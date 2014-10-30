@@ -1,0 +1,488 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>gsdview.qtwindowlistmenu &mdash; GSDView Open Edition Home Page</title>
+    <link rel="stylesheet" href="../../_static/sourceforge.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.6.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/logo.ico"/>
+    <link rel="top" title="GSDView Open Edition Home Page" href="../../index.html" />
+    <link rel="up" title="gsdview" href="../gsdview.html" /> 
+  </head>
+  <body>
+    
+        
+    
+    
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li><a href="../../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../gsdview.html" accesskey="U">gsdview</a> &raquo;</li> 
+      </ul>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for gsdview.qtwindowlistmenu</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="c">### Copyright (C) 2008-2011 Antonio Valentino &lt;a_valentino@users.sf.net&gt;</span>
+
+<span class="c">### This file is part of GSDView.</span>
+
+<span class="c">### GSDView is free software; you can redistribute it and/or modify</span>
+<span class="c">### it under the terms of the GNU General Public License as published by</span>
+<span class="c">### the Free Software Foundation; either version 2 of the License, or</span>
+<span class="c">### (at your option) any later version.</span>
+
+<span class="c">### GSDView is distributed in the hope that it will be useful,</span>
+<span class="c">### but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c">### MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c">### GNU General Public License for more details.</span>
+
+<span class="c">### You should have received a copy of the GNU General Public License</span>
+<span class="c">### along with GSDView; if not, write to the Free Software</span>
+<span class="c">### Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA.</span>
+
+
+<span class="sd">&#39;&#39;&#39;Window Menu</span>
+
+<span class="sd">Python port of the Window Wenu component from Qt Solutions.</span>
+
+<span class="sd">&#39;&#39;&#39;</span>
+
+
+<span class="kn">from</span> <span class="nn">qt</span> <span class="kn">import</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtGui</span>
+
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s">&#39;Antonio Valentino &lt;a_valentino@users.sf.net&gt;&#39;</span>
+<span class="n">__date__</span> <span class="o">=</span> <span class="s">&#39;$Date: 2009-09-04 20:24:24 +0200 (ven, 04 set 2009) $&#39;</span>
+<span class="n">__revision__</span> <span class="o">=</span> <span class="s">&#39;$Revision: 531 $&#39;</span>
+
+
+<div class="viewcode-block" id="QtWindowListMenu"><a class="viewcode-back" href="../../api/gsdview.qtwindowlistmenu.html#gsdview.qtwindowlistmenu.QtWindowListMenu">[docs]</a><span class="k">class</span> <span class="nc">QtWindowListMenu</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QMenu</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;The QtWindowListMenu class is a menu that provides navigation</span>
+<span class="sd">    commands for the subwindows in a QMdiArea.</span>
+
+<span class="sd">    It is typically used as the conventional &quot;Windows&quot; item in an MDI</span>
+<span class="sd">    application&#39;s menubar. It provides some standard commands for</span>
+<span class="sd">    arranging and closing the MDI subwindows, corresponding to the</span>
+<span class="sd">    slots of QMdiArea, as well as shortcuts to navigate directly to</span>
+<span class="sd">    each of them.</span>
+
+<span class="sd">    Usage: After creation, use attachToMdiArea() to tell the</span>
+<span class="sd">    QtWindowListMenu object which QMdiArea object it should provide</span>
+<span class="sd">    navigation commands for.  It can then be added to a QMenuBar (or</span>
+<span class="sd">    other objects that can take QMenus or QActions, like QToolButton</span>
+<span class="sd">    or QMenu) in the ordinary way, since QtWindowListMenu is a QMenu</span>
+<span class="sd">    subclass.</span>
+
+<span class="sd">    The subwindow navigation items may be given a common icon with</span>
+<span class="sd">    setDefaultIcon(). The item icon for a specific subwindow can be</span>
+<span class="sd">    set with setWindowIcon().</span>
+
+<span class="sd">    Customization: Additional menu items (actions) can be inserted</span>
+<span class="sd">    into this menu in the ordinary way for a QMenu. The</span>
+<span class="sd">    standardAction() method gives access to the standard navigation</span>
+<span class="sd">    items, which can be used to change their icon, shortcut,</span>
+<span class="sd">    visibility etc. Ultimately, the whole menu can be customized by</span>
+<span class="sd">    overriding syncWithMdiArea() in a subclass of QtWindowListMenu.</span>
+
+<span class="sd">    If a QtWindowListMenu is showed and opened before being attached</span>
+<span class="sd">    to a QMdiArea, it will try to auto-attach itself to the closest</span>
+<span class="sd">    sibling object that is or inherits QMdiArea, if any exists. This</span>
+<span class="sd">    behaviour is intended for special usecases; normally you will want</span>
+<span class="sd">    to explicitly specify the desired QMdiArea with attachToMdiArea().</span>
+
+<span class="sd">    .. seealso:: QMdiArea, QMdiSubWindow, QMenuBar, QAction</span>
+
+<span class="sd">    The *StandardAction* enumeration specifies the standard menu items</span>
+<span class="sd">    of a QtWindowListMenu.</span>
+
+<span class="sd">    :Enum:</span>
+
+<span class="sd">        * CloseAction</span>
+<span class="sd">        * CloseAllAction</span>
+<span class="sd">        * TileAction</span>
+<span class="sd">        * CascadeAction</span>
+<span class="sd">        * NextAction</span>
+<span class="sd">        * PrevAction</span>
+
+<span class="sd">    .. seealso:: standardAction()</span>
+
+<span class="sd">    :SLOTS:</span>
+
+<span class="sd">        * :meth:`syncWithMdiArea`</span>
+<span class="sd">        * :meth:`activateWindow`</span>
+<span class="sd">        * :meth:`windowDestroyed`</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">CloseAction</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">CloseAllAction</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">TileAction</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="n">CascadeAction</span> <span class="o">=</span> <span class="mi">4</span>
+    <span class="n">NextAction</span> <span class="o">=</span> <span class="mi">6</span>
+    <span class="n">PrevAction</span> <span class="o">=</span> <span class="mi">7</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Constructs a QtWindowListMenu object.</span>
+
+<span class="sd">        The *parent* parameter is passed to the QMenu constructor.</span>
+<span class="sd">        Although this parameter has the conventional default of 0,</span>
+<span class="sd">        you will normally want to explicitly provide a parent object,</span>
+<span class="sd">        since the later adding of this menu object to an action</span>
+<span class="sd">        container (e.g. QMenuBar) does not cause a reparenting.</span>
+<span class="sd">        The container is normally the natural choice for *parent*.</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">QtWindowListMenu</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">mdi</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setTitle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;&amp;Windows&#39;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">aboutToShow</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">syncWithMdiArea</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stdGroup</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QActionGroup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exclusive</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_winGroup</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QActionGroup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exclusive</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+                                            <span class="c">#, triggered=self.activateWindow)</span>
+
+        <span class="c"># @COMPATIBILITY: with pyside 1.0.1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_winGroup</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">activateWindow</span><span class="p">)</span>
+
+        <span class="c"># Create the standard menu items.</span>
+        <span class="c"># @Note: Creation order must match the StandardAction enum values ;-)</span>
+        <span class="n">QtGui</span><span class="o">.</span><span class="n">QAction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Cl&amp;ose&#39;</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stdGroup</span><span class="p">,</span>
+                      <span class="n">shortcut</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Ctrl+F4&#39;</span><span class="p">),</span>
+                      <span class="n">statusTip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Close the active window&#39;</span><span class="p">))</span>
+
+        <span class="n">QtGui</span><span class="o">.</span><span class="n">QAction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Close &amp;All&#39;</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stdGroup</span><span class="p">,</span>
+                      <span class="n">statusTip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Close all the windows&#39;</span><span class="p">))</span>
+
+        <span class="n">act</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stdGroup</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">act</span><span class="o">.</span><span class="n">setSeparator</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+
+        <span class="n">QtGui</span><span class="o">.</span><span class="n">QAction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;&amp;Tile&#39;</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stdGroup</span><span class="p">,</span>
+                      <span class="n">statusTip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Tile the windows&#39;</span><span class="p">))</span>
+
+        <span class="n">QtGui</span><span class="o">.</span><span class="n">QAction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;&amp;Cascade&#39;</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stdGroup</span><span class="p">,</span>
+                      <span class="n">statusTip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Cascade the windows&#39;</span><span class="p">))</span>
+
+        <span class="n">act</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stdGroup</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">act</span><span class="o">.</span><span class="n">setSeparator</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+
+        <span class="n">QtGui</span><span class="o">.</span><span class="n">QAction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Ne&amp;xt&#39;</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stdGroup</span><span class="p">,</span>
+                      <span class="n">statusTip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Move the focus to the next window&#39;</span><span class="p">))</span>
+
+        <span class="n">QtGui</span><span class="o">.</span><span class="n">QAction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Pre&amp;vious&#39;</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stdGroup</span><span class="p">,</span>
+                      <span class="n">statusTip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span>
+                                    <span class="s">&#39;Move the focus to the previous window&#39;</span><span class="p">))</span>
+
+        <span class="n">act</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stdGroup</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">act</span><span class="o">.</span><span class="n">setSeparator</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">addActions</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_stdGroup</span><span class="o">.</span><span class="n">actions</span><span class="p">())</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_winMap</span> <span class="o">=</span> <span class="p">{}</span>   <span class="c"># QMap&lt;QAction *, QMdiSubWindow *&gt;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_iconMap</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c"># QMap&lt;const QMdiSubWindow *, QIcon&gt;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_defIcon</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QIcon</span><span class="p">()</span>
+
+<div class="viewcode-block" id="QtWindowListMenu.attachToMdiArea"><a class="viewcode-back" href="../../api/gsdview.qtwindowlistmenu.html#gsdview.qtwindowlistmenu.QtWindowListMenu.attachToMdiArea">[docs]</a>    <span class="k">def</span> <span class="nf">attachToMdiArea</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mdiArea</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Instructs this menu to display navigation actions for the</span>
+<span class="sd">        QMdiArea *mdiArea*.</span>
+
+<span class="sd">        This should be done before this menu is shown.</span>
+<span class="sd">        Specifying a null *mdiArea* is meaningless and will generate</span>
+<span class="sd">        a warning.</span>
+
+<span class="sd">        For special usecases, see the note about auto-attachment in the</span>
+<span class="sd">        class description.</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">if</span> <span class="n">mdiArea</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdi</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">acts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stdGroup</span><span class="o">.</span><span class="n">actions</span><span class="p">()</span>
+        <span class="n">acts</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">([</span><span class="s">&#39;CloseAction&#39;</span><span class="p">,</span> <span class="s">&#39;CloseAllAction&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;TileAction&#39;</span><span class="p">,</span>
+                         <span class="s">&#39;CascadeAction&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;NextAction&#39;</span><span class="p">,</span> <span class="s">&#39;PrevAction&#39;</span><span class="p">],</span>
+                        <span class="n">acts</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdi</span><span class="p">:</span>
+            <span class="c"># i.e. we have previously been attached</span>
+            <span class="n">mdi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdi</span>
+            <span class="n">acts</span><span class="p">[</span><span class="s">&#39;CloseAction&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">disconnect</span><span class="p">(</span><span class="n">mdi</span><span class="o">.</span><span class="n">closeActiveSubWindow</span><span class="p">)</span>
+            <span class="n">acts</span><span class="p">[</span><span class="s">&#39;CloseAllAction&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">disconnect</span><span class="p">(</span><span class="n">mdi</span><span class="o">.</span><span class="n">closeAllSubWindows</span><span class="p">)</span>
+            <span class="n">acts</span><span class="p">[</span><span class="s">&#39;TileAction&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">disconnect</span><span class="p">(</span><span class="n">mdi</span><span class="o">.</span><span class="n">tileSubWindows</span><span class="p">)</span>
+            <span class="n">acts</span><span class="p">[</span><span class="s">&#39;CascadeAction&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">disconnect</span><span class="p">(</span><span class="n">mdi</span><span class="o">.</span><span class="n">cascadeSubWindows</span><span class="p">)</span>
+            <span class="n">acts</span><span class="p">[</span><span class="s">&#39;NextAction&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">disconnect</span><span class="p">(</span><span class="n">mdi</span><span class="o">.</span><span class="n">activateNextSubWindow</span><span class="p">)</span>
+            <span class="n">acts</span><span class="p">[</span><span class="s">&#39;PrevAction&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">disconnect</span><span class="p">(</span>
+                                                <span class="n">mdi</span><span class="o">.</span><span class="n">activatePreviousSubWindow</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">mdi</span> <span class="o">=</span> <span class="n">mdiArea</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdi</span><span class="p">:</span>
+            <span class="n">QtCore</span><span class="o">.</span><span class="n">qWarning</span><span class="p">(</span><span class="s">&#39;QtWindowListMenu::attachToMdiArea(): &#39;</span>
+                            <span class="s">&#39;mdiArea is 0; menu will be empty.&#39;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">acts</span><span class="p">[</span><span class="s">&#39;CloseAction&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mdi</span><span class="o">.</span><span class="n">closeActiveSubWindow</span><span class="p">)</span>
+        <span class="n">acts</span><span class="p">[</span><span class="s">&#39;CloseAllAction&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mdi</span><span class="o">.</span><span class="n">closeAllSubWindows</span><span class="p">)</span>
+        <span class="n">acts</span><span class="p">[</span><span class="s">&#39;TileAction&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mdi</span><span class="o">.</span><span class="n">tileSubWindows</span><span class="p">)</span>
+        <span class="n">acts</span><span class="p">[</span><span class="s">&#39;CascadeAction&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mdi</span><span class="o">.</span><span class="n">cascadeSubWindows</span><span class="p">)</span>
+        <span class="n">acts</span><span class="p">[</span><span class="s">&#39;NextAction&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mdi</span><span class="o">.</span><span class="n">activateNextSubWindow</span><span class="p">)</span>
+        <span class="n">acts</span><span class="p">[</span><span class="s">&#39;PrevAction&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mdi</span><span class="o">.</span><span class="n">activatePreviousSubWindow</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="QtWindowListMenu.attachedMdiArea"><a class="viewcode-back" href="../../api/gsdview.qtwindowlistmenu.html#gsdview.qtwindowlistmenu.QtWindowListMenu.attachedMdiArea">[docs]</a>    <span class="k">def</span> <span class="nf">attachedMdiArea</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Returns the QMdiArea this menu is currently attached to,</span>
+<span class="sd">        or None if not yet attached.</span>
+
+<span class="sd">        .. seealso:: attachToMdiArea()</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdi</span>
+</div>
+    <span class="k">def</span> <span class="nf">_attachToClosestMdiAreaObject</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Attach the menu to the most likely intended MDI area object</span>
+
+<span class="sd">        Heuristic method to auto-attach to the most likely intended</span>
+<span class="sd">        mdiArea object, i.e. the closest &quot;sibling&quot; mdiArea widget.</span>
+
+<span class="sd">        In the typical case, there will be only one in the mainwindow</span>
+<span class="sd">        that owns this menu, and this method will find it.</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdi</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">True</span>
+
+        <span class="n">mdi</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">parent</span> <span class="o">=</span> <span class="bp">self</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="n">mdi</span><span class="p">:</span>
+            <span class="n">parent</span> <span class="o">=</span> <span class="n">parent</span><span class="o">.</span><span class="n">parentWidget</span><span class="p">()</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">parent</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">False</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mdi</span><span class="p">,</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QMdiArea</span><span class="p">):</span>
+                <span class="n">mdi</span> <span class="o">=</span> <span class="n">parent</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">mdi</span> <span class="o">=</span> <span class="n">parent</span><span class="o">.</span><span class="n">findChild</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QMdiArea</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">attachToMdiArea</span><span class="p">(</span><span class="n">mdi</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">True</span>
+
+    <span class="nd">@QtCore.Slot</span><span class="p">()</span>
+<div class="viewcode-block" id="QtWindowListMenu.syncWithMdiArea"><a class="viewcode-back" href="../../api/gsdview.qtwindowlistmenu.html#gsdview.qtwindowlistmenu.QtWindowListMenu.syncWithMdiArea">[docs]</a>    <span class="k">def</span> <span class="nf">syncWithMdiArea</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Syncronize with MDI area</span>
+
+<span class="sd">        This slot is executed immediately prior to each opening of this</span>
+<span class="sd">        menu. It removes the previous subwindow navigation actions and</span>
+<span class="sd">        adds new ones according to the current state of the attached</span>
+<span class="sd">        QMdiArea.</span>
+
+<span class="sd">        :C++ signature: `void syncWithMdiArea()`</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdi</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attachToClosestMdiAreaObject</span><span class="p">():</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stdGroup</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mdi</span><span class="o">.</span><span class="n">subWindowList</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_winMap</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">act</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_winGroup</span><span class="o">.</span><span class="n">actions</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">removeAction</span><span class="p">(</span><span class="n">act</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_winGroup</span><span class="o">.</span><span class="n">removeAction</span><span class="p">(</span><span class="n">act</span><span class="p">)</span>
+            <span class="k">del</span> <span class="n">act</span>
+
+        <span class="n">idx</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">win</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mdi</span><span class="o">.</span><span class="n">subWindowList</span><span class="p">()):</span>
+            <span class="k">if</span> <span class="n">win</span><span class="o">.</span><span class="n">isWindowModified</span><span class="p">():</span>
+                <span class="n">modMarker</span> <span class="o">=</span> <span class="s">&quot;*&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">modMarker</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+
+            <span class="n">title</span> <span class="o">=</span> <span class="n">win</span><span class="o">.</span><span class="n">windowTitle</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;[*]&#39;</span><span class="p">,</span> <span class="n">modMarker</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">idx</span> <span class="o">&lt;</span> <span class="mi">8</span><span class="p">:</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="s">&#39;&amp;</span><span class="si">%d</span><span class="s"> </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">title</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%d</span><span class="s"> </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">title</span><span class="p">)</span>
+
+            <span class="n">icon</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iconMap</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">win</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_defIcon</span><span class="p">)</span>
+            <span class="n">action</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QAction</span><span class="p">(</span><span class="n">icon</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_winGroup</span><span class="p">,</span> <span class="n">checkable</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+            <span class="n">action</span><span class="o">.</span><span class="n">setChecked</span><span class="p">(</span><span class="n">win</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdi</span><span class="o">.</span><span class="n">activeSubWindow</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_winMap</span><span class="p">[</span><span class="n">action</span><span class="p">]</span> <span class="o">=</span> <span class="n">win</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">addActions</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_winGroup</span><span class="o">.</span><span class="n">actions</span><span class="p">())</span>
+</div>
+    <span class="nd">@QtCore.Slot</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QAction</span><span class="p">)</span>
+<div class="viewcode-block" id="QtWindowListMenu.activateWindow"><a class="viewcode-back" href="../../api/gsdview.qtwindowlistmenu.html#gsdview.qtwindowlistmenu.QtWindowListMenu.activateWindow">[docs]</a>    <span class="k">def</span> <span class="nf">activateWindow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">act</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Activate the corresponding sub-window in the MDI area</span>
+
+<span class="sd">        This slot is executed when the user selects one of the subwindow</span>
+<span class="sd">        navigation actions, given in *act*. It causes the corresponding</span>
+<span class="sd">        subwindow in the attached QMdiArea object to be activated.</span>
+
+<span class="sd">        :C++ signature: `void activateWindow(QAction *act)``</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdi</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attachToClosestMdiAreaObject</span><span class="p">():</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mdi</span><span class="o">.</span><span class="n">setActiveSubWindow</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_winMap</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">act</span><span class="p">))</span>
+</div>
+    <span class="nd">@QtCore.Slot</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QObject</span><span class="p">)</span>
+<div class="viewcode-block" id="QtWindowListMenu.windowDestroyed"><a class="viewcode-back" href="../../api/gsdview.qtwindowlistmenu.html#gsdview.qtwindowlistmenu.QtWindowListMenu.windowDestroyed">[docs]</a>    <span class="k">def</span> <span class="nf">windowDestroyed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;This slot is executed whenever a subwindow (*obj*) of the</span>
+<span class="sd">        attached QMdiArea, for which an icon has been, is deleted.</span>
+<span class="sd">        It clears that icon.</span>
+
+<span class="sd">        :C++ signature: `void windowDestroyed(QObject *obj)`</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iconMap</span><span class="p">[</span><span class="n">obj</span><span class="p">]</span>
+</div>
+<div class="viewcode-block" id="QtWindowListMenu.setWindowIcon"><a class="viewcode-back" href="../../api/gsdview.qtwindowlistmenu.html#gsdview.qtwindowlistmenu.QtWindowListMenu.setWindowIcon">[docs]</a>    <span class="k">def</span> <span class="nf">setWindowIcon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">window</span><span class="p">,</span> <span class="n">icon</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Sets *icon* as the icon of the menu item corresponding to</span>
+<span class="sd">        the mdi subwindow *window*. If *icon* is a null icon, the</span>
+<span class="sd">        current item icon will be cleared.</span>
+
+<span class="sd">        .. seealso:: windowIcon()</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">window</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="n">icon</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iconMap</span><span class="p">[</span><span class="n">window</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_iconMap</span><span class="p">[</span><span class="n">window</span><span class="p">]</span> <span class="o">=</span> <span class="n">icon</span>
+            <span class="n">window</span><span class="o">.</span><span class="n">destroyed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">windowDestroyed</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="QtWindowListMenu.windowIcon"><a class="viewcode-back" href="../../api/gsdview.qtwindowlistmenu.html#gsdview.qtwindowlistmenu.QtWindowListMenu.windowIcon">[docs]</a>    <span class="k">def</span> <span class="nf">windowIcon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">window</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Returns the icon of the menu item corresponding to the mdi</span>
+<span class="sd">        subwindow *window*. This will be a null icon if none has been</span>
+<span class="sd">        explicitly set.</span>
+
+<span class="sd">        .. seealso:: setWindowIcon()</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="c">#return self._iconMap.get(window)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iconMap</span><span class="p">[</span><span class="n">window</span><span class="p">]</span>
+</div>
+<div class="viewcode-block" id="QtWindowListMenu.setDefaultIcon"><a class="viewcode-back" href="../../api/gsdview.qtwindowlistmenu.html#gsdview.qtwindowlistmenu.QtWindowListMenu.setDefaultIcon">[docs]</a>    <span class="k">def</span> <span class="nf">setDefaultIcon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">icon</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Sets *icon* as the default icon for the subwindow navigation</span>
+<span class="sd">        items in this QtWindowListMenu. If *icon* is a null icon, then</span>
+<span class="sd">        the default icon will be cleared.</span>
+
+<span class="sd">        .. seealso:: defaultIcon()</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_defIcon</span> <span class="o">=</span> <span class="n">icon</span>
+</div>
+<div class="viewcode-block" id="QtWindowListMenu.defaultIcon"><a class="viewcode-back" href="../../api/gsdview.qtwindowlistmenu.html#gsdview.qtwindowlistmenu.QtWindowListMenu.defaultIcon">[docs]</a>    <span class="k">def</span> <span class="nf">defaultIcon</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Returns the default icon for the subwindow navigation items</span>
+<span class="sd">        in this QtWindowListMenu. This will be a null icon if none has</span>
+<span class="sd">        been explicitly set.</span>
+
+<span class="sd">        .. seealso:: setDefaultIcon()</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_defIcon</span>
+</div>
+<div class="viewcode-block" id="QtWindowListMenu.standardAction"><a class="viewcode-back" href="../../api/gsdview.qtwindowlistmenu.html#gsdview.qtwindowlistmenu.QtWindowListMenu.standardAction">[docs]</a>    <span class="k">def</span> <span class="nf">standardAction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Returns a pointer to the standard navigation action of this</span>
+<span class="sd">        menu specified by *item*. This can be used to customize the</span>
+<span class="sd">        look, shortcut, tool tip, etc. of this item, or to provide</span>
+<span class="sd">        alternative access to it through a tool button etc.</span>
+
+<span class="sd">        The returned object is owned by this QtWindowListMenu, and must</span>
+<span class="sd">        not be deleted. If you want QtWindowListMenu to not display this</span>
+<span class="sd">        action, set its &quot;visible&quot; property to false.</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stdGroup</span><span class="o">.</span><span class="n">actions</span><span class="p">()[</span><span class="n">item</span><span class="p">]</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+    
+    
+    <p>
+        <a href="http://sourceforge.net/projects/gsdview">
+            <img src="http://sflogo.sourceforge.net/sflogo.php?group_id=226458&type=14" width="150" height="40" alt="Get GSDView at SourceForge.net. Fast, secure and Free Open Source software downloads" />
+        </a>
+    </p>
+    
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li><a href="../../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../gsdview.html" >gsdview</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2008-2011, Antonio Valentino.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=GSDView
+Comment=Geo-Spatial Data Viewer
+Exec=gsdview
+Icon=GSDView
+Terminal=false
+Categories=Education;Science;Geoscience;Qt;
+

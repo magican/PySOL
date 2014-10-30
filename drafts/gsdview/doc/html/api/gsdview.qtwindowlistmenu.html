@@ -1,0 +1,357 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>gsdview.qtwindowlistmenu &mdash; GSDView Open Edition Home Page</title>
+    <link rel="stylesheet" href="../_static/sourceforge.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.6.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/logo.ico"/>
+    <link rel="top" title="GSDView Open Edition Home Page" href="../index.html" />
+    <link rel="up" title="API Reference" href="../reference.html" />
+    <link rel="next" title="gsdview.utils" href="gsdview.utils.html" />
+    <link rel="prev" title="gsdview.qt4support" href="gsdview.qt4support.html" /> 
+  </head>
+  <body>
+    
+        
+    
+    
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li class="right" >
+          <a href="gsdview.utils.html" title="gsdview.utils"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="gsdview.qt4support.html" title="gsdview.qt4support"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../reference.html" accesskey="U">API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-gsdview.qtwindowlistmenu">
+<span id="gsdview-qtwindowlistmenu"></span><h1>gsdview.qtwindowlistmenu<a class="headerlink" href="#module-gsdview.qtwindowlistmenu" title="Permalink to this headline">¶</a></h1>
+<p>Window Menu</p>
+<p>Python port of the Window Wenu component from Qt Solutions.</p>
+<p class="rubric">Classes</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><a class="reference internal" href="#gsdview.qtwindowlistmenu.QtWindowListMenu" title="gsdview.qtwindowlistmenu.QtWindowListMenu"><tt class="xref py py-obj docutils literal"><span class="pre">QtWindowListMenu</span></tt></a>(parent,&nbsp;**kwargs)</td>
+<td>The QtWindowListMenu class is a menu that provides navigation</td>
+</tr>
+</tbody>
+</table>
+<dl class="class">
+<dt id="gsdview.qtwindowlistmenu.QtWindowListMenu">
+<em class="property">class </em><tt class="descclassname">gsdview.qtwindowlistmenu.</tt><tt class="descname">QtWindowListMenu</tt><big>(</big><em>parent</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/gsdview/qtwindowlistmenu.html#QtWindowListMenu"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.qtwindowlistmenu.QtWindowListMenu" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">PyQt4.QtGui.QMenu</span></tt></p>
+<p>The QtWindowListMenu class is a menu that provides navigation
+commands for the subwindows in a QMdiArea.</p>
+<p>It is typically used as the conventional &#8220;Windows&#8221; item in an MDI
+application&#8217;s menubar. It provides some standard commands for
+arranging and closing the MDI subwindows, corresponding to the
+slots of QMdiArea, as well as shortcuts to navigate directly to
+each of them.</p>
+<p>Usage: After creation, use attachToMdiArea() to tell the
+QtWindowListMenu object which QMdiArea object it should provide
+navigation commands for.  It can then be added to a QMenuBar (or
+other objects that can take QMenus or QActions, like QToolButton
+or QMenu) in the ordinary way, since QtWindowListMenu is a QMenu
+subclass.</p>
+<p>The subwindow navigation items may be given a common icon with
+setDefaultIcon(). The item icon for a specific subwindow can be
+set with setWindowIcon().</p>
+<p>Customization: Additional menu items (actions) can be inserted
+into this menu in the ordinary way for a QMenu. The
+standardAction() method gives access to the standard navigation
+items, which can be used to change their icon, shortcut,
+visibility etc. Ultimately, the whole menu can be customized by
+overriding syncWithMdiArea() in a subclass of QtWindowListMenu.</p>
+<p>If a QtWindowListMenu is showed and opened before being attached
+to a QMdiArea, it will try to auto-attach itself to the closest
+sibling object that is or inherits QMdiArea, if any exists. This
+behaviour is intended for special usecases; normally you will want
+to explicitly specify the desired QMdiArea with attachToMdiArea().</p>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last">QMdiArea, QMdiSubWindow, QMenuBar, QAction</p>
+</div>
+<p>The <em>StandardAction</em> enumeration specifies the standard menu items
+of a QtWindowListMenu.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Enum :</th><td class="field-body"><ul class="first last simple">
+<li>CloseAction</li>
+<li>CloseAllAction</li>
+<li>TileAction</li>
+<li>CascadeAction</li>
+<li>NextAction</li>
+<li>PrevAction</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last">standardAction()</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Slots :</th><td class="field-body"><ul class="first last simple">
+<li><a class="reference internal" href="#gsdview.qtwindowlistmenu.QtWindowListMenu.syncWithMdiArea" title="gsdview.qtwindowlistmenu.QtWindowListMenu.syncWithMdiArea"><tt class="xref py py-meth docutils literal"><span class="pre">syncWithMdiArea()</span></tt></a></li>
+<li><a class="reference internal" href="#gsdview.qtwindowlistmenu.QtWindowListMenu.activateWindow" title="gsdview.qtwindowlistmenu.QtWindowListMenu.activateWindow"><tt class="xref py py-meth docutils literal"><span class="pre">activateWindow()</span></tt></a></li>
+<li><a class="reference internal" href="#gsdview.qtwindowlistmenu.QtWindowListMenu.windowDestroyed" title="gsdview.qtwindowlistmenu.QtWindowListMenu.windowDestroyed"><tt class="xref py py-meth docutils literal"><span class="pre">windowDestroyed()</span></tt></a></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Constructs a QtWindowListMenu object.</p>
+<p>The <em>parent</em> parameter is passed to the QMenu constructor.
+Although this parameter has the conventional default of 0,
+you will normally want to explicitly provide a parent object,
+since the later adding of this menu object to an action
+container (e.g. QMenuBar) does not cause a reparenting.
+The container is normally the natural choice for <em>parent</em>.</p>
+<dl class="method">
+<dt id="gsdview.qtwindowlistmenu.QtWindowListMenu.activateWindow">
+<tt class="descname">activateWindow</tt><big>(</big><em>act</em><big>)</big><a class="reference internal" href="../_modules/gsdview/qtwindowlistmenu.html#QtWindowListMenu.activateWindow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.qtwindowlistmenu.QtWindowListMenu.activateWindow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Activate the corresponding sub-window in the MDI area</p>
+<p>This slot is executed when the user selects one of the subwindow
+navigation actions, given in <em>act</em>. It causes the corresponding
+subwindow in the attached QMdiArea object to be activated.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">C++ signature:</th><td class="field-body"><cite>void activateWindow(QAction *act)`</cite></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="gsdview.qtwindowlistmenu.QtWindowListMenu.attachToMdiArea">
+<tt class="descname">attachToMdiArea</tt><big>(</big><em>mdiArea</em><big>)</big><a class="reference internal" href="../_modules/gsdview/qtwindowlistmenu.html#QtWindowListMenu.attachToMdiArea"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.qtwindowlistmenu.QtWindowListMenu.attachToMdiArea" title="Permalink to this definition">¶</a></dt>
+<dd><p>Instructs this menu to display navigation actions for the
+QMdiArea <em>mdiArea</em>.</p>
+<p>This should be done before this menu is shown.
+Specifying a null <em>mdiArea</em> is meaningless and will generate
+a warning.</p>
+<p>For special usecases, see the note about auto-attachment in the
+class description.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gsdview.qtwindowlistmenu.QtWindowListMenu.attachedMdiArea">
+<tt class="descname">attachedMdiArea</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/qtwindowlistmenu.html#QtWindowListMenu.attachedMdiArea"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.qtwindowlistmenu.QtWindowListMenu.attachedMdiArea" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the QMdiArea this menu is currently attached to,
+or None if not yet attached.</p>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last">attachToMdiArea()</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="gsdview.qtwindowlistmenu.QtWindowListMenu.defaultIcon">
+<tt class="descname">defaultIcon</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/qtwindowlistmenu.html#QtWindowListMenu.defaultIcon"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.qtwindowlistmenu.QtWindowListMenu.defaultIcon" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the default icon for the subwindow navigation items
+in this QtWindowListMenu. This will be a null icon if none has
+been explicitly set.</p>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last">setDefaultIcon()</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="gsdview.qtwindowlistmenu.QtWindowListMenu.setDefaultIcon">
+<tt class="descname">setDefaultIcon</tt><big>(</big><em>icon</em><big>)</big><a class="reference internal" href="../_modules/gsdview/qtwindowlistmenu.html#QtWindowListMenu.setDefaultIcon"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.qtwindowlistmenu.QtWindowListMenu.setDefaultIcon" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets <em>icon</em> as the default icon for the subwindow navigation
+items in this QtWindowListMenu. If <em>icon</em> is a null icon, then
+the default icon will be cleared.</p>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last">defaultIcon()</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="gsdview.qtwindowlistmenu.QtWindowListMenu.setWindowIcon">
+<tt class="descname">setWindowIcon</tt><big>(</big><em>window</em>, <em>icon</em><big>)</big><a class="reference internal" href="../_modules/gsdview/qtwindowlistmenu.html#QtWindowListMenu.setWindowIcon"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.qtwindowlistmenu.QtWindowListMenu.setWindowIcon" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets <em>icon</em> as the icon of the menu item corresponding to
+the mdi subwindow <em>window</em>. If <em>icon</em> is a null icon, the
+current item icon will be cleared.</p>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last">windowIcon()</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="gsdview.qtwindowlistmenu.QtWindowListMenu.standardAction">
+<tt class="descname">standardAction</tt><big>(</big><em>item</em><big>)</big><a class="reference internal" href="../_modules/gsdview/qtwindowlistmenu.html#QtWindowListMenu.standardAction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.qtwindowlistmenu.QtWindowListMenu.standardAction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a pointer to the standard navigation action of this
+menu specified by <em>item</em>. This can be used to customize the
+look, shortcut, tool tip, etc. of this item, or to provide
+alternative access to it through a tool button etc.</p>
+<p>The returned object is owned by this QtWindowListMenu, and must
+not be deleted. If you want QtWindowListMenu to not display this
+action, set its &#8220;visible&#8221; property to false.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gsdview.qtwindowlistmenu.QtWindowListMenu.syncWithMdiArea">
+<tt class="descname">syncWithMdiArea</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/qtwindowlistmenu.html#QtWindowListMenu.syncWithMdiArea"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.qtwindowlistmenu.QtWindowListMenu.syncWithMdiArea" title="Permalink to this definition">¶</a></dt>
+<dd><p>Syncronize with MDI area</p>
+<p>This slot is executed immediately prior to each opening of this
+menu. It removes the previous subwindow navigation actions and
+adds new ones according to the current state of the attached
+QMdiArea.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">C++ signature:</th><td class="field-body"><cite>void syncWithMdiArea()</cite></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="gsdview.qtwindowlistmenu.QtWindowListMenu.windowDestroyed">
+<tt class="descname">windowDestroyed</tt><big>(</big><em>obj</em><big>)</big><a class="reference internal" href="../_modules/gsdview/qtwindowlistmenu.html#QtWindowListMenu.windowDestroyed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.qtwindowlistmenu.QtWindowListMenu.windowDestroyed" title="Permalink to this definition">¶</a></dt>
+<dd><p>This slot is executed whenever a subwindow (<em>obj</em>) of the
+attached QMdiArea, for which an icon has been, is deleted.
+It clears that icon.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">C++ signature:</th><td class="field-body"><cite>void windowDestroyed(QObject *obj)</cite></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="gsdview.qtwindowlistmenu.QtWindowListMenu.windowIcon">
+<tt class="descname">windowIcon</tt><big>(</big><em>window</em><big>)</big><a class="reference internal" href="../_modules/gsdview/qtwindowlistmenu.html#QtWindowListMenu.windowIcon"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.qtwindowlistmenu.QtWindowListMenu.windowIcon" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the icon of the menu item corresponding to the mdi
+subwindow <em>window</em>. This will be a null icon if none has been
+explicitly set.</p>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last">setWindowIcon()</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo.png" alt="Logo"/>
+            </a></p>
+    
+    
+    <p>
+        <a href="http://sourceforge.net/projects/gsdview">
+            <img src="http://sflogo.sourceforge.net/sflogo.php?group_id=226458&type=14" width="150" height="40" alt="Get GSDView at SourceForge.net. Fast, secure and Free Open Source software downloads" />
+        </a>
+    </p>
+    
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="gsdview.qt4support.html"
+                        title="previous chapter">gsdview.qt4support</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="gsdview.utils.html"
+                        title="next chapter">gsdview.utils</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/api/gsdview.qtwindowlistmenu.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li class="right" >
+          <a href="gsdview.utils.html" title="gsdview.utils"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="gsdview.qt4support.html" title="gsdview.qt4support"
+             >previous</a> |</li>
+        <li><a href="../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../reference.html" >API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2008-2011, Antonio Valentino.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

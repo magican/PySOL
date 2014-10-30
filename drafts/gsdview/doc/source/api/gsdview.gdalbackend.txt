@@ -1,0 +1,44 @@
+gsdview.gdalbackend
+===================
+
+.. automodule:: gsdview.gdalbackend
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      DontUseExceptions
+      UseExceptions
+      close
+      closeCurrentItem
+      findItemFromFilename
+      getUseExceptions
+      init
+      itemActions
+      itemContextMenu
+      loadSettings
+      newImageView
+      openFile
+      openImageView
+      openItemMatadataView
+      openRGBImageView
+      openSubDataset
+      saveSettings
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      GDALBackend
+   
+   
+
+   
+   
+   

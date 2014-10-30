@@ -1,0 +1,24 @@
+gsdview.gdalbackend.core
+========================
+
+.. automodule:: gsdview.gdalbackend.core
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      GDALBackend
+      GraphicsViewSubWindow
+      ItemSubWindow
+   
+   
+
+   
+   
+   

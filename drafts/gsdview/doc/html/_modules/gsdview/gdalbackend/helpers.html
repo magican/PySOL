@@ -1,0 +1,627 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>gsdview.gdalbackend.helpers &mdash; GSDView Open Edition Home Page</title>
+    <link rel="stylesheet" href="../../../_static/sourceforge.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.6.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../../_static/logo.ico"/>
+    <link rel="top" title="GSDView Open Edition Home Page" href="../../../index.html" />
+    <link rel="up" title="gsdview.gdalbackend" href="../gdalbackend.html" /> 
+  </head>
+  <body>
+    
+        
+    
+    
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li><a href="../../../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../gsdview.html" >gsdview</a> &raquo;</li>
+          <li><a href="../gdalbackend.html" accesskey="U">gsdview.gdalbackend</a> &raquo;</li> 
+      </ul>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for gsdview.gdalbackend.helpers</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="c">### Copyright (C) 2008-2011 Antonio Valentino &lt;a_valentino@users.sf.net&gt;</span>
+
+<span class="c">### This file is part of GSDView.</span>
+
+<span class="c">### GSDView is free software; you can redistribute it and/or modify</span>
+<span class="c">### it under the terms of the GNU General Public License as published by</span>
+<span class="c">### the Free Software Foundation; either version 2 of the License, or</span>
+<span class="c">### (at your option) any later version.</span>
+
+<span class="c">### GSDView is distributed in the hope that it will be useful,</span>
+<span class="c">### but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c">### MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c">### GNU General Public License for more details.</span>
+
+<span class="c">### You should have received a copy of the GNU General Public License</span>
+<span class="c">### along with GSDView; if not, write to the Free Software</span>
+<span class="c">### Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA.</span>
+
+
+<span class="sd">&#39;&#39;&#39;Core GDAL backend functions and classes.&#39;&#39;&#39;</span>
+
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">glob</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">tempfile</span>
+
+<span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">gdal</span>
+
+<span class="kn">from</span> <span class="nn">qt</span> <span class="kn">import</span> <span class="n">QtGui</span>
+
+<span class="kn">from</span> <span class="nn">..gdalbackend</span> <span class="kn">import</span> <span class="n">modelitems</span>
+<span class="kn">from</span> <span class="nn">..gdalbackend</span> <span class="kn">import</span> <span class="n">gdalsupport</span>
+
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s">&#39;Antonio Valentino &lt;a_valentino@users.sf.net&gt;&#39;</span>
+<span class="n">__date__</span> <span class="o">=</span> <span class="s">&#39;$Date: 2011-07-30 16:57:37 +0200 (sab, 30 lug 2011) $&#39;</span>
+<span class="n">__revision__</span> <span class="o">=</span> <span class="s">&#39;$Revision: 976 $&#39;</span>
+
+
+<div class="viewcode-block" id="GdalHelper"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.helpers.html#gsdview.gdalbackend.helpers.GdalHelper">[docs]</a><span class="k">class</span> <span class="nc">GdalHelper</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Basee helper class for running external GDAL tools.</span>
+
+<span class="sd">    Helper classes provide a common set of functionality for running</span>
+<span class="sd">    GDAL tools in separate processes.</span>
+<span class="sd">    Task performed are:</span>
+
+<span class="sd">        * tool setup</span>
+<span class="sd">        * temporay files and diractories creation</span>
+<span class="sd">        * temporay files and diractories cleanup</span>
+<span class="sd">        * finalization actions</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">_PROGRESS_RANGE</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">,</span> <span class="n">tool</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">GdalHelper</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">app</span> <span class="o">=</span> <span class="n">app</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tool</span> <span class="o">=</span> <span class="n">tool</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">progressdialog</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tmpdir</span> <span class="o">=</span> <span class="bp">None</span>
+
+<div class="viewcode-block" id="GdalHelper.setup_progress_dialog"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.helpers.html#gsdview.gdalbackend.helpers.GdalHelper.setup_progress_dialog">[docs]</a>    <span class="k">def</span> <span class="nf">setup_progress_dialog</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">):</span>
+        <span class="n">dialog</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QProgressDialog</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="p">)</span>
+        <span class="n">dialog</span><span class="o">.</span><span class="n">setModal</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">title</span><span class="p">:</span>
+            <span class="n">dialog</span><span class="o">.</span><span class="n">setLabelText</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+        <span class="n">dialog</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">progressdialog</span> <span class="o">=</span> <span class="n">dialog</span>
+
+        <span class="k">return</span> <span class="n">dialog</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="GdalHelper.controller"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.helpers.html#gsdview.gdalbackend.helpers.GdalHelper.controller">[docs]</a>    <span class="k">def</span> <span class="nf">controller</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">controller</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="GdalHelper.logger"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.helpers.html#gsdview.gdalbackend.helpers.GdalHelper.logger">[docs]</a>    <span class="k">def</span> <span class="nf">logger</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">logger</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="GdalHelper.gdalbackend"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.helpers.html#gsdview.gdalbackend.helpers.GdalHelper.gdalbackend">[docs]</a>    <span class="k">def</span> <span class="nf">gdalbackend</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">pluginmanager</span><span class="o">.</span><span class="n">plugins</span><span class="p">[</span><span class="s">&#39;gdalbackend&#39;</span><span class="p">]</span>
+</div>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="GdalHelper.ovrfiles"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.helpers.html#gsdview.gdalbackend.helpers.GdalHelper.ovrfiles">[docs]</a>    <span class="k">def</span> <span class="nf">ovrfiles</span><span class="p">(</span><span class="n">dirname</span><span class="p">):</span>
+        <span class="n">files</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">pattern</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39;*.ovr&#39;</span><span class="p">,</span> <span class="s">&#39;*.aux&#39;</span><span class="p">):</span>
+            <span class="n">files</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dirname</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="n">files</span>
+</div>
+<div class="viewcode-block" id="GdalHelper.setup_tmpdir"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.helpers.html#gsdview.gdalbackend.helpers.GdalHelper.setup_tmpdir">[docs]</a>    <span class="k">def</span> <span class="nf">setup_tmpdir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Create a temporary diran copy the virtual file into it.&#39;&#39;&#39;</span>
+
+        <span class="n">vrtdirname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">vrtfilename</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">tmpdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">vrtdirname</span><span class="p">,</span> <span class="s">&#39;tmp&#39;</span><span class="p">)</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+            <span class="n">tmpdir</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">()</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">vrtfilename</span><span class="p">,</span> <span class="n">tmpdir</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">tmpdir</span>
+</div>
+<div class="viewcode-block" id="GdalHelper.cleanup"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.helpers.html#gsdview.gdalbackend.helpers.GdalHelper.cleanup">[docs]</a>    <span class="k">def</span> <span class="nf">cleanup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tmpdir</span><span class="p">:</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tmpdir</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tmpdir</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&#39;unable ro remove remporary dir: &#39;</span>
+                                    <span class="s">&#39;&quot;</span><span class="si">%s</span><span class="s">&quot;&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tmpdir</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tmpdir</span> <span class="o">=</span> <span class="bp">None</span>
+</div>
+<div class="viewcode-block" id="GdalHelper.setProgressRange"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.helpers.html#gsdview.gdalbackend.helpers.GdalHelper.setProgressRange">[docs]</a>    <span class="k">def</span> <span class="nf">setProgressRange</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">minimum</span><span class="p">,</span> <span class="n">maximum</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">progressbar</span><span class="o">.</span><span class="n">setRange</span><span class="p">(</span><span class="n">minimum</span><span class="p">,</span> <span class="n">maximum</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">progressdialog</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">progressdialog</span><span class="o">.</span><span class="n">setRange</span><span class="p">(</span><span class="n">minimum</span><span class="p">,</span> <span class="n">maximum</span><span class="p">)</span>
+</div>
+    <span class="k">def</span> <span class="nf">_reset_progress</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setProgressRange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">progressdialog</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">progressdialog</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+
+<div class="viewcode-block" id="GdalHelper.reset"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.helpers.html#gsdview.gdalbackend.helpers.GdalHelper.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reset_progress</span><span class="p">()</span>
+</div>
+    <span class="k">def</span> <span class="nf">_connect_signals</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">finished</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">finalize</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">progressdialog</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">progressdialog</span><span class="o">.</span><span class="n">canceled</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">stop_tool</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">progressbar</span><span class="o">.</span><span class="n">valueChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+                                                <span class="bp">self</span><span class="o">.</span><span class="n">progressdialog</span><span class="o">.</span><span class="n">setValue</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_disconnect_signals</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c"># @TODO: catch exceptions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">finished</span><span class="o">.</span><span class="n">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">finalize</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">progressdialog</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">progressbar</span><span class="o">.</span><span class="n">valueChanged</span><span class="o">.</span><span class="n">disconnect</span><span class="p">(</span>
+                                                <span class="bp">self</span><span class="o">.</span><span class="n">progressdialog</span><span class="o">.</span><span class="n">setValue</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">progressdialog</span><span class="o">.</span><span class="n">canceled</span><span class="o">.</span><span class="n">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">stop_tool</span><span class="p">)</span>
+
+<div class="viewcode-block" id="GdalHelper.do_start"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.helpers.html#gsdview.gdalbackend.helpers.GdalHelper.do_start">[docs]</a>    <span class="k">def</span> <span class="nf">do_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span> <span class="o">+</span> <span class="s">&#39;.do_start&#39;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="GdalHelper.start"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.helpers.html#gsdview.gdalbackend.helpers.GdalHelper.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">isbusy</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&#39;unable to perform overview computation: &#39;</span>
+                                <span class="s">&#39;the subprocess controller is currently &#39;</span>
+                                <span class="s">&#39;busy.&#39;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;run the &quot;</span><span class="si">%s</span><span class="s">&quot; subprocess.&#39;</span> <span class="o">%</span>
+                                    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tool</span><span class="o">.</span><span class="n">executable</span><span class="p">))</span>
+
+        <span class="c"># @TODO: check: this instruuctin in this position don&#39; seems to work</span>
+        <span class="c">#        (the progressbar hangs)</span>
+        <span class="c">#self.setProgressRange(*self._PROGRESS_RANGE)</span>
+        <span class="c">#if self.progressdialog:</span>
+        <span class="c">#    #self.progressdialog.reset()</span>
+        <span class="c">#    self.progressdialog.show()</span>
+
+        <span class="c"># @TODO: connect signals after the process succefully started (??)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connect_signals</span><span class="p">()</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">startfailure</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_start</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+            <span class="c">#self.logger.error(str(e), exc_info=True)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">),</span> <span class="n">exc_info</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+            <span class="n">startfailure</span> <span class="o">=</span> <span class="bp">True</span>
+
+        <span class="k">if</span> <span class="n">startfailure</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_disconnect_signals</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setProgressRange</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_PROGRESS_RANGE</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">progressdialog</span><span class="p">:</span>
+                <span class="c">#self.progressdialog.reset()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">progressdialog</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="GdalHelper.do_finalize"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.helpers.html#gsdview.gdalbackend.helpers.GdalHelper.do_finalize">[docs]</a>    <span class="k">def</span> <span class="nf">do_finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+</div>
+<div class="viewcode-block" id="GdalHelper.do_finalize_on_error"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.helpers.html#gsdview.gdalbackend.helpers.GdalHelper.do_finalize_on_error">[docs]</a>    <span class="k">def</span> <span class="nf">do_finalize_on_error</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="c">#@QtCore.Slot()</span>
+    <span class="c">#@QtCore.Slot(int)</span></div>
+<div class="viewcode-block" id="GdalHelper.finalize"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.helpers.html#gsdview.gdalbackend.helpers.GdalHelper.finalize">[docs]</a>    <span class="k">def</span> <span class="nf">finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">returncode</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_disconnect_signals</span><span class="p">()</span>
+
+            <span class="c"># only call do_finalize if processing finished successfully</span>
+            <span class="k">if</span> <span class="n">returncode</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">userstop</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">do_finalize</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">do_finalize_on_error</span><span class="p">()</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cleanup</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_reset_progress</span><span class="p">()</span>
+
+</div></div>
+<div class="viewcode-block" id="AddoHelper"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.helpers.html#gsdview.gdalbackend.helpers.AddoHelper">[docs]</a><span class="k">class</span> <span class="nc">AddoHelper</span><span class="p">(</span><span class="n">GdalHelper</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Helper class for gdaladdo execution on live datasets.</span>
+
+<span class="sd">    In GSDView an external process running the gdaladdo is used to add</span>
+<span class="sd">    oveviews to (virtual) dataset that are already open in GSDView</span>
+<span class="sd">    itself.</span>
+
+<span class="sd">    Unfortunately, as far as I know, there is no way to safely handle</span>
+<span class="sd">    two dataset objects (pointing at the same vrt file) in two different</span>
+<span class="sd">    processes.</span>
+
+<span class="sd">    This helper class provides functions to perform overview</span>
+<span class="sd">    computation on a private environment and then move the ovr/aux</span>
+<span class="sd">    file back to the main cache folder of the dataset.</span>
+<span class="sd">    After that the dataset is re-opened an all changes are safely</span>
+<span class="sd">    reflected to the GUI.</span>
+
+<span class="sd">    In case the overview computation is stopped before completion then</span>
+<span class="sd">    the private gdaladdo environment is simply cleaned and no side</span>
+<span class="sd">    effect arises.</span>
+
+<span class="sd">    .. note:: if one wants to add overviews to a vrt dataset that</span>
+<span class="sd">              already has overviews (i.e. the ovr/aux file already</span>
+<span class="sd">              exists) then the ovr/aux file should be copyed in the</span>
+<span class="sd">              private gdaladdo environment before starting computation.</span>
+
+<span class="sd">              In this way the pre-existing overview are preserved but</span>
+<span class="sd">              the copy operation could be heavy weight.</span>
+
+<span class="sd">              Maybe some suggestion can be asked on the GDAL</span>
+<span class="sd">              mailing-list.</span>
+
+<span class="sd">              An alternative solution, the one currently implemented,</span>
+<span class="sd">              is to force recomputation of all overview levels (exixting</span>
+<span class="sd">              ones and newly selected) and then replace the ol overview</span>
+<span class="sd">              file.</span>
+
+<span class="sd">              This solution is not efficient since it doesn&#39;t re-use</span>
+<span class="sd">              existing overviews but ensure no data loss in case the</span>
+<span class="sd">              operation is stopped by the user.</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">,</span> <span class="n">tool</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">AddoHelper</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">tool</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_datasetitem</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_band</span> <span class="o">=</span> <span class="bp">None</span>
+
+<div class="viewcode-block" id="AddoHelper.target_levels"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.helpers.html#gsdview.gdalbackend.helpers.AddoHelper.target_levels">[docs]</a>    <span class="k">def</span> <span class="nf">target_levels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_band</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">band</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_band</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">band</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">GetRasterBand</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">oldlevels</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">estep</span> <span class="o">=</span> <span class="mi">3</span>
+        <span class="n">threshold</span> <span class="o">=</span> <span class="mf">0.1</span>
+
+        <span class="k">if</span> <span class="n">band</span><span class="o">.</span><span class="n">GetOverviewCount</span><span class="p">():</span>
+            <span class="n">oldlevels</span> <span class="o">=</span> <span class="n">gdalsupport</span><span class="o">.</span><span class="n">ovrLevels</span><span class="p">(</span><span class="n">band</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">set</span><span class="p">(</span><span class="n">oldlevels</span><span class="p">)</span><span class="o">.</span><span class="n">issuperset</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">)):</span>
+                <span class="n">estep</span> <span class="o">=</span> <span class="mi">2</span>
+                <span class="n">threshold</span> <span class="o">=</span> <span class="mf">1.1</span>
+
+        <span class="c"># @NOTE: use dataset for levels computation because the</span>
+        <span class="c">#        IMAGE_STRUCTURE metadata are not propagated from</span>
+        <span class="c">#        CachedDatasetItem to raster bands</span>
+        <span class="n">levels</span> <span class="o">=</span> <span class="n">gdalsupport</span><span class="o">.</span><span class="n">ovrComputeLevels</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">estep</span><span class="o">=</span><span class="n">estep</span><span class="p">,</span>
+                                              <span class="n">threshold</span><span class="o">=</span><span class="n">threshold</span><span class="p">)</span>
+
+        <span class="c"># @NOTE: the GDAL band info is configured to force recomputation of</span>
+        <span class="c">#        all levels checked</span>
+        <span class="k">if</span> <span class="n">levels</span><span class="p">:</span>
+            <span class="n">levels</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">oldlevels</span><span class="p">)</span>
+            <span class="n">levels</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">levels</span>
+</div>
+<div class="viewcode-block" id="AddoHelper.do_start"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.helpers.html#gsdview.gdalbackend.helpers.AddoHelper.do_start">[docs]</a>    <span class="k">def</span> <span class="nf">do_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="c">#levels = gdalsupport.ovrComputeLevels(item)</span>
+
+        <span class="c"># @NOTE: use dataset for levels computation because the</span>
+        <span class="c">#        IMAGE_STRUCTURE metadata are not propagated from</span>
+        <span class="c">#        CachedDatasetItem to raster bands</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">modelitems</span><span class="o">.</span><span class="n">DatasetItem</span><span class="p">):</span>
+            <span class="c"># NOTE: a reguest of opening an overview is converted into a</span>
+            <span class="c">#       request for opening the corresponding raster band</span>
+            <span class="k">while</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">modelitems</span><span class="o">.</span><span class="n">OverviewItem</span><span class="p">):</span>
+                <span class="n">item</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_band</span> <span class="o">=</span> <span class="n">item</span>
+            <span class="n">dataset</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dataset</span> <span class="o">=</span> <span class="n">item</span>
+
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">modelitems</span><span class="o">.</span><span class="n">CachedDatasetItem</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+
+        <span class="n">levels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_levels</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+
+        <span class="c"># @NOTE: overviews are computed for all bands so I do this at</span>
+        <span class="c">#        application level, before a specific band is choosen.</span>
+        <span class="c">#        Maybe ths is not the best policy and overviews should be</span>
+        <span class="c">#        computed only when needed instead</span>
+        <span class="k">if</span> <span class="n">levels</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;requested levels: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">levels</span><span class="p">)</span>
+
+            <span class="c"># Run an external process for overviews computation</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">statusBar</span><span class="p">()</span><span class="o">.</span><span class="n">showMessage</span><span class="p">(</span><span class="s">&#39;Quick look image generation ...&#39;</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tmpdir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">setup_tmpdir</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+            <span class="n">vrtfilename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">vrtfilename</span><span class="p">)</span>
+            <span class="n">vrtfilename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tmpdir</span><span class="p">,</span> <span class="n">vrtfilename</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_datasetitem</span> <span class="o">=</span> <span class="n">dataset</span>
+
+            <span class="c"># use averaging in magphase space for complex raster bands</span>
+            <span class="k">if</span> <span class="n">gdalsupport</span><span class="o">.</span><span class="n">has_complex_bands</span><span class="p">(</span><span class="n">dataset</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">tool</span><span class="o">.</span><span class="n">set_resampling_method</span><span class="p">(</span><span class="s">&#39;average_magphase&#39;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">tool</span><span class="o">.</span><span class="n">set_resampling_method</span><span class="p">(</span><span class="s">&#39;average&#39;</span><span class="p">)</span>
+
+            <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">vrtfilename</span><span class="p">)]</span>
+            <span class="n">args</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">levels</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tool</span><span class="o">.</span><span class="n">cwd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">vrtfilename</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">run_tool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tool</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">True</span>
+</div>
+<div class="viewcode-block" id="AddoHelper.do_finalize"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.helpers.html#gsdview.gdalbackend.helpers.AddoHelper.do_finalize">[docs]</a>    <span class="k">def</span> <span class="nf">do_finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c"># @TODO: check if opening the dataset in update mode</span>
+        <span class="c">#        (gdal.GA_Update) is a better solution</span>
+
+        <span class="n">dataset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_datasetitem</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">dataset</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;unable to retrieve dataset for finalization&#39;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="c"># move ovr files in the cache dir</span>
+        <span class="n">dirname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">vrtfilename</span><span class="p">)</span>
+        <span class="n">ovrfiles</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ovrfiles</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tmpdir</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">ovrfile</span> <span class="ow">in</span> <span class="n">ovrfiles</span><span class="p">:</span>
+            <span class="n">dst</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dirname</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">ovrfile</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">dst</span><span class="p">):</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">dst</span><span class="p">)</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">ovrfile</span><span class="p">,</span> <span class="n">dirname</span><span class="p">)</span>
+
+        <span class="n">dataset</span><span class="o">.</span><span class="n">reopen</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">rowCount</span><span class="p">()):</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">child</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">treeview</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">index</span><span class="p">())</span>
+</div>
+<div class="viewcode-block" id="AddoHelper.reset"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.helpers.html#gsdview.gdalbackend.helpers.AddoHelper.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">AddoHelper</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_datasetitem</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_band</span> <span class="o">=</span> <span class="bp">None</span>
+
+</div></div>
+<div class="viewcode-block" id="StatsHelper"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.helpers.html#gsdview.gdalbackend.helpers.StatsHelper">[docs]</a><span class="k">class</span> <span class="nc">StatsHelper</span><span class="p">(</span><span class="n">GdalHelper</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Helper class for statistics pre-computation on live raster bands.&#39;&#39;&#39;</span>
+
+    <span class="n">_PROGRESS_RANGE</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="c"># @TODO: test error control and user stop handling</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">,</span> <span class="n">tool</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">StatsHelper</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">tool</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_datasetitem</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_banditem</span> <span class="o">=</span> <span class="bp">None</span>
+
+<div class="viewcode-block" id="StatsHelper.do_start"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.helpers.html#gsdview.gdalbackend.helpers.StatsHelper.do_start">[docs]</a>    <span class="k">def</span> <span class="nf">do_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">modelitems</span><span class="o">.</span><span class="n">BandItem</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;invalid band item: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">item</span><span class="p">)</span>
+
+        <span class="c"># NOTE: a reguest of opening an overview is converted into a request</span>
+        <span class="c">#       for opening the corresponding raster band</span>
+        <span class="k">while</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">modelitems</span><span class="o">.</span><span class="n">OverviewItem</span><span class="p">):</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span>
+
+        <span class="n">dataset</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span>
+
+        <span class="c"># Run an external process for statistics computation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">statusBar</span><span class="p">()</span><span class="o">.</span><span class="n">showMessage</span><span class="p">(</span><span class="s">&#39;Compute coarse statistics ...&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tmpdir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">setup_tmpdir</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+        <span class="n">vrtfilename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">vrtfilename</span><span class="p">)</span>
+        <span class="n">vrtfilename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tmpdir</span><span class="p">,</span> <span class="n">vrtfilename</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_banditem</span> <span class="o">=</span> <span class="n">item</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_datasetitem</span> <span class="o">=</span> <span class="n">dataset</span>
+
+        <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">vrtfilename</span><span class="p">)]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tool</span><span class="o">.</span><span class="n">cwd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">vrtfilename</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">run_tool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tool</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="StatsHelper.do_finalize"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.helpers.html#gsdview.gdalbackend.helpers.StatsHelper.do_finalize">[docs]</a>    <span class="k">def</span> <span class="nf">do_finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c"># @TODO: check if opening the dataset in update mode</span>
+        <span class="c">#        (gdal.GA_Update) is a better solution</span>
+        <span class="n">dataset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_datasetitem</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">dataset</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;unable to retrieve dataset for finalization&#39;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="c"># set computed statisstic values</span>
+        <span class="n">bandno</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_banditem</span><span class="o">.</span><span class="n">GetBand</span><span class="p">()</span>
+        <span class="n">tmpvrt</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tmpdir</span><span class="p">,</span>
+                              <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">vrtfilename</span><span class="p">))</span>
+        <span class="n">ds</span> <span class="o">=</span> <span class="n">gdal</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">tmpvrt</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">ds</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&#39;unable to open temporary virtual file for &#39;</span>
+                                <span class="s">&#39;getting statistics.&#39;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">vrtband</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">GetRasterBand</span><span class="p">(</span><span class="n">bandno</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">vrtband</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&#39;unable to open raster band n. </span><span class="si">%d</span><span class="s">.&#39;</span> <span class="o">%</span> <span class="n">bandno</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">copy_data</span><span class="p">(</span><span class="n">vrtband</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">apply</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="StatsHelper.reset"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.helpers.html#gsdview.gdalbackend.helpers.StatsHelper.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">StatsHelper</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_banditem</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_datasetitem</span> <span class="o">=</span> <span class="bp">None</span>
+</div>
+<div class="viewcode-block" id="StatsHelper.copy_data"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.helpers.html#gsdview.gdalbackend.helpers.StatsHelper.copy_data">[docs]</a>    <span class="k">def</span> <span class="nf">copy_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vrtband</span><span class="p">):</span>
+        <span class="n">stats</span> <span class="o">=</span> <span class="n">gdalsupport</span><span class="o">.</span><span class="n">GetCachedStatistics</span><span class="p">(</span><span class="n">vrtband</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">None</span> <span class="ow">in</span> <span class="n">stats</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&#39;unable to retrieve statistics.&#39;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">gdalsupport</span><span class="o">.</span><span class="n">GDAL_STATS_KEYS</span><span class="p">,</span> <span class="n">stats</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_banditem</span><span class="o">.</span><span class="n">SetMetadataItem</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="StatsHelper.apply"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.helpers.html#gsdview.gdalbackend.helpers.StatsHelper.apply">[docs]</a>    <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gdalbackend</span><span class="o">.</span><span class="n">newImageView</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_banditem</span><span class="p">)</span>
+
+</div></div>
+<div class="viewcode-block" id="StatsDialogHelper"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.helpers.html#gsdview.gdalbackend.helpers.StatsDialogHelper">[docs]</a><span class="k">class</span> <span class="nc">StatsDialogHelper</span><span class="p">(</span><span class="n">StatsHelper</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Helper class for statistics computation on live raster bands.&#39;&#39;&#39;</span>
+
+    <span class="n">_PROGRESS_DIALOD_MSG</span> <span class="o">=</span> <span class="s">&#39;Statistics computation.&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">,</span> <span class="n">tool</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">StatsDialogHelper</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">tool</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dialog</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_PROGRESS_DIALOD_MSG</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setup_progress_dialog</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_PROGRESS_DIALOD_MSG</span><span class="p">))</span>
+
+<div class="viewcode-block" id="StatsDialogHelper.start"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.helpers.html#gsdview.gdalbackend.helpers.StatsDialogHelper.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">dialog</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">dialog</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dialog</span> <span class="o">=</span> <span class="n">dialog</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">dialog</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;&quot;dialog&quot; attribute not set&#39;</span><span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">StatsDialogHelper</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="StatsDialogHelper.reset"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.helpers.html#gsdview.gdalbackend.helpers.StatsDialogHelper.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">StatsDialogHelper</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dialog</span> <span class="o">=</span> <span class="bp">None</span>
+</div>
+<div class="viewcode-block" id="StatsDialogHelper.apply"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.helpers.html#gsdview.gdalbackend.helpers.StatsDialogHelper.apply">[docs]</a>    <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dialog</span><span class="o">.</span><span class="n">updateStatistics</span><span class="p">()</span>
+
+</div></div>
+<div class="viewcode-block" id="HistDialogHelper"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.helpers.html#gsdview.gdalbackend.helpers.HistDialogHelper">[docs]</a><span class="k">class</span> <span class="nc">HistDialogHelper</span><span class="p">(</span><span class="n">StatsDialogHelper</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Helper class for histogram computation on live raster bands.&#39;&#39;&#39;</span>
+
+    <span class="n">_PROGRESS_RANGE</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+    <span class="n">_PROGRESS_DIALOD_MSG</span> <span class="o">=</span> <span class="s">&#39;Histogram computation.&#39;</span>
+
+<div class="viewcode-block" id="HistDialogHelper.copy_data"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.helpers.html#gsdview.gdalbackend.helpers.HistDialogHelper.copy_data">[docs]</a>    <span class="k">def</span> <span class="nf">copy_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vrtband</span><span class="p">):</span>
+        <span class="n">hmin</span><span class="p">,</span> <span class="n">hmax</span><span class="p">,</span> <span class="n">nbucketsm</span><span class="p">,</span> <span class="n">hist</span> <span class="o">=</span> <span class="n">vrtband</span><span class="o">.</span><span class="n">GetDefaultHistogram</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_banditem</span><span class="o">.</span><span class="n">SetDefaultHistogram</span><span class="p">(</span><span class="n">hmin</span><span class="p">,</span> <span class="n">hmax</span><span class="p">,</span> <span class="n">hist</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="HistDialogHelper.apply"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.helpers.html#gsdview.gdalbackend.helpers.HistDialogHelper.apply">[docs]</a>    <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">hist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_banditem</span><span class="o">.</span><span class="n">GetDefaultHistogram</span><span class="p">()</span>
+        <span class="c">#self.dialog.updateHistogram()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dialog</span><span class="o">.</span><span class="n">setHistogram</span><span class="p">(</span><span class="o">*</span><span class="n">hist</span><span class="p">)</span>
+
+</div></div>
+<div class="viewcode-block" id="AddoDialogHelper"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.helpers.html#gsdview.gdalbackend.helpers.AddoDialogHelper">[docs]</a><span class="k">class</span> <span class="nc">AddoDialogHelper</span><span class="p">(</span><span class="n">AddoHelper</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Helper class for overviews computation.</span>
+
+<span class="sd">    .. seealso:: :class:`AddoHelper`</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">_PROGRESS_DIALOD_MSG</span> <span class="o">=</span> <span class="s">&#39;Overviews computation.&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">,</span> <span class="n">tool</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">AddoDialogHelper</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">tool</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dialog</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setup_progress_dialog</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_PROGRESS_DIALOD_MSG</span><span class="p">))</span>
+
+<div class="viewcode-block" id="AddoDialogHelper.target_levels"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.helpers.html#gsdview.gdalbackend.helpers.AddoDialogHelper.target_levels">[docs]</a>    <span class="k">def</span> <span class="nf">target_levels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dialog</span><span class="o">.</span><span class="n">overviewWidget</span><span class="o">.</span><span class="n">levels</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="AddoDialogHelper.start"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.helpers.html#gsdview.gdalbackend.helpers.AddoDialogHelper.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">dialog</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">dialog</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dialog</span> <span class="o">=</span> <span class="n">dialog</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">dialog</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;&quot;dialog&quot; attribute not set&#39;</span><span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">AddoDialogHelper</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="AddoDialogHelper.reset"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.helpers.html#gsdview.gdalbackend.helpers.AddoDialogHelper.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">AddoDialogHelper</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dialog</span> <span class="o">=</span> <span class="bp">None</span>
+</div>
+<div class="viewcode-block" id="AddoDialogHelper.do_finalize"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.helpers.html#gsdview.gdalbackend.helpers.AddoDialogHelper.do_finalize">[docs]</a>    <span class="k">def</span> <span class="nf">do_finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">AddoDialogHelper</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">do_finalize</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dialog</span><span class="o">.</span><span class="n">updateOverviewInfo</span><span class="p">()</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/logo.png" alt="Logo"/>
+            </a></p>
+    
+    
+    <p>
+        <a href="http://sourceforge.net/projects/gsdview">
+            <img src="http://sflogo.sourceforge.net/sflogo.php?group_id=226458&type=14" width="150" height="40" alt="Get GSDView at SourceForge.net. Fast, secure and Free Open Source software downloads" />
+        </a>
+    </p>
+    
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li><a href="../../../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../gsdview.html" >gsdview</a> &raquo;</li>
+          <li><a href="../gdalbackend.html" >gsdview.gdalbackend</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2008-2011, Antonio Valentino.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

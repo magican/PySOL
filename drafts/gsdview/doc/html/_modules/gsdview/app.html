@@ -1,0 +1,877 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>gsdview.app &mdash; GSDView Open Edition Home Page</title>
+    <link rel="stylesheet" href="../../_static/sourceforge.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.6.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/logo.ico"/>
+    <link rel="top" title="GSDView Open Edition Home Page" href="../../index.html" />
+    <link rel="up" title="gsdview" href="../gsdview.html" /> 
+  </head>
+  <body>
+    
+        
+    
+    
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li><a href="../../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../gsdview.html" accesskey="U">gsdview</a> &raquo;</li> 
+      </ul>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for gsdview.app</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="c">### Copyright (C) 2008-2011 Antonio Valentino &lt;a_valentino@users.sf.net&gt;</span>
+
+<span class="c">### This file is part of GSDView.</span>
+
+<span class="c">### GSDView is free software; you can redistribute it and/or modify</span>
+<span class="c">### it under the terms of the GNU General Public License as published by</span>
+<span class="c">### the Free Software Foundation; either version 2 of the License, or</span>
+<span class="c">### (at your option) any later version.</span>
+
+<span class="c">### GSDView is distributed in the hope that it will be useful,</span>
+<span class="c">### but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c">### MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c">### GNU General Public License for more details.</span>
+
+<span class="c">### You should have received a copy of the GNU General Public License</span>
+<span class="c">### along with GSDView; if not, write to the Free Software</span>
+<span class="c">### Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA.</span>
+
+
+<span class="sd">&#39;&#39;&#39;GUI front-end for the Geospatial Data Abstracton Library (GDAL).&#39;&#39;&#39;</span>
+
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">from</span> <span class="nn">qt</span> <span class="kn">import</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtGui</span>
+
+<span class="kn">from</span> <span class="nn">exectools.qt4</span> <span class="kn">import</span> <span class="n">Qt4ToolController</span><span class="p">,</span> <span class="n">Qt4DialogLoggingHandler</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">info</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">errors</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">qt4support</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">graphicsview</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">mousemanager</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">pluginmanager</span>
+
+<span class="kn">from</span> <span class="nn">.mdi</span> <span class="kn">import</span> <span class="n">ItemModelMainWindow</span>
+<span class="kn">from</span> <span class="nn">.appsite</span> <span class="kn">import</span> <span class="n">USERCONFIGDIR</span><span class="p">,</span> <span class="n">SYSPLUGINSDIR</span>
+<span class="kn">from</span> <span class="nn">.widgets</span> <span class="kn">import</span> <span class="n">AboutDialog</span><span class="p">,</span> <span class="n">PreferencesDialog</span>
+<span class="kn">from</span> <span class="nn">.widgets</span> <span class="kn">import</span> <span class="n">GSDViewExceptionDialog</span> <span class="k">as</span> <span class="n">ExceptionDialog</span>
+
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s">&#39;Antonio Valentino &lt;a_valentino@users.sf.net&gt;&#39;</span>
+<span class="n">__date__</span> <span class="o">=</span> <span class="s">&#39;$Date: 2011-11-13 13:02:05 +0100 (dom, 13 nov 2011) $&#39;</span>
+<span class="n">__revision__</span> <span class="o">=</span> <span class="s">&#39;$Revision: 1010 $&#39;</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;GSDView&#39;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="GSDView"><a class="viewcode-back" href="../../api/gsdview.app.html#gsdview.app.GSDView">[docs]</a><span class="k">class</span> <span class="nc">GSDView</span><span class="p">(</span><span class="n">ItemModelMainWindow</span><span class="p">):</span>
+    <span class="c"># @TODO:</span>
+    <span class="c">#   * cache browser, cache cleanup</span>
+    <span class="c">#   * open internal product</span>
+    <span class="c">#   * disable actions when the external tool is running</span>
+    <span class="c">#   * /usr/share/doc/python-qt4-doc/examples/mainwindows/recentfiles.py</span>
+
+    <span class="sd">&#39;&#39;&#39;Main window class for GSDView application.&#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">WindowFlags</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s">&#39;gsdview&#39;</span><span class="p">)</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Main window base classes initialization ...&#39;</span><span class="p">)</span>
+        <span class="n">QtGui</span><span class="o">.</span><span class="n">QApplication</span><span class="o">.</span><span class="n">setWindowIcon</span><span class="p">(</span>
+                                <span class="n">qt4support</span><span class="o">.</span><span class="n">geticon</span><span class="p">(</span><span class="s">&#39;GSDView.png&#39;</span><span class="p">,</span> <span class="n">__name__</span><span class="p">))</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">GSDView</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">flags</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">title</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;GSDView Open Source Edition v. </span><span class="si">%s</span><span class="s">&#39;</span><span class="p">)</span> <span class="o">%</span> <span class="n">info</span><span class="o">.</span><span class="n">version</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setWindowTitle</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="s">&#39;gsdview-mainwin&#39;</span><span class="p">)</span>
+
+        <span class="c"># Dialogs</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Setting up file dialog ...&#39;</span><span class="p">)</span>
+
+        <span class="c">#: application global file dialog instance</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filedialog</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QFileDialog</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filedialog</span><span class="o">.</span><span class="n">setFileMode</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QFileDialog</span><span class="o">.</span><span class="n">ExistingFile</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filedialog</span><span class="o">.</span><span class="n">setViewMode</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QFileDialog</span><span class="o">.</span><span class="n">Detail</span><span class="p">)</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Setting up the about dialog ...&#39;</span><span class="p">)</span>
+
+        <span class="c">#: application global about dialog instance</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">aboutdialog</span> <span class="o">=</span> <span class="n">AboutDialog</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Setting up the preferences dialog ...&#39;</span><span class="p">)</span>
+
+        <span class="c">#: prefernces dialog instance</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">preferencesdialog</span> <span class="o">=</span> <span class="n">PreferencesDialog</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                                                   <span class="nb">apply</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">applySettings</span><span class="p">)</span>
+
+        <span class="c"># Stop button</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Setting up the stop button ...&#39;</span><span class="p">)</span>
+        <span class="n">qstyle</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QApplication</span><span class="o">.</span><span class="n">style</span><span class="p">()</span>
+        <span class="n">icon</span> <span class="o">=</span> <span class="n">qstyle</span><span class="o">.</span><span class="n">standardIcon</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QStyle</span><span class="o">.</span><span class="n">SP_BrowserStop</span><span class="p">)</span>
+
+        <span class="c">#: stop button for external tools</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stopbutton</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QPushButton</span><span class="p">(</span><span class="n">icon</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Stop&#39;</span><span class="p">),</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">statusBar</span><span class="p">()</span><span class="o">.</span><span class="n">addPermanentWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stopbutton</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stopbutton</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+
+        <span class="c"># Progressbar</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Setting up the progress bar ...&#39;</span><span class="p">)</span>
+
+        <span class="c">#: application progress bar</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">progressbar</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QProgressBar</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">progressbar</span><span class="o">.</span><span class="n">setTextVisible</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">statusBar</span><span class="p">()</span><span class="o">.</span><span class="n">addPermanentWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">progressbar</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">progressbar</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+
+        <span class="c"># Miscellanea</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Miscellanea setup ...&#39;</span><span class="p">)</span>
+
+        <span class="c">#: cache directory path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cachedir</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="c"># GraphicsViewMonitor and mouse manager</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Setting up &quot;monitor&quot; components ...&#39;</span><span class="p">)</span>
+
+        <span class="c">#: graphics scenes/views monitor</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">monitor</span> <span class="o">=</span> <span class="n">graphicsview</span><span class="o">.</span><span class="n">GraphicsViewMonitor</span><span class="p">()</span>
+
+        <span class="c">#: mouse manager for graphics scenes/views</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mousemanager</span> <span class="o">=</span> <span class="n">mousemanager</span><span class="o">.</span><span class="n">MouseManager</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mousemanager</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="s">&#39;hand&#39;</span>
+
+        <span class="c"># Plugin Manager</span>
+
+        <span class="c">#: backends list</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">backends</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c">#: plugin manager instance</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pluginmanager</span> <span class="o">=</span> <span class="n">pluginmanager</span><span class="o">.</span><span class="n">PluginManager</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">SYSPLUGINSDIR</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">preferencesdialog</span><span class="o">.</span><span class="n">addPage</span><span class="p">(</span>
+                <span class="n">pluginmanager</span><span class="o">.</span><span class="n">PluginManagerGui</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pluginmanager</span><span class="p">,</span> <span class="bp">self</span><span class="p">),</span>
+                <span class="n">qt4support</span><span class="o">.</span><span class="n">geticon</span><span class="p">(</span><span class="s">&#39;plugin.svg&#39;</span><span class="p">,</span> <span class="n">__name__</span><span class="p">),</span>
+                <span class="n">label</span><span class="o">=</span><span class="s">&#39;Plugins&#39;</span><span class="p">)</span>
+
+        <span class="c"># Settings</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">USERCONFIGDIR</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">USERCONFIGDIR</span><span class="p">)</span>
+
+        <span class="c"># @TODO: fix filename</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Read application settings ...&#39;</span><span class="p">)</span>
+        <span class="c">#self.settings = QtCore.QSettings(&#39;gsdview-soft&#39;, &#39;gsdview&#39;, self)</span>
+        <span class="c">#self.settings = QtCore.QSettings(QtCore.QSettings.IniFormat,</span>
+        <span class="c">#                                 QtCore.QSettings.UserScope,</span>
+        <span class="c">#                                 &#39;gsdview&#39;, &#39;gsdview&#39;, self)</span>
+        <span class="n">cfgfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">USERCONFIGDIR</span><span class="p">,</span> <span class="s">&#39;gsdview.ini&#39;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;Configuration file: &quot;</span><span class="si">%s</span><span class="s">&quot;.&#39;</span><span class="p">,</span> <span class="n">cfgfile</span><span class="p">)</span>
+
+        <span class="c">#: application settings</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QSettings</span><span class="p">(</span><span class="n">cfgfile</span><span class="p">,</span>
+                                         <span class="n">QtCore</span><span class="o">.</span><span class="n">QSettings</span><span class="o">.</span><span class="n">IniFormat</span><span class="p">,</span>
+                                         <span class="bp">self</span><span class="p">)</span>
+
+        <span class="c"># Setup the log system and the external tools controller</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Complete logging setup...&#39;</span><span class="p">)</span>
+        <span class="c"># @TODO: logevel could be set from command line</span>
+        <span class="c">#: application sandard logger</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">setupLogging</span><span class="p">()</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Setting up external tool controller ...&#39;</span><span class="p">)</span>
+
+        <span class="c">#: external tool controller</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">controller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">setupController</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">statusBar</span><span class="p">(),</span>
+                                               <span class="bp">self</span><span class="o">.</span><span class="n">progressbar</span><span class="p">)</span>
+
+        <span class="c"># Actions</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Setting up actions ...&#39;</span><span class="p">)</span>
+
+        <span class="c">#: actions associated to file menu</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fileActions</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="c">#: settings actions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settingsActions</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="c">#: help actions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">helpActions</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setupActions</span><span class="p">()</span>
+
+        <span class="c"># File menu end toolbar</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_addMenuFromActions</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fileActions</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;&amp;File&#39;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_addToolBarFromActions</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fileActions</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;File toolbar&#39;</span><span class="p">))</span>
+
+        <span class="c"># Image menu and toolbar</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">imagemenu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_addMenuFromActions</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mousemanager</span><span class="o">.</span><span class="n">actions</span><span class="p">,</span>
+                                                  <span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;&amp;Image&#39;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_addToolBarFromActions</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mousemanager</span><span class="o">.</span><span class="n">actions</span><span class="p">,</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Mouse toolbar&#39;</span><span class="p">))</span>
+
+        <span class="c"># Tools menu</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">toolsmenu</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QMenu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;&amp;Tools&#39;</span><span class="p">),</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">menuBar</span><span class="p">()</span><span class="o">.</span><span class="n">addMenu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">toolsmenu</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">toolsmenu</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+
+        <span class="c"># Setup plugins</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Setup plugins ...&#39;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setupPlugins</span><span class="p">()</span>
+
+        <span class="c"># Settings menu end toolbar</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Settings menu setup ...&#39;</span><span class="p">))</span>
+        <span class="n">menu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_addMenuFromActions</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settingsActions</span><span class="p">,</span>
+                                        <span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;&amp;Settings&#39;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_addToolBarFromActions</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settingsActions</span><span class="p">,</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Settings toolbar&#39;</span><span class="p">))</span>
+
+        <span class="c">#: settings sub-menu</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings_submenu</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QMenu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;&amp;View&#39;</span><span class="p">),</span>
+            <span class="n">aboutToShow</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">updateSettingsMenu</span><span class="p">)</span>
+        <span class="n">menu</span><span class="o">.</span><span class="n">addSeparator</span><span class="p">()</span>
+        <span class="n">menu</span><span class="o">.</span><span class="n">addMenu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings_submenu</span><span class="p">)</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Window menu setup ...&#39;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">menuBar</span><span class="p">()</span><span class="o">.</span><span class="n">addMenu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">windowmenu</span><span class="p">)</span>
+
+        <span class="c"># Help menu end toolbar</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Help menu setup ...&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_addMenuFromActions</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">helpActions</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;&amp;Help&#39;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_addToolBarFromActions</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">helpActions</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Help toolbar&#39;</span><span class="p">))</span>
+
+        <span class="c"># @NOTE: the window state setup must happen after the plugins loading</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;Load settings ...&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loadSettings</span><span class="p">()</span>  <span class="c"># @TODO: pass settings</span>
+        <span class="c"># @TODO: force the log level set from command line</span>
+        <span class="c">#self.logger.setLevel(level)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">treeview</span><span class="o">.</span><span class="n">setContextMenuPolicy</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">CustomContextMenu</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">treeview</span><span class="o">.</span><span class="n">customContextMenuRequested</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">itemContextMenu</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">statusBar</span><span class="p">()</span><span class="o">.</span><span class="n">showMessage</span><span class="p">(</span><span class="s">&#39;Ready&#39;</span><span class="p">)</span>
+
+    <span class="c">### Model/View utils ######################################################</span>
+<div class="viewcode-block" id="GSDView.currentGraphicsView"><a class="viewcode-back" href="../../api/gsdview.app.html#gsdview.app.GSDView.currentGraphicsView">[docs]</a>    <span class="k">def</span> <span class="nf">currentGraphicsView</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">window</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdiarea</span><span class="o">.</span><span class="n">activeSubWindow</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">window</span><span class="p">:</span>
+            <span class="n">widget</span> <span class="o">=</span> <span class="n">window</span><span class="o">.</span><span class="n">widget</span><span class="p">()</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QGraphicsView</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">widget</span>
+        <span class="k">return</span> <span class="bp">None</span>
+</div>
+    <span class="nd">@QtCore.Slot</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QPoint</span><span class="p">)</span>
+<div class="viewcode-block" id="GSDView.itemContextMenu"><a class="viewcode-back" href="../../api/gsdview.app.html#gsdview.app.GSDView.itemContextMenu">[docs]</a>    <span class="k">def</span> <span class="nf">itemContextMenu</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pos</span><span class="p">):</span>
+        <span class="n">modelindex</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">treeview</span><span class="o">.</span><span class="n">indexAt</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">modelindex</span><span class="o">.</span><span class="n">isValid</span><span class="p">():</span>
+            <span class="k">return</span>
+        <span class="c"># @TODO: check</span>
+        <span class="c"># @NOTE: set the current index so that action callback can retrieve</span>
+        <span class="c">#        the cottect item</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">treeview</span><span class="o">.</span><span class="n">setCurrentIndex</span><span class="p">(</span><span class="n">modelindex</span><span class="p">)</span>
+        <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">itemFromIndex</span><span class="p">(</span><span class="n">modelindex</span><span class="p">)</span>
+        <span class="n">backend</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pluginmanager</span><span class="o">.</span><span class="n">plugins</span><span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">backend</span><span class="p">]</span>
+        <span class="n">menu</span> <span class="o">=</span> <span class="n">backend</span><span class="o">.</span><span class="n">itemContextMenu</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">menu</span><span class="p">:</span>
+            <span class="n">menu</span><span class="o">.</span><span class="n">exec_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">treeview</span><span class="o">.</span><span class="n">mapToGlobal</span><span class="p">(</span><span class="n">pos</span><span class="p">))</span>
+
+    <span class="c">### Event handlers ########################################################</span></div>
+<div class="viewcode-block" id="GSDView.closeEvent"><a class="viewcode-back" href="../../api/gsdview.app.html#gsdview.app.GSDView.closeEvent">[docs]</a>    <span class="k">def</span> <span class="nf">closeEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">stop_tool</span><span class="p">()</span>
+        <span class="c"># @TODO: whait for finished (??)</span>
+        <span class="c"># @TODO: save opened datasets (??)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">saveSettings</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pluginmanager</span><span class="o">.</span><span class="n">save_settings</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">closeAll</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pluginmanager</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;Closing application&#39;</span><span class="p">)</span>
+        <span class="c">#event.accept()</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">GSDView</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">closeEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="GSDView.changeEvent"><a class="viewcode-back" href="../../api/gsdview.app.html#gsdview.app.GSDView.changeEvent">[docs]</a>    <span class="k">def</span> <span class="nf">changeEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">oldState</span><span class="p">()</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">WindowNoState</span><span class="p">:</span>
+                <span class="c"># save window size and position</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">beginGroup</span><span class="p">(</span><span class="s">&#39;mainwindow&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="s">&#39;position&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pos</span><span class="p">())</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="s">&#39;size&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">())</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">endGroup</span><span class="p">()</span>
+                <span class="n">event</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+    <span class="c">### Custom exception hook #################################################</span></div>
+<div class="viewcode-block" id="GSDView.excepthook"><a class="viewcode-back" href="../../api/gsdview.app.html#gsdview.app.GSDView.excepthook">[docs]</a>    <span class="k">def</span> <span class="nf">excepthook</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exctype</span><span class="p">,</span> <span class="n">excvalue</span><span class="p">,</span> <span class="n">tracebackobj</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Global function to catch unhandled exceptions.</span>
+
+<span class="sd">        :param exctype:</span>
+<span class="sd">            exception class</span>
+<span class="sd">        :param excvalue:</span>
+<span class="sd">            exception instance</span>
+<span class="sd">        :param tracebackobj:</span>
+<span class="sd">            traceback object</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="n">sys</span><span class="o">.</span><span class="n">__excepthook__</span><span class="p">(</span><span class="n">exctype</span><span class="p">,</span> <span class="n">excvalue</span><span class="p">,</span> <span class="n">tracebackobj</span><span class="p">)</span>
+        <span class="c"># No messages for keyboard interruts</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">exctype</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">):</span>
+        <span class="c">#~ if issubclass(exctype, KeyboardInterrupt):</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">excvalue</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">msg</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="n">excvalue</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="k">return</span>
+
+        <span class="c"># #TODO: check</span>
+        <span class="c"># Guard for avoiding multiple dialog opening</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s">&#39;_busy&#39;</span><span class="p">):</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_busy</span> <span class="o">=</span> <span class="bp">True</span>
+
+        <span class="c"># @TODO: sometimes a RuntimeError is raised claiming that the</span>
+        <span class="c">#        &quot;underlying C/C++ object has been deleted&quot;.</span>
+        <span class="c">#        Try to build the dialog without parent (self) and check</span>
+        <span class="c">#        modality.</span>
+        <span class="n">dialog</span> <span class="o">=</span> <span class="n">ExceptionDialog</span><span class="p">(</span><span class="n">exctype</span><span class="p">,</span> <span class="n">excvalue</span><span class="p">,</span> <span class="n">tracebackobj</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="c">#dialog.show()</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">dialog</span><span class="o">.</span><span class="n">exec_</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">ret</span> <span class="o">==</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QDialog</span><span class="o">.</span><span class="n">Rejected</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&#39;ignoring an unhandled exception may cause &#39;</span>
+                            <span class="s">&#39;program malfunctions.&#39;</span><span class="p">)</span>
+
+    <span class="c">### Setup helpers #########################################################</span></div>
+    <span class="k">def</span> <span class="nf">_setupFileActions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c"># @TODO: add a &quot;close all&quot; (items) action</span>
+        <span class="n">actionsgroup</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QActionGroup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="c"># Open</span>
+        <span class="n">icon</span> <span class="o">=</span> <span class="n">qt4support</span><span class="o">.</span><span class="n">geticon</span><span class="p">(</span><span class="s">&#39;open.svg&#39;</span><span class="p">,</span> <span class="n">__name__</span><span class="p">)</span>
+        <span class="n">QtGui</span><span class="o">.</span><span class="n">QAction</span><span class="p">(</span><span class="n">icon</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;&amp;Open&#39;</span><span class="p">),</span> <span class="n">actionsgroup</span><span class="p">,</span>
+                      <span class="n">objectName</span><span class="o">=</span><span class="s">&#39;openAction&#39;</span><span class="p">,</span>
+                      <span class="n">shortcut</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Ctrl+O&#39;</span><span class="p">),</span>
+                      <span class="n">toolTip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Open an existing file&#39;</span><span class="p">),</span>
+                      <span class="n">statusTip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Open an existing file&#39;</span><span class="p">),</span>
+                      <span class="n">triggered</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">openFile</span><span class="p">)</span>
+
+        <span class="c"># Close</span>
+        <span class="n">icon</span> <span class="o">=</span> <span class="n">qt4support</span><span class="o">.</span><span class="n">geticon</span><span class="p">(</span><span class="s">&#39;close.svg&#39;</span><span class="p">,</span> <span class="n">__name__</span><span class="p">)</span>
+        <span class="n">QtGui</span><span class="o">.</span><span class="n">QAction</span><span class="p">(</span><span class="n">icon</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;&amp;Close&#39;</span><span class="p">),</span> <span class="n">actionsgroup</span><span class="p">,</span>
+                      <span class="n">objectName</span><span class="o">=</span><span class="s">&#39;closeAction&#39;</span><span class="p">,</span>
+                      <span class="c"># &#39;Ctrl+W&#39; shortcu is used for closing windows</span>
+                      <span class="c">#shortcut=self.tr(&#39;Ctrl+W&#39;),</span>
+                      <span class="n">toolTip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Close the current file&#39;</span><span class="p">),</span>
+                      <span class="n">statusTip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Close the current file&#39;</span><span class="p">),</span>
+                      <span class="n">triggered</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">closeItem</span><span class="p">)</span>
+
+        <span class="c"># Separator</span>
+        <span class="n">QtGui</span><span class="o">.</span><span class="n">QAction</span><span class="p">(</span><span class="n">actionsgroup</span><span class="p">)</span><span class="o">.</span><span class="n">setSeparator</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+        <span class="c"># objectName=&#39;separator&#39;)</span>
+
+        <span class="c"># Exit</span>
+        <span class="n">icon</span> <span class="o">=</span> <span class="n">qt4support</span><span class="o">.</span><span class="n">geticon</span><span class="p">(</span><span class="s">&#39;quit.svg&#39;</span><span class="p">,</span> <span class="n">__name__</span><span class="p">)</span>
+        <span class="n">QtGui</span><span class="o">.</span><span class="n">QAction</span><span class="p">(</span><span class="n">icon</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;&amp;Exit&#39;</span><span class="p">),</span> <span class="n">actionsgroup</span><span class="p">,</span>
+                      <span class="n">objectName</span><span class="o">=</span><span class="s">&#39;exitAction&#39;</span><span class="p">,</span>
+                      <span class="n">shortcut</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Ctrl+X&#39;</span><span class="p">),</span>
+                      <span class="n">toolTip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Exit the program&#39;</span><span class="p">),</span>
+                      <span class="n">statusTip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Exit the program&#39;</span><span class="p">),</span>
+                      <span class="n">triggered</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">actionsgroup</span>
+
+    <span class="k">def</span> <span class="nf">_setupSettingsActions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">actionsgroup</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QActionGroup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="c"># Preferences</span>
+        <span class="n">icon</span> <span class="o">=</span> <span class="n">qt4support</span><span class="o">.</span><span class="n">geticon</span><span class="p">(</span><span class="s">&#39;preferences.svg&#39;</span><span class="p">,</span> <span class="n">__name__</span><span class="p">)</span>
+        <span class="n">QtGui</span><span class="o">.</span><span class="n">QAction</span><span class="p">(</span><span class="n">icon</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;&amp;Preferences&#39;</span><span class="p">),</span> <span class="n">actionsgroup</span><span class="p">,</span>
+                      <span class="n">objectName</span><span class="o">=</span><span class="s">&#39;preferencesAction&#39;</span><span class="p">,</span>
+                      <span class="n">toolTip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Open the program preferences dialog&#39;</span><span class="p">),</span>
+                      <span class="n">statusTip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Open the program preferences dialog&#39;</span><span class="p">),</span>
+                      <span class="n">triggered</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">showPreferencesDialog</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">actionsgroup</span>
+
+    <span class="k">def</span> <span class="nf">_setupHelpActions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">actionsgroup</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QActionGroup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="c"># About</span>
+        <span class="n">icon</span> <span class="o">=</span> <span class="n">qt4support</span><span class="o">.</span><span class="n">geticon</span><span class="p">(</span><span class="s">&#39;about.svg&#39;</span><span class="p">,</span> <span class="n">__name__</span><span class="p">)</span>
+        <span class="n">QtGui</span><span class="o">.</span><span class="n">QAction</span><span class="p">(</span><span class="n">icon</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;&amp;About&#39;</span><span class="p">),</span> <span class="n">actionsgroup</span><span class="p">,</span>
+                      <span class="n">objectName</span><span class="o">=</span><span class="s">&#39;aboutAction&#39;</span><span class="p">,</span>
+                      <span class="n">toolTip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Show program information&#39;</span><span class="p">),</span>
+                      <span class="n">statusTip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Show program information&#39;</span><span class="p">),</span>
+                      <span class="n">triggered</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">aboutdialog</span><span class="o">.</span><span class="n">exec_</span><span class="p">())</span>
+
+        <span class="c"># AboutQt</span>
+        <span class="n">icon</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QIcon</span><span class="p">(</span><span class="s">&#39;:/trolltech/qmessagebox/images/qtlogo-64.png&#39;</span><span class="p">)</span>
+        <span class="n">QtGui</span><span class="o">.</span><span class="n">QAction</span><span class="p">(</span><span class="n">icon</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;About &amp;Qt&#39;</span><span class="p">),</span> <span class="n">actionsgroup</span><span class="p">,</span>
+                      <span class="n">objectName</span><span class="o">=</span><span class="s">&#39;aboutQtAction&#39;</span><span class="p">,</span>
+                      <span class="n">toolTip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Show information about Qt&#39;</span><span class="p">),</span>
+                      <span class="n">statusTip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Show information about Qt&#39;</span><span class="p">),</span>
+                      <span class="n">triggered</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QMessageBox</span><span class="o">.</span><span class="n">aboutQt</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">actionsgroup</span>
+
+<div class="viewcode-block" id="GSDView.setupActions"><a class="viewcode-back" href="../../api/gsdview.app.html#gsdview.app.GSDView.setupActions">[docs]</a>    <span class="k">def</span> <span class="nf">setupActions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fileActions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setupFileActions</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settingsActions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setupSettingsActions</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">helpActions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setupHelpActions</span><span class="p">()</span>
+        <span class="c"># @TODO: tree view actions: expand/collapse all, expand/collapse</span>
+        <span class="c">#        subtree</span>
+        <span class="c"># @TODO: stop action</span>
+</div>
+    <span class="k">def</span> <span class="nf">_addMenuFromActions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">actions</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="n">menu</span> <span class="o">=</span> <span class="n">qt4support</span><span class="o">.</span><span class="n">actionGroupToMenu</span><span class="p">(</span><span class="n">actions</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">menuBar</span><span class="p">()</span><span class="o">.</span><span class="n">addMenu</span><span class="p">(</span><span class="n">menu</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">menu</span>
+
+    <span class="k">def</span> <span class="nf">_addToolBarFromActions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">actions</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="n">toolbar</span> <span class="o">=</span> <span class="n">qt4support</span><span class="o">.</span><span class="n">actionGroupToToolbar</span><span class="p">(</span><span class="n">actions</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">addToolBar</span><span class="p">(</span><span class="n">toolbar</span><span class="p">)</span>
+
+        <span class="c"># @COMPATIBILITY: pyside 1.0.1</span>
+        <span class="c">#                 without the call to toolbar.parent() the toolbar is</span>
+        <span class="c">#                 not actually added</span>
+        <span class="k">assert</span> <span class="n">toolbar</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">toolbar</span>
+
+<div class="viewcode-block" id="GSDView.setupPlugins"><a class="viewcode-back" href="../../api/gsdview.app.html#gsdview.app.GSDView.setupPlugins">[docs]</a>    <span class="k">def</span> <span class="nf">setupPlugins</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c"># load backends</span>
+        <span class="c"># @WARNING: (pychecker) Function (__import__) doesn&#39;t support **kwArgs</span>
+        <span class="n">module</span> <span class="o">=</span> <span class="nb">__import__</span><span class="p">(</span><span class="s">&#39;gsdview.gdalbackend&#39;</span><span class="p">,</span> <span class="n">fromlist</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;gsdview&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pluginmanager</span><span class="o">.</span><span class="n">load_module</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="s">&#39;gdalbackend&#39;</span><span class="p">)</span>
+
+        <span class="c"># load settings</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pluginmanager</span><span class="o">.</span><span class="n">load_settings</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">)</span>
+
+        <span class="c"># save initial state</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pluginmanager</span><span class="o">.</span><span class="n">save_settings</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="GSDView.setupLogging"><a class="viewcode-back" href="../../api/gsdview.app.html#gsdview.app.GSDView.setupLogging">[docs]</a>    <span class="k">def</span> <span class="nf">setupLogging</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s">&#39;gsdview&#39;</span><span class="p">)</span>    <span class="c"># &#39;gsdview&#39; # @TODO: fix</span>
+
+        <span class="c"># move this to launch.py</span>
+        <span class="n">fmt</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;</span><span class="si">%(levelname)s</span><span class="s">: </span><span class="si">%(asctime)s</span><span class="s"> </span><span class="si">%(filename)s</span><span class="s"> line </span><span class="si">%(lineno)d</span><span class="s"> in &#39;</span>
+               <span class="s">&#39;</span><span class="si">%(funcName)s</span><span class="s">: </span><span class="si">%(message)s</span><span class="s">&#39;</span><span class="p">)</span>
+        <span class="n">formatter</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="n">fmt</span><span class="p">)</span>
+        <span class="n">logfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">USERCONFIGDIR</span><span class="p">,</span> <span class="s">&#39;gsdview.log&#39;</span><span class="p">)</span>
+        <span class="n">handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">FileHandler</span><span class="p">(</span><span class="n">logfile</span><span class="p">,</span> <span class="s">&#39;w&#39;</span><span class="p">)</span>
+        <span class="n">handler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+        <span class="n">handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span>
+
+        <span class="n">formatter</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%(message)s</span><span class="s">&#39;</span><span class="p">)</span>
+        <span class="n">handler</span> <span class="o">=</span> <span class="n">Qt4DialogLoggingHandler</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">dialog</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+        <span class="n">handler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">)</span>
+        <span class="n">handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span>
+
+        <span class="c"># set log level</span>
+        <span class="c"># @WARNING: duplicate loadSettings</span>
+        <span class="n">level</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s">&#39;preferences/loglevel&#39;</span><span class="p">,</span> <span class="s">&#39;INFO&#39;</span><span class="p">)</span>
+        <span class="n">levelno</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLevelName</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">level</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">levelno</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">levelno</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;&quot;</span><span class="si">%s</span><span class="s">&quot; loglevel set&#39;</span> <span class="o">%</span> <span class="n">level</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;invalid log level: &quot;</span><span class="si">%s</span><span class="s">&quot;&#39;</span> <span class="o">%</span> <span class="n">level</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">logger</span>
+</div>
+<div class="viewcode-block" id="GSDView.setupController"><a class="viewcode-back" href="../../api/gsdview.app.html#gsdview.app.GSDView.setupController">[docs]</a>    <span class="k">def</span> <span class="nf">setupController</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">statusbar</span><span class="p">,</span> <span class="n">progressbar</span><span class="p">):</span>
+        <span class="n">controller</span> <span class="o">=</span> <span class="n">Qt4ToolController</span><span class="p">(</span><span class="n">logger</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">controller</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">started</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">processingStarted</span><span class="p">)</span>
+        <span class="n">controller</span><span class="o">.</span><span class="n">finished</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">processingDone</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stopbutton</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">controller</span><span class="o">.</span><span class="n">stop_tool</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">controller</span>
+
+    <span class="c">### Settings ##############################################################</span></div>
+    <span class="k">def</span> <span class="nf">_restoreWindowState</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">settings</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">settings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span>
+
+        <span class="n">settings</span><span class="o">.</span><span class="n">beginGroup</span><span class="p">(</span><span class="s">&#39;mainwindow&#39;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">position</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s">&#39;position&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">position</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">position</span><span class="p">)</span>
+            <span class="n">size</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s">&#39;size&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">size</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c"># default size</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="mi">800</span><span class="p">,</span> <span class="mi">600</span><span class="p">)</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">winstate</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s">&#39;winstate&#39;</span><span class="p">,</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">WindowNoState</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">winstate</span> <span class="ow">and</span> <span class="n">winstate</span> <span class="o">!=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">WindowNoState</span><span class="p">:</span>
+                    <span class="c"># @COMPATIBILITY: presumably a bug in PyQt4 4.7.2</span>
+                    <span class="c"># @TODO: check</span>
+                    <span class="n">winstate</span> <span class="o">=</span> <span class="n">qt4support</span><span class="o">.</span><span class="n">intToWinState</span><span class="p">[</span><span class="n">winstate</span><span class="p">]</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">setWindowState</span><span class="p">(</span><span class="n">winstate</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;unable to restore the window state&#39;</span><span class="p">,</span>
+                              <span class="n">exc_info</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+            <span class="c"># State of toolbars ad docks</span>
+            <span class="n">state</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s">&#39;state&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">state</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">restoreState</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">settings</span><span class="o">.</span><span class="n">endGroup</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_restoreFileDialogState</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">settings</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">settings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span>
+
+        <span class="n">settings</span><span class="o">.</span><span class="n">beginGroup</span><span class="p">(</span><span class="s">&#39;filedialog&#39;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c"># state</span>
+            <span class="n">state</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s">&#39;state&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">state</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="c"># QFileDialog.restoreState is new in Qt 4.3</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">filedialog</span><span class="o">.</span><span class="n">restoreState</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;unable to save the file dialog state&#39;</span><span class="p">)</span>
+
+            <span class="c"># workdir</span>
+            <span class="n">workdir</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s">&#39;workdir&#39;</span><span class="p">,</span> <span class="n">utils</span><span class="o">.</span><span class="n">default_workdir</span><span class="p">())</span>
+            <span class="n">workdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expandvars</span><span class="p">(</span><span class="n">workdir</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">filedialog</span><span class="o">.</span><span class="n">setDirectory</span><span class="p">(</span><span class="n">workdir</span><span class="p">)</span>
+
+            <span class="c"># history</span>
+            <span class="c">#history = settings.value(&#39;history&#39;)</span>
+            <span class="c">#if history:</span>
+            <span class="c">#    self.filedialog.setHistory(history)</span>
+
+            <span class="c"># sidebar urls</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c"># QFileDialog.setSidebarUrls is new in Qt 4.3</span>
+                <span class="n">sidebarurls</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s">&#39;sidebarurls&#39;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">sidebarurls</span><span class="p">:</span>
+                    <span class="n">sidebarurls</span> <span class="o">=</span> <span class="p">[</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QUrl</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">sidebarurls</span><span class="p">]</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">filedialog</span><span class="o">.</span><span class="n">setSidebarUrls</span><span class="p">(</span><span class="n">sidebarurls</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;unable to restore sidebar URLs of the file &#39;</span>
+                              <span class="s">&#39;dialog&#39;</span><span class="p">)</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">settings</span><span class="o">.</span><span class="n">endGroup</span><span class="p">()</span>
+
+<div class="viewcode-block" id="GSDView.loadSettings"><a class="viewcode-back" href="../../api/gsdview.app.html#gsdview.app.GSDView.loadSettings">[docs]</a>    <span class="k">def</span> <span class="nf">loadSettings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="c"># @TODO: split app saveSettings frlm plugins one</span>
+        <span class="k">if</span> <span class="n">settings</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">settings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span>
+
+        <span class="c"># general</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_restoreWindowState</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_restoreFileDialogState</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span>
+
+        <span class="n">settings</span><span class="o">.</span><span class="n">beginGroup</span><span class="p">(</span><span class="s">&#39;preferences&#39;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c"># log level</span>
+            <span class="n">level</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s">&#39;loglevel&#39;</span><span class="p">,</span> <span class="s">&#39;INFO&#39;</span><span class="p">)</span>
+            <span class="n">levelno</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLevelName</span><span class="p">(</span><span class="n">level</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">levelno</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">levelno</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;&quot;</span><span class="si">%s</span><span class="s">&quot; loglevel set&#39;</span> <span class="o">%</span> <span class="n">level</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;invalid log level: &quot;</span><span class="si">%s</span><span class="s">&quot;&#39;</span> <span class="o">%</span> <span class="n">level</span><span class="p">)</span>
+
+            <span class="n">default</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">USERCONFIGDIR</span><span class="p">,</span> <span class="s">&#39;cache&#39;</span><span class="p">)</span>
+            <span class="n">cachedir</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s">&#39;cachedir&#39;</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cachedir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expandvars</span><span class="p">(</span><span class="n">cachedir</span><span class="p">))</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">settings</span><span class="o">.</span><span class="n">endGroup</span><span class="p">()</span>
+
+        <span class="c"># cache</span>
+        <span class="c"># @TODO</span>
+
+        <span class="c"># plugins</span>
+        <span class="k">for</span> <span class="n">plugin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pluginmanager</span><span class="o">.</span><span class="n">plugins</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">plugin</span><span class="o">.</span><span class="n">loadSettings</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span>
+</div>
+    <span class="k">def</span> <span class="nf">_saveWindowState</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">settings</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">settings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span>
+
+        <span class="n">settings</span><span class="o">.</span><span class="n">beginGroup</span><span class="p">(</span><span class="s">&#39;mainwindow&#39;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">settings</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="s">&#39;winstate&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">windowState</span><span class="p">())</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">windowState</span><span class="p">()</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">WindowNoState</span><span class="p">:</span>
+                <span class="n">settings</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="s">&#39;position&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pos</span><span class="p">())</span>
+                <span class="n">settings</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="s">&#39;size&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">())</span>
+
+            <span class="n">settings</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="s">&#39;state&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">saveState</span><span class="p">())</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">settings</span><span class="o">.</span><span class="n">endGroup</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_saveFileDialogState</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">settings</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">settings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span>
+
+        <span class="n">settings</span><span class="o">.</span><span class="n">beginGroup</span><span class="p">(</span><span class="s">&#39;filedialog&#39;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c"># state</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c"># QFileDialog.saveState is new in Qt 4.3</span>
+                <span class="n">settings</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="s">&#39;state&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">filedialog</span><span class="o">.</span><span class="n">saveState</span><span class="p">())</span>
+            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;unable to save the file dialog state&#39;</span><span class="p">)</span>
+
+            <span class="c"># workdir</span>
+            <span class="c"># @NOTE: uncomment to preserve the session value</span>
+            <span class="c">#workdir = settings.setValue(&#39;workdir&#39;,</span>
+            <span class="c">#                            self.filedialog.directory())</span>
+
+            <span class="c"># history</span>
+            <span class="c">#settings.setValue(&#39;history&#39;, self.filedialog.history())</span>
+
+            <span class="c"># sidebar urls</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c"># QFileDialog.sidebarUrls is new in Qt 4.3</span>
+                <span class="n">sidebarurls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filedialog</span><span class="o">.</span><span class="n">sidebarUrls</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">sidebarurls</span><span class="p">:</span>
+                    <span class="n">settings</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="s">&#39;sidebarurls&#39;</span><span class="p">,</span> <span class="n">sidebarurls</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;unable to save sidebar URLs of the file dialog&#39;</span><span class="p">)</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">settings</span><span class="o">.</span><span class="n">endGroup</span><span class="p">()</span>
+
+<div class="viewcode-block" id="GSDView.saveSettings"><a class="viewcode-back" href="../../api/gsdview.app.html#gsdview.app.GSDView.saveSettings">[docs]</a>    <span class="k">def</span> <span class="nf">saveSettings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">settings</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">settings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span>
+
+        <span class="c"># general</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_saveWindowState</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_saveFileDialogState</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span>
+
+        <span class="n">settings</span><span class="o">.</span><span class="n">beginGroup</span><span class="p">(</span><span class="s">&#39;preferences&#39;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">level</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLevelName</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">level</span><span class="p">)</span>
+            <span class="n">settings</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="s">&#39;loglevel&#39;</span><span class="p">,</span> <span class="n">level</span><span class="p">)</span>
+
+            <span class="c"># only changed via preferences</span>
+            <span class="c">#settings.setValue(&#39;cachedir&#39;, self.cachedir)</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">settings</span><span class="o">.</span><span class="n">endGroup</span><span class="p">()</span>
+
+        <span class="c"># @NOTE: cache preferences are only modified via preferences dialog</span>
+
+        <span class="k">for</span> <span class="n">plugin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pluginmanager</span><span class="o">.</span><span class="n">plugins</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="c">#logging.debug(&#39;save %s plugin preferences&#39; % plugin.name)</span>
+            <span class="n">plugin</span><span class="o">.</span><span class="n">saveSettings</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span>
+</div>
+    <span class="nd">@QtCore.Slot</span><span class="p">()</span>
+<div class="viewcode-block" id="GSDView.updateSettingsMenu"><a class="viewcode-back" href="../../api/gsdview.app.html#gsdview.app.GSDView.updateSettingsMenu">[docs]</a>    <span class="k">def</span> <span class="nf">updateSettingsMenu</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c"># @TODO: rewrite; it should not be needed to copy the menu into a</span>
+        <span class="c">#        new one</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings_submenu</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="n">menu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">createPopupMenu</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">action</span> <span class="ow">in</span> <span class="n">menu</span><span class="o">.</span><span class="n">actions</span><span class="p">():</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;toolbar&#39;</span><span class="p">)</span> <span class="ow">in</span> <span class="n">action</span><span class="o">.</span><span class="n">text</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">settings_submenu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings_submenu</span><span class="o">.</span><span class="n">addSeparator</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">action</span> <span class="ow">in</span> <span class="n">menu</span><span class="o">.</span><span class="n">actions</span><span class="p">():</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;toolbar&#39;</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">action</span><span class="o">.</span><span class="n">text</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">settings_submenu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
+</div>
+    <span class="nd">@QtCore.Slot</span><span class="p">()</span>
+<div class="viewcode-block" id="GSDView.applySettings"><a class="viewcode-back" href="../../api/gsdview.app.html#gsdview.app.GSDView.applySettings">[docs]</a>    <span class="k">def</span> <span class="nf">applySettings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">preferencesdialog</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loadSettings</span><span class="p">()</span>
+</div>
+    <span class="nd">@QtCore.Slot</span><span class="p">()</span>
+<div class="viewcode-block" id="GSDView.showPreferencesDialog"><a class="viewcode-back" href="../../api/gsdview.app.html#gsdview.app.GSDView.showPreferencesDialog">[docs]</a>    <span class="k">def</span> <span class="nf">showPreferencesDialog</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c"># @TODO: complete</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">saveSettings</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">preferencesdialog</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">preferencesdialog</span><span class="o">.</span><span class="n">exec_</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">applySettings</span><span class="p">()</span>
+
+    <span class="c">### File actions ##########################################################</span></div>
+    <span class="nd">@QtCore.Slot</span><span class="p">()</span>
+<div class="viewcode-block" id="GSDView.openFile"><a class="viewcode-back" href="../../api/gsdview.app.html#gsdview.app.GSDView.openFile">[docs]</a>    <span class="k">def</span> <span class="nf">openFile</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c"># @TODO: remove; this is a temporary workaround for a Qt bug in</span>
+        <span class="c">#        Cocoa version</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filedialog</span><span class="o">.</span><span class="n">selectNameFilter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filedialog</span><span class="o">.</span><span class="n">selectedNameFilter</span><span class="p">())</span>
+
+        <span class="c"># @TODO: allow multiple file selection</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">filedialog</span><span class="o">.</span><span class="n">exec_</span><span class="p">():</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filedialog</span><span class="o">.</span><span class="n">selectedFiles</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">filename</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">backendname</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">backends</span><span class="p">:</span>
+                    <span class="n">backend</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pluginmanager</span><span class="o">.</span><span class="n">plugins</span><span class="p">[</span><span class="n">backendname</span><span class="p">]</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">item</span> <span class="o">=</span> <span class="n">backend</span><span class="o">.</span><span class="n">openFile</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">item</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">appendRow</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">treeview</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">index</span><span class="p">())</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;File &quot;</span><span class="si">%s</span><span class="s">&quot; opened with backend &#39;</span>
+                                              <span class="s">&#39;&quot;</span><span class="si">%s</span><span class="s">&quot;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">backendname</span><span class="p">))</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;file </span><span class="si">%s</span><span class="s">&quot; already open&#39;</span> <span class="o">%</span>
+                                                                    <span class="n">filename</span><span class="p">)</span>
+                        <span class="k">break</span>
+                    <span class="k">except</span> <span class="n">errors</span><span class="o">.</span><span class="n">OpenError</span><span class="p">:</span>
+                        <span class="c">#self.logger.exception(&#39;exception caught&#39;)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Backend &quot;</span><span class="si">%s</span><span class="s">&quot; failed to open file &#39;</span>
+                                          <span class="s">&#39;&quot;</span><span class="si">%s</span><span class="s">&quot;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">backendname</span><span class="p">,</span> <span class="n">filename</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&#39;Unable to open file &quot;</span><span class="si">%s</span><span class="s">&quot;&#39;</span> <span class="o">%</span> <span class="n">filename</span><span class="p">)</span>
+</div>
+    <span class="nd">@QtCore.Slot</span><span class="p">()</span>
+<div class="viewcode-block" id="GSDView.closeItem"><a class="viewcode-back" href="../../api/gsdview.app.html#gsdview.app.GSDView.closeItem">[docs]</a>    <span class="k">def</span> <span class="nf">closeItem</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c"># @TODO: extend for multiple datasets</span>
+        <span class="c">#~ self.closeGdalDataset.emit()</span>
+
+        <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">currentItem</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">item</span><span class="p">:</span>
+            <span class="c"># find the toplevel item</span>
+            <span class="k">while</span> <span class="n">item</span><span class="o">.</span><span class="n">parent</span><span class="p">():</span>
+                <span class="n">item</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c">#~ backend = self.pluginmanager.plugins[item.backend]</span>
+                <span class="c">#~ backend.closeFile(item)</span>
+                <span class="n">item</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">invisibleRootItem</span><span class="p">()</span><span class="o">.</span><span class="n">removeRow</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">row</span><span class="p">())</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">statusBar</span><span class="p">()</span><span class="o">.</span><span class="n">showMessage</span><span class="p">(</span><span class="s">&#39;Ready.&#39;</span><span class="p">)</span>
+</div>
+    <span class="nd">@QtCore.Slot</span><span class="p">()</span>
+<div class="viewcode-block" id="GSDView.closeAll"><a class="viewcode-back" href="../../api/gsdview.app.html#gsdview.app.GSDView.closeAll">[docs]</a>    <span class="k">def</span> <span class="nf">closeAll</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">root</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">invisibleRootItem</span><span class="p">()</span>
+        <span class="k">while</span> <span class="n">root</span><span class="o">.</span><span class="n">hasChildren</span><span class="p">():</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="n">child</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c">#~ backend = self.pluginmanager.plugins[item.backend]</span>
+                <span class="c">#~ backend.closeFile(item)</span>
+                <span class="n">item</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                <span class="n">root</span><span class="o">.</span><span class="n">removeRow</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">row</span><span class="p">())</span>
+
+    <span class="c">### Auxiliary methods ####################################################</span></div>
+    <span class="nd">@QtCore.Slot</span><span class="p">()</span>
+    <span class="nd">@QtCore.Slot</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+<div class="viewcode-block" id="GSDView.processingStarted"><a class="viewcode-back" href="../../api/gsdview.app.html#gsdview.app.GSDView.processingStarted">[docs]</a>    <span class="k">def</span> <span class="nf">processingStarted</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">msg</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">statusBar</span><span class="p">()</span><span class="o">.</span><span class="n">showMessage</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">progressbar</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stopbutton</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stopbutton</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</div>
+    <span class="nd">@QtCore.Slot</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+<div class="viewcode-block" id="GSDView.updateProgressBar"><a class="viewcode-back" href="../../api/gsdview.app.html#gsdview.app.GSDView.updateProgressBar">[docs]</a>    <span class="k">def</span> <span class="nf">updateProgressBar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fract</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">progressbar</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">progressbar</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="mf">100.</span> <span class="o">*</span> <span class="n">fract</span><span class="p">))</span>
+</div>
+    <span class="nd">@QtCore.Slot</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+<div class="viewcode-block" id="GSDView.processingDone"><a class="viewcode-back" href="../../api/gsdview.app.html#gsdview.app.GSDView.processingDone">[docs]</a>    <span class="k">def</span> <span class="nf">processingDone</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">returncode</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="c">#self.controller.reset() # @TODO: remove</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">returncode</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;An error occurred during the quicklook generation.</span><span class="se">\n</span><span class="s">&#39;</span>
+                       <span class="s">&#39;Now close the dataset.&#39;</span><span class="p">)</span>
+                <span class="n">QtGui</span><span class="o">.</span><span class="n">QMessageBox</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">closeItem</span><span class="p">()</span>   <span class="c"># @TODO: check</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">progressbar</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stopbutton</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stopbutton</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">statusBar</span><span class="p">()</span><span class="o">.</span><span class="n">showMessage</span><span class="p">(</span><span class="s">&#39;Ready.&#39;</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+    
+    
+    <p>
+        <a href="http://sourceforge.net/projects/gsdview">
+            <img src="http://sflogo.sourceforge.net/sflogo.php?group_id=226458&type=14" width="150" height="40" alt="Get GSDView at SourceForge.net. Fast, secure and Free Open Source software downloads" />
+        </a>
+    </p>
+    
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li><a href="../../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../gsdview.html" >gsdview</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2008-2011, Antonio Valentino.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

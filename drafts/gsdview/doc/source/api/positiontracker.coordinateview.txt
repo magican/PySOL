@@ -1,0 +1,23 @@
+positiontracker.coordinateview
+==============================
+
+.. automodule:: positiontracker.coordinateview
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      CoordinateView
+      GeoCoordinateView
+   
+   
+
+   
+   
+   

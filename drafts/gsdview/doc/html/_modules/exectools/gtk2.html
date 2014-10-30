@@ -1,0 +1,766 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>exectools.gtk2 &mdash; GSDView Open Edition Home Page</title>
+    <link rel="stylesheet" href="../../_static/sourceforge.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.6.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/logo.ico"/>
+    <link rel="top" title="GSDView Open Edition Home Page" href="../../index.html" />
+    <link rel="up" title="exectools" href="../exectools.html" /> 
+  </head>
+  <body>
+    
+        
+    
+    
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li><a href="../../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../exectools.html" accesskey="U">exectools</a> &raquo;</li> 
+      </ul>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for exectools.gtk2</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="c">### Copyright (C) 2006-2011 Antonio Valentino &lt;a_valentino@users.sf.net&gt;</span>
+
+<span class="c">### This file is part of exectools.</span>
+
+<span class="c">### This module is free software; you can redistribute it and/or modify</span>
+<span class="c">### it under the terms of the GNU General Public License as published by</span>
+<span class="c">### the Free Software Foundation; either version 2 of the License, or</span>
+<span class="c">### (at your option) any later version.</span>
+
+<span class="c">### This module is distributed in the hope that it will be useful,</span>
+<span class="c">### but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c">### MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c">### GNU General Public License for more details.</span>
+
+<span class="c">### You should have received a copy of the GNU General Public License</span>
+<span class="c">### along with this module; if not, write to the Free Software</span>
+<span class="c">### Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA.</span>
+
+<span class="sd">&#39;&#39;&#39;Tools for running external processes in a GTK GUI.&#39;&#39;&#39;</span>
+
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">import</span> <span class="nn">gtk</span>
+<span class="kn">import</span> <span class="nn">pango</span>
+<span class="kn">import</span> <span class="nn">gobject</span>
+
+<span class="kn">import</span> <span class="nn">subprocess2</span>
+
+<span class="kn">from</span> <span class="nn">exectools</span> <span class="kn">import</span> <span class="n">BaseOutputHandler</span><span class="p">,</span> <span class="n">level2tag</span>
+<span class="kn">from</span> <span class="nn">exectools.std</span> <span class="kn">import</span> <span class="n">StdToolController</span>
+
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s">&#39;Antonio Valentino &lt;a_valentino@users.sf.net&gt;&#39;</span>
+<span class="n">__revision__</span> <span class="o">=</span> <span class="s">&#39;$Revision: 971 $&#39;</span>
+<span class="n">__date__</span> <span class="o">=</span> <span class="s">&#39;$Date: 2011-07-30 11:07:42 +0200 (sab, 30 lug 2011) $&#39;</span>
+
+
+<div class="viewcode-block" id="Popen"><a class="viewcode-back" href="../../api/exectools.gtk2.html#exectools.gtk2.Popen">[docs]</a><span class="k">class</span> <span class="nc">Popen</span><span class="p">(</span><span class="n">gobject</span><span class="o">.</span><span class="n">GObject</span><span class="p">,</span> <span class="n">subprocess2</span><span class="o">.</span><span class="n">Popen</span><span class="p">):</span>
+
+    <span class="n">_timeout</span> <span class="o">=</span> <span class="mi">100</span>  <span class="c"># ms</span>
+
+    <span class="n">__gsignals__</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">&#39;stdout-ready&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">gobject</span><span class="o">.</span><span class="n">SIGNAL_RUN_LAST</span><span class="p">,</span> <span class="n">gobject</span><span class="o">.</span><span class="n">TYPE_NONE</span><span class="p">,</span> <span class="p">(),),</span>
+        <span class="s">&#39;stderr-ready&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">gobject</span><span class="o">.</span><span class="n">SIGNAL_RUN_LAST</span><span class="p">,</span> <span class="n">gobject</span><span class="o">.</span><span class="n">TYPE_NONE</span><span class="p">,</span> <span class="p">(),),</span>
+        <span class="s">&#39;io-error&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">gobject</span><span class="o">.</span><span class="n">SIGNAL_RUN_LAST</span><span class="p">,</span> <span class="n">gobject</span><span class="o">.</span><span class="n">TYPE_NONE</span><span class="p">,</span> <span class="p">(),),</span>
+        <span class="s">&#39;connection-broken&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">gobject</span><span class="o">.</span><span class="n">SIGNAL_RUN_LAST</span><span class="p">,</span> <span class="n">gobject</span><span class="o">.</span><span class="n">TYPE_NONE</span><span class="p">,</span> <span class="p">(),),</span>
+        <span class="s">&#39;finished&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">gobject</span><span class="o">.</span><span class="n">SIGNAL_RUN_LAST</span><span class="p">,</span> <span class="n">gobject</span><span class="o">.</span><span class="n">TYPE_NONE</span><span class="p">,</span> <span class="p">(),),</span>
+    <span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">gobject</span><span class="o">.</span><span class="n">GObject</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">subprocess2</span><span class="o">.</span><span class="n">Popen</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_watch_tags</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">id_</span> <span class="o">=</span> <span class="n">gobject</span><span class="o">.</span><span class="n">timeout_add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_timeout</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_finished</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_watch_tags</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">id_</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setup_io_watch</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_check_finished</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">poll</span><span class="p">()</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="s">&#39;finished&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">False</span>
+        <span class="k">return</span> <span class="bp">True</span>
+
+<div class="viewcode-block" id="Popen.close"><a class="viewcode-back" href="../../api/exectools.gtk2.html#exectools.gtk2.Popen.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c"># @NOTE: don&#39;t close system stdout and stderr</span>
+        <span class="c">#if self.stdout:</span>
+        <span class="c">#    self.stdout.close()</span>
+        <span class="c">#if self.stderr:</span>
+        <span class="c">#    self.stderr.close()</span>
+
+        <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_watch_tags</span><span class="p">:</span>
+            <span class="n">gobject</span><span class="o">.</span><span class="n">source_remove</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>
+</div>
+    <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;win&#39;</span><span class="p">:</span>
+        <span class="kn">import</span> <span class="nn">errno</span>
+        <span class="kn">import</span> <span class="nn">msvcrt</span>
+        <span class="kn">from</span> <span class="nn">subprocess</span> <span class="kn">import</span> <span class="n">pywintypes</span>
+        <span class="kn">from</span> <span class="nn">win32pipe</span> <span class="kn">import</span> <span class="n">PeekNamedPipe</span>
+
+        <span class="k">def</span> <span class="nf">_setup_io_watch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="c"># @TODO: signal.set_wakeup_fd from Python 2.6</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">stdout</span><span class="p">:</span>
+                <span class="n">id_</span> <span class="o">=</span> <span class="n">gobject</span><span class="o">.</span><span class="n">timeout_add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_timeout</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_ready</span><span class="p">,</span>
+                                          <span class="bp">self</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_watch_tags</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">id_</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">stderr</span><span class="p">:</span>
+                <span class="n">id_</span> <span class="o">=</span> <span class="n">gobject</span><span class="o">.</span><span class="n">timeout_add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_timeout</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_ready</span><span class="p">,</span>
+                                          <span class="bp">self</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_watch_tags</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">id_</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">_check_ready</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conn</span><span class="p">,</span> <span class="n">maxsize</span><span class="o">=</span><span class="mi">1024</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">maxsize</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">maxsize</span> <span class="o">=</span> <span class="mi">1</span>
+
+            <span class="k">if</span> <span class="n">conn</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">return</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="n">msvcrt</span><span class="o">.</span><span class="n">get_osfhandle</span><span class="p">(</span><span class="n">conn</span><span class="o">.</span><span class="n">fileno</span><span class="p">())</span>
+                <span class="p">(</span><span class="n">read</span><span class="p">,</span> <span class="n">nAvail</span><span class="p">,</span> <span class="n">nMessage</span><span class="p">)</span> <span class="o">=</span> <span class="n">PeekNamedPipe</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">maxsize</span> <span class="o">&lt;</span> <span class="n">nAvail</span><span class="p">:</span>
+                    <span class="n">nAvail</span> <span class="o">=</span> <span class="n">maxsize</span>
+                <span class="k">if</span> <span class="n">nAvail</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">conn</span> <span class="ow">is</span> <span class="bp">self</span><span class="o">.</span><span class="n">stdout</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="s">&#39;stdout-ready&#39;</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">conn</span> <span class="ow">is</span> <span class="bp">self</span><span class="o">.</span><span class="n">stderr</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="s">&#39;stderr-ready&#39;</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">conn</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="k">except</span> <span class="p">(</span><span class="n">pywintypes</span><span class="o">.</span><span class="n">error</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">),</span> <span class="n">why</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">why</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">109</span><span class="p">,</span> <span class="n">errno</span><span class="o">.</span><span class="n">ESHUTDOWN</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="n">conn</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                <span class="k">raise</span>
+
+            <span class="k">return</span> <span class="bp">True</span>
+
+    <span class="k">else</span><span class="p">:</span>   <span class="c"># POSIX</span>
+
+        <span class="k">def</span> <span class="nf">_setup_io_watch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="n">cond</span> <span class="o">=</span> <span class="p">(</span><span class="n">gobject</span><span class="o">.</span><span class="n">IO_IN</span> <span class="o">|</span> <span class="n">gobject</span><span class="o">.</span><span class="n">IO_PRI</span> <span class="o">|</span> <span class="n">gobject</span><span class="o">.</span><span class="n">IO_ERR</span> <span class="o">|</span>
+                    <span class="n">gobject</span><span class="o">.</span><span class="n">IO_HUP</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">stdout</span><span class="p">:</span>
+                <span class="n">id_</span> <span class="o">=</span> <span class="n">gobject</span><span class="o">.</span><span class="n">io_add_watch</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">cond</span><span class="p">,</span>
+                                           <span class="bp">self</span><span class="o">.</span><span class="n">_io_callback</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_watch_tags</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">id_</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">stderr</span><span class="p">:</span>
+                <span class="n">id_</span> <span class="o">=</span> <span class="n">gobject</span><span class="o">.</span><span class="n">io_add_watch</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span> <span class="n">cond</span><span class="p">,</span>
+                                           <span class="bp">self</span><span class="o">.</span><span class="n">_io_callback</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_watch_tags</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">id_</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">_io_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">condition</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">condition</span> <span class="ow">in</span> <span class="p">(</span><span class="n">gobject</span><span class="o">.</span><span class="n">IO_IN</span><span class="p">,</span> <span class="n">gobject</span><span class="o">.</span><span class="n">IO_PRI</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">source</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">stdout</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="s">&#39;stdout-ready&#39;</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">source</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">stderr</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="s">&#39;stderr-ready&#39;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="bp">True</span>
+
+            <span class="k">if</span> <span class="n">condition</span> <span class="o">==</span> <span class="n">gobject</span><span class="o">.</span><span class="n">IO_ERR</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="s">&#39;io-error&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">condition</span> <span class="o">==</span> <span class="n">gobject</span><span class="o">.</span><span class="n">IO_HUP</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="s">&#39;connection-broken&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">False</span>
+
+</div>
+<div class="viewcode-block" id="GtkBlinker"><a class="viewcode-back" href="../../api/exectools.gtk2.html#exectools.gtk2.GtkBlinker">[docs]</a><span class="k">class</span> <span class="nc">GtkBlinker</span><span class="p">(</span><span class="n">gtk</span><span class="o">.</span><span class="n">Image</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">gtk</span><span class="o">.</span><span class="n">Image</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_from_stock</span><span class="p">(</span><span class="n">gtk</span><span class="o">.</span><span class="n">STOCK_MEDIA_RECORD</span><span class="p">,</span>
+                            <span class="n">gtk</span><span class="o">.</span><span class="n">ICON_SIZE_SMALL_TOOLBAR</span><span class="p">)</span>
+
+<div class="viewcode-block" id="GtkBlinker.pulse"><a class="viewcode-back" href="../../api/exectools.gtk2.html#exectools.gtk2.GtkBlinker.pulse">[docs]</a>    <span class="k">def</span> <span class="nf">pulse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;A blinker pulse&#39;&#39;&#39;</span>
+
+        <span class="n">sensitive</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_property</span><span class="p">(</span><span class="s">&#39;sensitive&#39;</span><span class="p">)</span>
+        <span class="n">sensitive</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">sensitive</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="n">sensitive</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="GtkBlinker.flush"><a class="viewcode-back" href="../../api/exectools.gtk2.html#exectools.gtk2.GtkBlinker.flush">[docs]</a>    <span class="k">def</span> <span class="nf">flush</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Flush the blinker&#39;&#39;&#39;</span>
+
+        <span class="k">while</span> <span class="n">gtk</span><span class="o">.</span><span class="n">events_pending</span><span class="p">():</span>
+            <span class="n">gtk</span><span class="o">.</span><span class="n">main_iteration</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="GtkBlinker.reset"><a class="viewcode-back" href="../../api/exectools.gtk2.html#exectools.gtk2.GtkBlinker.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Reset the blinker&#39;&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+
+
+<span class="c"># @TODO: check</span></div></div>
+<div class="viewcode-block" id="GtkOutputPlane"><a class="viewcode-back" href="../../api/exectools.gtk2.html#exectools.gtk2.GtkOutputPlane">[docs]</a><span class="k">class</span> <span class="nc">GtkOutputPlane</span><span class="p">(</span><span class="n">gtk</span><span class="o">.</span><span class="n">TextView</span><span class="p">):</span>
+
+    <span class="n">__gsignals__</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">&#39;hide-request&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">gobject</span><span class="o">.</span><span class="n">SIGNAL_RUN_LAST</span><span class="p">,</span> <span class="n">gobject</span><span class="o">.</span><span class="n">TYPE_NONE</span><span class="p">,</span> <span class="p">(),),</span>
+    <span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">buffer</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">hide_button</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">formats</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">GtkOutputPlane</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="nb">buffer</span><span class="p">)</span>
+        <span class="c">#self.stream = GtkOStream(self)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hide_button</span> <span class="o">=</span> <span class="n">hide_button</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s">&#39;populate-popup&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_populate_popup</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_filedialog</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setup_filedialog</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">banner</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="c"># @TODO: improve formats handling add/remove/list/edit</span>
+        <span class="k">if</span> <span class="n">formats</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">formats</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s">&#39;error&#39;</span><span class="p">:</span>     <span class="p">{</span><span class="s">&#39;foreground&#39;</span><span class="p">:</span> <span class="s">&#39;red&#39;</span><span class="p">},</span>
+                <span class="s">&#39;warning&#39;</span><span class="p">:</span>   <span class="p">{</span><span class="s">&#39;foreground&#39;</span><span class="p">:</span> <span class="s">&#39;orange&#39;</span><span class="p">},</span>
+                <span class="s">&#39;info&#39;</span><span class="p">:</span>      <span class="p">{</span><span class="s">&#39;foreground&#39;</span><span class="p">:</span> <span class="s">&#39;blue&#39;</span><span class="p">},</span>
+                <span class="s">&#39;debug&#39;</span><span class="p">:</span>     <span class="p">{</span><span class="s">&#39;foreground&#39;</span><span class="p">:</span> <span class="s">&#39;gray&#39;</span><span class="p">},</span>
+                <span class="s">&#39;cmd&#39;</span><span class="p">:</span>       <span class="p">{</span><span class="s">&#39;weight&#39;</span><span class="p">:</span>     <span class="n">pango</span><span class="o">.</span><span class="n">WEIGHT_BOLD</span><span class="p">},</span>
+            <span class="p">}</span>
+            <span class="c">#&#39;message&#39;:{}</span>
+
+        <span class="n">buffer_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_buffer</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">formats</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="n">buffer_</span><span class="o">.</span><span class="n">create_tag</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="o">**</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_setup_filedialog</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">dialog</span> <span class="o">=</span> <span class="n">gtk</span><span class="o">.</span><span class="n">FileChooserDialog</span><span class="p">(</span>
+                        <span class="n">title</span><span class="o">=</span><span class="s">&#39;Save Output Log&#39;</span><span class="p">,</span>
+                        <span class="c">#parent=self.textview.get_toplevel(),</span>
+                        <span class="n">action</span><span class="o">=</span><span class="n">gtk</span><span class="o">.</span><span class="n">FILE_CHOOSER_ACTION_SAVE</span><span class="p">,</span>
+                        <span class="n">buttons</span><span class="o">=</span><span class="p">(</span><span class="n">gtk</span><span class="o">.</span><span class="n">STOCK_OK</span><span class="p">,</span> <span class="n">gtk</span><span class="o">.</span><span class="n">RESPONSE_OK</span><span class="p">,</span>
+                                 <span class="n">gtk</span><span class="o">.</span><span class="n">STOCK_CANCEL</span><span class="p">,</span> <span class="n">gtk</span><span class="o">.</span><span class="n">RESPONSE_CANCEL</span><span class="p">))</span>
+
+        <span class="n">patterns</span> <span class="o">=</span> <span class="p">[(</span><span class="s">&#39;*.txt&#39;</span><span class="p">,</span> <span class="s">&#39;Text files&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;*&#39;</span><span class="p">,</span> <span class="s">&#39;All Files&#39;</span><span class="p">)]</span>
+        <span class="k">for</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">patterns</span><span class="p">:</span>
+            <span class="n">filefilter</span> <span class="o">=</span> <span class="n">gtk</span><span class="o">.</span><span class="n">FileFilter</span><span class="p">()</span>
+            <span class="n">filefilter</span><span class="o">.</span><span class="n">set_name</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">filefilter</span><span class="o">.</span><span class="n">add_pattern</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span>
+            <span class="n">dialog</span><span class="o">.</span><span class="n">add_filter</span><span class="p">(</span><span class="n">filefilter</span><span class="p">)</span>
+
+        <span class="n">dialog</span><span class="o">.</span><span class="n">set_current_name</span><span class="p">(</span><span class="s">&#39;outputlog.txt&#39;</span><span class="p">)</span>
+        <span class="n">dialog</span><span class="o">.</span><span class="n">set_select_multiple</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+        <span class="n">dialog</span><span class="o">.</span><span class="n">set_default_response</span><span class="p">(</span><span class="n">gtk</span><span class="o">.</span><span class="n">RESPONSE_OK</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">dialog</span>
+
+    <span class="k">def</span> <span class="nf">_report</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">banner</span><span class="p">):</span>
+            <span class="n">header</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">banner</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">banner</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">header</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">banner</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">header</span> <span class="o">=</span> <span class="s">&#39;# Output log generated on </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">time</span><span class="o">.</span><span class="n">asctime</span><span class="p">()</span>
+
+        <span class="n">buf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_buffer</span><span class="p">()</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">buf</span><span class="o">.</span><span class="n">get_text</span><span class="p">(</span><span class="n">buf</span><span class="o">.</span><span class="n">get_start_iter</span><span class="p">(),</span> <span class="n">buf</span><span class="o">.</span><span class="n">get_end_iter</span><span class="p">())</span>
+
+        <span class="k">return</span> <span class="s">&#39;</span><span class="si">%s</span><span class="se">\n\n</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+
+<div class="viewcode-block" id="GtkOutputPlane.clear"><a class="viewcode-back" href="../../api/exectools.gtk2.html#exectools.gtk2.GtkOutputPlane.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">buf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_buffer</span><span class="p">()</span>
+        <span class="n">buf</span><span class="o">.</span><span class="n">set_text</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="GtkOutputPlane.save"><a class="viewcode-back" href="../../api/exectools.gtk2.html#exectools.gtk2.GtkOutputPlane.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">dialog</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filedialog</span>
+        <span class="n">dialog</span><span class="o">.</span><span class="n">set_transient_for</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_toplevel</span><span class="p">())</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="n">filename</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">dialog</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">response</span> <span class="o">==</span> <span class="n">gtk</span><span class="o">.</span><span class="n">RESPONSE_CANCEL</span><span class="p">:</span>
+                <span class="n">dialog</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+                <span class="k">return</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="n">dialog</span><span class="o">.</span><span class="n">get_filename</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">filename</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;File &quot;</span><span class="si">%s</span><span class="s">&quot; already exists.</span><span class="se">\n\n</span><span class="s">&#39;</span>
+                       <span class="s">&#39;Are you sure you want overwrite it?&#39;</span> <span class="o">%</span> <span class="n">filename</span><span class="p">)</span>
+                <span class="n">msgdialog</span> <span class="o">=</span> <span class="n">gtk</span><span class="o">.</span><span class="n">MessageDialog</span><span class="p">(</span>
+                                    <span class="n">parent</span><span class="o">=</span><span class="n">dialog</span><span class="p">,</span>
+                                    <span class="n">flags</span><span class="o">=</span><span class="n">gtk</span><span class="o">.</span><span class="n">DIALOG_MODAL</span> <span class="o">|</span>
+                                             <span class="n">gtk</span><span class="o">.</span><span class="n">DIALOG_DESTROY_WITH_PARENT</span><span class="p">,</span>
+                                    <span class="nb">type</span><span class="o">=</span><span class="n">gtk</span><span class="o">.</span><span class="n">MESSAGE_QUESTION</span><span class="p">,</span>
+                                    <span class="n">buttons</span><span class="o">=</span><span class="n">gtk</span><span class="o">.</span><span class="n">BUTTONS_YES_NO</span><span class="p">,</span>
+                                    <span class="n">message_format</span><span class="o">=</span><span class="n">msg</span><span class="p">)</span>
+                <span class="n">msgdialog</span><span class="o">.</span><span class="n">set_default_response</span><span class="p">(</span><span class="n">gtk</span><span class="o">.</span><span class="n">RESPONSE_NO</span><span class="p">)</span>
+                <span class="n">response</span> <span class="o">=</span> <span class="n">msgdialog</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+                <span class="n">msgdialog</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span>
+                <span class="k">if</span><span class="p">(</span><span class="n">response</span> <span class="o">!=</span> <span class="n">gtk</span><span class="o">.</span><span class="n">RESPONSE_YES</span><span class="p">):</span>
+                    <span class="n">filename</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="n">dialog</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+
+        <span class="n">logfile</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s">&#39;w&#39;</span><span class="p">)</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_report</span><span class="p">()</span>
+        <span class="n">logfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+        <span class="n">logfile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="GtkOutputPlane.on_populate_popup"><a class="viewcode-back" href="../../api/exectools.gtk2.html#exectools.gtk2.GtkOutputPlane.on_populate_popup">[docs]</a>    <span class="k">def</span> <span class="nf">on_populate_popup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">menu</span><span class="p">):</span>
+        <span class="c"># Separator</span>
+        <span class="n">item</span> <span class="o">=</span> <span class="n">gtk</span><span class="o">.</span><span class="n">SeparatorMenuItem</span><span class="p">()</span>
+        <span class="n">item</span><span class="o">.</span><span class="n">set_name</span><span class="p">(</span><span class="s">&#39;separator&#39;</span><span class="p">)</span>
+        <span class="n">item</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+        <span class="n">menu</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+
+        <span class="c"># Save As</span>
+        <span class="n">item</span> <span class="o">=</span> <span class="n">gtk</span><span class="o">.</span><span class="n">ImageMenuItem</span><span class="p">(</span><span class="n">gtk</span><span class="o">.</span><span class="n">STOCK_SAVE_AS</span><span class="p">)</span>
+        <span class="n">item</span><span class="o">.</span><span class="n">set_name</span><span class="p">(</span><span class="s">&#39;save_as&#39;</span><span class="p">)</span>
+        <span class="n">item</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s">&#39;activate&#39;</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">item</span><span class="p">,</span> <span class="n">w</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">(),</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="n">item</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+        <span class="n">menu</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+
+        <span class="c"># Clear OutputLog</span>
+        <span class="n">item</span> <span class="o">=</span> <span class="n">gtk</span><span class="o">.</span><span class="n">ImageMenuItem</span><span class="p">(</span><span class="n">gtk</span><span class="o">.</span><span class="n">STOCK_CLEAR</span><span class="p">)</span>
+        <span class="n">item</span><span class="o">.</span><span class="n">set_name</span><span class="p">(</span><span class="s">&#39;clear&#39;</span><span class="p">)</span>
+        <span class="n">item</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s">&#39;activate&#39;</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">item</span><span class="p">,</span> <span class="n">w</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">clear</span><span class="p">(),</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="n">item</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+        <span class="n">menu</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+
+        <span class="c"># Hide OutputLog</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">hide_button</span><span class="p">:</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="n">gtk</span><span class="o">.</span><span class="n">ImageMenuItem</span><span class="p">(</span><span class="n">gtk</span><span class="o">.</span><span class="n">STOCK_CLOSE</span><span class="p">)</span>
+            <span class="n">item</span><span class="o">.</span><span class="n">set_name</span><span class="p">(</span><span class="s">&#39;close&#39;</span><span class="p">)</span>
+            <span class="n">item</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s">&#39;activate&#39;</span><span class="p">,</span> <span class="k">lambda</span> <span class="bp">self</span><span class="p">,</span> <span class="n">w</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="s">&#39;hide-request&#39;</span><span class="p">))</span>
+            <span class="n">item</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+            <span class="n">menu</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+
+</div></div>
+<div class="viewcode-block" id="GtkOutputHandler"><a class="viewcode-back" href="../../api/exectools.gtk2.html#exectools.gtk2.GtkOutputHandler">[docs]</a><span class="k">class</span> <span class="nc">GtkOutputHandler</span><span class="p">(</span><span class="n">gobject</span><span class="o">.</span><span class="n">GObject</span><span class="p">,</span> <span class="n">BaseOutputHandler</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;GTK progress handler&#39;&#39;&#39;</span>
+
+    <span class="n">__gsignals__</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">&#39;pulse&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">gobject</span><span class="o">.</span><span class="n">SIGNAL_RUN_LAST</span><span class="p">,</span> <span class="n">gobject</span><span class="o">.</span><span class="n">TYPE_NONE</span><span class="p">,</span>
+                                                    <span class="p">(</span><span class="n">gobject</span><span class="o">.</span><span class="n">TYPE_STRING</span><span class="p">,),),</span>
+        <span class="s">&#39;percentage-changed&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">gobject</span><span class="o">.</span><span class="n">SIGNAL_RUN_LAST</span><span class="p">,</span> <span class="n">gobject</span><span class="o">.</span><span class="n">TYPE_NONE</span><span class="p">,</span>
+                                                    <span class="p">(</span><span class="n">gobject</span><span class="o">.</span><span class="n">TYPE_FLOAT</span><span class="p">,),),</span>
+    <span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">statusbar</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">progressbar</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                 <span class="n">blinker</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="n">gobject</span><span class="o">.</span><span class="n">GObject</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">BaseOutputHandler</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logger</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">statusbar</span> <span class="o">=</span> <span class="n">statusbar</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">statusbar</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">context_id</span> <span class="o">=</span> <span class="n">statusbar</span><span class="o">.</span><span class="n">get_context_id</span><span class="p">(</span><span class="s">&#39;progress&#39;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">blinker</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">blinker</span> <span class="o">=</span> <span class="n">GtkBlinker</span><span class="p">()</span>
+                <span class="n">statusbar</span><span class="o">.</span><span class="n">pack_end</span><span class="p">(</span><span class="n">blinker</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+                <span class="n">blinker</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s">&#39;pulse&#39;</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">obj</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="n">blinker</span><span class="o">.</span><span class="n">show</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s">&#39;pulse&#39;</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">obj</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="n">blinker</span><span class="o">.</span><span class="n">pulse</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s">&#39;pulse&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_update_statusbar</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">progressbar</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">progressbar</span> <span class="o">=</span> <span class="n">gtk</span><span class="o">.</span><span class="n">ProgressBar</span><span class="p">()</span>
+                <span class="n">statusbar</span><span class="o">.</span><span class="n">pack_end</span><span class="p">(</span><span class="n">progressbar</span><span class="p">)</span>
+                <span class="n">progressbar</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s">&#39;percentage-changed&#39;</span><span class="p">,</span>
+                                <span class="k">lambda</span> <span class="n">obj</span><span class="p">,</span> <span class="n">perc</span><span class="p">:</span> <span class="n">progressbar</span><span class="o">.</span><span class="n">show</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s">&#39;percentage-changed&#39;</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">obj</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span>
+                            <span class="n">progressbar</span><span class="o">.</span><span class="n">set_text</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">percentage_fmt</span> <span class="o">%</span> <span class="n">value</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s">&#39;percentage-changed&#39;</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">obj</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span>
+                            <span class="n">progressbar</span><span class="o">.</span><span class="n">set_fraction</span><span class="p">(</span><span class="n">value</span> <span class="o">/</span> <span class="mf">100.</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">context_id</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">progressbar</span> <span class="o">=</span> <span class="n">progressbar</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">blinker</span> <span class="o">=</span> <span class="n">blinker</span>
+
+    <span class="k">def</span> <span class="nf">_update_statusbar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">statusbar</span>
+        <span class="k">if</span> <span class="n">text</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">statusbar</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">context_id</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">statusbar</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">context_id</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+
+<div class="viewcode-block" id="GtkOutputHandler.feed"><a class="viewcode-back" href="../../api/exectools.gtk2.html#exectools.gtk2.GtkOutputHandler.feed">[docs]</a>    <span class="k">def</span> <span class="nf">feed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Feed some data to the parser.</span>
+
+<span class="sd">        It is processed insofar as it consists of complete elements;</span>
+<span class="sd">        incomplete data is buffered until more data is fed or close()</span>
+<span class="sd">        is called.</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">blinker</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">blinker</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+            <span class="c">#self.progressbar.show()</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">GtkOutputHandler</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="GtkOutputHandler.close"><a class="viewcode-back" href="../../api/exectools.gtk2.html#exectools.gtk2.GtkOutputHandler.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Force processing of all buffered data and reset the instance&#39;&#39;&#39;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">statusbar</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">statusbar</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">context_id</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">GtkOutputHandler</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="GtkOutputHandler.reset"><a class="viewcode-back" href="../../api/exectools.gtk2.html#exectools.gtk2.GtkOutputHandler.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Reset the handler instance.</span>
+
+<span class="sd">        Loses all unprocessed data. This is called implicitly at</span>
+<span class="sd">        instantiation time.</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">GtkOutputHandler</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">progressbar</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">progressbar</span><span class="o">.</span><span class="n">set_text</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%.0f</span><span class="s"> </span><span class="si">%%</span><span class="s">&#39;</span> <span class="o">%</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">progressbar</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">progressbar</span><span class="o">.</span><span class="n">set_fraction</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">blinker</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">blinker</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="GtkOutputHandler.handle_progress"><a class="viewcode-back" href="../../api/exectools.gtk2.html#exectools.gtk2.GtkOutputHandler.handle_progress">[docs]</a>    <span class="k">def</span> <span class="nf">handle_progress</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Handle progress data.</span>
+
+<span class="sd">        :param data:</span>
+<span class="sd">            a list containing an item for each named group in the</span>
+<span class="sd">            &quot;progress&quot; regular expression: (pulse, percentage, text)</span>
+<span class="sd">            for the default implementation.</span>
+<span class="sd">            Each item can be None.</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="c">#pulse = data.get(&#39;pulse&#39;)</span>
+        <span class="n">percentage</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;percentage&#39;</span><span class="p">)</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;text&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">text</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="s">&#39;pulse&#39;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="s">&#39;pulse&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">percentage</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="s">&#39;percentage-changed&#39;</span><span class="p">,</span> <span class="n">percentage</span><span class="p">)</span>
+
+        <span class="c"># Flush events</span>
+        <span class="c">#while gtk.events_pending():</span>
+        <span class="c">#    gtk.main_iteration(False)</span>
+
+</div></div>
+<div class="viewcode-block" id="GtkLoggingHandler"><a class="viewcode-back" href="../../api/exectools.gtk2.html#exectools.gtk2.GtkLoggingHandler">[docs]</a><span class="k">class</span> <span class="nc">GtkLoggingHandler</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">Handler</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Custom handler for logging on GTK+ textviews&#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">textview</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="n">textview</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">textview</span> <span class="o">=</span> <span class="n">textview</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">Handler</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">format</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="n">buf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">textview</span><span class="o">.</span><span class="n">get_buffer</span><span class="p">()</span>
+        <span class="n">textiter</span> <span class="o">=</span> <span class="n">buf</span><span class="o">.</span><span class="n">get_end_iter</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">format</span><span class="p">:</span>
+            <span class="n">tagtable</span> <span class="o">=</span> <span class="n">buf</span><span class="o">.</span><span class="n">get_tag_table</span><span class="p">()</span>
+            <span class="n">tag</span> <span class="o">=</span> <span class="n">tagtable</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="n">format</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">tag</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="k">if</span> <span class="n">data</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">data</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">):</span>
+            <span class="n">data</span> <span class="o">+=</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span>
+
+        <span class="k">if</span> <span class="n">tag</span><span class="p">:</span>
+            <span class="n">buf</span><span class="o">.</span><span class="n">insert_with_tags</span><span class="p">(</span><span class="n">textiter</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">tag</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">buf</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">textiter</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+
+        <span class="n">buf</span><span class="o">.</span><span class="n">place_cursor</span><span class="p">(</span><span class="n">buf</span><span class="o">.</span><span class="n">get_end_iter</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">textview</span><span class="o">.</span><span class="n">scroll_mark_onscreen</span><span class="p">(</span><span class="n">buf</span><span class="o">.</span><span class="n">get_mark</span><span class="p">(</span><span class="s">&#39;insert&#39;</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_flush</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">while</span> <span class="n">gtk</span><span class="o">.</span><span class="n">events_pending</span><span class="p">():</span>
+            <span class="n">gtk</span><span class="o">.</span><span class="n">main_iteration</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+
+<div class="viewcode-block" id="GtkLoggingHandler.emit"><a class="viewcode-back" href="../../api/exectools.gtk2.html#exectools.gtk2.GtkLoggingHandler.emit">[docs]</a>    <span class="k">def</span> <span class="nf">emit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>
+            <span class="n">tag</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">record</span><span class="p">,</span> <span class="s">&#39;tag&#39;</span><span class="p">,</span> <span class="n">level2tag</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">levelno</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_write</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">msg</span><span class="p">,</span> <span class="n">tag</span><span class="p">)</span>
+            <span class="c"># @TODO: check</span>
+            <span class="c">#self._flush()</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">KeyboardInterrupt</span><span class="p">,</span> <span class="ne">SystemExit</span><span class="p">):</span>
+            <span class="k">raise</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">handleError</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>
+
+</div></div>
+<div class="viewcode-block" id="GtkDialogLoggingHandler"><a class="viewcode-back" href="../../api/exectools.gtk2.html#exectools.gtk2.GtkDialogLoggingHandler">[docs]</a><span class="k">class</span> <span class="nc">GtkDialogLoggingHandler</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">Handler</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;GTK handler for logging message dialog&#39;&#39;&#39;</span>
+
+    <span class="n">levelsmap</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">CRITICAL</span><span class="p">:</span> <span class="n">gtk</span><span class="o">.</span><span class="n">MESSAGE_ERROR</span><span class="p">,</span>
+        <span class="c"># FATAL = CRITICAL</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">:</span> <span class="n">gtk</span><span class="o">.</span><span class="n">MESSAGE_ERROR</span><span class="p">,</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">:</span> <span class="n">gtk</span><span class="o">.</span><span class="n">MESSAGE_WARNING</span><span class="p">,</span>
+        <span class="c"># WARN = WARNING</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">:</span> <span class="n">gtk</span><span class="o">.</span><span class="n">MESSAGE_INFO</span><span class="p">,</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">:</span> <span class="n">gtk</span><span class="o">.</span><span class="n">MESSAGE_INFO</span><span class="p">,</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">NOTSET</span><span class="p">:</span> <span class="n">gtk</span><span class="o">.</span><span class="n">MESSAGE_INFO</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dialog</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">Handler</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">dialog</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">parent</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">parent</span> <span class="o">=</span> <span class="n">gtk</span><span class="o">.</span><span class="n">window_list_toplevels</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                    <span class="k">pass</span>
+            <span class="n">dialog</span> <span class="o">=</span> <span class="n">gtk</span><span class="o">.</span><span class="n">MessageDialog</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">buttons</span><span class="o">=</span><span class="n">gtk</span><span class="o">.</span><span class="n">BUTTONS_CLOSE</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dialog</span> <span class="o">=</span> <span class="n">dialog</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">formatter</span> <span class="o">=</span> <span class="bp">None</span>
+
+<div class="viewcode-block" id="GtkDialogLoggingHandler.emit"><a class="viewcode-back" href="../../api/exectools.gtk2.html#exectools.gtk2.GtkDialogLoggingHandler.emit">[docs]</a>    <span class="k">def</span> <span class="nf">emit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">msgtype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">levelsmap</span><span class="p">[</span><span class="n">record</span><span class="o">.</span><span class="n">levelno</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dialog</span><span class="o">.</span><span class="n">set_property</span><span class="p">(</span><span class="s">&#39;message-type&#39;</span><span class="p">,</span> <span class="n">msgtype</span><span class="p">)</span>
+
+            <span class="n">msg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;UTF-8&#39;</span><span class="p">,</span> <span class="s">&#39;replace&#39;</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">dialog</span><span class="o">.</span><span class="n">format_secondary_markup</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">record</span><span class="o">.</span><span class="n">exc_info</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">getMessage</span><span class="p">()</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;UTF-8&#39;</span><span class="p">,</span> <span class="s">&#39;replace&#39;</span><span class="p">)</span>
+                <span class="c"># @TODO: check</span>
+                <span class="c">#self.dialog.set_markup(&#39;&lt;b&gt;%s&lt;/b&gt;&#39; % msg)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">dialog</span><span class="o">.</span><span class="n">set_markup</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLevelName</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">levelno</span><span class="p">)</span>
+                <span class="c"># @TODO: check</span>
+                <span class="c">#self.dialog.set_markup(&#39;&lt;b&gt;%s&lt;/b&gt;&#39; % msg)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">dialog</span><span class="o">.</span><span class="n">set_markup</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">dialog</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dialog</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">KeyboardInterrupt</span><span class="p">,</span> <span class="ne">SystemExit</span><span class="p">):</span>
+            <span class="k">raise</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">handleError</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>
+
+</div></div>
+<div class="viewcode-block" id="GtkToolController"><a class="viewcode-back" href="../../api/exectools.gtk2.html#exectools.gtk2.GtkToolController">[docs]</a><span class="k">class</span> <span class="nc">GtkToolController</span><span class="p">(</span><span class="n">gobject</span><span class="o">.</span><span class="n">GObject</span><span class="p">,</span> <span class="n">StdToolController</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;GTK tool controller&#39;&#39;&#39;</span>
+
+    <span class="n">__gsignals__</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">&#39;finished&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">gobject</span><span class="o">.</span><span class="n">SIGNAL_RUN_LAST</span><span class="p">,</span> <span class="n">gobject</span><span class="o">.</span><span class="n">TYPE_NONE</span><span class="p">,</span>
+                                                    <span class="p">(</span><span class="n">gobject</span><span class="o">.</span><span class="n">TYPE_INT</span><span class="p">,),),</span>
+    <span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="n">gobject</span><span class="o">.</span><span class="n">GObject</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">StdToolController</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logger</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_handlers</span> <span class="o">=</span> <span class="p">[]</span>
+
+<div class="viewcode-block" id="GtkToolController.finalize_run"><a class="viewcode-back" href="../../api/exectools.gtk2.html#exectools.gtk2.GtkToolController.finalize_run">[docs]</a>    <span class="k">def</span> <span class="nf">finalize_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Perform finalization actions.</span>
+
+<span class="sd">        This method is called when the controlled process terminates</span>
+<span class="sd">        to perform finalization actions like:</span>
+
+<span class="sd">        * read and handle residual data in buffers,</span>
+<span class="sd">        * flush and close output handlers,</span>
+<span class="sd">        * close subprocess file descriptors</span>
+<span class="sd">        * run the &quot;finalize_run_hook&quot; method</span>
+<span class="sd">        * reset the controller instance</span>
+
+<span class="sd">        Additional finalization actions are performed using a custom</span>
+<span class="sd">        &quot;finalize_run_hook&quot; instead of overriging &quot;finalize_run&quot;.</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="n">returncode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">returncode</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">GtkToolController</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">finalize_run</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="s">&#39;finished&#39;</span><span class="p">,</span> <span class="n">returncode</span><span class="p">)</span>
+</div>
+    <span class="k">def</span> <span class="nf">_reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Internal reset.</span>
+
+<span class="sd">        Kill the controlled subprocess and reset I/O channels loosing</span>
+<span class="sd">        all unprocessed data.</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">for</span> <span class="n">handler_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handlers</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">disconnect</span><span class="p">(</span><span class="n">handler_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">GtkToolController</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">_reset</span><span class="p">()</span>
+
+<div class="viewcode-block" id="GtkToolController.connect_output_handlers"><a class="viewcode-back" href="../../api/exectools.gtk2.html#exectools.gtk2.GtkToolController.connect_output_handlers">[docs]</a>    <span class="k">def</span> <span class="nf">connect_output_handlers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Connect output handlers&#39;&#39;&#39;</span>
+
+        <span class="k">for</span> <span class="n">handler_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handlers</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">disconnect</span><span class="p">(</span><span class="n">handler_id</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s">&#39;stdout-ready&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_stdout</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s">&#39;stderr-ready&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_stderr</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s">&#39;io-error&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_ioerror</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s">&#39;connection-broken&#39;</span><span class="p">,</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">handle_connection_broken</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s">&#39;finished&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_finished</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="GtkToolController.run_tool"><a class="viewcode-back" href="../../api/exectools.gtk2.html#exectools.gtk2.GtkToolController.run_tool">[docs]</a>    <span class="k">def</span> <span class="nf">run_tool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tool</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Run an external tool in controlled way</span>
+
+<span class="sd">        The output of the child process is handled by the controller</span>
+<span class="sd">        and, optionally, notifications can be achieved at sub-process</span>
+<span class="sd">        termination.</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tool</span> <span class="o">=</span> <span class="n">tool</span>
+
+        <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;win&#39;</span><span class="p">:</span>
+            <span class="n">closefds</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="n">startupinfo</span> <span class="o">=</span> <span class="n">subprocess2</span><span class="o">.</span><span class="n">STARTUPINFO</span><span class="p">()</span>
+            <span class="n">startupinfo</span><span class="o">.</span><span class="n">dwFlags</span> <span class="o">|=</span> <span class="n">subprocess2</span><span class="o">.</span><span class="n">STARTF_USESHOWWINDOW</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">closefds</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="n">startupinfo</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tool</span><span class="o">.</span><span class="n">stdout_handler</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tool</span><span class="o">.</span><span class="n">stdout_handler</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tool</span><span class="o">.</span><span class="n">stderr_handler</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tool</span><span class="o">.</span><span class="n">stderr_handler</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+
+        <span class="n">cmd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tool</span><span class="o">.</span><span class="n">cmdline</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prerun_hook</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;&quot;shell&quot; flag set to </span><span class="si">%s</span><span class="s">.&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tool</span><span class="o">.</span><span class="n">shell</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span> <span class="o">=</span> <span class="n">Popen</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span>
+                                    <span class="n">stdin</span><span class="o">=</span><span class="n">subprocess2</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span>
+                                    <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess2</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span>
+                                    <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess2</span><span class="o">.</span><span class="n">STDOUT</span><span class="p">,</span>
+                                    <span class="n">close_fds</span><span class="o">=</span><span class="n">closefds</span><span class="p">,</span>
+                                    <span class="n">shell</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_tool</span><span class="o">.</span><span class="n">shell</span><span class="p">,</span>
+                                    <span class="n">startupinfo</span><span class="o">=</span><span class="n">startupinfo</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">stdin</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">connect_output_handlers</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="nb">basestring</span><span class="p">):</span>
+                <span class="n">cmd</span> <span class="o">=</span> <span class="s">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s">&#39;Unable to execute: &quot;</span><span class="si">%s</span><span class="s">&quot;&#39;</span> <span class="o">%</span> <span class="n">cmd</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_reset</span><span class="p">()</span>
+
+            <span class="c"># ..seealso:: http://tldp.org/LDP/abs/html/exitcodes.html</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="s">&#39;finished&#39;</span><span class="p">,</span> <span class="mi">126</span><span class="p">)</span>   <span class="c"># @TODO: check</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_reset</span><span class="p">()</span>
+            <span class="k">raise</span>
+</div>
+<div class="viewcode-block" id="GtkToolController.handle_finished"><a class="viewcode-back" href="../../api/exectools.gtk2.html#exectools.gtk2.GtkToolController.handle_finished">[docs]</a>    <span class="k">def</span> <span class="nf">handle_finished</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Handle process termination&#39;&#39;&#39;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_userstop</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;finished PID=</span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">pid</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">finalize_run</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="GtkToolController.handle_ioerror"><a class="viewcode-back" href="../../api/exectools.gtk2.html#exectools.gtk2.GtkToolController.handle_ioerror">[docs]</a>    <span class="k">def</span> <span class="nf">handle_ioerror</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Handle a IO error while process execution&#39;&#39;&#39;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_userstop</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s">&#39;I/O error from sub-process PID=</span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">pid</span>
+            <span class="c">#self.logger.error(msg)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="GtkToolController.handle_connection_broken"><a class="viewcode-back" href="../../api/exectools.gtk2.html#exectools.gtk2.GtkToolController.handle_connection_broken">[docs]</a>    <span class="k">def</span> <span class="nf">handle_connection_broken</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Handle a connection broken&#39;&#39;&#39;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_userstop</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;Connection broken with sub-process PID=</span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span>
+                                                        <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">pid</span><span class="p">)</span>
+            <span class="c">#self.logger.error(msg)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+    
+    
+    <p>
+        <a href="http://sourceforge.net/projects/gsdview">
+            <img src="http://sflogo.sourceforge.net/sflogo.php?group_id=226458&type=14" width="150" height="40" alt="Get GSDView at SourceForge.net. Fast, secure and Free Open Source software downloads" />
+        </a>
+    </p>
+    
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li><a href="../../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../exectools.html" >exectools</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2008-2011, Antonio Valentino.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

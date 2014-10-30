@@ -1,0 +1,469 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>gsdview.gdalbackend.modelitems &mdash; GSDView Open Edition Home Page</title>
+    <link rel="stylesheet" href="../_static/sourceforge.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.6.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/logo.ico"/>
+    <link rel="top" title="GSDView Open Edition Home Page" href="../index.html" />
+    <link rel="up" title="API Reference" href="../reference.html" />
+    <link rel="next" title="gsdview.gdalbackend.ogrqt4" href="gsdview.gdalbackend.ogrqt4.html" />
+    <link rel="prev" title="gsdview.gdalbackend.info" href="gsdview.gdalbackend.info.html" /> 
+  </head>
+  <body>
+    
+        
+    
+    
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li class="right" >
+          <a href="gsdview.gdalbackend.ogrqt4.html" title="gsdview.gdalbackend.ogrqt4"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="gsdview.gdalbackend.info.html" title="gsdview.gdalbackend.info"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../reference.html" accesskey="U">API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-gsdview.gdalbackend.modelitems">
+<span id="gsdview-gdalbackend-modelitems"></span><h1>gsdview.gdalbackend.modelitems<a class="headerlink" href="#module-gsdview.gdalbackend.modelitems" title="Permalink to this headline">¶</a></h1>
+<p>GDAL items for Qt4 QStandardItemModel.</p>
+<p class="rubric">Functions</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><a class="reference internal" href="#gsdview.gdalbackend.modelitems.datasetitem" title="gsdview.gdalbackend.modelitems.datasetitem"><tt class="xref py py-obj docutils literal"><span class="pre">datasetitem</span></tt></a>(filename)</td>
+<td>Factory for dataset items.</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Classes</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><a class="reference internal" href="#gsdview.gdalbackend.modelitems.BandItem" title="gsdview.gdalbackend.modelitems.BandItem"><tt class="xref py py-obj docutils literal"><span class="pre">BandItem</span></tt></a>(band,&nbsp;**kwargs)</td>
+<td>Raster band item.</td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.gdalbackend.modelitems.CachedDatasetItem" title="gsdview.gdalbackend.modelitems.CachedDatasetItem"><tt class="xref py py-obj docutils literal"><span class="pre">CachedDatasetItem</span></tt></a>(filename,&nbsp;**kwargs[,&nbsp;mode])</td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.gdalbackend.modelitems.DatasetItem" title="gsdview.gdalbackend.modelitems.DatasetItem"><tt class="xref py py-obj docutils literal"><span class="pre">DatasetItem</span></tt></a>(filename,&nbsp;**kwargs[,&nbsp;mode])</td>
+<td>Dataset item</td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.gdalbackend.modelitems.MajorObjectItem" title="gsdview.gdalbackend.modelitems.MajorObjectItem"><tt class="xref py py-obj docutils literal"><span class="pre">MajorObjectItem</span></tt></a>(gdalobj,&nbsp;**kwargs)</td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.gdalbackend.modelitems.OverviewItem" title="gsdview.gdalbackend.modelitems.OverviewItem"><tt class="xref py py-obj docutils literal"><span class="pre">OverviewItem</span></tt></a>(band,&nbsp;**kwargs)</td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.gdalbackend.modelitems.SubDatasetItem" title="gsdview.gdalbackend.modelitems.SubDatasetItem"><tt class="xref py py-obj docutils literal"><span class="pre">SubDatasetItem</span></tt></a>(gdalfilename,&nbsp;**kwargs[,&nbsp;...])</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Exceptions</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><tt class="xref py py-obj docutils literal"><span class="pre">OpenError</span></tt></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="class">
+<dt id="gsdview.gdalbackend.modelitems.BandItem">
+<em class="property">class </em><tt class="descclassname">gsdview.gdalbackend.modelitems.</tt><tt class="descname">BandItem</tt><big>(</big><em>band</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/modelitems.html#BandItem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.modelitems.BandItem" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gsdview.gdalbackend.modelitems.MajorObjectItem" title="gsdview.gdalbackend.modelitems.MajorObjectItem"><tt class="xref py py-class docutils literal"><span class="pre">gsdview.gdalbackend.modelitems.MajorObjectItem</span></tt></a></p>
+<p>Raster band item.</p>
+<p>This class implements both the QStandardItem and the
+gdal.Band interface.</p>
+<p>It also as attatched a graphics scene containing a GdalGraphicsItem</p>
+<dl class="method">
+<dt id="gsdview.gdalbackend.modelitems.BandItem.GetOverview">
+<tt class="descname">GetOverview</tt><big>(</big><em>index</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/modelitems.html#BandItem.GetOverview"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.modelitems.BandItem.GetOverview" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.modelitems.BandItem.GetOverviewCount">
+<tt class="descname">GetOverviewCount</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/modelitems.html#BandItem.GetOverviewCount"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.modelitems.BandItem.GetOverviewCount" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.modelitems.BandItem.close">
+<tt class="descname">close</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/modelitems.html#BandItem.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.modelitems.BandItem.close" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.gdalbackend.modelitems.BandItem.cmapper">
+<tt class="descname">cmapper</tt><a class="reference internal" href="../_modules/gsdview/gdalbackend/modelitems.html#BandItem.cmapper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.modelitems.BandItem.cmapper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Coordinate mapper object.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.modelitems.BandItem.footprint">
+<tt class="descname">footprint</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/modelitems.html#BandItem.footprint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.modelitems.BandItem.footprint" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.gdalbackend.modelitems.BandItem.graphicsitem">
+<tt class="descname">graphicsitem</tt><a class="headerlink" href="#gsdview.gdalbackend.modelitems.BandItem.graphicsitem" title="Permalink to this definition">¶</a></dt>
+<dd><p>graphics item representing the raster band</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.gdalbackend.modelitems.BandItem.scene">
+<tt class="descname">scene</tt><a class="headerlink" href="#gsdview.gdalbackend.modelitems.BandItem.scene" title="Permalink to this definition">¶</a></dt>
+<dd><p>graphics scene associated to the raster band</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gsdview.gdalbackend.modelitems.CachedDatasetItem">
+<em class="property">class </em><tt class="descclassname">gsdview.gdalbackend.modelitems.</tt><tt class="descname">CachedDatasetItem</tt><big>(</big><em>filename</em>, <em>mode=1</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/modelitems.html#CachedDatasetItem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.modelitems.CachedDatasetItem" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gsdview.gdalbackend.modelitems.DatasetItem" title="gsdview.gdalbackend.modelitems.DatasetItem"><tt class="xref py py-class docutils literal"><span class="pre">gsdview.gdalbackend.modelitems.DatasetItem</span></tt></a></p>
+<dl class="method">
+<dt id="gsdview.gdalbackend.modelitems.CachedDatasetItem.GetMetadata">
+<tt class="descname">GetMetadata</tt><big>(</big><em>domain=''</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/modelitems.html#CachedDatasetItem.GetMetadata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.modelitems.CachedDatasetItem.GetMetadata" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.modelitems.CachedDatasetItem.GetMetadataItem">
+<tt class="descname">GetMetadataItem</tt><big>(</big><em>name</em>, <em>domain=''</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/modelitems.html#CachedDatasetItem.GetMetadataItem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.modelitems.CachedDatasetItem.GetMetadataItem" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.modelitems.CachedDatasetItem.GetMetadata_Dict">
+<tt class="descname">GetMetadata_Dict</tt><big>(</big><em>domain=''</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/modelitems.html#CachedDatasetItem.GetMetadata_Dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.modelitems.CachedDatasetItem.GetMetadata_Dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.modelitems.CachedDatasetItem.GetMetadata_List">
+<tt class="descname">GetMetadata_List</tt><big>(</big><em>domain=''</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/modelitems.html#CachedDatasetItem.GetMetadata_List"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.modelitems.CachedDatasetItem.GetMetadata_List" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.modelitems.CachedDatasetItem.close">
+<tt class="descname">close</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/modelitems.html#CachedDatasetItem.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.modelitems.CachedDatasetItem.close" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.gdalbackend.modelitems.CachedDatasetItem.cmapper">
+<tt class="descname">cmapper</tt><a class="headerlink" href="#gsdview.gdalbackend.modelitems.CachedDatasetItem.cmapper" title="Permalink to this definition">¶</a></dt>
+<dd><p>coordinate mapper</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.gdalbackend.modelitems.CachedDatasetItem.filename">
+<tt class="descname">filename</tt><a class="headerlink" href="#gsdview.gdalbackend.modelitems.CachedDatasetItem.filename" title="Permalink to this definition">¶</a></dt>
+<dd><p>dataset filename</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.gdalbackend.modelitems.CachedDatasetItem.graphicsitem">
+<tt class="descname">graphicsitem</tt><a class="headerlink" href="#gsdview.gdalbackend.modelitems.CachedDatasetItem.graphicsitem" title="Permalink to this definition">¶</a></dt>
+<dd><p>graphics item representing the dataset</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.modelitems.CachedDatasetItem.reopen">
+<tt class="descname">reopen</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/modelitems.html#CachedDatasetItem.reopen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.modelitems.CachedDatasetItem.reopen" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.gdalbackend.modelitems.CachedDatasetItem.scene">
+<tt class="descname">scene</tt><a class="headerlink" href="#gsdview.gdalbackend.modelitems.CachedDatasetItem.scene" title="Permalink to this definition">¶</a></dt>
+<dd><p>graphics scene associated to the item</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.gdalbackend.modelitems.CachedDatasetItem.vrtfilename">
+<tt class="descname">vrtfilename</tt><a class="headerlink" href="#gsdview.gdalbackend.modelitems.CachedDatasetItem.vrtfilename" title="Permalink to this definition">¶</a></dt>
+<dd><p>filename of the cached virtual dataset</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gsdview.gdalbackend.modelitems.DatasetItem">
+<em class="property">class </em><tt class="descclassname">gsdview.gdalbackend.modelitems.</tt><tt class="descname">DatasetItem</tt><big>(</big><em>filename</em>, <em>mode=0</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/modelitems.html#DatasetItem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.modelitems.DatasetItem" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gsdview.gdalbackend.modelitems.MajorObjectItem" title="gsdview.gdalbackend.modelitems.MajorObjectItem"><tt class="xref py py-class docutils literal"><span class="pre">gsdview.gdalbackend.modelitems.MajorObjectItem</span></tt></a></p>
+<p>Dataset item</p>
+<p>This class implements both the QStandardItem and the gdal.Dataset
+interface.</p>
+<dl class="method">
+<dt id="gsdview.gdalbackend.modelitems.DatasetItem.GetRasterBand">
+<tt class="descname">GetRasterBand</tt><big>(</big><em>index</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/modelitems.html#DatasetItem.GetRasterBand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.modelitems.DatasetItem.GetRasterBand" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.modelitems.DatasetItem.GetSubDatasets">
+<tt class="descname">GetSubDatasets</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/modelitems.html#DatasetItem.GetSubDatasets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.modelitems.DatasetItem.GetSubDatasets" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.modelitems.DatasetItem.close">
+<tt class="descname">close</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/modelitems.html#DatasetItem.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.modelitems.DatasetItem.close" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.gdalbackend.modelitems.DatasetItem.cmapper">
+<tt class="descname">cmapper</tt><a class="headerlink" href="#gsdview.gdalbackend.modelitems.DatasetItem.cmapper" title="Permalink to this definition">¶</a></dt>
+<dd><p>coordiante mapper</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.gdalbackend.modelitems.DatasetItem.filename">
+<tt class="descname">filename</tt><a class="headerlink" href="#gsdview.gdalbackend.modelitems.DatasetItem.filename" title="Permalink to this definition">¶</a></dt>
+<dd><p>dataset filename</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.modelitems.DatasetItem.footprint">
+<tt class="descname">footprint</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/modelitems.html#DatasetItem.footprint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.modelitems.DatasetItem.footprint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the dataset geographic footprint as a QPolygonF.</p>
+<p>The geographic footprint is a QPolygonF containing the four
+vertices of the image in geographic coordinates.
+If no geographic info is available in the dataset None is
+returned.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.gdalbackend.modelitems.DatasetItem.graphicsitem">
+<tt class="descname">graphicsitem</tt><a class="headerlink" href="#gsdview.gdalbackend.modelitems.DatasetItem.graphicsitem" title="Permalink to this definition">¶</a></dt>
+<dd><p>graphics item representing the dataset</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.gdalbackend.modelitems.DatasetItem.scene">
+<tt class="descname">scene</tt><a class="headerlink" href="#gsdview.gdalbackend.modelitems.DatasetItem.scene" title="Permalink to this definition">¶</a></dt>
+<dd><p>graphics scene associated to the item</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gsdview.gdalbackend.modelitems.MajorObjectItem">
+<em class="property">class </em><tt class="descclassname">gsdview.gdalbackend.modelitems.</tt><tt class="descname">MajorObjectItem</tt><big>(</big><em>gdalobj</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/modelitems.html#MajorObjectItem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.modelitems.MajorObjectItem" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">PyQt4.QtGui.QStandardItem</span></tt></p>
+<dl class="method">
+<dt id="gsdview.gdalbackend.modelitems.MajorObjectItem.close">
+<tt class="descname">close</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/modelitems.html#MajorObjectItem.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.modelitems.MajorObjectItem.close" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.modelitems.MajorObjectItem.type">
+<tt class="descname">type</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/modelitems.html#MajorObjectItem.type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.modelitems.MajorObjectItem.type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gsdview.gdalbackend.modelitems.OverviewItem">
+<em class="property">class </em><tt class="descclassname">gsdview.gdalbackend.modelitems.</tt><tt class="descname">OverviewItem</tt><big>(</big><em>band</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/modelitems.html#OverviewItem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.modelitems.OverviewItem" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gsdview.gdalbackend.modelitems.BandItem" title="gsdview.gdalbackend.modelitems.BandItem"><tt class="xref py py-class docutils literal"><span class="pre">gsdview.gdalbackend.modelitems.BandItem</span></tt></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="gsdview.gdalbackend.modelitems.SubDatasetItem">
+<em class="property">class </em><tt class="descclassname">gsdview.gdalbackend.modelitems.</tt><tt class="descname">SubDatasetItem</tt><big>(</big><em>gdalfilename</em>, <em>extrainfo=''</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/modelitems.html#SubDatasetItem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.modelitems.SubDatasetItem" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gsdview.gdalbackend.modelitems.CachedDatasetItem" title="gsdview.gdalbackend.modelitems.CachedDatasetItem"><tt class="xref py py-class docutils literal"><span class="pre">gsdview.gdalbackend.modelitems.CachedDatasetItem</span></tt></a></p>
+<dl class="method">
+<dt id="gsdview.gdalbackend.modelitems.SubDatasetItem.GetMetadata">
+<tt class="descname">GetMetadata</tt><big>(</big><em>domain=''</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/modelitems.html#SubDatasetItem.GetMetadata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.modelitems.SubDatasetItem.GetMetadata" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.modelitems.SubDatasetItem.GetMetadataItem">
+<tt class="descname">GetMetadataItem</tt><big>(</big><em>name</em>, <em>domain=''</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/modelitems.html#SubDatasetItem.GetMetadataItem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.modelitems.SubDatasetItem.GetMetadataItem" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.modelitems.SubDatasetItem.GetMetadata_Dict">
+<tt class="descname">GetMetadata_Dict</tt><big>(</big><em>domain=''</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/modelitems.html#SubDatasetItem.GetMetadata_Dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.modelitems.SubDatasetItem.GetMetadata_Dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.modelitems.SubDatasetItem.GetMetadata_List">
+<tt class="descname">GetMetadata_List</tt><big>(</big><em>domain=''</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/modelitems.html#SubDatasetItem.GetMetadata_List"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.modelitems.SubDatasetItem.GetMetadata_List" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.modelitems.SubDatasetItem.GetRasterBand">
+<tt class="descname">GetRasterBand</tt><big>(</big><em>index</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/modelitems.html#SubDatasetItem.GetRasterBand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.modelitems.SubDatasetItem.GetRasterBand" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.modelitems.SubDatasetItem.close">
+<tt class="descname">close</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/modelitems.html#SubDatasetItem.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.modelitems.SubDatasetItem.close" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.gdalbackend.modelitems.SubDatasetItem.cmapper">
+<tt class="descname">cmapper</tt><a class="headerlink" href="#gsdview.gdalbackend.modelitems.SubDatasetItem.cmapper" title="Permalink to this definition">¶</a></dt>
+<dd><p>coordinate mapper</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.gdalbackend.modelitems.SubDatasetItem.extrainfo">
+<tt class="descname">extrainfo</tt><a class="headerlink" href="#gsdview.gdalbackend.modelitems.SubDatasetItem.extrainfo" title="Permalink to this definition">¶</a></dt>
+<dd><p>GDAL sub-dataset info</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.gdalbackend.modelitems.SubDatasetItem.filename">
+<tt class="descname">filename</tt><a class="headerlink" href="#gsdview.gdalbackend.modelitems.SubDatasetItem.filename" title="Permalink to this definition">¶</a></dt>
+<dd><p>dataset filename</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.gdalbackend.modelitems.SubDatasetItem.graphicsitem">
+<tt class="descname">graphicsitem</tt><a class="headerlink" href="#gsdview.gdalbackend.modelitems.SubDatasetItem.graphicsitem" title="Permalink to this definition">¶</a></dt>
+<dd><p>graphics item representing the dataset</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.modelitems.SubDatasetItem.isopen">
+<tt class="descname">isopen</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/modelitems.html#SubDatasetItem.isopen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.modelitems.SubDatasetItem.isopen" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.modelitems.SubDatasetItem.open">
+<tt class="descname">open</tt><big>(</big><em>cachedir=None</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/modelitems.html#SubDatasetItem.open"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.modelitems.SubDatasetItem.open" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.modelitems.SubDatasetItem.reopen">
+<tt class="descname">reopen</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/modelitems.html#SubDatasetItem.reopen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.modelitems.SubDatasetItem.reopen" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.gdalbackend.modelitems.SubDatasetItem.scene">
+<tt class="descname">scene</tt><a class="headerlink" href="#gsdview.gdalbackend.modelitems.SubDatasetItem.scene" title="Permalink to this definition">¶</a></dt>
+<dd><p>graphics scene associated to the item</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.gdalbackend.modelitems.SubDatasetItem.vrtfilename">
+<tt class="descname">vrtfilename</tt><a class="headerlink" href="#gsdview.gdalbackend.modelitems.SubDatasetItem.vrtfilename" title="Permalink to this definition">¶</a></dt>
+<dd><p>filename of the cached virtual dataset</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="gsdview.gdalbackend.modelitems.datasetitem">
+<tt class="descclassname">gsdview.gdalbackend.modelitems.</tt><tt class="descname">datasetitem</tt><big>(</big><em>filename</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/modelitems.html#datasetitem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.modelitems.datasetitem" title="Permalink to this definition">¶</a></dt>
+<dd><p>Factory for dataset items.</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo.png" alt="Logo"/>
+            </a></p>
+    
+    
+    <p>
+        <a href="http://sourceforge.net/projects/gsdview">
+            <img src="http://sflogo.sourceforge.net/sflogo.php?group_id=226458&type=14" width="150" height="40" alt="Get GSDView at SourceForge.net. Fast, secure and Free Open Source software downloads" />
+        </a>
+    </p>
+    
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="gsdview.gdalbackend.info.html"
+                        title="previous chapter">gsdview.gdalbackend.info</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="gsdview.gdalbackend.ogrqt4.html"
+                        title="next chapter">gsdview.gdalbackend.ogrqt4</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/api/gsdview.gdalbackend.modelitems.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li class="right" >
+          <a href="gsdview.gdalbackend.ogrqt4.html" title="gsdview.gdalbackend.ogrqt4"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="gsdview.gdalbackend.info.html" title="gsdview.gdalbackend.info"
+             >previous</a> |</li>
+        <li><a href="../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../reference.html" >API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2008-2011, Antonio Valentino.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

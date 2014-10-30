@@ -1,0 +1,438 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>gsdview.mousemanager &mdash; GSDView Open Edition Home Page</title>
+    <link rel="stylesheet" href="../../_static/sourceforge.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.6.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/logo.ico"/>
+    <link rel="top" title="GSDView Open Edition Home Page" href="../../index.html" />
+    <link rel="up" title="gsdview" href="../gsdview.html" /> 
+  </head>
+  <body>
+    
+        
+    
+    
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li><a href="../../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../gsdview.html" accesskey="U">gsdview</a> &raquo;</li> 
+      </ul>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for gsdview.mousemanager</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="c">### Copyright (C) 2008-2011 Antonio Valentino &lt;a_valentino@users.sf.net&gt;</span>
+
+<span class="c">### This file is part of GSDView.</span>
+
+<span class="c">### GSDView is free software; you can redistribute it and/or modify</span>
+<span class="c">### it under the terms of the GNU General Public License as published by</span>
+<span class="c">### the Free Software Foundation; either version 2 of the License, or</span>
+<span class="c">### (at your option) any later version.</span>
+
+<span class="c">### GSDView is distributed in the hope that it will be useful,</span>
+<span class="c">### but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c">### MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c">### GNU General Public License for more details.</span>
+
+<span class="c">### You should have received a copy of the GNU General Public License</span>
+<span class="c">### along with GSDView; if not, write to the Free Software</span>
+<span class="c">### Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA.</span>
+
+<span class="sd">&#39;&#39;&#39;Mouse manager for the Qt4 graphics framework.</span>
+
+<span class="sd">Mouse management for the Qt4 graphics framework is implemented by a set</span>
+<span class="sd">of MouseMode objects, that provide specific event handlers and behave</span>
+<span class="sd">like a descriptor, and a manager object that catches mouse events and</span>
+<span class="sd">dispatch them to the appropriate hendler.</span>
+
+<span class="sd">The MouseManager provides methods for eddeing/removing mouse modes,</span>
+<span class="sd">making the system expandible, and also methods to register objects</span>
+<span class="sd">(QGraphicsScene and QGraphicsView) to be controlled.</span>
+
+<span class="sd">&#39;&#39;&#39;</span>
+
+
+<span class="kn">from</span> <span class="nn">qt</span> <span class="kn">import</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtGui</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">qt4support</span>
+
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s">&#39;Antonio Valentino &lt;a_valentino@users.sf.net&gt;&#39;</span>
+<span class="n">__date__</span> <span class="o">=</span> <span class="s">&#39;$Date: 2011-08-01 19:26:21 +0200 (lun, 01 ago 2011) $&#39;</span>
+<span class="n">__revision__</span> <span class="o">=</span> <span class="s">&#39;$Revision: 997 $&#39;</span>
+
+
+<div class="viewcode-block" id="MouseMode"><a class="viewcode-back" href="../../api/gsdview.mousemanager.html#gsdview.mousemanager.MouseMode">[docs]</a><span class="k">class</span> <span class="nc">MouseMode</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QObject</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Base class for mouse mode desctiptors.</span>
+
+<span class="sd">    Qt Graphics Framework mouse mode descriptors define some basic</span>
+<span class="sd">    property for mouse related matters:</span>
+
+<span class="sd">    - cursor</span>
+<span class="sd">    - dragmode</span>
+<span class="sd">    - eventFilter</span>
+<span class="sd">    - name</span>
+<span class="sd">    - label</span>
+<span class="sd">    - icon</span>
+
+<span class="sd">    The first three properties (not to be intender as python progremming</span>
+<span class="sd">    language property) are strongly characterizing of the way the mouse</span>
+<span class="sd">    works.</span>
+
+<span class="sd">    In particular the eventFilter method is used to filter all events</span>
+<span class="sd">    coming from graphics scenes an graphics views.</span>
+
+<span class="sd">    .. note:: in order to work properly the eventFilter should be installed</span>
+<span class="sd">              on both graphics scene and view and also on the scrollbars of</span>
+<span class="sd">              the graphics view.</span>
+<span class="sd">              So please always use the register method of MouseManager for</span>
+<span class="sd">              a proper installaton of al event filters.</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">dragmode</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QGraphicsView</span><span class="o">.</span><span class="n">NoDrag</span>
+    <span class="n">cursor</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">icon</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QIcon</span><span class="p">()</span>
+    <span class="n">label</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+
+<div class="viewcode-block" id="MouseMode.eventFilter"><a class="viewcode-back" href="../../api/gsdview.mousemanager.html#gsdview.mousemanager.MouseMode.eventFilter">[docs]</a>    <span class="k">def</span> <span class="nf">eventFilter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Basic implementation of the eventFilter method.</span>
+
+<span class="sd">        The dafault implementation makes some basic operation such setting</span>
+<span class="sd">        the mouse cursor anc dispatch the event to specific methods:</span>
+
+<span class="sd">        - sceneEventFilter</span>
+<span class="sd">        - viewEventFilter</span>
+<span class="sd">        - scrollbarEventFilter</span>
+
+<span class="sd">        In most of the cases derived classes only need to specialize one or</span>
+<span class="sd">        more of this specific methods.</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QGraphicsScene</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sceneEventFilter</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QGraphicsView</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span><span class="p">()</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QEvent</span><span class="o">.</span><span class="n">Enter</span><span class="p">:</span>
+                <span class="n">obj</span><span class="o">.</span><span class="n">setDragMode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dragmode</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="p">:</span>
+                    <span class="n">obj</span><span class="o">.</span><span class="n">setCursor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">obj</span><span class="o">.</span><span class="n">unsetCursor</span><span class="p">()</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">viewEventFilter</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QScrollBar</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">scrollbarEventFilter</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">False</span>
+</div>
+<div class="viewcode-block" id="MouseMode.sceneEventFilter"><a class="viewcode-back" href="../../api/gsdview.mousemanager.html#gsdview.mousemanager.MouseMode.sceneEventFilter">[docs]</a>    <span class="k">def</span> <span class="nf">sceneEventFilter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">False</span>
+</div>
+<div class="viewcode-block" id="MouseMode.viewEventFilter"><a class="viewcode-back" href="../../api/gsdview.mousemanager.html#gsdview.mousemanager.MouseMode.viewEventFilter">[docs]</a>    <span class="k">def</span> <span class="nf">viewEventFilter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">False</span>
+</div>
+<div class="viewcode-block" id="MouseMode.scrollbarEventFilter"><a class="viewcode-back" href="../../api/gsdview.mousemanager.html#gsdview.mousemanager.MouseMode.scrollbarEventFilter">[docs]</a>    <span class="k">def</span> <span class="nf">scrollbarEventFilter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">False</span>
+
+</div></div>
+<div class="viewcode-block" id="PointerMode"><a class="viewcode-back" href="../../api/gsdview.mousemanager.html#gsdview.mousemanager.PointerMode">[docs]</a><span class="k">class</span> <span class="nc">PointerMode</span><span class="p">(</span><span class="n">MouseMode</span><span class="p">):</span>
+    <span class="n">dragmode</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QGraphicsView</span><span class="o">.</span><span class="n">NoDrag</span>
+    <span class="n">cursor</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">icon</span> <span class="o">=</span> <span class="n">qt4support</span><span class="o">.</span><span class="n">geticon</span><span class="p">(</span><span class="s">&#39;arrow.svg&#39;</span><span class="p">,</span> <span class="n">__name__</span><span class="p">)</span>
+    <span class="n">label</span> <span class="o">=</span> <span class="s">&#39;Pointer&#39;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s">&#39;pointer&#39;</span>
+
+</div>
+<div class="viewcode-block" id="ScrollHandMode"><a class="viewcode-back" href="../../api/gsdview.mousemanager.html#gsdview.mousemanager.ScrollHandMode">[docs]</a><span class="k">class</span> <span class="nc">ScrollHandMode</span><span class="p">(</span><span class="n">MouseMode</span><span class="p">):</span>
+    <span class="n">dragmode</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QGraphicsView</span><span class="o">.</span><span class="n">ScrollHandDrag</span>
+    <span class="n">cursor</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">icon</span> <span class="o">=</span> <span class="n">qt4support</span><span class="o">.</span><span class="n">geticon</span><span class="p">(</span><span class="s">&#39;hand.svg&#39;</span><span class="p">,</span> <span class="n">__name__</span><span class="p">)</span>
+    <span class="n">label</span> <span class="o">=</span> <span class="s">&#39;Scroll hand&#39;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s">&#39;hand&#39;</span>
+
+<div class="viewcode-block" id="ScrollHandMode.viewEventFilter"><a class="viewcode-back" href="../../api/gsdview.mousemanager.html#gsdview.mousemanager.ScrollHandMode.viewEventFilter">[docs]</a>    <span class="k">def</span> <span class="nf">viewEventFilter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span><span class="p">()</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QEvent</span><span class="o">.</span><span class="n">Wheel</span><span class="p">:</span>
+
+            <span class="c"># Delta is expressed in 1/8 degree</span>
+            <span class="n">delta</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">delta</span><span class="p">()</span> <span class="o">/</span> <span class="mf">8.</span>  <span class="c"># degree</span>
+
+            <span class="c"># Conversion from degrees to zoom factor:</span>
+            <span class="c"># a factor of 1.1 every 15 degrees</span>
+            <span class="n">k</span> <span class="o">=</span> <span class="mf">1.1</span> <span class="o">/</span> <span class="mf">15.</span>
+
+            <span class="k">if</span> <span class="n">delta</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">factor</span> <span class="o">=</span> <span class="n">k</span> <span class="o">*</span> <span class="n">delta</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">factor</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">k</span> <span class="o">*</span> <span class="n">delta</span><span class="p">)</span>
+
+            <span class="n">obj</span><span class="o">.</span><span class="n">scale</span><span class="p">(</span><span class="n">factor</span><span class="p">,</span> <span class="n">factor</span><span class="p">)</span>
+            <span class="n">event</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
+
+            <span class="k">return</span> <span class="bp">True</span>
+
+        <span class="k">return</span> <span class="bp">False</span>
+</div>
+<div class="viewcode-block" id="ScrollHandMode.scrollbarEventFilter"><a class="viewcode-back" href="../../api/gsdview.mousemanager.html#gsdview.mousemanager.ScrollHandMode.scrollbarEventFilter">[docs]</a>    <span class="k">def</span> <span class="nf">scrollbarEventFilter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="c"># ignore wheel events</span>
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span><span class="p">()</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QEvent</span><span class="o">.</span><span class="n">Wheel</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">False</span>
+
+</div></div>
+<div class="viewcode-block" id="RubberBandMode"><a class="viewcode-back" href="../../api/gsdview.mousemanager.html#gsdview.mousemanager.RubberBandMode">[docs]</a><span class="k">class</span> <span class="nc">RubberBandMode</span><span class="p">(</span><span class="n">MouseMode</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Mouse mode for rubber band selection.</span>
+
+<span class="sd">    :SIGNALS:</span>
+
+<span class="sd">        * :attr:`rubberBandSeclection`</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">dragmode</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QGraphicsView</span><span class="o">.</span><span class="n">RubberBandDrag</span>
+    <span class="n">cursor</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">CrossCursor</span>
+    <span class="n">icon</span> <span class="o">=</span> <span class="n">qt4support</span><span class="o">.</span><span class="n">geticon</span><span class="p">(</span><span class="s">&#39;area.svg&#39;</span><span class="p">,</span> <span class="n">__name__</span><span class="p">)</span>
+    <span class="n">label</span> <span class="o">=</span> <span class="s">&#39;Rubber band&#39;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s">&#39;rubberband&#39;</span>
+
+    <span class="c">#: SIGNAL: it is emitted when a rectangular area is selected</span>
+    <span class="c">#:</span>
+    <span class="c">#: :C++ signature: `void rubberBandSeclection(const QRectF&amp;)`</span>
+    <span class="n">rubberBandSeclection</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QRectF</span><span class="p">)</span>
+
+<div class="viewcode-block" id="RubberBandMode.sceneEventFilter"><a class="viewcode-back" href="../../api/gsdview.mousemanager.html#gsdview.mousemanager.RubberBandMode.sceneEventFilter">[docs]</a>    <span class="k">def</span> <span class="nf">sceneEventFilter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span><span class="p">()</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QEvent</span><span class="o">.</span><span class="n">GraphicsSceneMouseRelease</span><span class="p">:</span>
+            <span class="n">p0</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">buttonDownScenePos</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">LeftButton</span><span class="p">)</span>
+            <span class="n">p1</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">scenePos</span><span class="p">()</span>
+            <span class="n">rect</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QRectF</span><span class="p">(</span><span class="n">p0</span><span class="p">,</span> <span class="n">p1</span><span class="p">)</span><span class="o">.</span><span class="n">normalized</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rubberBandSeclection</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">rect</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">True</span>
+
+        <span class="c">#return obj.eventFilter(obj, event)   # @TODO: check</span>
+        <span class="c">#return QtGui.QGraphicsScene.eventFilter(self, obj, event)</span>
+        <span class="k">return</span> <span class="bp">False</span>
+</div>
+<div class="viewcode-block" id="RubberBandMode.scrollbarEventFilter"><a class="viewcode-back" href="../../api/gsdview.mousemanager.html#gsdview.mousemanager.RubberBandMode.scrollbarEventFilter">[docs]</a>    <span class="k">def</span> <span class="nf">scrollbarEventFilter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="c"># ignore wheel events if some button is pressed</span>
+        <span class="k">if</span> <span class="p">((</span><span class="n">event</span><span class="o">.</span><span class="n">type</span><span class="p">()</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QEvent</span><span class="o">.</span><span class="n">Wheel</span><span class="p">)</span>
+                                <span class="ow">and</span> <span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">buttons</span><span class="p">()</span> <span class="o">!=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">NoButton</span><span class="p">)):</span>
+            <span class="k">return</span> <span class="bp">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">False</span>
+
+</div></div>
+<div class="viewcode-block" id="MouseManager"><a class="viewcode-back" href="../../api/gsdview.mousemanager.html#gsdview.mousemanager.MouseManager">[docs]</a><span class="k">class</span> <span class="nc">MouseManager</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QObject</span><span class="p">):</span>
+
+    <span class="c">#: SIGNAL: it is emitted when the mouse mode is changed</span>
+    <span class="c">#:</span>
+    <span class="c">#: :C++ signature: `void modeChanged(const QString&amp;)`</span>
+    <span class="n">modeChanged</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">stdmodes</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">QtCore</span><span class="o">.</span><span class="n">QObject</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_moderegistry</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actions</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QActionGroup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">setExclusive</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">stdmodes</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">registerStandardModes</span><span class="p">()</span>
+
+<div class="viewcode-block" id="MouseManager.registerStandardModes"><a class="viewcode-back" href="../../api/gsdview.mousemanager.html#gsdview.mousemanager.MouseManager.registerStandardModes">[docs]</a>    <span class="k">def</span> <span class="nf">registerStandardModes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">(</span><span class="n">PointerMode</span><span class="p">,</span> <span class="n">ScrollHandMode</span><span class="p">):</span>  <span class="c"># , RubberBandMode):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">addMode</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_moderegistry</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">checkedAction</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">actions</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">setChecked</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+</div>
+    <span class="k">def</span> <span class="nf">_newModeAction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">parent</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mode</span><span class="o">.</span><span class="n">icon</span><span class="p">,</span> <span class="nb">basestring</span><span class="p">):</span>
+            <span class="n">icon</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QIcon</span><span class="p">(</span><span class="n">mode</span><span class="o">.</span><span class="n">icon</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mode</span><span class="o">.</span><span class="n">icon</span><span class="p">,</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QStyle</span><span class="o">.</span><span class="n">StandardPixmap</span><span class="p">):</span>
+            <span class="n">style</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QApplication</span><span class="o">.</span><span class="n">style</span><span class="p">()</span>
+            <span class="n">icon</span> <span class="o">=</span> <span class="n">style</span><span class="o">.</span><span class="n">standardIcon</span><span class="p">(</span><span class="n">mode</span><span class="o">.</span><span class="n">icon</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">icon</span> <span class="o">=</span> <span class="n">mode</span><span class="o">.</span><span class="n">icon</span>
+
+        <span class="n">action</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QAction</span><span class="p">(</span><span class="n">icon</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="n">mode</span><span class="o">.</span><span class="n">label</span><span class="p">),</span> <span class="n">parent</span><span class="p">,</span>
+                               <span class="n">statusTip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="n">mode</span><span class="o">.</span><span class="n">label</span><span class="p">),</span>
+                               <span class="n">checkable</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">action</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">modeChanged</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">action</span>
+
+    <span class="k">def</span> <span class="nf">_getMode</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">action</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">checkedAction</span><span class="p">()</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">actions</span><span class="p">()</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_moderegistry</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">name</span>
+
+    <span class="k">def</span> <span class="nf">_setMode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="p">()</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="n">names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">action</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">actions</span><span class="p">()[</span><span class="n">index</span><span class="p">]</span>
+        <span class="n">action</span><span class="o">.</span><span class="n">setChecked</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_delMode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_moderegistry</span><span class="p">]</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="n">names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">action</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">actions</span><span class="p">()[</span><span class="n">index</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">removeAction</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_moderegistry</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+        <span class="c">#~ if actin.checked() and self._moderegistry:</span>
+            <span class="c">#~ self.actions.actions()[0].setChecked(True)</span>
+
+    <span class="n">mode</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_getMode</span><span class="p">,</span> <span class="n">_setMode</span><span class="p">,</span> <span class="n">_delMode</span><span class="p">,</span> <span class="s">&#39;mouse mode name&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="MouseManager.modes"><a class="viewcode-back" href="../../api/gsdview.mousemanager.html#gsdview.mousemanager.MouseManager.modes">[docs]</a>    <span class="k">def</span> <span class="nf">modes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_moderegistry</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="MouseManager.addMode"><a class="viewcode-back" href="../../api/gsdview.mousemanager.html#gsdview.mousemanager.MouseManager.addMode">[docs]</a>    <span class="k">def</span> <span class="nf">addMode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mode</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span>
+            <span class="n">mode</span> <span class="o">=</span> <span class="n">mode</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="n">action</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_newModeAction</span><span class="p">(</span><span class="n">mode</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">actions</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_moderegistry</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="MouseManager.getModeDescriptor"><a class="viewcode-back" href="../../api/gsdview.mousemanager.html#gsdview.mousemanager.MouseManager.getModeDescriptor">[docs]</a>    <span class="k">def</span> <span class="nf">getModeDescriptor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Return the mouse mode object&#39;&#39;&#39;</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">action</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">checkedAction</span><span class="p">()</span>
+                <span class="n">index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">actions</span><span class="p">()</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="p">()</span>
+                <span class="n">index</span> <span class="o">=</span> <span class="n">names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_moderegistry</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="c"># @TODO: check</span>
+            <span class="c">#raise ValueError(&#39;invalid mde nema: &quot;%s&quot;&#39; % mode)</span>
+            <span class="k">return</span> <span class="bp">None</span>
+</div>
+<div class="viewcode-block" id="MouseManager.eventFilter"><a class="viewcode-back" href="../../api/gsdview.mousemanager.html#gsdview.mousemanager.MouseManager.eventFilter">[docs]</a>    <span class="k">def</span> <span class="nf">eventFilter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Events dispatcher&#39;&#39;&#39;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">getModeDescriptor</span><span class="p">()</span><span class="o">.</span><span class="n">eventFilter</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="MouseManager.register"><a class="viewcode-back" href="../../api/gsdview.mousemanager.html#gsdview.mousemanager.MouseManager.register">[docs]</a>    <span class="k">def</span> <span class="nf">register</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Register a Qt graphics object to be monitored by the mouse manager.</span>
+
+<span class="sd">        QGraphicsScene and QGrapgicsViews (and descending classes) objects</span>
+<span class="sd">        can be registered to be monitored by the mouse manager.</span>
+
+<span class="sd">        Scene objects associated to views (passes as argument) are</span>
+<span class="sd">        automatically registered.</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="n">obj</span><span class="o">.</span><span class="n">installEventFilter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">verticalScrollBar</span><span class="p">()</span><span class="o">.</span><span class="n">installEventFilter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="c"># it is a QGraphicsScene</span>
+            <span class="n">scene</span> <span class="o">=</span> <span class="n">obj</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">scene</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">scene</span><span class="p">()</span>
+
+        <span class="c"># Avoid event filter duplication</span>
+        <span class="n">scene</span><span class="o">.</span><span class="n">removeEventFilter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">scene</span><span class="o">.</span><span class="n">installEventFilter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="MouseManager.unregister"><a class="viewcode-back" href="../../api/gsdview.mousemanager.html#gsdview.mousemanager.MouseManager.unregister">[docs]</a>    <span class="k">def</span> <span class="nf">unregister</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Unregister monitored objects.</span>
+
+<span class="sd">        If the object passed as argument is not a registered object</span>
+<span class="sd">        nothing happens.</span>
+
+<span class="sd">        .. note:: this method never tries to unregister scene objects</span>
+<span class="sd">                  associated to the view passed as argument.</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="n">obj</span><span class="o">.</span><span class="n">removeEventFilter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+    
+    
+    <p>
+        <a href="http://sourceforge.net/projects/gsdview">
+            <img src="http://sflogo.sourceforge.net/sflogo.php?group_id=226458&type=14" width="150" height="40" alt="Get GSDView at SourceForge.net. Fast, secure and Free Open Source software downloads" />
+        </a>
+    </p>
+    
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li><a href="../../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../gsdview.html" >gsdview</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2008-2011, Antonio Valentino.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

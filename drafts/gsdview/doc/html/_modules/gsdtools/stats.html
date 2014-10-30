@@ -1,0 +1,520 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>gsdtools.stats &mdash; GSDView Open Edition Home Page</title>
+    <link rel="stylesheet" href="../../_static/sourceforge.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.6.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/logo.ico"/>
+    <link rel="top" title="GSDView Open Edition Home Page" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    
+        
+    
+    
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li><a href="../../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for gsdtools.stats</h1><div class="highlight"><pre>
+<span class="c">#!/usr/bin/env python</span>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="c">### Copyright (C) 2011 Antonio Valentino &lt;a_valentino@users.sf.net&gt;</span>
+
+<span class="c">### This file is part of GSDView.</span>
+
+<span class="c">### GSDView is free software; you can redistribute it and/or modify</span>
+<span class="c">### it under the terms of the GNU General Public License as published by</span>
+<span class="c">### the Free Software Foundation; either version 2 of the License, or</span>
+<span class="c">### (at your option) any later version.</span>
+
+<span class="c">### GSDView is distributed in the hope that it will be useful,</span>
+<span class="c">### but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c">### MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c">### GNU General Public License for more details.</span>
+
+<span class="c">### You should have received a copy of the GNU General Public License</span>
+<span class="c">### along with GSDView; if not, write to the Free Software</span>
+<span class="c">### Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA.</span>
+
+
+<span class="sd">&#39;&#39;&#39;Compute statistics and histograms of geo-spatial data.&#39;&#39;&#39;</span>
+
+
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">Statistics</span> <span class="o">=</span> <span class="bp">None</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">Statistics</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s">&#39;Statistics&#39;</span><span class="p">,</span> <span class="s">&#39;min max mean stddev&#39;</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">gdal</span>
+
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s">&#39;Antonio Valentino &lt;a_valentino@users.sf.net&gt;&#39;</span>
+<span class="n">__date__</span> <span class="o">=</span> <span class="s">&#39;$Date: 2011-07-30 11:07:42 +0200 (sab, 30 lug 2011) $&#39;</span>
+<span class="n">__revision__</span> <span class="o">=</span> <span class="s">&#39;$Revision: 971 $&#39;</span>
+<span class="n">__version__</span> <span class="o">=</span> <span class="s">&#39;1.0&#39;</span>
+
+<span class="n">GDAL_STATS_KEYS</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;STATISTICS_MINIMUM&#39;</span><span class="p">,</span> <span class="s">&#39;STATISTICS_MAXIMUM&#39;</span><span class="p">,</span>
+                   <span class="s">&#39;STATISTICS_MEAN&#39;</span><span class="p">,</span> <span class="s">&#39;STATISTICS_STDDEV&#39;</span><span class="p">)</span>
+
+
+<span class="c"># @NOTE: the band.GetStatistics method called with the second argument</span>
+<span class="c">#        set to False (no image rescanning) has been fixed in</span>
+<span class="c">#        r19666_ (1.6 branch) and r19665_ (1.7 branch)</span>
+<span class="c">#        see `ticket #3572` on `GDAL Trac`_.</span>
+<span class="c">#</span>
+<span class="c"># .. _r19666: http://trac.osgeo.org/gdal/changeset/19666</span>
+<span class="c"># .. _r19665: http://trac.osgeo.org/gdal/changeset/19665</span>
+<span class="c"># .. _`ticket #3572`: http://trac.osgeo.org/gdal/ticket/3572</span>
+<span class="c"># .. _`GDAL Trac`: http://trac.osgeo.org/gdal</span>
+<span class="n">HAS_GETSTATS_FORCE_BUG</span> <span class="o">=</span> <span class="p">((</span><span class="s">&#39;1640&#39;</span> <span class="o">&lt;=</span> <span class="n">gdal</span><span class="o">.</span><span class="n">VersionInfo</span><span class="p">()</span> <span class="o">&lt;</span> <span class="s">&#39;1700&#39;</span><span class="p">)</span> <span class="ow">or</span>
+                          <span class="p">(</span><span class="n">gdal</span><span class="o">.</span><span class="n">VersionInfo</span><span class="p">()</span> <span class="o">&gt;</span> <span class="s">&#39;1720&#39;</span><span class="p">))</span>
+
+
+<div class="viewcode-block" id="SafeGetStatistics"><a class="viewcode-back" href="../../api/gsdtools.stats.html#gsdtools.stats.SafeGetStatistics">[docs]</a><span class="k">def</span> <span class="nf">SafeGetStatistics</span><span class="p">(</span><span class="n">band</span><span class="p">,</span> <span class="n">approxok</span><span class="p">,</span> <span class="n">force</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Retriewe statistics form a GDAL raster band in a safe way.</span>
+
+<span class="sd">    If it is not possible to get statistics (e.g. because the force</span>
+<span class="sd">    flag is set to false and statistics are not available, or because</span>
+<span class="sd">    the approxok is set and there are too many nodata elements in the</span>
+<span class="sd">    raster band) then a tuple of four None is returned.</span>
+
+<span class="sd">    :param approxok:</span>
+<span class="sd">        if True statistics may be computed based on overviews or a</span>
+<span class="sd">        subset of all tiles</span>
+<span class="sd">    :param force:</span>
+<span class="sd">        if False statistics will only be returned if it can be done</span>
+<span class="sd">        without rescanning the image</span>
+
+<span class="sd">    .. note:: in order to check errors due to nodata values the GDAL</span>
+<span class="sd">              internal error status is reset.</span>
+
+<span class="sd">    .. important:: this function only works for versions of GDAL in</span>
+<span class="sd">                   which gdal.Band.GetStatistics correctly reset the</span>
+<span class="sd">                   return values: 1.6.4 &lt;= GDAL &lt; 1.7.0 and</span>
+<span class="sd">                   GDAL &gt; 1.7.2 (see `ticket #3572`_ on `GDAL Trac`_.</span>
+
+<span class="sd">    .. _`ticket #3572`: http://trac.osgeo.org/gdal/ticket/3572</span>
+<span class="sd">    .. _`GDAL Trac`: http://trac.osgeo.org/gdal</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">if</span> <span class="n">force</span> <span class="ow">is</span> <span class="bp">False</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">HAS_GETSTATS_FORCE_BUG</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&#39;it is not safe to use gada.Band.GetStatistics &#39;</span>
+                           <span class="s">&#39;with the &quot;force&quot; parameter set to false with this &#39;</span>
+                           <span class="s">&#39;version of GDAL (</span><span class="si">%s</span><span class="s">)&#39;</span> <span class="o">%</span> <span class="n">gdal</span><span class="o">.</span><span class="n">VersionInfo</span><span class="p">())</span>
+
+    <span class="n">gdal</span><span class="o">.</span><span class="n">ErrorReset</span><span class="p">()</span>
+
+    <span class="n">stats</span> <span class="o">=</span> <span class="n">band</span><span class="o">.</span><span class="n">GetStatistics</span><span class="p">(</span><span class="n">approxok</span><span class="p">,</span> <span class="n">force</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">stats</span> <span class="o">==</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">or</span> <span class="n">gdal</span><span class="o">.</span><span class="n">GetLastErrorNo</span><span class="p">()</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">stats</span> <span class="o">=</span> <span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+    <span class="n">gdal</span><span class="o">.</span><span class="n">ErrorReset</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">Statistics</span><span class="p">:</span>
+        <span class="n">stats</span> <span class="o">=</span> <span class="n">Statistics</span><span class="p">(</span><span class="o">*</span><span class="n">stats</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">stats</span>
+
+</div>
+<div class="viewcode-block" id="GetStatisticsFromMetadata"><a class="viewcode-back" href="../../api/gsdtools.stats.html#gsdtools.stats.GetStatisticsFromMetadata">[docs]</a><span class="k">def</span> <span class="nf">GetStatisticsFromMetadata</span><span class="p">(</span><span class="n">band</span><span class="p">):</span>
+    <span class="n">metadata</span> <span class="o">=</span> <span class="n">band</span><span class="o">.</span><span class="n">GetMetadata</span><span class="p">()</span>
+    <span class="n">stats</span> <span class="o">=</span> <span class="p">[</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">GDAL_STATS_KEYS</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="bp">None</span> <span class="ow">in</span> <span class="n">stats</span><span class="p">:</span>
+        <span class="n">stats</span> <span class="o">=</span> <span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">stats</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">stats</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">Statistics</span><span class="p">:</span>
+        <span class="n">stats</span> <span class="o">=</span> <span class="n">Statistics</span><span class="p">(</span><span class="o">*</span><span class="n">stats</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">stats</span>
+</div>
+<span class="n">SOURCE_TEMPLATE</span> <span class="o">=</span> <span class="s">&#39;&#39;&#39;</span><span class="se">\</span>
+<span class="s">&lt;SimpleSource&gt;</span>
+<span class="s">  &lt;SourceFilename&gt;</span><span class="si">%(filename)s</span><span class="s">&lt;/SourceFilename&gt;</span>
+<span class="s">  &lt;SourceBand&gt;</span><span class="si">%(bandno)d</span><span class="s">&lt;/SourceBand&gt;</span>
+<span class="s">  &lt;SrcRect xOff=&quot;</span><span class="si">%(xoffset)d</span><span class="s">&quot; yOff=&quot;</span><span class="si">%(yoffset)d</span><span class="s">&quot; xSize=&quot;</span><span class="si">%(xsize)d</span><span class="s">&quot; ySize=&quot;</span><span class="si">%(ysize)d</span><span class="s">&quot;/&gt;</span>
+<span class="s">  &lt;DstRect xOff=&quot;0&quot; yOff=&quot;0&quot; xSize=&quot;</span><span class="si">%(xsize)d</span><span class="s">&quot; ySize=&quot;</span><span class="si">%(ysize)d</span><span class="s">&quot;/&gt;</span>
+<span class="s">&lt;/SimpleSource&gt;&#39;&#39;&#39;</span>
+
+
+<div class="viewcode-block" id="copy_dataset_subwin"><a class="viewcode-back" href="../../api/gsdtools.stats.html#gsdtools.stats.copy_dataset_subwin">[docs]</a><span class="k">def</span> <span class="nf">copy_dataset_subwin</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">srcwin</span><span class="p">,</span> <span class="n">bands</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">vrtfile</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">):</span>
+    <span class="n">xoffset</span><span class="p">,</span> <span class="n">yoffset</span><span class="p">,</span> <span class="n">xsize</span><span class="p">,</span> <span class="n">ysize</span> <span class="o">=</span> <span class="n">srcwin</span>
+
+    <span class="n">driver</span> <span class="o">=</span> <span class="n">gdal</span><span class="o">.</span><span class="n">GetDriverByName</span><span class="p">(</span><span class="s">&#39;VRT&#39;</span><span class="p">)</span>
+    <span class="n">vrtds</span> <span class="o">=</span> <span class="n">driver</span><span class="o">.</span><span class="n">Create</span><span class="p">(</span><span class="n">vrtfile</span><span class="p">,</span> <span class="n">xsize</span><span class="p">,</span> <span class="n">ysize</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">vrtds</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">vrtfile</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s">&#39;unable to create a vrtual dataset for &quot;</span><span class="si">%s</span><span class="s">&quot; in &quot;</span><span class="si">%s</span><span class="s">&quot;.&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                                            <span class="n">dataset</span><span class="o">.</span><span class="n">GetDescription</span><span class="p">(),</span> <span class="n">vrtfile</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;unable to create and anonymous vrtual dataset for &quot;</span><span class="si">%s</span><span class="s">&quot;.&#39;</span> <span class="o">%</span>
+                                                    <span class="n">dataset</span><span class="o">.</span><span class="n">GetDescription</span><span class="p">())</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">bands</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">bands</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">dataset</span><span class="o">.</span><span class="n">RasterCount</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">bandno</span> <span class="ow">in</span> <span class="n">bands</span><span class="p">:</span>
+        <span class="n">srcband</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">GetRasterBand</span><span class="p">(</span><span class="n">bandno</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">srcband</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&#39;unable to get raster band n. </span><span class="si">%s</span><span class="s">.&#39;</span> <span class="o">%</span> <span class="n">bandno</span><span class="p">)</span>
+
+        <span class="n">vrtds</span><span class="o">.</span><span class="n">AddBand</span><span class="p">(</span><span class="n">srcband</span><span class="o">.</span><span class="n">DataType</span><span class="p">)</span>
+        <span class="n">dstband</span> <span class="o">=</span> <span class="n">vrtds</span><span class="o">.</span><span class="n">GetRasterBand</span><span class="p">(</span><span class="n">bandno</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">dstband</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&#39;unable to create raster bands in temporary &#39;</span>
+                               <span class="s">&#39;virtual file.&#39;</span><span class="p">)</span>
+
+        <span class="n">nodata</span> <span class="o">=</span> <span class="n">srcband</span><span class="o">.</span><span class="n">GetNoDataValue</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">nodata</span><span class="p">:</span>
+            <span class="n">dstband</span><span class="o">.</span><span class="n">SetNoDataValue</span><span class="p">()</span>
+
+        <span class="n">sourcexml</span> <span class="o">=</span> <span class="n">SOURCE_TEMPLATE</span> <span class="o">%</span> <span class="nb">locals</span><span class="p">()</span>
+        <span class="n">dstband</span><span class="o">.</span><span class="n">SetMetadataItem</span><span class="p">(</span><span class="s">&#39;source_0&#39;</span><span class="p">,</span> <span class="n">sourcexml</span><span class="p">,</span> <span class="s">&#39;new_vrt_sources&#39;</span><span class="p">)</span>
+
+        <span class="k">del</span> <span class="n">srcband</span><span class="p">,</span> <span class="n">dstband</span>
+
+    <span class="k">return</span> <span class="n">vrtds</span>
+
+</div>
+<div class="viewcode-block" id="HistogramRequest"><a class="viewcode-back" href="../../api/gsdtools.stats.html#gsdtools.stats.HistogramRequest">[docs]</a><span class="k">class</span> <span class="nc">HistogramRequest</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hmin</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">hmax</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">nbuckets</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                 <span class="n">include_out_of_range</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">computehistogram</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+
+        <span class="c">#: Enable histogram computation.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">computehistogram</span> <span class="o">=</span> <span class="n">computehistogram</span>
+
+        <span class="c">#: Histogram minimum.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hmin</span> <span class="o">=</span> <span class="n">hmin</span>
+
+        <span class="c">#: Histogram maximum.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hmax</span> <span class="o">=</span> <span class="n">hmax</span>
+
+        <span class="c">#: Number of buckets for histogram comutation.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nbuckets</span> <span class="o">=</span> <span class="n">nbuckets</span>
+
+        <span class="c">#: Flag for out of range values handling.</span>
+        <span class="c">#:</span>
+        <span class="c">#: If set then values below the histogram range will be mapped into</span>
+        <span class="c">#: the first bucket, and values above will be mapped into last one.</span>
+        <span class="c">#: Otherwise out of range values are discarded.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">include_out_of_range</span> <span class="o">=</span> <span class="n">include_out_of_range</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span><span class="s">&#39;HistogramRequest(hmin=</span><span class="si">%(hmin)s</span><span class="s">, hmax=</span><span class="si">%(hmax)s</span><span class="s">, &#39;</span>
+                <span class="s">&#39;nbuckets=</span><span class="si">%(nbuckets)s</span><span class="s">, &#39;</span>
+                <span class="s">&#39;include_out_of_range=</span><span class="si">%(include_out_of_range)s</span><span class="s">, &#39;</span>
+                <span class="s">&#39;computehistogram=</span><span class="si">%(computehistogram)s</span><span class="s">)&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">__dict__</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__nonzero__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">computehistogram</span><span class="p">)</span>
+
+<div class="viewcode-block" id="HistogramRequest.values"><a class="viewcode-back" href="../../api/gsdtools.stats.html#gsdtools.stats.HistogramRequest.values">[docs]</a>    <span class="k">def</span> <span class="nf">values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">hmin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hmax</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nbuckets</span>
+</div>
+<div class="viewcode-block" id="HistogramRequest.iscustom"><a class="viewcode-back" href="../../api/gsdtools.stats.html#gsdtools.stats.HistogramRequest.iscustom">[docs]</a>    <span class="k">def</span> <span class="nf">iscustom</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">all</span><span class="p">(</span><span class="n">val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span>
+                            <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hmin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hmax</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nbuckets</span><span class="p">))</span>
+
+</div></div>
+<div class="viewcode-block" id="computestats"><a class="viewcode-back" href="../../api/gsdtools.stats.html#gsdtools.stats.computestats">[docs]</a><span class="k">def</span> <span class="nf">computestats</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">bands</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">computestats</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">histreq</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                 <span class="n">approxok</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">minmax_only</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+
+    <span class="n">statistics</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">histograms</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">if</span> <span class="n">bands</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">bands</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">dataset</span><span class="o">.</span><span class="n">RasterCount</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">bandno</span> <span class="ow">in</span> <span class="n">bands</span><span class="p">:</span>
+        <span class="n">band</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">GetRasterBand</span><span class="p">(</span><span class="n">bandno</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">band</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&#39;unable to open band n. </span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">bandno</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">computestats</span><span class="p">:</span>
+            <span class="n">stats</span> <span class="o">=</span> <span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">approxok</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">HAS_GETSTATS_FORCE_BUG</span><span class="p">:</span>
+                    <span class="n">stats</span> <span class="o">=</span> <span class="n">SafeGetStatistics</span><span class="p">(</span><span class="n">band</span><span class="p">,</span> <span class="bp">True</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="bp">None</span> <span class="ow">in</span> <span class="n">stats</span><span class="p">:</span>
+                    <span class="n">stats</span> <span class="o">=</span> <span class="n">GetStatisticsFromMetadata</span><span class="p">(</span><span class="n">band</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="bp">None</span> <span class="ow">in</span> <span class="n">stats</span><span class="p">:</span>
+                <span class="n">stats</span> <span class="o">=</span> <span class="n">band</span><span class="o">.</span><span class="n">ComputeStatistics</span><span class="p">(</span><span class="n">approxok</span><span class="p">,</span> <span class="n">callback</span><span class="p">)</span>
+
+            <span class="n">statistics</span><span class="p">[</span><span class="n">bandno</span><span class="p">]</span> <span class="o">=</span> <span class="n">stats</span>
+
+            <span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="p">,</span> <span class="n">mean</span><span class="p">,</span> <span class="n">stddev</span> <span class="o">=</span> <span class="n">stats</span>
+
+            <span class="k">if</span> <span class="n">minmax_only</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%f</span><span class="s"> </span><span class="si">%f</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;Statistics for band n. </span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">bandno</span><span class="p">)</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;Min:    </span><span class="si">%f</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">vmin</span><span class="p">)</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;Max:    </span><span class="si">%f</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">vmax</span><span class="p">)</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;Mean:   </span><span class="si">%f</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">mean</span><span class="p">)</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;Stddev: </span><span class="si">%f</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">stddev</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">computestats</span> <span class="ow">and</span> <span class="n">histreq</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">histreq</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">histreq</span><span class="o">.</span><span class="n">iscustom</span><span class="p">():</span>
+                <span class="n">hmin</span><span class="p">,</span> <span class="n">hmax</span><span class="p">,</span> <span class="n">nbuckets</span><span class="p">,</span> <span class="n">hist</span> <span class="o">=</span> <span class="n">band</span><span class="o">.</span><span class="n">GetDefaultHistogram</span><span class="p">(</span>
+                                                    <span class="n">callback</span><span class="o">=</span><span class="n">callback</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">hmin</span><span class="p">,</span> <span class="n">hmax</span><span class="p">,</span> <span class="n">nbuckets</span> <span class="o">=</span> <span class="n">histreq</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+                <span class="n">nbuckets</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">nbuckets</span><span class="p">)</span>
+                <span class="n">hist</span> <span class="o">=</span> <span class="n">band</span><span class="o">.</span><span class="n">GetHistogram</span><span class="p">(</span><span class="n">hmin</span><span class="p">,</span> <span class="n">hmax</span><span class="p">,</span> <span class="n">nbuckets</span><span class="p">,</span>
+                                         <span class="n">histreq</span><span class="o">.</span><span class="n">include_out_of_range</span><span class="p">,</span>
+                                         <span class="n">approxok</span><span class="p">,</span> <span class="n">callback</span><span class="p">)</span>
+
+            <span class="n">histograms</span><span class="p">[</span><span class="n">bandno</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">hmin</span><span class="p">,</span> <span class="n">hmax</span><span class="p">,</span> <span class="n">nbuckets</span><span class="p">,</span> <span class="n">hist</span><span class="p">)</span>
+
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;Histogram for band n. </span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">bandno</span><span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;Hist. min: </span><span class="si">%f</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">hmin</span><span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;Hist. max: </span><span class="si">%f</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">hmax</span><span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;Nuckets:   </span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">nbuckets</span><span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;Histogram: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">hist</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">bands</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">statistics</span><span class="p">,</span> <span class="n">histograms</span>
+
+
+<span class="c">### Command line tool #########################################################</span></div>
+<div class="viewcode-block" id="handlecmd"><a class="viewcode-back" href="../../api/gsdtools.stats.html#gsdtools.stats.handlecmd">[docs]</a><span class="k">def</span> <span class="nf">handlecmd</span><span class="p">(</span><span class="n">argv</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="kn">import</span> <span class="nn">optparse</span>
+
+    <span class="k">if</span> <span class="n">argv</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">argv</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span>
+
+    <span class="n">argv</span> <span class="o">=</span> <span class="n">gdal</span><span class="o">.</span><span class="n">GeneralCmdLineProcessor</span><span class="p">(</span><span class="n">argv</span><span class="p">)</span>
+
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">optparse</span><span class="o">.</span><span class="n">OptionParser</span><span class="p">(</span>
+                        <span class="n">usage</span><span class="o">=</span><span class="s">&#39;%prog [options] FILENAME&#39;</span><span class="p">,</span>
+                        <span class="n">version</span><span class="o">=</span><span class="s">&#39;</span><span class="si">%%</span><span class="s">prog </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">__version__</span><span class="p">,</span>
+                        <span class="n">description</span><span class="o">=</span><span class="n">__doc__</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s">&#39;--no-stats&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s">&#39;stats&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&#39;store_false&#39;</span><span class="p">,</span>
+                      <span class="n">default</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+                      <span class="n">help</span><span class="o">=</span><span class="s">&#39;disable statistics computation (default: False)&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s">&#39;--hist&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&#39;store_true&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+                      <span class="n">help</span><span class="o">=</span><span class="s">&#39;enable histogram computation (default: </span><span class="si">%d</span><span class="s">efault)&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s">&#39;-b&#39;</span><span class="p">,</span> <span class="s">&#39;--band&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s">&#39;int&#39;</span><span class="p">,</span>
+                      <span class="n">help</span><span class="o">=</span><span class="s">&#39;compute statistics for a specific raster band &#39;</span>
+                           <span class="s">&#39;(default: all bands are precessed)&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s">&#39;-a&#39;</span><span class="p">,</span> <span class="s">&#39;--approxok&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&#39;store_true&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+                      <span class="n">help</span><span class="o">=</span><span class="s">&#39;if set then statistics may be computed based on &#39;</span>
+                           <span class="s">&#39;overviews or a subset of all tiles &#39;</span>
+                           <span class="s">&#39;(default: </span><span class="si">%d</span><span class="s">efault)&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s">&#39;--minmax-only&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&#39;store_true&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+                      <span class="n">help</span><span class="o">=</span><span class="s">&#39;only print minimum and maximum on the same line.&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s">&#39;--histreq&#39;</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s">&#39;float&#39;</span><span class="p">,</span>
+                      <span class="n">metavar</span><span class="o">=</span><span class="s">&#39;MIN MAX NBUCKETS&#39;</span><span class="p">,</span>
+                      <span class="n">help</span><span class="o">=</span><span class="s">&#39;specify lower bound, upper bound and the number &#39;</span>
+                           <span class="s">&#39;of buckets for histogram computation &#39;</span>
+                           <span class="s">&#39;(automatically computed otherwise)&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s">&#39;-i&#39;</span><span class="p">,</span> <span class="s">&#39;--include_out_of_range&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&#39;store_true&#39;</span><span class="p">,</span>
+                      <span class="n">default</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+                      <span class="n">help</span><span class="o">=</span><span class="s">&#39;if set then values below the histogram range will &#39;</span>
+                           <span class="s">&#39;be mapped into the first bucket, and values above &#39;</span>
+                           <span class="s">&#39;will be mapped into last one. &#39;</span>
+                           <span class="s">&#39;Otherwise out of range values are discarded.&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s">&#39;--srcwin&#39;</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s">&#39;int&#39;</span><span class="p">,</span>
+                      <span class="n">metavar</span><span class="o">=</span><span class="s">&#39;XOFFSET YOFFSET XSIZE YSIZE&#39;</span><span class="p">,</span>
+                      <span class="n">help</span><span class="o">=</span><span class="s">&#39;specify source window in image coordinates: &#39;</span>
+                           <span class="s">&#39;(default: the entire image is processed)&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s">&#39;-o&#39;</span><span class="p">,</span> <span class="s">&#39;--outfile&#39;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s">&#39;FILE&#39;</span><span class="p">,</span>
+                      <span class="n">help</span><span class="o">=</span><span class="s">&#39;write results to FILE (default: stdout)&#39;</span><span class="p">,</span> <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s">&#39;-q&#39;</span><span class="p">,</span> <span class="s">&#39;--quiet&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&#39;store_true&#39;</span><span class="p">,</span>
+                      <span class="n">help</span><span class="o">=</span><span class="s">&#39;suppress progress messages&#39;</span><span class="p">)</span>
+
+    <span class="n">options</span><span class="p">,</span> <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">histreq</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">options</span><span class="o">.</span><span class="n">hist</span><span class="p">:</span>
+        <span class="n">options</span><span class="o">.</span><span class="n">hist</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="c">#parser.error(&#39;&quot;histreq&quot; option requires &quot;hist&quot;&#39;)</span>
+    <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">include_out_of_range</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">options</span><span class="o">.</span><span class="n">hist</span><span class="p">:</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&#39;&quot;include_out_of_range&quot; option requires &quot;hist&quot;&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">band</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">options</span><span class="o">.</span><span class="n">band</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&#39;the &quot;band&quot; parameter shoulb be a not null positive &#39;</span>
+                     <span class="s">&#39;integer.&#39;</span><span class="p">)</span>
+    <span class="n">histonly</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">hist</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">options</span><span class="o">.</span><span class="n">stats</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">histonly</span> <span class="ow">and</span> <span class="n">options</span><span class="o">.</span><span class="n">approxok</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">options</span><span class="o">.</span><span class="n">histreq</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&#39;the &quot;approxok&quot; option is ignored if &quot;histreq&quot; &#39;</span>
+                        <span class="s">&#39;is not set.&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">options</span><span class="o">.</span><span class="n">stats</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">options</span><span class="o">.</span><span class="n">hist</span><span class="p">:</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&#39;nothing to compute: &#39;</span>
+                     <span class="s">&#39;please check &quot;--hist&quot; and &quot;--no-stats&quot; optoions.&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&#39;at least one argument is required.&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">options</span><span class="p">,</span> <span class="n">args</span>
+
+</div>
+<div class="viewcode-block" id="main"><a class="viewcode-back" href="../../api/gsdtools.stats.html#gsdtools.stats.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="o">*</span><span class="n">argv</span><span class="p">):</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">format</span><span class="o">=</span><span class="s">&#39;</span><span class="si">%(levelname)s</span><span class="s">: </span><span class="si">%(message)s</span><span class="s">&#39;</span><span class="p">,</span>
+                        <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">argv</span><span class="p">:</span>
+            <span class="n">argv</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span>
+
+        <span class="n">options</span><span class="p">,</span> <span class="n">args</span> <span class="o">=</span> <span class="n">handlecmd</span><span class="p">(</span><span class="n">argv</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">outfile</span><span class="p">:</span>
+            <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span>
+
+            <span class="n">streamhandler</span> <span class="o">=</span> <span class="n">logger</span><span class="o">.</span><span class="n">handlers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">streamhandler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">)</span>
+
+            <span class="n">formatter</span> <span class="o">=</span> <span class="n">streamhandler</span><span class="o">.</span><span class="n">formatter</span>
+
+            <span class="n">filehandler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">FileHandler</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">outfile</span><span class="p">,</span> <span class="s">&#39;w&#39;</span><span class="p">)</span>
+            <span class="n">filehandler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+            <span class="n">filehandler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
+
+            <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">filehandler</span><span class="p">)</span>
+
+        <span class="n">filename</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">quiet</span><span class="p">:</span>
+            <span class="n">progressfunc</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">progressfunc</span> <span class="o">=</span> <span class="n">gdal</span><span class="o">.</span><span class="n">TermProgress</span>
+
+        <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">hist</span><span class="p">:</span>
+            <span class="n">histreq</span> <span class="o">=</span> <span class="n">HistogramRequest</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">histreq</span><span class="p">:</span>
+                <span class="n">histreq</span><span class="o">.</span><span class="n">hmin</span><span class="p">,</span> <span class="n">histreq</span><span class="o">.</span><span class="n">hmax</span><span class="p">,</span> <span class="n">histreq</span><span class="o">.</span><span class="n">nbuckets</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">histreq</span>
+            <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">include_out_of_range</span><span class="p">:</span>
+                <span class="n">histreq</span><span class="o">.</span><span class="n">include_out_of_range</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">include_out_of_range</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">histreq</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="n">ds</span> <span class="o">=</span> <span class="n">gdal</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">ds</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&#39;unable to open &quot;</span><span class="si">%s</span><span class="s">&quot;&#39;</span> <span class="o">%</span> <span class="n">filename</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">band</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">band</span> <span class="o">&gt;</span> <span class="n">ds</span><span class="o">.</span><span class="n">RasterCount</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;band </span><span class="si">%d</span><span class="s"> requested, but only bands 1 to </span><span class="si">%d</span><span class="s"> &#39;</span>
+                                 <span class="s">&#39;are available.&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">band</span><span class="p">,</span>
+                                                     <span class="n">ds</span><span class="o">.</span><span class="n">RasterCount</span><span class="p">))</span>
+            <span class="n">bands</span> <span class="o">=</span> <span class="p">[</span><span class="n">options</span><span class="o">.</span><span class="n">band</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">bands</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">ds</span><span class="o">.</span><span class="n">RasterCount</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">srcwin</span><span class="p">:</span>
+            <span class="n">ds</span> <span class="o">=</span> <span class="n">copy_dataset_subwin</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">srcwin</span><span class="p">)</span>
+
+        <span class="c"># core</span>
+        <span class="n">computestats</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="n">bands</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">stats</span><span class="p">,</span> <span class="n">histreq</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">approxok</span><span class="p">,</span>
+                     <span class="n">options</span><span class="o">.</span><span class="n">minmax_only</span><span class="p">,</span> <span class="n">progressfunc</span><span class="p">)</span>
+
+        <span class="n">ds</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>   <span class="c"># , exc_info=True)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+</div>
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+    
+    
+    <p>
+        <a href="http://sourceforge.net/projects/gsdview">
+            <img src="http://sflogo.sourceforge.net/sflogo.php?group_id=226458&type=14" width="150" height="40" alt="Get GSDView at SourceForge.net. Fast, secure and Free Open Source software downloads" />
+        </a>
+    </p>
+    
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li><a href="../../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2008-2011, Antonio Valentino.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

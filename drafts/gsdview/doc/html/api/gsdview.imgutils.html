@@ -1,0 +1,354 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>gsdview.imgutils &mdash; GSDView Open Edition Home Page</title>
+    <link rel="stylesheet" href="../_static/sourceforge.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.6.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/logo.ico"/>
+    <link rel="top" title="GSDView Open Edition Home Page" href="../index.html" />
+    <link rel="up" title="API Reference" href="../reference.html" />
+    <link rel="next" title="gsdview.info" href="gsdview.info.html" />
+    <link rel="prev" title="gsdview.graphicsview" href="gsdview.graphicsview.html" /> 
+  </head>
+  <body>
+    
+        
+    
+    
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li class="right" >
+          <a href="gsdview.info.html" title="gsdview.info"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="gsdview.graphicsview.html" title="gsdview.graphicsview"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../reference.html" accesskey="U">API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-gsdview.imgutils">
+<span id="gsdview-imgutils"></span><h1>gsdview.imgutils<a class="headerlink" href="#module-gsdview.imgutils" title="Permalink to this headline">¶</a></h1>
+<p>Tools for geo-spatial images handling and visualization.</p>
+<p class="rubric">Functions</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><a class="reference internal" href="#gsdview.imgutils.histogram_equalized_lut" title="gsdview.imgutils.histogram_equalized_lut"><tt class="xref py py-obj docutils literal"><span class="pre">histogram_equalized_lut</span></tt></a>(hist[,&nbsp;dtype,&nbsp;fill])</td>
+<td>Compute a histogram equalized LUT.</td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.imgutils.linear_lut" title="gsdview.imgutils.linear_lut"><tt class="xref py py-obj docutils literal"><span class="pre">linear_lut</span></tt></a>([vmin,&nbsp;vmax,&nbsp;dtype,&nbsp;fill,&nbsp;omin,&nbsp;omax])</td>
+<td>Compute a linear LUT.</td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.imgutils.log_lut" title="gsdview.imgutils.log_lut"><tt class="xref py py-obj docutils literal"><span class="pre">log_lut</span></tt></a>([dtype])</td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.imgutils.root" title="gsdview.imgutils.root"><tt class="xref py py-obj docutils literal"><span class="pre">root</span></tt></a>([dtype])</td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.imgutils.square" title="gsdview.imgutils.square"><tt class="xref py py-obj docutils literal"><span class="pre">square</span></tt></a>([dtype])</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Classes</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><a class="reference internal" href="#gsdview.imgutils.BaseStretcher" title="gsdview.imgutils.BaseStretcher"><tt class="xref py py-obj docutils literal"><span class="pre">BaseStretcher</span></tt></a>([vmin,&nbsp;vmax,&nbsp;dtype])</td>
+<td>Base class for stretcher objects.</td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.imgutils.LUTStretcher" title="gsdview.imgutils.LUTStretcher"><tt class="xref py py-obj docutils literal"><span class="pre">LUTStretcher</span></tt></a>([offset,&nbsp;vmin,&nbsp;vmax,&nbsp;dtype,&nbsp;fill])</td>
+<td>Stretch using LUT.</td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.imgutils.LinearStretcher" title="gsdview.imgutils.LinearStretcher"><tt class="xref py py-obj docutils literal"><span class="pre">LinearStretcher</span></tt></a>([scale,&nbsp;offset,&nbsp;vmin,&nbsp;vmax,&nbsp;...])</td>
+<td>Linear stretch.</td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.imgutils.LogarithmicStretcher" title="gsdview.imgutils.LogarithmicStretcher"><tt class="xref py py-obj docutils literal"><span class="pre">LogarithmicStretcher</span></tt></a>([scale,&nbsp;offset,&nbsp;base,&nbsp;...])</td>
+<td>Linear stretch.</td>
+</tr>
+</tbody>
+</table>
+<dl class="class">
+<dt id="gsdview.imgutils.BaseStretcher">
+<em class="property">class </em><tt class="descclassname">gsdview.imgutils.</tt><tt class="descname">BaseStretcher</tt><big>(</big><em>vmin=0</em>, <em>vmax=255</em>, <em>dtype='uint8'</em><big>)</big><a class="reference internal" href="../_modules/gsdview/imgutils.html#BaseStretcher"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.imgutils.BaseStretcher" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>Base class for stretcher objects.</p>
+<p>The base implementation of the <em>__call__</em> method just performs
+clipping and type conversion (both are optional).</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">outout extrema (<em>min</em> and <em>max</em>) have to be compatible
+with the data type (<em>dtype</em>) set.</p>
+</div>
+<p>Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">.</span><span class="mi">10</span><span class="p">,</span> <span class="mf">300.</span><span class="p">)</span>
+<span class="n">stretch</span> <span class="o">=</span> <span class="n">BaseStretch</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="s">&#39;uint8&#39;</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">stretch</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="attribute">
+<dt id="gsdview.imgutils.BaseStretcher.dtype">
+<tt class="descname">dtype</tt><a class="headerlink" href="#gsdview.imgutils.BaseStretcher.dtype" title="Permalink to this definition">¶</a></dt>
+<dd><p>data type for output data</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.imgutils.BaseStretcher.max">
+<tt class="descname">max</tt><a class="headerlink" href="#gsdview.imgutils.BaseStretcher.max" title="Permalink to this definition">¶</a></dt>
+<dd><p>the maximum value for output data</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.imgutils.BaseStretcher.min">
+<tt class="descname">min</tt><a class="headerlink" href="#gsdview.imgutils.BaseStretcher.min" title="Permalink to this definition">¶</a></dt>
+<dd><p>the minimum value for output data</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gsdview.imgutils.LUTStretcher">
+<em class="property">class </em><tt class="descclassname">gsdview.imgutils.</tt><tt class="descname">LUTStretcher</tt><big>(</big><em>offset=0</em>, <em>vmin=0</em>, <em>vmax=255</em>, <em>dtype='uint8'</em>, <em>fill=True</em><big>)</big><a class="reference internal" href="../_modules/gsdview/imgutils.html#LUTStretcher"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.imgutils.LUTStretcher" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gsdview.imgutils.BaseStretcher" title="gsdview.imgutils.BaseStretcher"><tt class="xref py py-class docutils literal"><span class="pre">gsdview.imgutils.BaseStretcher</span></tt></a></p>
+<p>Stretch using LUT.</p>
+<p>Perform an arbitrary scaling on unsigned data using a look-up table
+(LUT).</p>
+<p>An optional offset is applied before LUT application.</p>
+<dl class="attribute">
+<dt id="gsdview.imgutils.LUTStretcher.range">
+<tt class="descname">range</tt><a class="reference internal" href="../_modules/gsdview/imgutils.html#LUTStretcher.range"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.imgutils.LUTStretcher.range" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.imgutils.LUTStretcher.set_range">
+<tt class="descname">set_range</tt><big>(</big><em>imin</em>, <em>imax</em>, <em>fill=None</em><big>)</big><a class="reference internal" href="../_modules/gsdview/imgutils.html#LUTStretcher.set_range"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.imgutils.LUTStretcher.set_range" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gsdview.imgutils.LinearStretcher">
+<em class="property">class </em><tt class="descclassname">gsdview.imgutils.</tt><tt class="descname">LinearStretcher</tt><big>(</big><em>scale=1.0</em>, <em>offset=0</em>, <em>vmin=0</em>, <em>vmax=255</em>, <em>dtype='uint8'</em><big>)</big><a class="reference internal" href="../_modules/gsdview/imgutils.html#LinearStretcher"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.imgutils.LinearStretcher" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gsdview.imgutils.BaseStretcher" title="gsdview.imgutils.BaseStretcher"><tt class="xref py py-class docutils literal"><span class="pre">gsdview.imgutils.BaseStretcher</span></tt></a></p>
+<p>Linear stretch.</p>
+<p>Perform linear scaling (including offest application) and clipping.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>offset is applyed before scaling:</p>
+<div class="last math">
+<p><img src="../_images/math/4de63fcca5e7eaf1661599705bf9a00f2b18d74f.png" alt="output = scale \cdot (data - offset)" /></p>
+</div></div>
+<dl class="attribute">
+<dt id="gsdview.imgutils.LinearStretcher.range">
+<tt class="descname">range</tt><a class="reference internal" href="../_modules/gsdview/imgutils.html#LinearStretcher.range"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.imgutils.LinearStretcher.range" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.imgutils.LinearStretcher.set_range">
+<tt class="descname">set_range</tt><big>(</big><em>imin</em>, <em>imax</em><big>)</big><a class="reference internal" href="../_modules/gsdview/imgutils.html#LinearStretcher.set_range"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.imgutils.LinearStretcher.set_range" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gsdview.imgutils.LogarithmicStretcher">
+<em class="property">class </em><tt class="descclassname">gsdview.imgutils.</tt><tt class="descname">LogarithmicStretcher</tt><big>(</big><em>scale=10</em>, <em>offset=0</em>, <em>base=10</em>, <em>vmin=0</em>, <em>vmax=255</em>, <em>dtype='uint8'</em><big>)</big><a class="reference internal" href="../_modules/gsdview/imgutils.html#LogarithmicStretcher"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.imgutils.LogarithmicStretcher" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gsdview.imgutils.BaseStretcher" title="gsdview.imgutils.BaseStretcher"><tt class="xref py py-class docutils literal"><span class="pre">gsdview.imgutils.BaseStretcher</span></tt></a></p>
+<p>Linear stretch.</p>
+<p>Perform logarithmic stretching and clipping:</p>
+<div class="math">
+<p><img src="../_images/math/2552996f2c81db3a5b88116569a547ca6c687a9d.png" alt="output = scale \cdot log_{base}(data - offset)" /></p>
+</div><div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">both <em>base</em> and <em>scale</em> default to 10 while the default
+value for <em>offset</em> is 0 so the strecher returns values
+expressed in <em>dB</em>: <img class="math" src="../_images/math/2f727c7870423013411357a736db7e5906eacea2.png" alt="output = 10 \cdot log_{10}(data)"/></p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="gsdview.imgutils.histogram_equalized_lut">
+<tt class="descclassname">gsdview.imgutils.</tt><tt class="descname">histogram_equalized_lut</tt><big>(</big><em>hist</em>, <em>dtype='uint8'</em>, <em>fill=False</em><big>)</big><a class="reference internal" href="../_modules/gsdview/imgutils.html#histogram_equalized_lut"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.imgutils.histogram_equalized_lut" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute a histogram equalized LUT.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>hist</strong> (<em>ndarray</em>) &#8211; histogram to be equalized</li>
+<li><strong>dtype</strong> (<em>np.dtype (uint8 or uint16)</em>) &#8211; numpy data type of the output LUT (default uint8)</li>
+<li><strong>fill</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; if False (default) the returned LUT has
+<img class="math" src="../_images/math/0bbfe2835b58c27bfee6973f09e787244378a045.png" alt="length = len(hist)"/>.
+Otherwise the LUT length has a lenght of 2**nbits with nbits
+bein 8 or 16 depending on dtype and  LUT indices greater than
+the last histogram max value are filled with the maximum value
+itself.</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">the llok up table (LUT)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="gsdview.imgutils.linear_lut">
+<tt class="descclassname">gsdview.imgutils.</tt><tt class="descname">linear_lut</tt><big>(</big><em>vmin=0</em>, <em>vmax=None</em>, <em>dtype='uint8'</em>, <em>fill=False</em>, <em>omin=0</em>, <em>omax=None</em><big>)</big><a class="reference internal" href="../_modules/gsdview/imgutils.html#linear_lut"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.imgutils.linear_lut" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute a linear LUT.</p>
+<p>The returned LUT maps the imput domain (vmin, vmax) onto the output
+one (0, vout) using a linear low. The value of vout depends on
+dtype: 2**8-1 if dtype=&#8217;uint8&#8217;, 2**16-1 dtype=&#8217;uint16&#8217;</p>
+<p>The <em>fill</em> parameter can be used to controll the length of returned
+LUT (see below).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>vmin</strong> (<em>int or float</em>) &#8211; minimum value (positive or null). Default 0</li>
+<li><strong>vmax</strong> (<em>int or float</em>) &#8211; maximum value (positive) Default 2**nbits depending on dtype</li>
+<li><strong>dtype</strong> (<em>np.dtype (uint8 or uint16)</em>) &#8211; numpy data type of the output LUT (default uint8)</li>
+<li><strong>fill</strong> (<em>bool or int</em>) &#8211; <p>the length of the returned lut is:</p>
+<blockquote>
+<div><ul>
+<li>vmax + 1 if bool(fill) == False</li>
+<li>max(vmax + 1, 2**nbits) if fill == True</li>
+<li>max(vmax + 1, fill) id fille is an number</li>
+</ul>
+</div></blockquote>
+</li>
+<li><strong>omin</strong> &#8211; &#64;TBW</li>
+<li><strong>omax</strong> &#8211; &#64;TBW</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">the look up tabe (LUT)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="gsdview.imgutils.log_lut">
+<tt class="descclassname">gsdview.imgutils.</tt><tt class="descname">log_lut</tt><big>(</big><em>dtype='uint8'</em><big>)</big><a class="reference internal" href="../_modules/gsdview/imgutils.html#log_lut"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.imgutils.log_lut" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="gsdview.imgutils.root">
+<tt class="descclassname">gsdview.imgutils.</tt><tt class="descname">root</tt><big>(</big><em>dtype='uint8'</em><big>)</big><a class="reference internal" href="../_modules/gsdview/imgutils.html#root"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.imgutils.root" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="gsdview.imgutils.square">
+<tt class="descclassname">gsdview.imgutils.</tt><tt class="descname">square</tt><big>(</big><em>dtype='uint8'</em><big>)</big><a class="reference internal" href="../_modules/gsdview/imgutils.html#square"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.imgutils.square" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo.png" alt="Logo"/>
+            </a></p>
+    
+    
+    <p>
+        <a href="http://sourceforge.net/projects/gsdview">
+            <img src="http://sflogo.sourceforge.net/sflogo.php?group_id=226458&type=14" width="150" height="40" alt="Get GSDView at SourceForge.net. Fast, secure and Free Open Source software downloads" />
+        </a>
+    </p>
+    
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="gsdview.graphicsview.html"
+                        title="previous chapter">gsdview.graphicsview</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="gsdview.info.html"
+                        title="next chapter">gsdview.info</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/api/gsdview.imgutils.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li class="right" >
+          <a href="gsdview.info.html" title="gsdview.info"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="gsdview.graphicsview.html" title="gsdview.graphicsview"
+             >previous</a> |</li>
+        <li><a href="../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../reference.html" >API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2008-2011, Antonio Valentino.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

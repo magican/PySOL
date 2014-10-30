@@ -1,0 +1,326 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>gsdtoolsui.tooldescriptors &mdash; GSDView Open Edition Home Page</title>
+    <link rel="stylesheet" href="../_static/sourceforge.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.6.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/logo.ico"/>
+    <link rel="top" title="GSDView Open Edition Home Page" href="../index.html" />
+    <link rel="up" title="API Reference" href="../reference.html" />
+    <link rel="next" title="metadata" href="metadata.html" />
+    <link rel="prev" title="gsdtoolsui.info" href="gsdtoolsui.info.html" /> 
+  </head>
+  <body>
+    
+        
+    
+    
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li class="right" >
+          <a href="metadata.html" title="metadata"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="gsdtoolsui.info.html" title="gsdtoolsui.info"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../reference.html" accesskey="U">API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-gsdtoolsui.tooldescriptors">
+<span id="gsdtoolsui-tooldescriptors"></span><h1>gsdtoolsui.tooldescriptors<a class="headerlink" href="#module-gsdtoolsui.tooldescriptors" title="Permalink to this headline">¶</a></h1>
+<p>Exectools tool descriptors for gsdtools .</p>
+<p class="rubric">Classes</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><tt class="xref py py-obj docutils literal"><span class="pre">BaseGdalToolDescriptor</span></tt>(executable[,&nbsp;args,&nbsp;...])</td>
+<td>Base class for GDAL tool descriprors.</td>
+</tr>
+<tr><td><tt class="xref py py-obj docutils literal"><span class="pre">HistogramRequest</span></tt>([hmin,&nbsp;hmax,&nbsp;nbuckets,&nbsp;...])</td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdtoolsui.tooldescriptors.Ras2vecDescriptor" title="gsdtoolsui.tooldescriptors.Ras2vecDescriptor"><tt class="xref py py-obj docutils literal"><span class="pre">Ras2vecDescriptor</span></tt></a>([cwd,&nbsp;env,&nbsp;...])</td>
+<td>Descriptor for ras2vec tool.</td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdtoolsui.tooldescriptors.StatsDescriptor" title="gsdtoolsui.tooldescriptors.StatsDescriptor"><tt class="xref py py-obj docutils literal"><span class="pre">StatsDescriptor</span></tt></a>([cwd,&nbsp;env,&nbsp;stdout_handler,&nbsp;...])</td>
+<td>Descriptor for gsdstats tool.</td>
+</tr>
+</tbody>
+</table>
+<dl class="class">
+<dt id="gsdtoolsui.tooldescriptors.Ras2vecDescriptor">
+<em class="property">class </em><tt class="descclassname">gsdtoolsui.tooldescriptors.</tt><tt class="descname">Ras2vecDescriptor</tt><big>(</big><em>cwd=None</em>, <em>env=None</em>, <em>stdout_handler=None</em>, <em>stderr_handler=None</em><big>)</big><a class="reference internal" href="../_modules/gsdtoolsui/tooldescriptors.html#Ras2vecDescriptor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdtoolsui.tooldescriptors.Ras2vecDescriptor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="gsdview.gdalbackend.gdalexectools.html#gsdview.gdalbackend.gdalexectools.BaseGdalToolDescriptor" title="gsdview.gdalbackend.gdalexectools.BaseGdalToolDescriptor"><tt class="xref py py-class docutils literal"><span class="pre">gsdview.gdalbackend.gdalexectools.BaseGdalToolDescriptor</span></tt></a></p>
+<p>Descriptor for ras2vec tool.</p>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="exectools.html#exectools.ToolDescriptor" title="exectools.ToolDescriptor"><tt class="xref py py-class docutils literal"><span class="pre">exectools.ToolDescriptor</span></tt></a></p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>cwd</strong> &#8211; program working directory</li>
+<li><strong>env</strong> &#8211; environment dictionary</li>
+<li><strong>envmerge</strong> &#8211; if set to True (default) it is the <tt class="xref py py-attr docutils literal"><span class="pre">env</span></tt> dictionaty is
+used to update the system environment</li>
+<li><strong>stdout_handler</strong> &#8211; <em>OutputHandler</em> for the stdout of the tool</li>
+<li><strong>stderr_handler</strong> &#8211; +OutputHandler* for the stderr of the tool</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="exectools.html#exectools.BaseOutputHandler" title="exectools.BaseOutputHandler"><tt class="xref py py-class docutils literal"><span class="pre">exectools.BaseOutputHandler</span></tt></a></p>
+</div>
+<dl class="attribute">
+<dt id="gsdtoolsui.tooldescriptors.Ras2vecDescriptor.abspath">
+<tt class="descname">abspath</tt><a class="headerlink" href="#gsdtoolsui.tooldescriptors.Ras2vecDescriptor.abspath" title="Permalink to this definition">¶</a></dt>
+<dd><p>Store absolute path in bounding box feature description.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gsdtoolsui.tooldescriptors.Ras2vecDescriptor.cmdline">
+<tt class="descname">cmdline</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/gsdtoolsui/tooldescriptors.html#Ras2vecDescriptor.cmdline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdtoolsui.tooldescriptors.Ras2vecDescriptor.cmdline" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gsdtoolsui.tooldescriptors.Ras2vecDescriptor.corners">
+<tt class="descname">corners</tt><a class="headerlink" href="#gsdtoolsui.tooldescriptors.Ras2vecDescriptor.corners" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate markers for bounding box corners.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gsdtoolsui.tooldescriptors.Ras2vecDescriptor.gcps">
+<tt class="descname">gcps</tt><a class="headerlink" href="#gsdtoolsui.tooldescriptors.Ras2vecDescriptor.gcps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate an additional layer for GCPs.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gsdtoolsui.tooldescriptors.StatsDescriptor">
+<em class="property">class </em><tt class="descclassname">gsdtoolsui.tooldescriptors.</tt><tt class="descname">StatsDescriptor</tt><big>(</big><em>cwd=None</em>, <em>env=None</em>, <em>stdout_handler=None</em>, <em>stderr_handler=None</em><big>)</big><a class="reference internal" href="../_modules/gsdtoolsui/tooldescriptors.html#StatsDescriptor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdtoolsui.tooldescriptors.StatsDescriptor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="gsdview.gdalbackend.gdalexectools.html#gsdview.gdalbackend.gdalexectools.BaseGdalToolDescriptor" title="gsdview.gdalbackend.gdalexectools.BaseGdalToolDescriptor"><tt class="xref py py-class docutils literal"><span class="pre">gsdview.gdalbackend.gdalexectools.BaseGdalToolDescriptor</span></tt></a></p>
+<p>Descriptor for gsdstats tool.</p>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="exectools.html#exectools.ToolDescriptor" title="exectools.ToolDescriptor"><tt class="xref py py-class docutils literal"><span class="pre">exectools.ToolDescriptor</span></tt></a></p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>cwd</strong> &#8211; program working directory</li>
+<li><strong>env</strong> &#8211; environment dictionary</li>
+<li><strong>envmerge</strong> &#8211; if set to True (default) it is the <tt class="xref py py-attr docutils literal"><span class="pre">env</span></tt> dictionaty is
+used to update the system environment</li>
+<li><strong>stdout_handler</strong> &#8211; <em>OutputHandler</em> for the stdout of the tool</li>
+<li><strong>stderr_handler</strong> &#8211; <em>OutputHandler</em> for the stderr of the tool</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="exectools.html#exectools.BaseOutputHandler" title="exectools.BaseOutputHandler"><tt class="xref py py-class docutils literal"><span class="pre">exectools.BaseOutputHandler</span></tt></a></p>
+</div>
+<dl class="attribute">
+<dt id="gsdtoolsui.tooldescriptors.StatsDescriptor.approxok">
+<tt class="descname">approxok</tt><a class="headerlink" href="#gsdtoolsui.tooldescriptors.StatsDescriptor.approxok" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow approximate statistics computation.</p>
+<p>If set then statistics may be computed based on overviews or a
+subset of all tiles (default: False)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gsdtoolsui.tooldescriptors.StatsDescriptor.band">
+<tt class="descname">band</tt><a class="headerlink" href="#gsdtoolsui.tooldescriptors.StatsDescriptor.band" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute statistics for a specific raster band.</p>
+<p>Default: all bands are precessed.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gsdtoolsui.tooldescriptors.StatsDescriptor.cmdline">
+<tt class="descname">cmdline</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/gsdtoolsui/tooldescriptors.html#StatsDescriptor.cmdline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdtoolsui.tooldescriptors.StatsDescriptor.cmdline" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gsdtoolsui.tooldescriptors.StatsDescriptor.hist">
+<tt class="descname">hist</tt><a class="reference internal" href="../_modules/gsdtoolsui/tooldescriptors.html#StatsDescriptor.hist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdtoolsui.tooldescriptors.StatsDescriptor.hist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Histogram request.</p>
+<p>Histogram request objects allow to specifie parameters for
+historams computarion or disable histogram computation at all.</p>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="gsdtools.stats.html#gsdtools.stats.HistogramRequest" title="gsdtools.stats.HistogramRequest"><tt class="xref py py-class docutils literal"><span class="pre">gsdtools.stats.HistogramRequest</span></tt></a>.</p>
+</div>
+<p>If set to a non null value the histogram computation is enabled:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">desctiptot</span><span class="o">.</span><span class="n">hist</span> <span class="o">=</span> <span class="bp">True</span>
+</pre></div>
+</div>
+<p>the above code is equivalent to:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">desctiptot</span><span class="o">.</span><span class="n">hist</span><span class="o">.</span><span class="n">computehistogram</span> <span class="o">=</span> <span class="bp">True</span>
+</pre></div>
+</div>
+<p>Use histogram request object attributes to speficy custom
+parameters for historam comutation:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">desctiptot</span><span class="o">.</span><span class="n">hist</span><span class="o">.</span><span class="n">hmin</span> <span class="o">=</span> <span class="o">-</span> <span class="mf">0.5</span>
+<span class="n">desctiptot</span><span class="o">.</span><span class="n">hist</span><span class="o">.</span><span class="n">hmax</span> <span class="o">=</span> <span class="mf">3000.5</span>
+<span class="n">desctiptot</span><span class="o">.</span><span class="n">hist</span><span class="o">.</span><span class="n">nbuckets</span> <span class="o">=</span> <span class="mi">101</span>
+<span class="n">desctiptot</span><span class="o">.</span><span class="n">hist</span><span class="o">.</span><span class="n">include_out_of_range</span> <span class="o">=</span> <span class="bp">True</span>
+</pre></div>
+</div>
+<p>To disable histocram computation set it <a class="reference internal" href="#gsdtoolsui.tooldescriptors.StatsDescriptor.hist" title="gsdtoolsui.tooldescriptors.StatsDescriptor.hist"><tt class="xref py py-attr docutils literal"><span class="pre">hist</span></tt></a> to
+<em>False</em>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">desctiptot</span><span class="o">.</span><span class="n">hist</span> <span class="o">=</span> <span class="bp">False</span>
+</pre></div>
+</div>
+<p>Setting <a class="reference internal" href="#gsdtoolsui.tooldescriptors.StatsDescriptor.hist" title="gsdtoolsui.tooldescriptors.StatsDescriptor.hist"><tt class="xref py py-attr docutils literal"><span class="pre">hist</span></tt></a> to <em>None</em> disable histogram computation
+and perform a fiull reset of the histogram requast object:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">desctiptot</span><span class="o">.</span><span class="n">hist</span> <span class="o">=</span> <span class="bp">None</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gsdtoolsui.tooldescriptors.StatsDescriptor.minmaxonly">
+<tt class="descname">minmaxonly</tt><a class="headerlink" href="#gsdtoolsui.tooldescriptors.StatsDescriptor.minmaxonly" title="Permalink to this definition">¶</a></dt>
+<dd><p>Only print minimum and maximum on the same line</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gsdtoolsui.tooldescriptors.StatsDescriptor.nostats">
+<tt class="descname">nostats</tt><a class="headerlink" href="#gsdtoolsui.tooldescriptors.StatsDescriptor.nostats" title="Permalink to this definition">¶</a></dt>
+<dd><p>Disable statistics computation (default: False)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gsdtoolsui.tooldescriptors.StatsDescriptor.outfile">
+<tt class="descname">outfile</tt><a class="headerlink" href="#gsdtoolsui.tooldescriptors.StatsDescriptor.outfile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write results to FILE.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gsdtoolsui.tooldescriptors.StatsDescriptor.quiet">
+<tt class="descname">quiet</tt><a class="headerlink" href="#gsdtoolsui.tooldescriptors.StatsDescriptor.quiet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Suppress progress messages.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gsdtoolsui.tooldescriptors.StatsDescriptor.srcwin">
+<tt class="descname">srcwin</tt><a class="headerlink" href="#gsdtoolsui.tooldescriptors.StatsDescriptor.srcwin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Specify source window in image coordinates.</p>
+<p>Default: the entire image is processed.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo.png" alt="Logo"/>
+            </a></p>
+    
+    
+    <p>
+        <a href="http://sourceforge.net/projects/gsdview">
+            <img src="http://sflogo.sourceforge.net/sflogo.php?group_id=226458&type=14" width="150" height="40" alt="Get GSDView at SourceForge.net. Fast, secure and Free Open Source software downloads" />
+        </a>
+    </p>
+    
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="gsdtoolsui.info.html"
+                        title="previous chapter">gsdtoolsui.info</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="metadata.html"
+                        title="next chapter">metadata</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/api/gsdtoolsui.tooldescriptors.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li class="right" >
+          <a href="metadata.html" title="metadata"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="gsdtoolsui.info.html" title="gsdtoolsui.info"
+             >previous</a> |</li>
+        <li><a href="../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../reference.html" >API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2008-2011, Antonio Valentino.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,231 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>exectools.std &mdash; GSDView Open Edition Home Page</title>
+    <link rel="stylesheet" href="../_static/sourceforge.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.6.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/logo.ico"/>
+    <link rel="top" title="GSDView Open Edition Home Page" href="../index.html" />
+    <link rel="up" title="API Reference" href="../reference.html" />
+    <link rel="next" title="exectools.qt4" href="exectools.qt4.html" />
+    <link rel="prev" title="exectools" href="exectools.html" /> 
+  </head>
+  <body>
+    
+        
+    
+    
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li class="right" >
+          <a href="exectools.qt4.html" title="exectools.qt4"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="exectools.html" title="exectools"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../reference.html" accesskey="U">API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-exectools.std">
+<span id="exectools-std"></span><h1>exectools.std<a class="headerlink" href="#module-exectools.std" title="Permalink to this headline">¶</a></h1>
+<p>Tools for running external processes using the subprocess module.</p>
+<p class="rubric">Classes</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><tt class="xref py py-obj docutils literal"><span class="pre">BaseToolController</span></tt>([logger])</td>
+<td>Base class for controlling command line tools.</td>
+</tr>
+<tr><td><a class="reference internal" href="#exectools.std.StdToolController" title="exectools.std.StdToolController"><tt class="xref py py-obj docutils literal"><span class="pre">StdToolController</span></tt></a>([logger])</td>
+<td>Class for controlling command line tools.</td>
+</tr>
+</tbody>
+</table>
+<dl class="class">
+<dt id="exectools.std.StdToolController">
+<em class="property">class </em><tt class="descclassname">exectools.std.</tt><tt class="descname">StdToolController</tt><big>(</big><em>logger=None</em><big>)</big><a class="reference internal" href="../_modules/exectools/std.html#StdToolController"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#exectools.std.StdToolController" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="exectools.html#exectools.BaseToolController" title="exectools.BaseToolController"><tt class="xref py py-class docutils literal"><span class="pre">exectools.BaseToolController</span></tt></a></p>
+<p>Class for controlling command line tools.</p>
+<p>A tool controller runs an external tool in controlled way.
+The output of the child process is handled by the controller and,
+optionally, notifications can be achieved at sub-process
+termination.</p>
+<p>A tool controller also allow to stop the controlled process.</p>
+<dl class="method">
+<dt id="exectools.std.StdToolController.finalize_run">
+<tt class="descname">finalize_run</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/exectools/std.html#StdToolController.finalize_run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#exectools.std.StdToolController.finalize_run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform finalization actions.</p>
+<p>This method is called when the controlled process terminates
+to perform finalization actions like:</p>
+<ul class="simple">
+<li>read and handle residual data in buffers,</li>
+<li>flush and close output handlers,</li>
+<li>close subprocess file descriptors</li>
+<li>run the &#8220;finalize_run_hook&#8221; method</li>
+<li>reset the controller instance</li>
+</ul>
+<p>This method is not meant to be called by the user but the user
+can provide custom implementations in subclasses.</p>
+<p>If one just needs to perfor some additional finalization action
+it should be better to use a custom &#8220;finalize_run_hook&#8221; instead
+of overriging &#8220;finalize_run&#8221;.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="exectools.std.StdToolController.handle_stderr">
+<tt class="descname">handle_stderr</tt><big>(</big><em>*args</em><big>)</big><a class="reference internal" href="../_modules/exectools/std.html#StdToolController.handle_stderr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#exectools.std.StdToolController.handle_stderr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handle standard  error.</p>
+<p>This method is not meant to be directly called by the user.</p>
+<p>The user, anyway, can provide a custom implementation in
+derived classes.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="exectools.std.StdToolController.handle_stdout">
+<tt class="descname">handle_stdout</tt><big>(</big><em>*args</em><big>)</big><a class="reference internal" href="../_modules/exectools/std.html#StdToolController.handle_stdout"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#exectools.std.StdToolController.handle_stdout" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handle standard output data.</p>
+<p>This method is not meant to be directly called by the user.</p>
+<p>The user, anyway, can provide a custom implementation in
+derived classes.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="exectools.std.StdToolController.isbusy">
+<tt class="descname">isbusy</tt><a class="reference internal" href="../_modules/exectools/std.html#StdToolController.isbusy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#exectools.std.StdToolController.isbusy" title="Permalink to this definition">¶</a></dt>
+<dd><p>If True then the controller is already running a subprocess.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="exectools.std.StdToolController.reset">
+<tt class="descname">reset</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/exectools/std.html#StdToolController.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#exectools.std.StdToolController.reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reset the tool controller instance.</p>
+<p>Kill the controlled subprocess and reset the controller
+instance loosing all unprocessed data.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="exectools.std.StdToolController.run_tool">
+<tt class="descname">run_tool</tt><big>(</big><em>tool</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/exectools/std.html#StdToolController.run_tool"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#exectools.std.StdToolController.run_tool" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run an external tool in controlled way.</p>
+<p>The output of the child process is handled by the controller
+and, optionally, notifications can be achieved at sub-process
+termination.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="exectools.std.StdToolController.stop_tool">
+<tt class="descname">stop_tool</tt><big>(</big><em>force=True</em><big>)</big><a class="reference internal" href="../_modules/exectools/std.html#StdToolController.stop_tool"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#exectools.std.StdToolController.stop_tool" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop the execution of controlled subprocess.</p>
+<p>When this method is invoked the controller instance is always
+reset even if the controller is unable to stop the subprocess.</p>
+<p>When possible the controller try to kill the subprocess in a
+polite way.  If this fails it also tryes brute killing by
+default (force=True).  This behaviour can be controlled using
+the <cite>force</cite> parameter.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo.png" alt="Logo"/>
+            </a></p>
+    
+    
+    <p>
+        <a href="http://sourceforge.net/projects/gsdview">
+            <img src="http://sflogo.sourceforge.net/sflogo.php?group_id=226458&type=14" width="150" height="40" alt="Get GSDView at SourceForge.net. Fast, secure and Free Open Source software downloads" />
+        </a>
+    </p>
+    
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="exectools.html"
+                        title="previous chapter">exectools</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="exectools.qt4.html"
+                        title="next chapter">exectools.qt4</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/api/exectools.std.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li class="right" >
+          <a href="exectools.qt4.html" title="exectools.qt4"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="exectools.html" title="exectools"
+             >previous</a> |</li>
+        <li><a href="../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../reference.html" >API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2008-2011, Antonio Valentino.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

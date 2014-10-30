@@ -1,0 +1,252 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>gsdview.gdalbackend.core &mdash; GSDView Open Edition Home Page</title>
+    <link rel="stylesheet" href="../_static/sourceforge.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.6.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/logo.ico"/>
+    <link rel="top" title="GSDView Open Edition Home Page" href="../index.html" />
+    <link rel="up" title="API Reference" href="../reference.html" />
+    <link rel="next" title="gsdview.gdalbackend.gdalexectools" href="gsdview.gdalbackend.gdalexectools.html" />
+    <link rel="prev" title="gsdview.gdalbackend" href="gsdview.gdalbackend.html" /> 
+  </head>
+  <body>
+    
+        
+    
+    
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li class="right" >
+          <a href="gsdview.gdalbackend.gdalexectools.html" title="gsdview.gdalbackend.gdalexectools"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="gsdview.gdalbackend.html" title="gsdview.gdalbackend"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../reference.html" accesskey="U">API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-gsdview.gdalbackend.core">
+<span id="gsdview-gdalbackend-core"></span><h1>gsdview.gdalbackend.core<a class="headerlink" href="#module-gsdview.gdalbackend.core" title="Permalink to this headline">¶</a></h1>
+<p>Core GDAL backend functions and classes.</p>
+<p class="rubric">Classes</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><a class="reference internal" href="#gsdview.gdalbackend.core.GDALBackend" title="gsdview.gdalbackend.core.GDALBackend"><tt class="xref py py-obj docutils literal"><span class="pre">GDALBackend</span></tt></a>(app,&nbsp;**kwargs)</td>
+<td></td>
+</tr>
+<tr><td><tt class="xref py py-obj docutils literal"><span class="pre">GraphicsViewSubWindow</span></tt>(item,&nbsp;**kwargs[,&nbsp;...])</td>
+<td></td>
+</tr>
+<tr><td><tt class="xref py py-obj docutils literal"><span class="pre">ItemSubWindow</span></tt>(item,&nbsp;**kwargs[,&nbsp;parent,&nbsp;flags])</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="class">
+<dt id="gsdview.gdalbackend.core.GDALBackend">
+<em class="property">class </em><tt class="descclassname">gsdview.gdalbackend.core.</tt><tt class="descname">GDALBackend</tt><big>(</big><em>app</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/core.html#GDALBackend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.core.GDALBackend" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">PyQt4.QtCore.QObject</span></tt></p>
+<dl class="staticmethod">
+<dt id="gsdview.gdalbackend.core.GDALBackend.DontUseExceptions">
+<em class="property">static </em><tt class="descname">DontUseExceptions</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/core.html#GDALBackend.DontUseExceptions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.core.GDALBackend.DontUseExceptions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="gsdview.gdalbackend.core.GDALBackend.UseExceptions">
+<em class="property">static </em><tt class="descname">UseExceptions</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/core.html#GDALBackend.UseExceptions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.core.GDALBackend.UseExceptions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.core.GDALBackend.buildOverviews">
+<tt class="descname">buildOverviews</tt><big>(</big><em>item=None</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/core.html#GDALBackend.buildOverviews"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.core.GDALBackend.buildOverviews" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.core.GDALBackend.closeCurrentItem">
+<tt class="descname">closeCurrentItem</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/core.html#GDALBackend.closeCurrentItem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.core.GDALBackend.closeCurrentItem" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.core.GDALBackend.findItemFromFilename">
+<tt class="descname">findItemFromFilename</tt><big>(</big><em>filename</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/core.html#GDALBackend.findItemFromFilename"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.core.GDALBackend.findItemFromFilename" title="Permalink to this definition">¶</a></dt>
+<dd><p>Serch for and return the (dataset) item corresponding to filename.</p>
+<p>If no item is found retirn None.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="gsdview.gdalbackend.core.GDALBackend.getUseExceptions">
+<em class="property">static </em><tt class="descname">getUseExceptions</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/core.html#GDALBackend.getUseExceptions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.core.GDALBackend.getUseExceptions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.core.GDALBackend.itemActions">
+<tt class="descname">itemActions</tt><big>(</big><em>item</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/core.html#GDALBackend.itemActions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.core.GDALBackend.itemActions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.core.GDALBackend.itemContextMenu">
+<tt class="descname">itemContextMenu</tt><big>(</big><em>item</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/core.html#GDALBackend.itemContextMenu"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.core.GDALBackend.itemContextMenu" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.core.GDALBackend.loadGDALSettings">
+<tt class="descname">loadGDALSettings</tt><big>(</big><em>settings</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/core.html#GDALBackend.loadGDALSettings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.core.GDALBackend.loadGDALSettings" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.core.GDALBackend.loadSettings">
+<tt class="descname">loadSettings</tt><big>(</big><em>settings</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/core.html#GDALBackend.loadSettings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.core.GDALBackend.loadSettings" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.core.GDALBackend.newImageView">
+<tt class="descname">newImageView</tt><big>(</big><em>item=None</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/core.html#GDALBackend.newImageView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.core.GDALBackend.newImageView" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.core.GDALBackend.onItemActivated">
+<tt class="descname">onItemActivated</tt><big>(</big><em>index</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/core.html#GDALBackend.onItemActivated"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.core.GDALBackend.onItemActivated" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.core.GDALBackend.openFile">
+<tt class="descname">openFile</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/core.html#GDALBackend.openFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.core.GDALBackend.openFile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.core.GDALBackend.openImageView">
+<tt class="descname">openImageView</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/core.html#GDALBackend.openImageView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.core.GDALBackend.openImageView" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.core.GDALBackend.openItemMatadataView">
+<tt class="descname">openItemMatadataView</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/core.html#GDALBackend.openItemMatadataView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.core.GDALBackend.openItemMatadataView" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.core.GDALBackend.openRGBImageView">
+<tt class="descname">openRGBImageView</tt><big>(</big><em>item=None</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/core.html#GDALBackend.openRGBImageView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.core.GDALBackend.openRGBImageView" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.core.GDALBackend.openSubDataset">
+<tt class="descname">openSubDataset</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/core.html#GDALBackend.openSubDataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.core.GDALBackend.openSubDataset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.core.GDALBackend.saveSettings">
+<tt class="descname">saveSettings</tt><big>(</big><em>settings</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/core.html#GDALBackend.saveSettings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.core.GDALBackend.saveSettings" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.core.GDALBackend.showItemProperties">
+<tt class="descname">showItemProperties</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/core.html#GDALBackend.showItemProperties"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.core.GDALBackend.showItemProperties" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo.png" alt="Logo"/>
+            </a></p>
+    
+    
+    <p>
+        <a href="http://sourceforge.net/projects/gsdview">
+            <img src="http://sflogo.sourceforge.net/sflogo.php?group_id=226458&type=14" width="150" height="40" alt="Get GSDView at SourceForge.net. Fast, secure and Free Open Source software downloads" />
+        </a>
+    </p>
+    
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="gsdview.gdalbackend.html"
+                        title="previous chapter">gsdview.gdalbackend</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="gsdview.gdalbackend.gdalexectools.html"
+                        title="next chapter">gsdview.gdalbackend.gdalexectools</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/api/gsdview.gdalbackend.core.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li class="right" >
+          <a href="gsdview.gdalbackend.gdalexectools.html" title="gsdview.gdalbackend.gdalexectools"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="gsdview.gdalbackend.html" title="gsdview.gdalbackend"
+             >previous</a> |</li>
+        <li><a href="../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../reference.html" >API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2008-2011, Antonio Valentino.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

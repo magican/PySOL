@@ -1,0 +1,36 @@
+gsdview.gdalbackend.gdalqt4
+===========================
+
+.. automodule:: gsdview.gdalbackend.gdalqt4
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      GDALTypeCodeToNumericTypeCode
+      gdalcolorentry2qcolor
+      graphicsItemFactory
+      numpy2qimage
+      safeDataStats
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      BaseGdalGraphicsItem
+      GdalComplexGraphicsItem
+      GdalGraphicsItem
+      GdalRgbGraphicsItem
+      UIntGdalGraphicsItem
+   
+   
+
+   
+   
+   

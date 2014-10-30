@@ -1,0 +1,470 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>exectools &mdash; GSDView Open Edition Home Page</title>
+    <link rel="stylesheet" href="../_static/sourceforge.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.6.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/logo.ico"/>
+    <link rel="top" title="GSDView Open Edition Home Page" href="../index.html" />
+    <link rel="up" title="API Reference" href="../reference.html" />
+    <link rel="next" title="exectools.std" href="exectools.std.html" />
+    <link rel="prev" title="gsdview.gdalbackend.widgets" href="gsdview.gdalbackend.widgets.html" /> 
+  </head>
+  <body>
+    
+        
+    
+    
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li class="right" >
+          <a href="exectools.std.html" title="exectools.std"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="gsdview.gdalbackend.widgets.html" title="gsdview.gdalbackend.widgets"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../reference.html" accesskey="U">API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-exectools">
+<span id="exectools"></span><h1>exectools<a class="headerlink" href="#module-exectools" title="Permalink to this headline">¶</a></h1>
+<p>Tools for running external processes.</p>
+<p class="rubric">Functions</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><tt class="xref py py-obj docutils literal"><span class="pre">StringIO</span></tt></td>
+<td>StringIO([s]) &#8211; Return a StringIO-like stream for reading or writing</td>
+</tr>
+<tr><td><a class="reference internal" href="#exectools.level2tag" title="exectools.level2tag"><tt class="xref py py-obj docutils literal"><span class="pre">level2tag</span></tt></a>(level)</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Classes</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><a class="reference internal" href="#exectools.BaseOutputHandler" title="exectools.BaseOutputHandler"><tt class="xref py py-obj docutils literal"><span class="pre">BaseOutputHandler</span></tt></a>([logger])</td>
+<td>Base class for output handlers</td>
+</tr>
+<tr><td><a class="reference internal" href="#exectools.BaseToolController" title="exectools.BaseToolController"><tt class="xref py py-obj docutils literal"><span class="pre">BaseToolController</span></tt></a>([logger])</td>
+<td>Base class for controlling command line tools.</td>
+</tr>
+<tr><td><a class="reference internal" href="#exectools.ToolDescriptor" title="exectools.ToolDescriptor"><tt class="xref py py-obj docutils literal"><span class="pre">ToolDescriptor</span></tt></a>(executable[,&nbsp;args,&nbsp;cwd,&nbsp;env,&nbsp;...])</td>
+<td>Command line tool desctiptor.</td>
+</tr>
+</tbody>
+</table>
+<dl class="function">
+<dt id="exectools.level2tag">
+<tt class="descclassname">exectools.</tt><tt class="descname">level2tag</tt><big>(</big><em>level</em><big>)</big><a class="reference internal" href="../_modules/exectools.html#level2tag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#exectools.level2tag" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="exectools.BaseOutputHandler">
+<em class="property">class </em><tt class="descclassname">exectools.</tt><tt class="descname">BaseOutputHandler</tt><big>(</big><em>logger=None</em><big>)</big><a class="reference internal" href="../_modules/exectools.html#BaseOutputHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#exectools.BaseOutputHandler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>Base class for output handlers</p>
+<dl class="method">
+<dt id="exectools.BaseOutputHandler.close">
+<tt class="descname">close</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/exectools.html#BaseOutputHandler.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#exectools.BaseOutputHandler.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Force processing of all buffered data and reset the instance</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="exectools.BaseOutputHandler.feed">
+<tt class="descname">feed</tt><big>(</big><em>data</em><big>)</big><a class="reference internal" href="../_modules/exectools.html#BaseOutputHandler.feed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#exectools.BaseOutputHandler.feed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Feed some data to the parser.</p>
+<p>It is processed insofar as it consists of complete elements;
+incomplete data is buffered until more data is fed or close()
+is called.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="exectools.BaseOutputHandler.get_line">
+<tt class="descname">get_line</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/exectools.html#BaseOutputHandler.get_line"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#exectools.BaseOutputHandler.get_line" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract complete lines</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="exectools.BaseOutputHandler.get_progress">
+<tt class="descname">get_progress</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/exectools.html#BaseOutputHandler.get_progress"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#exectools.BaseOutputHandler.get_progress" title="Permalink to this definition">¶</a></dt>
+<dd><p>Search and decode progress patterns</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="exectools.BaseOutputHandler.handle_line">
+<tt class="descname">handle_line</tt><big>(</big><em>data</em><big>)</big><a class="reference internal" href="../_modules/exectools.html#BaseOutputHandler.handle_line"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#exectools.BaseOutputHandler.handle_line" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handle output lines.</p>
+<p>This method is not meant to be directly called by the user.</p>
+<p>The user, anyway, can provide a custom implementation in
+derived classes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data</strong> &#8211; an entire output line (including the trailing &#8220;end of line&#8221;
+character.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="exectools.BaseOutputHandler.handle_progress">
+<tt class="descname">handle_progress</tt><big>(</big><em>data</em><big>)</big><a class="reference internal" href="../_modules/exectools.html#BaseOutputHandler.handle_progress"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#exectools.BaseOutputHandler.handle_progress" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handle progress data.</p>
+<p>This method is not meant to be called by the user.</p>
+<p>The user, anyway, can provide a custom implementation in
+derived classes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data</strong> &#8211; a list containing an item for each named group in the
+&#8220;progress&#8221; regular expression: (pulse, percentage, text)
+for the default implementation.
+Each item can be None.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="exectools.BaseOutputHandler.reset">
+<tt class="descname">reset</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/exectools.html#BaseOutputHandler.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#exectools.BaseOutputHandler.reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reset the handler instance.</p>
+<p>Loses all unprocessed data. This is called implicitly at
+instantiation time.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="exectools.BaseToolController">
+<em class="property">class </em><tt class="descclassname">exectools.</tt><tt class="descname">BaseToolController</tt><big>(</big><em>logger=None</em><big>)</big><a class="reference internal" href="../_modules/exectools.html#BaseToolController"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#exectools.BaseToolController" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>Base class for controlling command line tools.</p>
+<p>A tool controller runs an external tool in controlled way.
+The output of the child process is handled by the controller and,
+optionally, notifications can be achieved at sub-process
+termination.</p>
+<p>A tool controller also allows to stop the controlled process.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>after the process termination the user can still query
+both <a class="reference internal" href="#exectools.BaseToolController.subprocess" title="exectools.BaseToolController.subprocess"><tt class="xref py py-attr docutils literal"><span class="pre">subprocess</span></tt></a> and <tt class="xref py py-attr docutils literal"><span class="pre">stopped</span></tt> for getting
+info about the executed process.</p>
+<p class="last">The user should have care of calling <a class="reference internal" href="#exectools.BaseToolController.reset" title="exectools.BaseToolController.reset"><tt class="xref py py-meth docutils literal"><span class="pre">reset()</span></tt></a> when
+info n executed process are no more needed or before
+executing a new process.</p>
+</div>
+<dl class="method">
+<dt id="exectools.BaseToolController.connect_output_handlers">
+<tt class="descname">connect_output_handlers</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/exectools.html#BaseToolController.connect_output_handlers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#exectools.BaseToolController.connect_output_handlers" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="exectools.BaseToolController.finalize_run">
+<tt class="descname">finalize_run</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/exectools.html#BaseToolController.finalize_run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#exectools.BaseToolController.finalize_run" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="exectools.BaseToolController.finalize_run_hook">
+<tt class="descname">finalize_run_hook</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/exectools.html#BaseToolController.finalize_run_hook"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#exectools.BaseToolController.finalize_run_hook" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method for extra finalization tasks.</p>
+<p>This method is always called after finalization and before
+controller reset.</p>
+<p>The user can provide a custom implementation in derived classes
+in order to perform extra finalization actions.</p>
+<p>This method is not meant to be called from the user.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="exectools.BaseToolController.handle_stderr">
+<tt class="descname">handle_stderr</tt><big>(</big><em>*args</em><big>)</big><a class="reference internal" href="../_modules/exectools.html#BaseToolController.handle_stderr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#exectools.BaseToolController.handle_stderr" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="exectools.BaseToolController.handle_stdout">
+<tt class="descname">handle_stdout</tt><big>(</big><em>*args</em><big>)</big><a class="reference internal" href="../_modules/exectools.html#BaseToolController.handle_stdout"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#exectools.BaseToolController.handle_stdout" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="exectools.BaseToolController.isbusy">
+<tt class="descname">isbusy</tt><a class="reference internal" href="../_modules/exectools.html#BaseToolController.isbusy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#exectools.BaseToolController.isbusy" title="Permalink to this definition">¶</a></dt>
+<dd><p>If True then the controller is already running a subprocess.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="exectools.BaseToolController.prerun_hook">
+<tt class="descname">prerun_hook</tt><big>(</big><em>cmd</em><big>)</big><a class="reference internal" href="../_modules/exectools.html#BaseToolController.prerun_hook"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#exectools.BaseToolController.prerun_hook" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method for extra pre-run actions.</p>
+<p>This method is always called before the controlled subprocess
+is actually started.  The user can provide its own custom
+implementation in derived classes in order to perform
+additional actions.</p>
+<p>This method is not meant to be called from the user.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="exectools.BaseToolController.reset">
+<tt class="descname">reset</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/exectools.html#BaseToolController.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#exectools.BaseToolController.reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reset the tool controller instance</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="exectools.BaseToolController.run_tool">
+<tt class="descname">run_tool</tt><big>(</big><em>tool</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/exectools.html#BaseToolController.run_tool"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#exectools.BaseToolController.run_tool" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="exectools.BaseToolController.stop_tool">
+<tt class="descname">stop_tool</tt><big>(</big><em>force=True</em><big>)</big><a class="reference internal" href="../_modules/exectools.html#BaseToolController.stop_tool"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#exectools.BaseToolController.stop_tool" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="exectools.BaseToolController.subprocess">
+<tt class="descname">subprocess</tt><a class="headerlink" href="#exectools.BaseToolController.subprocess" title="Permalink to this definition">¶</a></dt>
+<dd><p>the subprocess instance</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="exectools.BaseToolController.userstop">
+<tt class="descname">userstop</tt><a class="reference internal" href="../_modules/exectools.html#BaseToolController.userstop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#exectools.BaseToolController.userstop" title="Permalink to this definition">¶</a></dt>
+<dd><p>If True the process has been stopped by the user.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="exectools.ToolDescriptor">
+<em class="property">class </em><tt class="descclassname">exectools.</tt><tt class="descname">ToolDescriptor</tt><big>(</big><em>executable</em>, <em>args=None</em>, <em>cwd=None</em>, <em>env=None</em>, <em>stdout_handler=None</em>, <em>stderr_handler=None</em><big>)</big><a class="reference internal" href="../_modules/exectools.html#ToolDescriptor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#exectools.ToolDescriptor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>Command line tool desctiptor.</p>
+<p>A <a class="reference internal" href="#exectools.ToolDescriptor" title="exectools.ToolDescriptor"><tt class="xref py py-class docutils literal"><span class="pre">ToolDescriptor</span></tt></a> instance describes a command line tool
+(<a class="reference internal" href="#exectools.ToolDescriptor.executable" title="exectools.ToolDescriptor.executable"><tt class="xref py py-attr docutils literal"><span class="pre">executable</span></tt></a>), how to run it (<a class="reference internal" href="#exectools.ToolDescriptor.args" title="exectools.ToolDescriptor.args"><tt class="xref py py-attr docutils literal"><span class="pre">args</span></tt></a>, <a class="reference internal" href="#exectools.ToolDescriptor.cwd" title="exectools.ToolDescriptor.cwd"><tt class="xref py py-attr docutils literal"><span class="pre">cwd</span></tt></a>,
+<a class="reference internal" href="#exectools.ToolDescriptor.env" title="exectools.ToolDescriptor.env"><tt class="xref py py-attr docutils literal"><span class="pre">env</span></tt></a>) and how to handle its output (<a class="reference internal" href="#exectools.ToolDescriptor.stdout_handler" title="exectools.ToolDescriptor.stdout_handler"><tt class="xref py py-attr docutils literal"><span class="pre">stdout_handler</span></tt></a>,
+<a class="reference internal" href="#exectools.ToolDescriptor.stderr_handler" title="exectools.ToolDescriptor.stderr_handler"><tt class="xref py py-attr docutils literal"><span class="pre">stderr_handler</span></tt></a>).</p>
+<p>Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">handler</span> <span class="o">=</span> <span class="n">BaseOutputHandler</span><span class="p">()</span>
+<span class="n">ll</span> <span class="o">=</span> <span class="n">ToolDescriptor</span><span class="p">(</span><span class="n">executable</span><span class="o">=</span><span class="s">&#39;ls&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;-l&#39;</span><span class="p">],</span>
+                    <span class="n">stdout_handler</span><span class="o">=</span><span class="n">handler</span><span class="p">)</span>
+<span class="n">controller</span><span class="o">.</span><span class="n">run_tool</span><span class="p">(</span><span class="n">ll</span><span class="p">)</span>
+
+<span class="c"># In this case no executabe is set in the descriptor.</span>
+<span class="n">cmd</span> <span class="o">=</span> <span class="n">ToolDescriptor</span><span class="p">(</span><span class="n">stdout_handler</span><span class="o">=</span><span class="n">handler</span><span class="p">)</span>
+
+<span class="c"># The executable name is passed at execution time (first argument)</span>
+<span class="n">controller</span><span class="o">.</span><span class="n">run_tool</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="s">&#39;ls&#39;</span><span class="p">,</span> <span class="s">&#39;-l&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>executable</strong> &#8211; full path of the tool executable or just the tool program
+name if it is in the system search path</li>
+<li><strong>args</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#list" title="(in Python v2.7)"><em>list</em></a>) &#8211; default args for command (list of strings)</li>
+<li><strong>cwd</strong> &#8211; program working directory</li>
+<li><strong>env</strong> &#8211; environment dictionary</li>
+<li><strong>envmerge</strong> &#8211; if set to True (default) it is the <a class="reference internal" href="#exectools.ToolDescriptor.env" title="exectools.ToolDescriptor.env"><tt class="xref py py-attr docutils literal"><span class="pre">env</span></tt></a> dictionaty is
+used to update the system environment</li>
+<li><strong>stdout_handler</strong> &#8211; <em>OutputHandler</em> for the stdout of the tool</li>
+<li><strong>stderr_handler</strong> &#8211; <em>OutputHandler</em> for the stderr of the tool</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#exectools.BaseOutputHandler" title="exectools.BaseOutputHandler"><tt class="xref py py-class docutils literal"><span class="pre">BaseOutputHandler</span></tt></a></p>
+</div>
+<dl class="attribute">
+<dt id="exectools.ToolDescriptor.args">
+<tt class="descname">args</tt><a class="headerlink" href="#exectools.ToolDescriptor.args" title="Permalink to this definition">¶</a></dt>
+<dd><p>default args for command</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="exectools.ToolDescriptor.cmdline">
+<tt class="descname">cmdline</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/exectools.html#ToolDescriptor.cmdline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#exectools.ToolDescriptor.cmdline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate the complete command-line for the tool.</p>
+<p>This method is meant to be used together with &#8220;subprocess&#8221;
+so the &#8220;comman-line&#8221; actually is a list of strings.</p>
+<p>If the executable attribute is not set (evaluate false) then
+the first non-keyword argument is considered to be the
+executable tool name.</p>
+<p>The command line is build as follows:</p>
+<div class="highlight-python"><pre>executable keyword-arguments args</pre>
+</div>
+<p>If you need a command-line in single string form use something
+like:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="s">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tool</span><span class="o">.</span><span class="n">cmdline</span><span class="p">(</span><span class="n">arg1</span><span class="p">,</span> <span class="n">arg2</span><span class="p">,</span> <span class="n">arg3</span><span class="p">))</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="exectools.ToolDescriptor.cwd">
+<tt class="descname">cwd</tt><a class="headerlink" href="#exectools.ToolDescriptor.cwd" title="Permalink to this definition">¶</a></dt>
+<dd><p>program working directory</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="exectools.ToolDescriptor.env">
+<tt class="descname">env</tt><a class="headerlink" href="#exectools.ToolDescriptor.env" title="Permalink to this definition">¶</a></dt>
+<dd><p>the tool environment</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="exectools.ToolDescriptor.envmerge">
+<tt class="descname">envmerge</tt><a class="headerlink" href="#exectools.ToolDescriptor.envmerge" title="Permalink to this definition">¶</a></dt>
+<dd><p>if set to True (default) then the <a class="reference internal" href="#exectools.ToolDescriptor.env" title="exectools.ToolDescriptor.env"><tt class="xref py py-attr docutils literal"><span class="pre">env</span></tt></a> dictionaty is used
+to update the system environment</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="exectools.ToolDescriptor.executable">
+<tt class="descname">executable</tt><a class="headerlink" href="#exectools.ToolDescriptor.executable" title="Permalink to this definition">¶</a></dt>
+<dd><p>full path of the tool executable or just the tool program name</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="exectools.ToolDescriptor.shell">
+<tt class="descname">shell</tt><a class="headerlink" href="#exectools.ToolDescriptor.shell" title="Permalink to this definition">¶</a></dt>
+<dd><p>is set to true the external too is executed in a system shell</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">some implementation don&#8217;t allow to stop a subprocess
+executed via shell</p>
+</div>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="exectools.ToolDescriptor.stderr_handler">
+<tt class="descname">stderr_handler</tt><a class="headerlink" href="#exectools.ToolDescriptor.stderr_handler" title="Permalink to this definition">¶</a></dt>
+<dd><p>the <em>OutputHandler</em> for the stderr of the tool</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="exectools.ToolDescriptor.stdout_handler">
+<tt class="descname">stdout_handler</tt><a class="headerlink" href="#exectools.ToolDescriptor.stdout_handler" title="Permalink to this definition">¶</a></dt>
+<dd><p>the <em>OutputHandler</em> for the stdout of the tool</p>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#exectools.BaseOutputHandler" title="exectools.BaseOutputHandler"><tt class="xref py py-class docutils literal"><span class="pre">BaseOutputHandler</span></tt></a></p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo.png" alt="Logo"/>
+            </a></p>
+    
+    
+    <p>
+        <a href="http://sourceforge.net/projects/gsdview">
+            <img src="http://sflogo.sourceforge.net/sflogo.php?group_id=226458&type=14" width="150" height="40" alt="Get GSDView at SourceForge.net. Fast, secure and Free Open Source software downloads" />
+        </a>
+    </p>
+    
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="gsdview.gdalbackend.widgets.html"
+                        title="previous chapter">gsdview.gdalbackend.widgets</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="exectools.std.html"
+                        title="next chapter">exectools.std</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/api/exectools.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li class="right" >
+          <a href="exectools.std.html" title="exectools.std"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="gsdview.gdalbackend.widgets.html" title="gsdview.gdalbackend.widgets"
+             >previous</a> |</li>
+        <li><a href="../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../reference.html" >API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2008-2011, Antonio Valentino.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

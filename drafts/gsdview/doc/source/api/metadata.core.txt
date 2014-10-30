@@ -1,0 +1,23 @@
+metadata.core
+=============
+
+.. automodule:: metadata.core
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      MetadataController
+      MetadataViewer
+   
+   
+
+   
+   
+   

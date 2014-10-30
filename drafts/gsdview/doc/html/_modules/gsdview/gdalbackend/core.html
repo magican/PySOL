@@ -1,0 +1,834 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>gsdview.gdalbackend.core &mdash; GSDView Open Edition Home Page</title>
+    <link rel="stylesheet" href="../../../_static/sourceforge.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.6.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../../_static/logo.ico"/>
+    <link rel="top" title="GSDView Open Edition Home Page" href="../../../index.html" />
+    <link rel="up" title="gsdview.gdalbackend" href="../gdalbackend.html" /> 
+  </head>
+  <body>
+    
+        
+    
+    
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li><a href="../../../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../gsdview.html" >gsdview</a> &raquo;</li>
+          <li><a href="../gdalbackend.html" accesskey="U">gsdview.gdalbackend</a> &raquo;</li> 
+      </ul>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for gsdview.gdalbackend.core</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="c">### Copyright (C) 2008-2011 Antonio Valentino &lt;a_valentino@users.sf.net&gt;</span>
+
+<span class="c">### This file is part of GSDView.</span>
+
+<span class="c">### GSDView is free software; you can redistribute it and/or modify</span>
+<span class="c">### it under the terms of the GNU General Public License as published by</span>
+<span class="c">### the Free Software Foundation; either version 2 of the License, or</span>
+<span class="c">### (at your option) any later version.</span>
+
+<span class="c">### GSDView is distributed in the hope that it will be useful,</span>
+<span class="c">### but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c">### MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c">### GNU General Public License for more details.</span>
+
+<span class="c">### You should have received a copy of the GNU General Public License</span>
+<span class="c">### along with GSDView; if not, write to the Free Software</span>
+<span class="c">### Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA.</span>
+
+
+<span class="sd">&#39;&#39;&#39;Core GDAL backend functions and classes.&#39;&#39;&#39;</span>
+
+
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">gdal</span>
+
+<span class="kn">from</span> <span class="nn">qt</span> <span class="kn">import</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtGui</span>
+
+<span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">qt4support</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">widgets</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">helpers</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">modelitems</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">gdalsupport</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">gdalexectools</span>
+
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s">&#39;Antonio Valentino &lt;a_valentino@users.sf.net&gt;&#39;</span>
+<span class="n">__date__</span> <span class="o">=</span> <span class="s">&#39;$Date: 2011-08-01 19:26:21 +0200 (lun, 01 ago 2011) $&#39;</span>
+<span class="n">__revision__</span> <span class="o">=</span> <span class="s">&#39;$Revision: 997 $&#39;</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;GDALBackend&#39;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="GDALBackend"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.core.html#gsdview.gdalbackend.core.GDALBackend">[docs]</a><span class="k">class</span> <span class="nc">GDALBackend</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QObject</span><span class="p">):</span>
+    <span class="c"># @TODO:</span>
+    <span class="c">#</span>
+    <span class="c"># - fix selection mess</span>
+    <span class="c">#</span>
+    <span class="c">#   * trying to re-oped an already open file should select the</span>
+    <span class="c">#     corresponding dataset item (no active sub-window change is expected)</span>
+    <span class="c">#</span>
+    <span class="c"># - sub-windows title and window menu</span>
+
+    <span class="n">_use_exceptions</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="c"># @TODO: fix names</span>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="GDALBackend.UseExceptions"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.core.html#gsdview.gdalbackend.core.GDALBackend.UseExceptions">[docs]</a>    <span class="k">def</span> <span class="nf">UseExceptions</span><span class="p">():</span>
+        <span class="n">gdal</span><span class="o">.</span><span class="n">UseExceptions</span><span class="p">()</span>
+        <span class="n">gdal</span><span class="o">.</span><span class="n">SetConfigOption</span><span class="p">(</span><span class="s">&#39;PYHTON_USE_EXCEPTIONS&#39;</span><span class="p">,</span> <span class="s">&#39;TRUE&#39;</span><span class="p">)</span>
+</div>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="GDALBackend.DontUseExceptions"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.core.html#gsdview.gdalbackend.core.GDALBackend.DontUseExceptions">[docs]</a>    <span class="k">def</span> <span class="nf">DontUseExceptions</span><span class="p">():</span>
+        <span class="n">gdal</span><span class="o">.</span><span class="n">DontUseExceptions</span><span class="p">()</span>
+        <span class="n">gdal</span><span class="o">.</span><span class="n">SetConfigOption</span><span class="p">(</span><span class="s">&#39;PYHTON_USE_EXCEPTIONS&#39;</span><span class="p">,</span> <span class="s">&#39;FALSE&#39;</span><span class="p">)</span>
+</div>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="GDALBackend.getUseExceptions"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.core.html#gsdview.gdalbackend.core.GDALBackend.getUseExceptions">[docs]</a>    <span class="k">def</span> <span class="nf">getUseExceptions</span><span class="p">():</span>
+        <span class="k">return</span> <span class="n">gdal</span><span class="o">.</span><span class="n">GetConfigOption</span><span class="p">(</span><span class="s">&#39;PYHTON_USE_EXCEPTIONS&#39;</span><span class="p">,</span> <span class="s">&#39;FALSE&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s">&#39;TRUE&#39;</span>
+</div>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">QtCore</span><span class="o">.</span><span class="n">QObject</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_app</span> <span class="o">=</span> <span class="n">app</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_helpers</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_actionsmap</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setupActions</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_app</span><span class="o">.</span><span class="n">treeview</span><span class="o">.</span><span class="n">activated</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">onItemActivated</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tools</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setupExternalTools</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_helpers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setupHelpers</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tools</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_setupExternalTools</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">tools</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="n">app</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_app</span>
+        <span class="n">handler</span> <span class="o">=</span> <span class="n">gdalexectools</span><span class="o">.</span><span class="n">GdalOutputHandler</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span> <span class="n">app</span><span class="o">.</span><span class="n">statusBar</span><span class="p">(),</span>
+                                                  <span class="n">app</span><span class="o">.</span><span class="n">progressbar</span><span class="p">)</span>
+
+        <span class="c"># gdaladdo</span>
+        <span class="n">tool</span> <span class="o">=</span> <span class="n">gdalexectools</span><span class="o">.</span><span class="n">GdalAddOverviewDescriptor</span><span class="p">(</span><span class="n">stdout_handler</span><span class="o">=</span><span class="n">handler</span><span class="p">)</span>
+        <span class="n">tools</span><span class="p">[</span><span class="s">&#39;addo&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tool</span>
+
+        <span class="c"># gdalinfo for statistics computation</span>
+        <span class="n">tool</span> <span class="o">=</span> <span class="n">gdalexectools</span><span class="o">.</span><span class="n">GdalInfoDescriptor</span><span class="p">(</span><span class="n">stdout_handler</span><span class="o">=</span><span class="n">handler</span><span class="p">)</span>
+        <span class="n">tool</span><span class="o">.</span><span class="n">stats</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="n">tool</span><span class="o">.</span><span class="n">nomd</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="n">tool</span><span class="o">.</span><span class="n">nogcp</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="n">tool</span><span class="o">.</span><span class="n">noct</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="n">tools</span><span class="p">[</span><span class="s">&#39;stats&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tool</span>
+
+        <span class="c"># gdalinfo for histogram computation</span>
+        <span class="n">tool</span> <span class="o">=</span> <span class="n">gdalexectools</span><span class="o">.</span><span class="n">GdalInfoDescriptor</span><span class="p">(</span><span class="n">stdout_handler</span><span class="o">=</span><span class="n">handler</span><span class="p">)</span>
+        <span class="n">tool</span><span class="o">.</span><span class="n">hist</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="n">tool</span><span class="o">.</span><span class="n">nomd</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="n">tool</span><span class="o">.</span><span class="n">nogcp</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="n">tool</span><span class="o">.</span><span class="n">noct</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="n">tools</span><span class="p">[</span><span class="s">&#39;hist&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tool</span>
+
+        <span class="k">return</span> <span class="n">tools</span>
+
+    <span class="k">def</span> <span class="nf">_setupHelpers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tools</span><span class="p">):</span>
+        <span class="n">hmap</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="n">app</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_app</span>
+
+        <span class="n">hmap</span><span class="p">[</span><span class="s">&#39;addo&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">helpers</span><span class="o">.</span><span class="n">AddoHelper</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">tools</span><span class="p">[</span><span class="s">&#39;addo&#39;</span><span class="p">])</span>
+        <span class="n">hmap</span><span class="p">[</span><span class="s">&#39;stats&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">helpers</span><span class="o">.</span><span class="n">StatsHelper</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">tools</span><span class="p">[</span><span class="s">&#39;stats&#39;</span><span class="p">])</span>
+        <span class="n">hmap</span><span class="p">[</span><span class="s">&#39;statsdialog&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">helpers</span><span class="o">.</span><span class="n">StatsDialogHelper</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">tools</span><span class="p">[</span><span class="s">&#39;stats&#39;</span><span class="p">])</span>
+        <span class="n">hmap</span><span class="p">[</span><span class="s">&#39;histdialog&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">helpers</span><span class="o">.</span><span class="n">HistDialogHelper</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">tools</span><span class="p">[</span><span class="s">&#39;hist&#39;</span><span class="p">])</span>
+        <span class="n">hmap</span><span class="p">[</span><span class="s">&#39;ovrdialog&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">helpers</span><span class="o">.</span><span class="n">AddoDialogHelper</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">tools</span><span class="p">[</span><span class="s">&#39;addo&#39;</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">hmap</span>
+
+<div class="viewcode-block" id="GDALBackend.findItemFromFilename"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.core.html#gsdview.gdalbackend.core.GDALBackend.findItemFromFilename">[docs]</a>    <span class="k">def</span> <span class="nf">findItemFromFilename</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Serch for and return the (dataset) item corresponding to filename.</span>
+
+<span class="sd">        If no item is found retirn None.</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="c"># @NOTE: linear complexity</span>
+        <span class="c"># @NOTE: only scan toplevel items</span>
+        <span class="c"># @TODO: use an internal regidtry (set or dict) in oder to perfotm</span>
+        <span class="c">#        O(1) search over all nesting levels</span>
+
+        <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="n">root</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_app</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">invisibleRootItem</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">root</span><span class="o">.</span><span class="n">rowCount</span><span class="p">()):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">item</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="n">child</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">filename</span> <span class="o">==</span> <span class="n">filename</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">item</span>
+            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                <span class="k">pass</span>
+        <span class="k">return</span> <span class="bp">None</span>
+</div>
+    <span class="nd">@qt4support.overrideCursor</span>
+<div class="viewcode-block" id="GDALBackend.openFile"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.core.html#gsdview.gdalbackend.core.GDALBackend.openFile">[docs]</a>    <span class="k">def</span> <span class="nf">openFile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">findItemFromFilename</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">item</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_app</span><span class="o">.</span><span class="n">treeview</span><span class="o">.</span><span class="n">setCurrentIndex</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">index</span><span class="p">())</span>
+
+            <span class="c"># @TODO: remove selection code</span>
+            <span class="n">sm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_app</span><span class="o">.</span><span class="n">treeview</span><span class="o">.</span><span class="n">selectionModel</span><span class="p">()</span>
+            <span class="n">sm</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">index</span><span class="p">(),</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QItemSelectionModel</span><span class="o">.</span><span class="n">Select</span><span class="p">)</span>
+
+            <span class="c"># @TODO: maybe it is better to use an exception here</span>
+            <span class="k">return</span> <span class="bp">None</span>
+        <span class="k">return</span> <span class="n">modelitems</span><span class="o">.</span><span class="n">datasetitem</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="GDALBackend.itemActions"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.core.html#gsdview.gdalbackend.core.GDALBackend.itemActions">[docs]</a>    <span class="k">def</span> <span class="nf">itemActions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">method</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s">&#39;_get</span><span class="si">%s</span><span class="s">Actions&#39;</span> <span class="o">%</span> <span class="n">item</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="n">actions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_actionsmap</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">actions</span> <span class="o">=</span> <span class="n">method</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">actions</span>
+</div>
+<div class="viewcode-block" id="GDALBackend.itemContextMenu"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.core.html#gsdview.gdalbackend.core.GDALBackend.itemContextMenu">[docs]</a>    <span class="k">def</span> <span class="nf">itemContextMenu</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="n">actions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">itemActions</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">actions</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">qt4support</span><span class="o">.</span><span class="n">actionGroupToMenu</span><span class="p">(</span><span class="n">actions</span><span class="p">,</span>
+                                                <span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Context menu&#39;</span><span class="p">),</span>
+                                                <span class="bp">self</span><span class="o">.</span><span class="n">_app</span><span class="o">.</span><span class="n">treeview</span><span class="p">)</span>
+</div>
+    <span class="nd">@QtCore.Slot</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QModelIndex</span><span class="p">)</span>
+<div class="viewcode-block" id="GDALBackend.onItemActivated"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.core.html#gsdview.gdalbackend.core.GDALBackend.onItemActivated">[docs]</a>    <span class="k">def</span> <span class="nf">onItemActivated</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="n">defaultActionsMap</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">modelitems</span><span class="o">.</span><span class="n">BandItem</span><span class="p">:</span> <span class="s">&#39;actionOpenImageView&#39;</span><span class="p">,</span>
+            <span class="n">modelitems</span><span class="o">.</span><span class="n">DatasetItem</span><span class="p">:</span> <span class="s">&#39;actionOpenRGBImageView&#39;</span><span class="p">,</span>
+            <span class="n">modelitems</span><span class="o">.</span><span class="n">SubDatasetItem</span><span class="p">:</span> <span class="s">&#39;actionOpenSubDatasetItem&#39;</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_app</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">itemFromIndex</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+
+        <span class="n">actions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_actionsmap</span><span class="p">[</span><span class="nb">type</span><span class="p">(</span><span class="n">item</span><span class="p">)</span><span class="o">.</span><span class="n">__name__</span><span class="p">]</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">defaultActionsMap</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">item</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">name</span><span class="p">:</span>
+            <span class="n">action</span> <span class="o">=</span> <span class="n">actions</span><span class="o">.</span><span class="n">findChild</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QAction</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">action</span><span class="p">:</span>
+                <span class="n">action</span><span class="o">.</span><span class="n">trigger</span><span class="p">()</span>
+                <span class="k">return</span>
+
+        <span class="k">for</span> <span class="n">itemtype</span> <span class="ow">in</span> <span class="n">defaultActionsMap</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">itemtype</span><span class="p">):</span>
+                <span class="n">action</span> <span class="o">=</span> <span class="n">actions</span><span class="o">.</span><span class="n">findChild</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QAction</span><span class="p">,</span>
+                                           <span class="n">defaultActionsMap</span><span class="p">[</span><span class="n">itemtype</span><span class="p">])</span>
+                <span class="k">if</span> <span class="n">action</span><span class="p">:</span>
+                    <span class="n">action</span><span class="o">.</span><span class="n">trigger</span><span class="p">()</span>
+                    <span class="k">break</span>
+
+    <span class="c">### Actions setup #########################################################</span></div>
+    <span class="k">def</span> <span class="nf">_setupMajorObjectItemActions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">actionsgroup</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">actionsgroup</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">actionsgroup</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QActionGroup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="c"># open metadata view</span>
+        <span class="n">icon</span> <span class="o">=</span> <span class="n">qt4support</span><span class="o">.</span><span class="n">geticon</span><span class="p">(</span><span class="s">&#39;metadata.svg&#39;</span><span class="p">,</span> <span class="n">__name__</span><span class="p">)</span>
+        <span class="n">QtGui</span><span class="o">.</span><span class="n">QAction</span><span class="p">(</span><span class="n">icon</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Open &amp;Metadata View&#39;</span><span class="p">),</span> <span class="n">actionsgroup</span><span class="p">,</span>
+                      <span class="n">objectName</span><span class="o">=</span><span class="s">&#39;actionOpenItemMetadataView&#39;</span><span class="p">,</span>
+                      <span class="n">shortcut</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Ctrl+M&#39;</span><span class="p">),</span>
+                      <span class="n">toolTip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Show metadata in a new window&#39;</span><span class="p">),</span>
+                      <span class="n">statusTip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Show metadata in a new window&#39;</span><span class="p">),</span>
+                      <span class="n">triggered</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">openItemMatadataView</span><span class="p">,</span>
+                      <span class="n">enabled</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>    <span class="c"># @TODO: remove</span>
+
+        <span class="c"># show properties</span>
+        <span class="c"># @TODO: standard info icon from gdsview package</span>
+        <span class="n">icon</span> <span class="o">=</span> <span class="n">qt4support</span><span class="o">.</span><span class="n">geticon</span><span class="p">(</span><span class="s">&#39;info.svg&#39;</span><span class="p">,</span> <span class="s">&#39;gsdview&#39;</span><span class="p">)</span>
+        <span class="n">QtGui</span><span class="o">.</span><span class="n">QAction</span><span class="p">(</span><span class="n">icon</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;&amp;Show Properties&#39;</span><span class="p">),</span> <span class="n">actionsgroup</span><span class="p">,</span>
+                      <span class="n">objectName</span><span class="o">=</span><span class="s">&#39;actionShowItemProperties&#39;</span><span class="p">,</span>
+                      <span class="n">shortcut</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Ctrl+S&#39;</span><span class="p">),</span>
+                      <span class="n">toolTip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Show the property dialog for the &#39;</span>
+                                      <span class="s">&#39;cutent item&#39;</span><span class="p">),</span>
+                      <span class="n">statusTip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Show the property dialog for the &#39;</span>
+                                        <span class="s">&#39;cutent item&#39;</span><span class="p">),</span>
+                      <span class="n">triggered</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">showItemProperties</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">actionsgroup</span>
+
+    <span class="k">def</span> <span class="nf">_setupBandItemActions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">actionsgroup</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">actionsgroup</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">actionsgroup</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QActionGroup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="c"># open image view</span>
+        <span class="n">icon</span> <span class="o">=</span> <span class="n">qt4support</span><span class="o">.</span><span class="n">geticon</span><span class="p">(</span><span class="s">&#39;open.svg&#39;</span><span class="p">,</span> <span class="n">__name__</span><span class="p">)</span>
+        <span class="n">QtGui</span><span class="o">.</span><span class="n">QAction</span><span class="p">(</span><span class="n">icon</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;&amp;Open Image View&#39;</span><span class="p">),</span> <span class="n">actionsgroup</span><span class="p">,</span>
+                      <span class="n">objectName</span><span class="o">=</span><span class="s">&#39;actionOpenImageView&#39;</span><span class="p">,</span>
+                      <span class="n">shortcut</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Ctrl+O&#39;</span><span class="p">),</span>
+                      <span class="n">toolTip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Open an image view&#39;</span><span class="p">),</span>
+                      <span class="n">statusTip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Open a new image view&#39;</span><span class="p">),</span>
+                      <span class="n">triggered</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">openImageView</span><span class="p">)</span>
+
+        <span class="c"># @TODO: add a new action for newImageView</span>
+
+        <span class="c"># @TODO: Masked bands, Compute statistics, Compute histogram</span>
+        <span class="c"># @TODO: dataset --&gt; Build overviews</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setupMajorObjectItemActions</span><span class="p">(</span><span class="n">actionsgroup</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">actionsgroup</span>
+
+    <span class="k">def</span> <span class="nf">_setupOverviewItemActions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">actionsgroup</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="c"># @TODO: remove open</span>
+        <span class="c"># @TODO: remove overviews build</span>
+        <span class="c">#~ actionsgroup = self._setupBandItemActions()</span>
+        <span class="c">#~ action = actionsgroup.findChild(QtGui.QAction, &#39;actionBuidOverviews&#39;)</span>
+        <span class="c">#~ actionsgroup.removeAction(action)</span>
+        <span class="c">#~ return actionsgroup</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setupBandItemActions</span><span class="p">(</span><span class="n">actionsgroup</span><span class="p">)</span>
+
+    <span class="c"># @TODO</span>
+    <span class="c">#def _setupVirtualBandItemActions(self):</span>
+    <span class="c">#    pass</span>
+
+    <span class="k">def</span> <span class="nf">_setupDatasetItemActions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">actionsgroup</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">actionsgroup</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">actionsgroup</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QActionGroup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="c"># open RGB</span>
+        <span class="c"># @TODO: find an icon for RGB</span>
+        <span class="n">icon</span> <span class="o">=</span> <span class="n">qt4support</span><span class="o">.</span><span class="n">geticon</span><span class="p">(</span><span class="s">&#39;rasterband.svg&#39;</span><span class="p">,</span> <span class="n">__name__</span><span class="p">)</span>
+        <span class="n">QtGui</span><span class="o">.</span><span class="n">QAction</span><span class="p">(</span><span class="n">icon</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Open as RGB&#39;</span><span class="p">),</span> <span class="n">actionsgroup</span><span class="p">,</span>
+                      <span class="n">objectName</span><span class="o">=</span><span class="s">&#39;actionOpenRGBImageView&#39;</span><span class="p">,</span>
+                      <span class="c">#shortcut=self.tr(&#39;Ctrl+B&#39;),</span>
+                      <span class="n">toolTip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Display the dataset as an RGB image&#39;</span><span class="p">),</span>
+                      <span class="n">statusTip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Open as RGB&#39;</span><span class="p">),</span>
+                      <span class="n">triggered</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">openRGBImageView</span><span class="p">)</span>
+
+        <span class="c"># build overviews</span>
+        <span class="n">icon</span> <span class="o">=</span> <span class="n">qt4support</span><span class="o">.</span><span class="n">geticon</span><span class="p">(</span><span class="s">&#39;overview.svg&#39;</span><span class="p">,</span> <span class="n">__name__</span><span class="p">)</span>
+        <span class="n">QtGui</span><span class="o">.</span><span class="n">QAction</span><span class="p">(</span><span class="n">icon</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;&amp;Build overviews&#39;</span><span class="p">),</span>
+                      <span class="n">actionsgroup</span><span class="p">,</span> <span class="n">objectName</span><span class="o">=</span><span class="s">&#39;actionBuidOverviews&#39;</span><span class="p">,</span>
+                      <span class="n">shortcut</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Ctrl+B&#39;</span><span class="p">),</span>
+                      <span class="n">toolTip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Build overviews for all raster bands&#39;</span><span class="p">),</span>
+                      <span class="n">statusTip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span>
+                        <span class="s">&#39;Build overviews for all raster bands&#39;</span><span class="p">),</span>
+                      <span class="n">triggered</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">buildOverviews</span><span class="p">)</span>
+
+        <span class="c"># @TODO: add band, add virtual band, open GCPs view</span>
+
+        <span class="c"># close</span>
+        <span class="n">icon</span> <span class="o">=</span> <span class="n">qt4support</span><span class="o">.</span><span class="n">geticon</span><span class="p">(</span><span class="s">&#39;close.svg&#39;</span><span class="p">,</span> <span class="s">&#39;gsdview&#39;</span><span class="p">)</span>
+        <span class="n">QtGui</span><span class="o">.</span><span class="n">QAction</span><span class="p">(</span><span class="n">icon</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Close&#39;</span><span class="p">),</span> <span class="n">actionsgroup</span><span class="p">,</span>
+                      <span class="n">objectName</span><span class="o">=</span><span class="s">&#39;actionCloseItem&#39;</span><span class="p">,</span>
+                      <span class="n">shortcut</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Ctrl+W&#39;</span><span class="p">),</span>
+                      <span class="n">toolTip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Close the current item&#39;</span><span class="p">),</span>
+                      <span class="n">statusTip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Close the current item&#39;</span><span class="p">),</span>
+                      <span class="n">triggered</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">closeCurrentItem</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setupMajorObjectItemActions</span><span class="p">(</span><span class="n">actionsgroup</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">actionsgroup</span>
+
+    <span class="k">def</span> <span class="nf">_setupSubDatasetItemActions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">actionsgroup</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">actionsgroup</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">actionsgroup</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QActionGroup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="c"># open</span>
+        <span class="n">icon</span> <span class="o">=</span> <span class="n">qt4support</span><span class="o">.</span><span class="n">geticon</span><span class="p">(</span><span class="s">&#39;open.svg&#39;</span><span class="p">,</span> <span class="n">__name__</span><span class="p">)</span>
+        <span class="n">QtGui</span><span class="o">.</span><span class="n">QAction</span><span class="p">(</span><span class="n">icon</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Open Sub Dataset&#39;</span><span class="p">),</span> <span class="n">actionsgroup</span><span class="p">,</span>
+                      <span class="n">objectName</span><span class="o">=</span><span class="s">&#39;actionOpenSubDatasetItem&#39;</span><span class="p">,</span>
+                      <span class="n">shortcut</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Ctrl+O&#39;</span><span class="p">),</span>
+                      <span class="n">toolTip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Open Sub Dataset&#39;</span><span class="p">),</span>
+                      <span class="n">statusTip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Open Sub Dataset&#39;</span><span class="p">),</span>
+                      <span class="n">triggered</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">openSubDataset</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setupDatasetItemActions</span><span class="p">(</span><span class="n">actionsgroup</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">actionsgroup</span>
+
+    <span class="k">def</span> <span class="nf">_setupActions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">actionsmap</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">actionsmap</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">actionsmap</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="n">actionsmap</span><span class="p">[</span><span class="s">&#39;MajorObjectItem&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setupMajorObjectItemActions</span><span class="p">()</span>
+        <span class="n">actionsmap</span><span class="p">[</span><span class="s">&#39;BandItem&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setupBandItemActions</span><span class="p">()</span>
+        <span class="n">actionsmap</span><span class="p">[</span><span class="s">&#39;OverviewItem&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setupOverviewItemActions</span><span class="p">()</span>
+        <span class="c">#actionsmap[&#39;VirtualBandItem&#39;] = self._setupVirtualBandItemActions()</span>
+        <span class="n">actionsmap</span><span class="p">[</span><span class="s">&#39;DatasetItem&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setupDatasetItemActions</span><span class="p">()</span>
+        <span class="n">actionsmap</span><span class="p">[</span><span class="s">&#39;CachedDatasetItem&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">actionsmap</span><span class="p">[</span><span class="s">&#39;DatasetItem&#39;</span><span class="p">]</span>
+        <span class="n">actionsmap</span><span class="p">[</span><span class="s">&#39;SubDatasetItem&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setupSubDatasetItemActions</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">actionsmap</span>
+
+    <span class="c">### Actions enabling ######################################################</span>
+    <span class="k">def</span> <span class="nf">_getBandItemActions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">actionsgroup</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">actionsgroup</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">actionsgroup</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_actionsmap</span><span class="p">[</span><span class="s">&#39;BandItem&#39;</span><span class="p">]</span>
+
+        <span class="n">action</span> <span class="o">=</span> <span class="n">actionsgroup</span><span class="o">.</span><span class="n">findChild</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QAction</span><span class="p">,</span> <span class="s">&#39;actionOpenImageView&#39;</span><span class="p">)</span>
+        <span class="n">action</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">item</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">modelitems</span><span class="o">.</span><span class="n">BandItem</span><span class="p">)</span>
+
+            <span class="c"># @TODO: find a better solution</span>
+            <span class="n">allowcomplex</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="k">if</span> <span class="n">gdal</span><span class="o">.</span><span class="n">DataTypeIsComplex</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">DataType</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">allowcomplex</span><span class="p">:</span>
+                <span class="n">action</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c"># @TODO: remove this to allow multiple views on the same item</span>
+                <span class="k">for</span> <span class="n">subwin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_app</span><span class="o">.</span><span class="n">mdiarea</span><span class="o">.</span><span class="n">subWindowList</span><span class="p">():</span>
+                    <span class="c">#if subwin.item == item:</span>
+                    <span class="c">#    action.setEnabled(False)</span>
+                    <span class="c">#    break</span>
+
+                    <span class="c"># @COMPATIBILITY: pyside 1.0.1</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">subwin</span><span class="o">.</span><span class="n">item</span> <span class="o">==</span> <span class="n">item</span><span class="p">:</span>
+                            <span class="n">action</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+                            <span class="k">break</span>
+                    <span class="k">except</span> <span class="ne">NotImplementedError</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="nb">id</span><span class="p">(</span><span class="n">subwin</span><span class="o">.</span><span class="n">item</span><span class="p">)</span> <span class="o">==</span> <span class="nb">id</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
+                            <span class="n">action</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+                            <span class="k">break</span>
+
+        <span class="k">return</span> <span class="n">actionsgroup</span>
+
+    <span class="k">def</span> <span class="nf">_getDatasetItemActions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">actionsgroup</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">actionsgroup</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">actionsgroup</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_actionsmap</span><span class="p">[</span><span class="s">&#39;DatasetItem&#39;</span><span class="p">]</span>
+
+        <span class="c"># RGB</span>
+        <span class="n">action</span> <span class="o">=</span> <span class="n">actionsgroup</span><span class="o">.</span><span class="n">findChild</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QAction</span><span class="p">,</span>
+                                        <span class="s">&#39;actionOpenRGBImageView&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">gdalsupport</span><span class="o">.</span><span class="n">isRGB</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
+            <span class="c"># @TODO: remove this to allow multiple views on the same item</span>
+            <span class="k">for</span> <span class="n">subwin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_app</span><span class="o">.</span><span class="n">mdiarea</span><span class="o">.</span><span class="n">subWindowList</span><span class="p">():</span>
+                <span class="c">#if subwin.item == item:</span>
+                <span class="c">#    action.setEnabled(False)</span>
+                <span class="c">#    break</span>
+
+                <span class="c"># @COMPATIBILITY: pyside 1.0.1</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">subwin</span><span class="o">.</span><span class="n">item</span> <span class="o">==</span> <span class="n">item</span><span class="p">:</span>
+                        <span class="n">action</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+                        <span class="k">break</span>
+                <span class="k">except</span> <span class="ne">NotImplementedError</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">id</span><span class="p">(</span><span class="n">subwin</span><span class="o">.</span><span class="n">item</span><span class="p">)</span> <span class="o">==</span> <span class="nb">id</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
+                        <span class="n">action</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+                        <span class="k">break</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">action</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">action</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">actionsgroup</span>
+
+    <span class="c"># @NOTE: this is needed for correct context menu setup</span>
+    <span class="c"># @TODO: maybe it is possible to find a better way to handle the problem</span>
+    <span class="n">_getCachedDatasetItemActions</span> <span class="o">=</span> <span class="n">_getDatasetItemActions</span>
+
+    <span class="k">def</span> <span class="nf">_getSubDatasetItemActions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">actionsgroup</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">actionsgroup</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">actionsgroup</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_actionsmap</span><span class="p">[</span><span class="s">&#39;SubDatasetItem&#39;</span><span class="p">]</span>
+
+        <span class="n">actionsgroup</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getDatasetItemActions</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">actionsgroup</span><span class="p">)</span>
+
+        <span class="n">openaction</span> <span class="o">=</span> <span class="n">actionsgroup</span><span class="o">.</span><span class="n">findChild</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QAction</span><span class="p">,</span>
+                                            <span class="s">&#39;actionOpenSubDatasetItem&#39;</span><span class="p">)</span>
+        <span class="n">closeaction</span> <span class="o">=</span> <span class="n">actionsgroup</span><span class="o">.</span><span class="n">findChild</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QAction</span><span class="p">,</span> <span class="s">&#39;actionCloseItem&#39;</span><span class="p">)</span>
+        <span class="n">propertyaction</span> <span class="o">=</span> <span class="n">actionsgroup</span><span class="o">.</span><span class="n">findChild</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QAction</span><span class="p">,</span>
+                                                <span class="s">&#39;actionShowItemProperties&#39;</span><span class="p">)</span>
+        <span class="n">ovraction</span> <span class="o">=</span> <span class="n">actionsgroup</span><span class="o">.</span><span class="n">findChild</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QAction</span><span class="p">,</span>
+                                           <span class="s">&#39;actionBuidOverviews&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">item</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">modelitems</span><span class="o">.</span><span class="n">SubDatasetItem</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">isopen</span><span class="p">():</span>
+                <span class="n">openaction</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+                <span class="n">closeaction</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+                <span class="n">propertyaction</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+                <span class="n">ovraction</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">openaction</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+                <span class="n">closeaction</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+                <span class="n">propertyaction</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+                <span class="n">ovraction</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">actionsgroup</span>
+
+    <span class="c">### Major object ##########################################################</span>
+    <span class="nd">@QtCore.Slot</span><span class="p">()</span>
+<div class="viewcode-block" id="GDALBackend.openItemMatadataView"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.core.html#gsdview.gdalbackend.core.GDALBackend.openItemMatadataView">[docs]</a>    <span class="k">def</span> <span class="nf">openItemMatadataView</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c"># @TODO: implementation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_app</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;method not yet implemented&#39;</span><span class="p">)</span>
+</div>
+    <span class="k">def</span> <span class="nf">_infoDialogFactory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">itemtype</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__mro__</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">itemtype</span><span class="o">.</span><span class="n">__name__</span>
+            <span class="k">assert</span> <span class="n">name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&#39;Item&#39;</span><span class="p">)</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">name</span><span class="p">[:</span><span class="o">-</span><span class="mi">4</span><span class="p">]</span> <span class="o">+</span> <span class="s">&#39;InfoDialog&#39;</span>
+            <span class="n">dialogclass</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">widgets</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">dialogclass</span><span class="p">:</span>
+                <span class="n">dialog</span> <span class="o">=</span> <span class="n">dialogclass</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_app</span><span class="p">)</span>
+                <span class="k">break</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dialog</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="c"># @TODO: rewrite</span>
+        <span class="k">if</span> <span class="n">dialog</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dialog</span><span class="p">,</span> <span class="n">widgets</span><span class="o">.</span><span class="n">BandInfoDialog</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">modelitems</span><span class="o">.</span><span class="n">OverviewItem</span><span class="p">):</span>
+                <span class="c"># disable some function on overview items</span>
+                <span class="n">dialog</span><span class="o">.</span><span class="n">overviewWidget</span><span class="o">.</span><span class="n">setReadOnly</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+
+                <span class="n">dialog</span><span class="o">.</span><span class="n">approxStatsCheckBox</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+                <span class="n">dialog</span><span class="o">.</span><span class="n">computeStatsButton</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+
+                <span class="n">dialog</span><span class="o">.</span><span class="n">customHistogramCheckBox</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+                <span class="n">dialog</span><span class="o">.</span><span class="n">computeHistogramButton</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+
+            <span class="c"># helpers setup</span>
+            <span class="k">for</span> <span class="n">helpername</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39;statsdialog&#39;</span><span class="p">,</span> <span class="s">&#39;histdialog&#39;</span><span class="p">,</span> <span class="s">&#39;ovrdialog&#39;</span><span class="p">):</span>
+                <span class="n">helper</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_helpers</span><span class="p">[</span><span class="n">helpername</span><span class="p">]</span>
+                <span class="n">helper</span><span class="o">.</span><span class="n">dialog</span> <span class="o">=</span> <span class="n">dialog</span>
+
+            <span class="n">dialog</span><span class="o">.</span><span class="n">statsComputationRequest</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+                                        <span class="bp">self</span><span class="o">.</span><span class="n">_helpers</span><span class="p">[</span><span class="s">&#39;statsdialog&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">start</span><span class="p">)</span>
+            <span class="n">dialog</span><span class="o">.</span><span class="n">histogramComputationRequest</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+                                        <span class="bp">self</span><span class="o">.</span><span class="n">_helpers</span><span class="p">[</span><span class="s">&#39;histdialog&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">start</span><span class="p">)</span>
+            <span class="n">dialog</span><span class="o">.</span><span class="n">overviewComputationRequest</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+                                        <span class="bp">self</span><span class="o">.</span><span class="n">_helpers</span><span class="p">[</span><span class="s">&#39;ovrdialog&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">start</span><span class="p">)</span>
+
+            <span class="n">dialog</span><span class="o">.</span><span class="n">finished</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_resethelpers</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">dialog</span>
+
+    <span class="nd">@QtCore.Slot</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">_resethelpers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_helpers</span><span class="p">[</span><span class="s">&#39;statsdialog&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_helpers</span><span class="p">[</span><span class="s">&#39;histdialog&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_helpers</span><span class="p">[</span><span class="s">&#39;ovrdialog&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+
+    <span class="nd">@QtCore.Slot</span><span class="p">()</span>
+<div class="viewcode-block" id="GDALBackend.showItemProperties"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.core.html#gsdview.gdalbackend.core.GDALBackend.showItemProperties">[docs]</a>    <span class="k">def</span> <span class="nf">showItemProperties</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_app</span><span class="o">.</span><span class="n">currentItem</span><span class="p">()</span>
+        <span class="n">dialog</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_infoDialogFactory</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">dialog</span><span class="p">:</span>
+            <span class="n">dialog</span><span class="o">.</span><span class="n">exec_</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_app</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;unable to show info dialog for &quot;</span><span class="si">%s</span><span class="s">&quot; &#39;</span>
+                                   <span class="s">&#39;item class&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">))</span>
+
+    <span class="c">### Driver ################################################################</span>
+    <span class="c">### Dataset ###############################################################</span></div>
+    <span class="nd">@QtCore.Slot</span><span class="p">()</span>
+    <span class="nd">@QtCore.Slot</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QStandardItem</span><span class="p">)</span>
+<div class="viewcode-block" id="GDALBackend.openRGBImageView"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.core.html#gsdview.gdalbackend.core.GDALBackend.openRGBImageView">[docs]</a>    <span class="k">def</span> <span class="nf">openRGBImageView</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">item</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_app</span><span class="o">.</span><span class="n">currentItem</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">modelitems</span><span class="o">.</span><span class="n">DatasetItem</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;item = </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span>
+                                                                    <span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">item</span><span class="o">.</span><span class="n">scene</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot;This dataset can&#39;t be opened in RGB mode.&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_app</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="c">#title = self.tr(&#39;WARNING&#39;)</span>
+            <span class="c">#msg = self.tr(msg)</span>
+            <span class="c">#QtGui.QMessageBox.warning(self._app, title, msg)</span>
+            <span class="k">return</span>
+
+        <span class="c"># only open a new view if there is no other on the item selected</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">views</span><span class="p">())</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">newImageView</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+</div>
+    <span class="nd">@QtCore.Slot</span><span class="p">()</span>
+<div class="viewcode-block" id="GDALBackend.buildOverviews"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.core.html#gsdview.gdalbackend.core.GDALBackend.buildOverviews">[docs]</a>    <span class="k">def</span> <span class="nf">buildOverviews</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">item</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_app</span><span class="o">.</span><span class="n">currentItem</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">modelitems</span><span class="o">.</span><span class="n">DatasetItem</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;item = </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span>
+                                                                    <span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="p">))</span>
+
+        <span class="n">dialog</span> <span class="o">=</span> <span class="n">widgets</span><span class="o">.</span><span class="n">OverviewDialog</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_app</span><span class="p">)</span>
+        <span class="n">helper</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_helpers</span><span class="p">[</span><span class="s">&#39;ovrdialog&#39;</span><span class="p">]</span>
+        <span class="n">helper</span><span class="o">.</span><span class="n">dialog</span> <span class="o">=</span> <span class="n">dialog</span>
+        <span class="n">dialog</span><span class="o">.</span><span class="n">overviewComputationRequest</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">helper</span><span class="o">.</span><span class="n">start</span><span class="p">)</span>
+        <span class="n">dialog</span><span class="o">.</span><span class="n">exec_</span><span class="p">()</span>
+
+    <span class="c"># @TODO: add band, add virtual band, open GCPs view</span>
+</div>
+    <span class="nd">@QtCore.Slot</span><span class="p">()</span>
+<div class="viewcode-block" id="GDALBackend.closeCurrentItem"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.core.html#gsdview.gdalbackend.core.GDALBackend.closeCurrentItem">[docs]</a>    <span class="k">def</span> <span class="nf">closeCurrentItem</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_app</span><span class="o">.</span><span class="n">currentItem</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_app</span><span class="o">.</span><span class="n">treeview</span><span class="o">.</span><span class="n">collapse</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">index</span><span class="p">())</span>
+        <span class="n">item</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="c">### Sub-dataset ###########################################################</span></div>
+    <span class="nd">@QtCore.Slot</span><span class="p">()</span>
+<div class="viewcode-block" id="GDALBackend.openSubDataset"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.core.html#gsdview.gdalbackend.core.GDALBackend.openSubDataset">[docs]</a>    <span class="k">def</span> <span class="nf">openSubDataset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_app</span><span class="o">.</span><span class="n">currentItem</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">modelitems</span><span class="o">.</span><span class="n">SubDatasetItem</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">isopen</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">gdalsupport</span><span class="o">.</span><span class="n">isRGB</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">openRGBImageView</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c"># Only works for CachedDatasetItems</span>
+            <span class="n">cachedir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">vrtfilename</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="n">id_</span> <span class="o">=</span> <span class="n">gdalsupport</span><span class="o">.</span><span class="n">uniqueDatasetID</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">parent</span><span class="p">())</span>
+            <span class="n">cachedir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">modelitems</span><span class="o">.</span><span class="n">SubDatasetItem</span><span class="o">.</span><span class="n">CACHEDIR</span><span class="p">,</span> <span class="n">id_</span><span class="p">)</span>
+
+        <span class="c"># sub-dataset index (starting from 1)</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">row</span><span class="p">()</span> <span class="o">-</span> <span class="n">item</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">RasterCount</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">cachedir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cachedir</span><span class="p">,</span> <span class="s">&#39;subdataset</span><span class="si">%02d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">index</span><span class="p">)</span>
+
+        <span class="n">item</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">cachedir</span><span class="p">)</span>
+        <span class="c">#self._app.treeview.expand(item.index())</span>
+
+        <span class="c">#for row in range(item.rowCount()):</span>
+        <span class="c">#    child = item.child(row)</span>
+        <span class="c">#    self._app.treeview.expand(child.index())</span>
+
+    <span class="c">### Raster Band ###########################################################</span></div>
+    <span class="nd">@QtCore.Slot</span><span class="p">()</span>
+    <span class="nd">@QtCore.Slot</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QStandardItem</span><span class="p">)</span>  <span class="c"># @TODO: check</span>
+    <span class="nd">@qt4support.overrideCursor</span>
+<div class="viewcode-block" id="GDALBackend.openImageView"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.core.html#gsdview.gdalbackend.core.GDALBackend.openImageView">[docs]</a>    <span class="k">def</span> <span class="nf">openImageView</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">item</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_app</span><span class="o">.</span><span class="n">currentItem</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">modelitems</span><span class="o">.</span><span class="n">BandItem</span><span class="p">),</span> <span class="s">&#39;item = </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+
+        <span class="c"># NOTE: a reguest of opening an overview is converted into a request</span>
+        <span class="c">#       for opening the corresponding raster band</span>
+        <span class="k">while</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">modelitems</span><span class="o">.</span><span class="n">OverviewItem</span><span class="p">):</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">item</span><span class="o">.</span><span class="n">scene</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">item</span><span class="o">.</span><span class="n">GetDescription</span><span class="p">():</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="s">&#39;band &quot;</span><span class="si">%s</span><span class="s">&quot; is not visualizable&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">row</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="s">&#39;band &quot;</span><span class="si">%s</span><span class="s">&quot; is not visualizable&#39;</span> <span class="o">%</span> <span class="n">item</span><span class="o">.</span><span class="n">GetDescription</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_app</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="c"># only open a new view if there is no other on the item selected</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">views</span><span class="p">())</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">stats</span> <span class="o">=</span> <span class="n">gdalsupport</span><span class="o">.</span><span class="n">GetCachedStatistics</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">None</span> <span class="ow">in</span> <span class="n">stats</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_helpers</span><span class="p">[</span><span class="s">&#39;stats&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">newImageView</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="GDALBackend.newImageView"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.core.html#gsdview.gdalbackend.core.GDALBackend.newImageView">[docs]</a>    <span class="k">def</span> <span class="nf">newImageView</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">item</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_app</span><span class="o">.</span><span class="n">currentItem</span><span class="p">()</span>
+        <span class="c">#assert isinstance(item, modelitems.BandItem)</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="p">(</span><span class="n">modelitems</span><span class="o">.</span><span class="n">BandItem</span><span class="p">,</span> <span class="n">modelitems</span><span class="o">.</span><span class="n">DatasetItem</span><span class="p">))</span>
+
+        <span class="c"># @TODO: check if any graphics view is open on the selected item</span>
+
+        <span class="n">winlist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_app</span><span class="o">.</span><span class="n">mdiarea</span><span class="o">.</span><span class="n">subWindowList</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">winlist</span><span class="p">):</span>
+            <span class="n">maximized</span> <span class="o">=</span> <span class="n">winlist</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">windowState</span><span class="p">()</span> <span class="o">&amp;</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">WindowMaximized</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">maximized</span> <span class="o">=</span> <span class="bp">True</span>
+
+        <span class="n">subwin</span> <span class="o">=</span> <span class="n">GraphicsViewSubWindow</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_app</span><span class="o">.</span><span class="n">mdiarea</span><span class="o">.</span><span class="n">addSubWindow</span><span class="p">(</span><span class="n">subwin</span><span class="p">)</span>
+        <span class="n">grephicsview</span> <span class="o">=</span> <span class="n">subwin</span><span class="o">.</span><span class="n">widget</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_app</span><span class="o">.</span><span class="n">monitor</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">grephicsview</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_app</span><span class="o">.</span><span class="n">mousemanager</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">grephicsview</span><span class="p">)</span>
+
+        <span class="n">subwin</span><span class="o">.</span><span class="n">destroyed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_app</span><span class="o">.</span><span class="n">subWindowClosed</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">maximized</span><span class="p">:</span>
+            <span class="n">subwin</span><span class="o">.</span><span class="n">showMaximized</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">subwin</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+        <span class="c"># @TODO: check</span>
+        <span class="n">helper</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_helpers</span><span class="p">[</span><span class="s">&#39;addo&#39;</span><span class="p">]</span>
+        <span class="n">helper</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+
+    <span class="c"># @TODO: Open, Masked bands</span>
+    <span class="c"># @TODO: dataset --&gt; Build overviews</span>
+
+    <span class="c">### Overview ##############################################################</span>
+    <span class="c">### Virtualband ###########################################################</span></div>
+<div class="viewcode-block" id="GDALBackend.loadGDALSettings"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.core.html#gsdview.gdalbackend.core.GDALBackend.loadGDALSettings">[docs]</a>    <span class="k">def</span> <span class="nf">loadGDALSettings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">):</span>
+        <span class="n">logger</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_app</span><span class="o">.</span><span class="n">logger</span>
+
+        <span class="n">settings</span><span class="o">.</span><span class="n">beginGroup</span><span class="p">(</span><span class="s">&#39;gdal&#39;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">cachesize</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s">&#39;GDAL_CACHEMAX&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">cachesize</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">cachesize</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">cachesize</span><span class="p">)</span>
+                <span class="n">gdal</span><span class="o">.</span><span class="n">SetCacheMax</span><span class="p">(</span><span class="n">cachesize</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;GDAL cache size det to </span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">cachesize</span><span class="p">)</span>
+
+            <span class="n">value</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s">&#39;GDAL_DATA&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">value</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expandvars</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+                <span class="n">gdal</span><span class="o">.</span><span class="n">SetConfigOption</span><span class="p">(</span><span class="s">&#39;GDAL_DATA&#39;</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;GDAL_DATA directory set to &quot;</span><span class="si">%s</span><span class="s">&quot;&#39;</span> <span class="o">%</span> <span class="n">value</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">optname</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39;GDAL_SKIP&#39;</span><span class="p">,</span> <span class="s">&#39;GDAL_DRIVER_PATH&#39;</span><span class="p">,</span>
+                            <span class="s">&#39;OGR_DRIVER_PATH&#39;</span><span class="p">):</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="n">optname</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expandvars</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+                    <span class="c"># @NOTE: type of arg 2 of SetConfigOption must be str,</span>
+                    <span class="c">#        not an unicode</span>
+                    <span class="n">gdal</span><span class="o">.</span><span class="n">SetConfigOption</span><span class="p">(</span><span class="n">optname</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%s</span><span class="s"> set to &quot;</span><span class="si">%s</span><span class="s">&quot;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">optname</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
+
+            <span class="n">gdal</span><span class="o">.</span><span class="n">AllRegister</span><span class="p">()</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;run &quot;gdal.AllRegister()&quot;&#39;</span><span class="p">)</span>
+
+            <span class="c"># update the about dialog</span>
+            <span class="n">tabWidget</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_app</span><span class="o">.</span><span class="n">aboutdialog</span><span class="o">.</span><span class="n">tabWidget</span>
+            <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">tabWidget</span><span class="o">.</span><span class="n">count</span><span class="p">()):</span>
+                <span class="k">if</span> <span class="n">tabWidget</span><span class="o">.</span><span class="n">tabText</span><span class="p">(</span><span class="n">index</span><span class="p">)</span> <span class="o">==</span> <span class="s">&#39;GDAL&#39;</span><span class="p">:</span>
+                    <span class="n">gdalinfowidget</span> <span class="o">=</span> <span class="n">tabWidget</span><span class="o">.</span><span class="n">widget</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+                    <span class="n">gdalinfowidget</span><span class="o">.</span><span class="n">setGdalDriversTab</span><span class="p">()</span>
+                    <span class="k">break</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;GDAL page ot found in the about dialog&#39;</span><span class="p">)</span>
+                <span class="k">return</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">settings</span><span class="o">.</span><span class="n">endGroup</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="GDALBackend.loadSettings"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.core.html#gsdview.gdalbackend.core.GDALBackend.loadSettings">[docs]</a>    <span class="k">def</span> <span class="nf">loadSettings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loadGDALSettings</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span>
+
+        <span class="n">settings</span><span class="o">.</span><span class="n">beginGroup</span><span class="p">(</span><span class="s">&#39;gdalbackend&#39;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c"># show overviews in the treeview</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s">&#39;visible_overview_items&#39;</span><span class="p">)</span>
+
+            <span class="c"># @COMPATIBILITY: presumably a bug in PyQt4 (4.7.2)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">basestring</span><span class="p">):</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="bp">True</span> <span class="k">if</span> <span class="n">value</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39;true&#39;</span><span class="p">,</span> <span class="s">&#39;True&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="bp">False</span>
+
+            <span class="n">modelitems</span><span class="o">.</span><span class="n">VISIBLE_OVERVIEW_ITEMS</span> <span class="o">=</span> <span class="n">value</span>
+            <span class="c"># @TODO: reload all items</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">settings</span><span class="o">.</span><span class="n">endGroup</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="GDALBackend.saveSettings"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.core.html#gsdview.gdalbackend.core.GDALBackend.saveSettings">[docs]</a>    <span class="k">def</span> <span class="nf">saveSettings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">):</span>
+        <span class="c"># @NOTE: GDAL preferences are only modified via preferences dialog</span>
+
+        <span class="n">settings</span><span class="o">.</span><span class="n">beginGroup</span><span class="p">(</span><span class="s">&#39;gdalbackend&#39;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c"># show overviews in the treeview</span>
+            <span class="n">settings</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="s">&#39;visible_overview_items&#39;</span><span class="p">,</span>
+                              <span class="n">modelitems</span><span class="o">.</span><span class="n">VISIBLE_OVERVIEW_ITEMS</span><span class="p">)</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">settings</span><span class="o">.</span><span class="n">endGroup</span><span class="p">()</span>
+
+
+<span class="c">### MISC ######################################################################</span></div></div>
+<span class="kn">from</span> <span class="nn">..mdi</span> <span class="kn">import</span> <span class="n">ItemSubWindow</span>
+
+
+<span class="c"># @TODO: move elsewhere</span>
+<span class="k">class</span> <span class="nc">GraphicsViewSubWindow</span><span class="p">(</span><span class="n">ItemSubWindow</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">WindowFlags</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span>
+                 <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">GraphicsViewSubWindow</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">flags</span><span class="p">,</span>
+                                                    <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">title</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">GetDescription</span><span class="p">())</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setWindowTitle</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+
+        <span class="n">scene</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">scene</span>
+        <span class="n">graphicsview</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QGraphicsView</span><span class="p">(</span><span class="n">scene</span><span class="p">)</span>
+        <span class="n">graphicsview</span><span class="o">.</span><span class="n">setMouseTracking</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setWidget</span><span class="p">(</span><span class="n">graphicsview</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/logo.png" alt="Logo"/>
+            </a></p>
+    
+    
+    <p>
+        <a href="http://sourceforge.net/projects/gsdview">
+            <img src="http://sflogo.sourceforge.net/sflogo.php?group_id=226458&type=14" width="150" height="40" alt="Get GSDView at SourceForge.net. Fast, secure and Free Open Source software downloads" />
+        </a>
+    </p>
+    
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li><a href="../../../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../gsdview.html" >gsdview</a> &raquo;</li>
+          <li><a href="../gdalbackend.html" >gsdview.gdalbackend</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2008-2011, Antonio Valentino.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

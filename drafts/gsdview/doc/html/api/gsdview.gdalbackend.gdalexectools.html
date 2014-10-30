@@ -1,0 +1,453 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>gsdview.gdalbackend.gdalexectools &mdash; GSDView Open Edition Home Page</title>
+    <link rel="stylesheet" href="../_static/sourceforge.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.6.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/logo.ico"/>
+    <link rel="top" title="GSDView Open Edition Home Page" href="../index.html" />
+    <link rel="up" title="API Reference" href="../reference.html" />
+    <link rel="next" title="gsdview.gdalbackend.gdalqt4" href="gsdview.gdalbackend.gdalqt4.html" />
+    <link rel="prev" title="gsdview.gdalbackend.core" href="gsdview.gdalbackend.core.html" /> 
+  </head>
+  <body>
+    
+        
+    
+    
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li class="right" >
+          <a href="gsdview.gdalbackend.gdalqt4.html" title="gsdview.gdalbackend.gdalqt4"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="gsdview.gdalbackend.core.html" title="gsdview.gdalbackend.core"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../reference.html" accesskey="U">API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-gsdview.gdalbackend.gdalexectools">
+<span id="gsdview-gdalbackend-gdalexectools"></span><h1>gsdview.gdalbackend.gdalexectools<a class="headerlink" href="#module-gsdview.gdalbackend.gdalexectools" title="Permalink to this headline">¶</a></h1>
+<p>Custom exectools components for GDAL.</p>
+<p class="rubric">Classes</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><a class="reference internal" href="#gsdview.gdalbackend.gdalexectools.BaseGdalToolDescriptor" title="gsdview.gdalbackend.gdalexectools.BaseGdalToolDescriptor"><tt class="xref py py-obj docutils literal"><span class="pre">BaseGdalToolDescriptor</span></tt></a>(executable[,&nbsp;args,&nbsp;...])</td>
+<td>Base class for GDAL tool descriprors.</td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.gdalbackend.gdalexectools.GdalAddOverviewDescriptor" title="gsdview.gdalbackend.gdalexectools.GdalAddOverviewDescriptor"><tt class="xref py py-obj docutils literal"><span class="pre">GdalAddOverviewDescriptor</span></tt></a>([cwd,&nbsp;env,&nbsp;...])</td>
+<td>Tool descriptor for the gdaladdo utility program.</td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.gdalbackend.gdalexectools.GdalInfoDescriptor" title="gsdview.gdalbackend.gdalexectools.GdalInfoDescriptor"><tt class="xref py py-obj docutils literal"><span class="pre">GdalInfoDescriptor</span></tt></a>([cwd,&nbsp;env,&nbsp;...])</td>
+<td>Tool descriptor for the gdalinfo utility program.</td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.gdalbackend.gdalexectools.GdalOutputHandler" title="gsdview.gdalbackend.gdalexectools.GdalOutputHandler"><tt class="xref py py-obj docutils literal"><span class="pre">GdalOutputHandler</span></tt></a>(**kwargs[,&nbsp;logger,&nbsp;...])</td>
+<td>Handler for the GDAL simple progress report to terminal.</td>
+</tr>
+<tr><td><tt class="xref py py-obj docutils literal"><span class="pre">Qt4OutputHandler</span></tt>(**kwargs[,&nbsp;logger,&nbsp;...])</td>
+<td>Qt4 Output Handler.</td>
+</tr>
+</tbody>
+</table>
+<dl class="class">
+<dt id="gsdview.gdalbackend.gdalexectools.BaseGdalToolDescriptor">
+<em class="property">class </em><tt class="descclassname">gsdview.gdalbackend.gdalexectools.</tt><tt class="descname">BaseGdalToolDescriptor</tt><big>(</big><em>executable</em>, <em>args=None</em>, <em>cwd=None</em>, <em>env=None</em>, <em>stdout_handler=None</em>, <em>stderr_handler=None</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/gdalexectools.html#BaseGdalToolDescriptor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.gdalexectools.BaseGdalToolDescriptor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="exectools.html#exectools.ToolDescriptor" title="exectools.ToolDescriptor"><tt class="xref py py-class docutils literal"><span class="pre">exectools.ToolDescriptor</span></tt></a></p>
+<p>Base class for GDAL tool descriprors.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>executable</strong> &#8211; full path of the tool executable or just the tool program
+name if it is in the system search path</li>
+<li><strong>args</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#list" title="(in Python v2.7)"><em>list</em></a>) &#8211; default args for command (list of strings)</li>
+<li><strong>cwd</strong> &#8211; program working directory</li>
+<li><strong>env</strong> &#8211; environment dictionary</li>
+<li><strong>envmerge</strong> &#8211; if set to True (default) it is the <tt class="xref py py-attr docutils literal"><span class="pre">env</span></tt> dictionaty is
+used to update the system environment</li>
+<li><strong>stdout_handler</strong> &#8211; <em>OutputHandler</em> for the stdout of the tool</li>
+<li><strong>stderr_handler</strong> &#8211; <em>OutputHandler</em> for the stderr of the tool</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><tt class="xref py py-class docutils literal"><span class="pre">BaseOutputHandler</span></tt></p>
+</div>
+<dl class="method">
+<dt id="gsdview.gdalbackend.gdalexectools.BaseGdalToolDescriptor.cmdline">
+<tt class="descname">cmdline</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/gdalexectools.html#BaseGdalToolDescriptor.cmdline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.gdalexectools.BaseGdalToolDescriptor.cmdline" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.gdalexectools.BaseGdalToolDescriptor.gdal_config_options">
+<tt class="descname">gdal_config_options</tt><big>(</big><em>cmd=''</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/gdalexectools.html#BaseGdalToolDescriptor.gdal_config_options"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.gdalexectools.BaseGdalToolDescriptor.gdal_config_options" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gsdview.gdalbackend.gdalexectools.GdalAddOverviewDescriptor">
+<em class="property">class </em><tt class="descclassname">gsdview.gdalbackend.gdalexectools.</tt><tt class="descname">GdalAddOverviewDescriptor</tt><big>(</big><em>cwd=None</em>, <em>env=None</em>, <em>stdout_handler=None</em>, <em>stderr_handler=None</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/gdalexectools.html#GdalAddOverviewDescriptor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.gdalexectools.GdalAddOverviewDescriptor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gsdview.gdalbackend.gdalexectools.BaseGdalToolDescriptor" title="gsdview.gdalbackend.gdalexectools.BaseGdalToolDescriptor"><tt class="xref py py-class docutils literal"><span class="pre">gsdview.gdalbackend.gdalexectools.BaseGdalToolDescriptor</span></tt></a></p>
+<p>Tool descriptor for the gdaladdo utility program.</p>
+<p>Initialization:</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>cwd</strong> &#8211; program working directory</li>
+<li><strong>env</strong> &#8211; environment dictionary</li>
+<li><strong>envmerge</strong> &#8211; if set to True (default) it is the <tt class="xref py py-attr docutils literal"><span class="pre">env</span></tt> dictionaty is
+used to update the system environment</li>
+<li><strong>stdout_handler</strong> &#8211; <em>OutputHandler</em> for the stdout of the tool</li>
+<li><strong>stderr_handler</strong> &#8211; <em>OutputHandler</em> for the stderr of the tool</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="exectools.html#exectools.BaseOutputHandler" title="exectools.BaseOutputHandler"><tt class="xref py py-class docutils literal"><span class="pre">exectools.BaseOutputHandler</span></tt></a></p>
+</div>
+<dl class="attribute">
+<dt id="gsdview.gdalbackend.gdalexectools.GdalAddOverviewDescriptor.RESAMPLING_METHODS">
+<tt class="descname">RESAMPLING_METHODS</tt><a class="headerlink" href="#gsdview.gdalbackend.gdalexectools.GdalAddOverviewDescriptor.RESAMPLING_METHODS" title="Permalink to this definition">¶</a></dt>
+<dd><p>resampling methods</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.gdalbackend.gdalexectools.GdalAddOverviewDescriptor.TIFF_COMPRESSION_METHODS">
+<tt class="descname">TIFF_COMPRESSION_METHODS</tt><a class="headerlink" href="#gsdview.gdalbackend.gdalexectools.GdalAddOverviewDescriptor.TIFF_COMPRESSION_METHODS" title="Permalink to this definition">¶</a></dt>
+<dd><p>TIFF compression methods</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.gdalbackend.gdalexectools.GdalAddOverviewDescriptor.TIFF_INTERLEAVING_METHODS">
+<tt class="descname">TIFF_INTERLEAVING_METHODS</tt><a class="headerlink" href="#gsdview.gdalbackend.gdalexectools.GdalAddOverviewDescriptor.TIFF_INTERLEAVING_METHODS" title="Permalink to this definition">¶</a></dt>
+<dd><p>TIFF interleaving methods</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.gdalbackend.gdalexectools.GdalAddOverviewDescriptor.TIFF_USE_BIGTIFF_MODE">
+<tt class="descname">TIFF_USE_BIGTIFF_MODE</tt><a class="headerlink" href="#gsdview.gdalbackend.gdalexectools.GdalAddOverviewDescriptor.TIFF_USE_BIGTIFF_MODE" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allowed options for BigTIFF flag</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.gdalexectools.GdalAddOverviewDescriptor.cmdline">
+<tt class="descname">cmdline</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/gdalexectools.html#GdalAddOverviewDescriptor.cmdline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.gdalexectools.GdalAddOverviewDescriptor.cmdline" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.gdalexectools.GdalAddOverviewDescriptor.compression_method">
+<tt class="descname">compression_method</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/gdalexectools.html#GdalAddOverviewDescriptor.compression_method"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.gdalexectools.GdalAddOverviewDescriptor.compression_method" title="Permalink to this definition">¶</a></dt>
+<dd><p>TIFF compression method.</p>
+<p>This attribute is only used if external overviews are
+stored in GeoTIFF format.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.gdalexectools.GdalAddOverviewDescriptor.gdal_config_options">
+<tt class="descname">gdal_config_options</tt><big>(</big><em>cmd=''</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/gdalexectools.html#GdalAddOverviewDescriptor.gdal_config_options"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.gdalexectools.GdalAddOverviewDescriptor.gdal_config_options" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.gdalexectools.GdalAddOverviewDescriptor.interleaving_method">
+<tt class="descname">interleaving_method</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/gdalexectools.html#GdalAddOverviewDescriptor.interleaving_method"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.gdalexectools.GdalAddOverviewDescriptor.interleaving_method" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.gdalbackend.gdalexectools.GdalAddOverviewDescriptor.photometric_interpretation">
+<tt class="descname">photometric_interpretation</tt><a class="headerlink" href="#gsdview.gdalbackend.gdalexectools.GdalAddOverviewDescriptor.photometric_interpretation" title="Permalink to this definition">¶</a></dt>
+<dd><p>photometric interpretation: RGB, YCBCR, etc. (only for external
+overviews in GeoTIFF format).
+If None use GDAL defaults.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.gdalbackend.gdalexectools.GdalAddOverviewDescriptor.readonly">
+<tt class="descname">readonly</tt><a class="headerlink" href="#gsdview.gdalbackend.gdalexectools.GdalAddOverviewDescriptor.readonly" title="Permalink to this definition">¶</a></dt>
+<dd><p>ensure that gdaladdo works in readonly mode</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.gdalexectools.GdalAddOverviewDescriptor.resampling_method">
+<tt class="descname">resampling_method</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/gdalexectools.html#GdalAddOverviewDescriptor.resampling_method"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.gdalexectools.GdalAddOverviewDescriptor.resampling_method" title="Permalink to this definition">¶</a></dt>
+<dd><p>Resampling method for overviews computation.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.gdalexectools.GdalAddOverviewDescriptor.set_compression_method">
+<tt class="descname">set_compression_method</tt><big>(</big><em>method</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/gdalexectools.html#GdalAddOverviewDescriptor.set_compression_method"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.gdalexectools.GdalAddOverviewDescriptor.set_compression_method" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.gdalexectools.GdalAddOverviewDescriptor.set_interleaving_method">
+<tt class="descname">set_interleaving_method</tt><big>(</big><em>method</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/gdalexectools.html#GdalAddOverviewDescriptor.set_interleaving_method"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.gdalexectools.GdalAddOverviewDescriptor.set_interleaving_method" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.gdalexectools.GdalAddOverviewDescriptor.set_resampling_method">
+<tt class="descname">set_resampling_method</tt><big>(</big><em>method</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/gdalexectools.html#GdalAddOverviewDescriptor.set_resampling_method"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.gdalexectools.GdalAddOverviewDescriptor.set_resampling_method" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.gdalexectools.GdalAddOverviewDescriptor.set_use_bigtiff_mode">
+<tt class="descname">set_use_bigtiff_mode</tt><big>(</big><em>mode</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/gdalexectools.html#GdalAddOverviewDescriptor.set_use_bigtiff_mode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.gdalexectools.GdalAddOverviewDescriptor.set_use_bigtiff_mode" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.gdalexectools.GdalAddOverviewDescriptor.use_bigtiff_mode">
+<tt class="descname">use_bigtiff_mode</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/gdalexectools.html#GdalAddOverviewDescriptor.use_bigtiff_mode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.gdalexectools.GdalAddOverviewDescriptor.use_bigtiff_mode" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.gdalbackend.gdalexectools.GdalAddOverviewDescriptor.use_rrd">
+<tt class="descname">use_rrd</tt><a class="headerlink" href="#gsdview.gdalbackend.gdalexectools.GdalAddOverviewDescriptor.use_rrd" title="Permalink to this definition">¶</a></dt>
+<dd><p>use Erdas Imagine format (.aux) as overview format.
+If None use GDAL defaults.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gsdview.gdalbackend.gdalexectools.GdalInfoDescriptor">
+<em class="property">class </em><tt class="descclassname">gsdview.gdalbackend.gdalexectools.</tt><tt class="descname">GdalInfoDescriptor</tt><big>(</big><em>cwd=None</em>, <em>env=None</em>, <em>stdout_handler=None</em>, <em>stderr_handler=None</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/gdalexectools.html#GdalInfoDescriptor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.gdalexectools.GdalInfoDescriptor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gsdview.gdalbackend.gdalexectools.BaseGdalToolDescriptor" title="gsdview.gdalbackend.gdalexectools.BaseGdalToolDescriptor"><tt class="xref py py-class docutils literal"><span class="pre">gsdview.gdalbackend.gdalexectools.BaseGdalToolDescriptor</span></tt></a></p>
+<p>Tool descriptor for the gdalinfo utility program.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>cwd</strong> &#8211; program working directory</li>
+<li><strong>env</strong> &#8211; environment dictionary</li>
+<li><strong>envmerge</strong> &#8211; if set to True (default) it is the <tt class="xref py py-attr docutils literal"><span class="pre">env</span></tt> dictionaty is
+used to update the system environment</li>
+<li><strong>stdout_handler</strong> &#8211; <em>OutputHandler</em> for the stdout of the tool</li>
+<li><strong>stderr_handler</strong> &#8211; <em>OutputHandler</em> for the stderr of the tool</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="exectools.html#exectools.BaseOutputHandler" title="exectools.BaseOutputHandler"><tt class="xref py py-class docutils literal"><span class="pre">exectools.BaseOutputHandler</span></tt></a></p>
+</div>
+<dl class="attribute">
+<dt id="gsdview.gdalbackend.gdalexectools.GdalInfoDescriptor.checksum">
+<tt class="descname">checksum</tt><a class="headerlink" href="#gsdview.gdalbackend.gdalexectools.GdalInfoDescriptor.checksum" title="Permalink to this definition">¶</a></dt>
+<dd><p>force computation of the checksum for each band in the dataset.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.gdalexectools.GdalInfoDescriptor.cmdline">
+<tt class="descname">cmdline</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/gdalexectools.html#GdalInfoDescriptor.cmdline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.gdalexectools.GdalInfoDescriptor.cmdline" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.gdalbackend.gdalexectools.GdalInfoDescriptor.hist">
+<tt class="descname">hist</tt><a class="headerlink" href="#gsdview.gdalbackend.gdalexectools.GdalInfoDescriptor.hist" title="Permalink to this definition">¶</a></dt>
+<dd><p>report histogram information for all bands.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.gdalbackend.gdalexectools.GdalInfoDescriptor.mdd">
+<tt class="descname">mdd</tt><a class="headerlink" href="#gsdview.gdalbackend.gdalexectools.GdalInfoDescriptor.mdd" title="Permalink to this definition">¶</a></dt>
+<dd><p>report metadata for the specified domain.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.gdalbackend.gdalexectools.GdalInfoDescriptor.mm">
+<tt class="descname">mm</tt><a class="headerlink" href="#gsdview.gdalbackend.gdalexectools.GdalInfoDescriptor.mm" title="Permalink to this definition">¶</a></dt>
+<dd><p>force computation of the actual min/max values for each band in the
+dataset.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.gdalbackend.gdalexectools.GdalInfoDescriptor.noct">
+<tt class="descname">noct</tt><a class="headerlink" href="#gsdview.gdalbackend.gdalexectools.GdalInfoDescriptor.noct" title="Permalink to this definition">¶</a></dt>
+<dd><p>suppress printing of color table.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.gdalbackend.gdalexectools.GdalInfoDescriptor.nogcp">
+<tt class="descname">nogcp</tt><a class="headerlink" href="#gsdview.gdalbackend.gdalexectools.GdalInfoDescriptor.nogcp" title="Permalink to this definition">¶</a></dt>
+<dd><p>suppress ground control points list printing. It may be useful for
+datasets with huge amount of GCPs, such as L1B AVHRR or HDF4 MODIS
+which contain thousands of the ones.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.gdalbackend.gdalexectools.GdalInfoDescriptor.nomd">
+<tt class="descname">nomd</tt><a class="headerlink" href="#gsdview.gdalbackend.gdalexectools.GdalInfoDescriptor.nomd" title="Permalink to this definition">¶</a></dt>
+<dd><p>suppress metadata printing. Some datasets may contain a lot of
+metadata strings.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.gdalbackend.gdalexectools.GdalInfoDescriptor.norat">
+<tt class="descname">norat</tt><a class="headerlink" href="#gsdview.gdalbackend.gdalexectools.GdalInfoDescriptor.norat" title="Permalink to this definition">¶</a></dt>
+<dd><p>suppress raster attribute table printing.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.gdalbackend.gdalexectools.GdalInfoDescriptor.stats">
+<tt class="descname">stats</tt><a class="headerlink" href="#gsdview.gdalbackend.gdalexectools.GdalInfoDescriptor.stats" title="Permalink to this definition">¶</a></dt>
+<dd><p>read and display image statistics. Force computation if no
+statistics are stored in an image.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gsdview.gdalbackend.gdalexectools.GdalOutputHandler">
+<em class="property">class </em><tt class="descclassname">gsdview.gdalbackend.gdalexectools.</tt><tt class="descname">GdalOutputHandler</tt><big>(</big><em>logger=None</em>, <em>statusbar=None</em>, <em>progressbar=None</em>, <em>blinker=None</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/gdalexectools.html#GdalOutputHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.gdalexectools.GdalOutputHandler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="exectools.qt4.html#exectools.qt4.Qt4OutputHandler" title="exectools.qt4.Qt4OutputHandler"><tt class="xref py py-class docutils literal"><span class="pre">exectools.qt4.Qt4OutputHandler</span></tt></a></p>
+<p>Handler for the GDAL simple progress report to terminal.</p>
+<p>This progress reporter prints simple progress report to the
+terminal window.
+The progress report generally looks something like this:</p>
+<blockquote>
+<div>&#8220;0...10...20...30...40...50...60...70...80...90...100 - done.&#8221;</div></blockquote>
+<p>Every 2.5% of progress another number or period is emitted.</p>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="exectools.html#exectools.BaseOutputHandler" title="exectools.BaseOutputHandler"><tt class="xref py py-class docutils literal"><span class="pre">exectools.BaseOutputHandler</span></tt></a>,
+<a class="reference internal" href="exectools.qt4.html#exectools.qt4.Qt4OutputHandler" title="exectools.qt4.Qt4OutputHandler"><tt class="xref py py-class docutils literal"><span class="pre">exectools.qt4.Qt4OutputHandler</span></tt></a></p>
+</div>
+<dl class="method">
+<dt id="gsdview.gdalbackend.gdalexectools.GdalOutputHandler.handle_progress">
+<tt class="descname">handle_progress</tt><big>(</big><em>data</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/gdalexectools.html#GdalOutputHandler.handle_progress"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.gdalexectools.GdalOutputHandler.handle_progress" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handle progress data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data</strong> &#8211; a list containing an item for each named group in the
+&#8220;progress&#8221; regular expression: (pulse, percentage, text)
+for the default implementation.
+Each item can be None.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.gdalexectools.GdalOutputHandler.reset">
+<tt class="descname">reset</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/gdalexectools.html#GdalOutputHandler.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.gdalexectools.GdalOutputHandler.reset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo.png" alt="Logo"/>
+            </a></p>
+    
+    
+    <p>
+        <a href="http://sourceforge.net/projects/gsdview">
+            <img src="http://sflogo.sourceforge.net/sflogo.php?group_id=226458&type=14" width="150" height="40" alt="Get GSDView at SourceForge.net. Fast, secure and Free Open Source software downloads" />
+        </a>
+    </p>
+    
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="gsdview.gdalbackend.core.html"
+                        title="previous chapter">gsdview.gdalbackend.core</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="gsdview.gdalbackend.gdalqt4.html"
+                        title="next chapter">gsdview.gdalbackend.gdalqt4</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/api/gsdview.gdalbackend.gdalexectools.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li class="right" >
+          <a href="gsdview.gdalbackend.gdalqt4.html" title="gsdview.gdalbackend.gdalqt4"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="gsdview.gdalbackend.core.html" title="gsdview.gdalbackend.core"
+             >previous</a> |</li>
+        <li><a href="../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../reference.html" >API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2008-2011, Antonio Valentino.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

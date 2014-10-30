@@ -1,0 +1,278 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>gsdview.mdi &mdash; GSDView Open Edition Home Page</title>
+    <link rel="stylesheet" href="../_static/sourceforge.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.6.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/logo.ico"/>
+    <link rel="top" title="GSDView Open Edition Home Page" href="../index.html" />
+    <link rel="up" title="API Reference" href="../reference.html" />
+    <link rel="next" title="gsdview.mousemanager" href="gsdview.mousemanager.html" />
+    <link rel="prev" title="gsdview.layermanager" href="gsdview.layermanager.html" /> 
+  </head>
+  <body>
+    
+        
+    
+    
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li class="right" >
+          <a href="gsdview.mousemanager.html" title="gsdview.mousemanager"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="gsdview.layermanager.html" title="gsdview.layermanager"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../reference.html" accesskey="U">API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-gsdview.mdi">
+<span id="gsdview-mdi"></span><h1>gsdview.mdi<a class="headerlink" href="#module-gsdview.mdi" title="Permalink to this headline">¶</a></h1>
+<p>Specialized MainWindow classes and mixins.</p>
+<p class="rubric">Classes</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><a class="reference internal" href="#gsdview.mdi.ItemModelMainWindow" title="gsdview.mdi.ItemModelMainWindow"><tt class="xref py py-obj docutils literal"><span class="pre">ItemModelMainWindow</span></tt></a>(**kwargs[,&nbsp;parent,&nbsp;flags])</td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.mdi.ItemSubWindow" title="gsdview.mdi.ItemSubWindow"><tt class="xref py py-obj docutils literal"><span class="pre">ItemSubWindow</span></tt></a>(item,&nbsp;**kwargs[,&nbsp;parent,&nbsp;flags])</td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.mdi.MdiMainWindow" title="gsdview.mdi.MdiMainWindow"><tt class="xref py py-obj docutils literal"><span class="pre">MdiMainWindow</span></tt></a>(**kwargs[,&nbsp;parent,&nbsp;flags])</td>
+<td>Base class for MDI applications.</td>
+</tr>
+<tr><td><tt class="xref py py-obj docutils literal"><span class="pre">QtWindowListMenu</span></tt>(parent,&nbsp;**kwargs)</td>
+<td>The QtWindowListMenu class is a menu that provides navigation</td>
+</tr>
+</tbody>
+</table>
+<dl class="class">
+<dt id="gsdview.mdi.ItemModelMainWindow">
+<em class="property">class </em><tt class="descclassname">gsdview.mdi.</tt><tt class="descname">ItemModelMainWindow</tt><big>(</big><em>parent=None</em>, <em>flags=&lt;PyQt4.QtCore.WindowFlags object at 0x396b910&gt;</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/gsdview/mdi.html#ItemModelMainWindow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.mdi.ItemModelMainWindow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gsdview.mdi.MdiMainWindow" title="gsdview.mdi.MdiMainWindow"><tt class="xref py py-class docutils literal"><span class="pre">gsdview.mdi.MdiMainWindow</span></tt></a></p>
+<dl class="method">
+<dt id="gsdview.mdi.ItemModelMainWindow.currentItem">
+<tt class="descname">currentItem</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/mdi.html#ItemModelMainWindow.currentItem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.mdi.ItemModelMainWindow.currentItem" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.mdi.ItemModelMainWindow.currentToplevelItem">
+<tt class="descname">currentToplevelItem</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/mdi.html#ItemModelMainWindow.currentToplevelItem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.mdi.ItemModelMainWindow.currentToplevelItem" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.mdi.ItemModelMainWindow.datamodel">
+<tt class="descname">datamodel</tt><a class="headerlink" href="#gsdview.mdi.ItemModelMainWindow.datamodel" title="Permalink to this definition">¶</a></dt>
+<dd><p>main application datamodel (QStandardItemModel)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gsdview.mdi.ItemModelMainWindow.onItemsClosed">
+<tt class="descname">onItemsClosed</tt><big>(</big><em>modelindex</em>, <em>start</em>, <em>end</em><big>)</big><a class="reference internal" href="../_modules/gsdview/mdi.html#ItemModelMainWindow.onItemsClosed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.mdi.ItemModelMainWindow.onItemsClosed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Closes sub-windows associated to the closed model items.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">C++ signature:</th><td class="field-body"><cite>void onItemsClosed(const QModelIndex&amp;, int, int)</cite></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="gsdview.mdi.ItemModelMainWindow.setActiveIndexFromWin">
+<tt class="descname">setActiveIndexFromWin</tt><big>(</big><em>window</em><big>)</big><a class="reference internal" href="../_modules/gsdview/mdi.html#ItemModelMainWindow.setActiveIndexFromWin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.mdi.ItemModelMainWindow.setActiveIndexFromWin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the active sub-window.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">C++ signature:</th><td class="field-body"><cite>void setActiveIndexFromWin(QMdiSubWindow*)</cite></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="gsdview.mdi.ItemModelMainWindow.setActiveWinFromIndex">
+<tt class="descname">setActiveWinFromIndex</tt><big>(</big><em>index</em><big>)</big><a class="reference internal" href="../_modules/gsdview/mdi.html#ItemModelMainWindow.setActiveWinFromIndex"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.mdi.ItemModelMainWindow.setActiveWinFromIndex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the active sub-window from index.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">C++ signature:</th><td class="field-body"><cite>void setActiveWinFromIndex(const QModelIndex&amp;)</cite></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.mdi.ItemModelMainWindow.treeview">
+<tt class="descname">treeview</tt><a class="headerlink" href="#gsdview.mdi.ItemModelMainWindow.treeview" title="Permalink to this definition">¶</a></dt>
+<dd><p>tree view for the main application data model</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gsdview.mdi.ItemSubWindow">
+<em class="property">class </em><tt class="descclassname">gsdview.mdi.</tt><tt class="descname">ItemSubWindow</tt><big>(</big><em>item</em>, <em>parent=None</em>, <em>flags=&lt;PyQt4.QtCore.WindowFlags object at 0x396b7c0&gt;</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/gsdview/mdi.html#ItemSubWindow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.mdi.ItemSubWindow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">PyQt4.QtGui.QMdiSubWindow</span></tt></p>
+<dl class="attribute">
+<dt id="gsdview.mdi.ItemSubWindow.item">
+<tt class="descname">item</tt><a class="headerlink" href="#gsdview.mdi.ItemSubWindow.item" title="Permalink to this definition">¶</a></dt>
+<dd><p>datamodel item associated to the MDI sub-window</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gsdview.mdi.MdiMainWindow">
+<em class="property">class </em><tt class="descclassname">gsdview.mdi.</tt><tt class="descname">MdiMainWindow</tt><big>(</big><em>parent=None</em>, <em>flags=&lt;PyQt4.QtCore.WindowFlags object at 0x396b8a0&gt;</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/gsdview/mdi.html#MdiMainWindow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.mdi.MdiMainWindow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">PyQt4.QtGui.QMainWindow</span></tt></p>
+<p>Base class for MDI applications.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Signals :</th><td class="field-body"><ul class="first last simple">
+<li><a class="reference internal" href="#gsdview.mdi.MdiMainWindow.subWindowClosed" title="gsdview.mdi.MdiMainWindow.subWindowClosed"><tt class="xref py py-attr docutils literal"><span class="pre">subWindowClosed</span></tt></a></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="gsdview.mdi.MdiMainWindow.mdiarea">
+<tt class="descname">mdiarea</tt><a class="headerlink" href="#gsdview.mdi.MdiMainWindow.mdiarea" title="Permalink to this definition">¶</a></dt>
+<dd><p>MDI area instance (QMdiArea)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.mdi.MdiMainWindow.subWindowClosed">
+<tt class="descname">subWindowClosed</tt><a class="headerlink" href="#gsdview.mdi.MdiMainWindow.subWindowClosed" title="Permalink to this definition">¶</a></dt>
+<dd><p>SIGNAL: it is emitted when an MDI subwindow is closed</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">C++ signature:</th><td class="field-body"><cite>void subWindowClosed()</cite></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.mdi.MdiMainWindow.windowmenu">
+<tt class="descname">windowmenu</tt><a class="headerlink" href="#gsdview.mdi.MdiMainWindow.windowmenu" title="Permalink to this definition">¶</a></dt>
+<dd><p>sub-windows menu</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo.png" alt="Logo"/>
+            </a></p>
+    
+    
+    <p>
+        <a href="http://sourceforge.net/projects/gsdview">
+            <img src="http://sflogo.sourceforge.net/sflogo.php?group_id=226458&type=14" width="150" height="40" alt="Get GSDView at SourceForge.net. Fast, secure and Free Open Source software downloads" />
+        </a>
+    </p>
+    
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="gsdview.layermanager.html"
+                        title="previous chapter">gsdview.layermanager</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="gsdview.mousemanager.html"
+                        title="next chapter">gsdview.mousemanager</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/api/gsdview.mdi.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li class="right" >
+          <a href="gsdview.mousemanager.html" title="gsdview.mousemanager"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="gsdview.layermanager.html" title="gsdview.layermanager"
+             >previous</a> |</li>
+        <li><a href="../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../reference.html" >API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2008-2011, Antonio Valentino.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

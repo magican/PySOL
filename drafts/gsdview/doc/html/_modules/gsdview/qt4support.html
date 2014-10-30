@@ -1,0 +1,921 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>gsdview.qt4support &mdash; GSDView Open Edition Home Page</title>
+    <link rel="stylesheet" href="../../_static/sourceforge.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.6.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/logo.ico"/>
+    <link rel="top" title="GSDView Open Edition Home Page" href="../../index.html" />
+    <link rel="up" title="gsdview" href="../gsdview.html" /> 
+  </head>
+  <body>
+    
+        
+    
+    
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li><a href="../../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../gsdview.html" accesskey="U">gsdview</a> &raquo;</li> 
+      </ul>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for gsdview.qt4support</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="c">### Copyright (C) 2008-2011 Antonio Valentino &lt;a_valentino@users.sf.net&gt;</span>
+
+<span class="c">### This file is part of GSDView.</span>
+
+<span class="c">### GSDView is free software; you can redistribute it and/or modify</span>
+<span class="c">### it under the terms of the GNU General Public License as published by</span>
+<span class="c">### the Free Software Foundation; either version 2 of the License, or</span>
+<span class="c">### (at your option) any later version.</span>
+
+<span class="c">### GSDView is distributed in the hope that it will be useful,</span>
+<span class="c">### but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c">### MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c">### GNU General Public License for more details.</span>
+
+<span class="c">### You should have received a copy of the GNU General Public License</span>
+<span class="c">### along with GSDView; if not, write to the Free Software</span>
+<span class="c">### Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA.</span>
+
+
+<span class="sd">&#39;&#39;&#39;Utility functions and classes for Qt4 applicaions.&#39;&#39;&#39;</span>
+
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">csv</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="c">#from io import StringIO    # @TODO: check</span>
+<span class="kn">from</span> <span class="nn">cStringIO</span> <span class="kn">import</span> <span class="n">StringIO</span>
+<span class="kn">from</span> <span class="nn">ConfigParser</span> <span class="kn">import</span> <span class="n">ConfigParser</span>
+
+<span class="kn">from</span> <span class="nn">qt</span> <span class="kn">import</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtGui</span><span class="p">,</span> <span class="n">QtSvg</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">utils</span>
+
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s">&#39;Antonio Valentino &lt;a_valentino@users.sf.net&gt;&#39;</span>
+<span class="n">__date__</span> <span class="o">=</span> <span class="s">&#39;$Date: 2011-10-15 20:49:39 +0200 (sab, 15 ott 2011) $&#39;</span>
+<span class="n">__revision__</span> <span class="o">=</span> <span class="s">&#39;$Revision: 1006 $&#39;</span>
+
+<span class="n">intToWinState</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nb">int</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">WindowNoState</span><span class="p">):</span>       <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">WindowNoState</span><span class="p">,</span>
+    <span class="nb">int</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">WindowMinimized</span><span class="p">):</span>     <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">WindowMinimized</span><span class="p">,</span>
+    <span class="nb">int</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">WindowMaximized</span><span class="p">):</span>     <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">WindowMaximized</span><span class="p">,</span>
+    <span class="nb">int</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">WindowFullScreen</span><span class="p">):</span>    <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">WindowFullScreen</span><span class="p">,</span>
+    <span class="nb">int</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">WindowActive</span><span class="p">):</span>        <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">WindowActive</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<span class="c">### Menus and toolbars helpers ###############################################</span>
+<div class="viewcode-block" id="actionGroupToMenu"><a class="viewcode-back" href="../../api/gsdview.qt4support.html#gsdview.qt4support.actionGroupToMenu">[docs]</a><span class="k">def</span> <span class="nf">actionGroupToMenu</span><span class="p">(</span><span class="n">actionGroup</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">mainwin</span><span class="p">):</span>
+    <span class="n">menu</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QMenu</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">mainwin</span><span class="p">)</span>
+    <span class="n">menu</span><span class="o">.</span><span class="n">addActions</span><span class="p">(</span><span class="n">actionGroup</span><span class="o">.</span><span class="n">actions</span><span class="p">())</span>
+    <span class="k">return</span> <span class="n">menu</span>
+
+</div>
+<div class="viewcode-block" id="actionGroupToToolbar"><a class="viewcode-back" href="../../api/gsdview.qt4support.html#gsdview.qt4support.actionGroupToToolbar">[docs]</a><span class="k">def</span> <span class="nf">actionGroupToToolbar</span><span class="p">(</span><span class="n">actionGroup</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="c"># get camel case name</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">.</span><span class="n">title</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+        <span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="s">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span>
+
+    <span class="n">toolbar</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QToolBar</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+    <span class="n">toolbar</span><span class="o">.</span><span class="n">addActions</span><span class="p">(</span><span class="n">actionGroup</span><span class="o">.</span><span class="n">actions</span><span class="p">())</span>
+    <span class="k">if</span> <span class="n">name</span><span class="p">:</span>
+        <span class="n">toolbar</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">toolbar</span>
+
+
+<span class="c">### Application cursor helpers ###############################################</span></div>
+<div class="viewcode-block" id="overrideCursor"><a class="viewcode-back" href="../../api/gsdview.qt4support.html#gsdview.qt4support.overrideCursor">[docs]</a><span class="k">def</span> <span class="nf">overrideCursor</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">aux</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">QtGui</span><span class="o">.</span><span class="n">QApplication</span><span class="o">.</span><span class="n">setOverrideCursor</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">WaitCursor</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">QtGui</span><span class="o">.</span><span class="n">QApplication</span><span class="o">.</span><span class="n">restoreOverrideCursor</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">aux</span>
+
+</div>
+<div class="viewcode-block" id="callExpensiveFunc"><a class="viewcode-back" href="../../api/gsdview.qt4support.html#gsdview.qt4support.callExpensiveFunc">[docs]</a><span class="k">def</span> <span class="nf">callExpensiveFunc</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="n">QtGui</span><span class="o">.</span><span class="n">QApplication</span><span class="o">.</span><span class="n">setOverrideCursor</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">WaitCursor</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">QtGui</span><span class="o">.</span><span class="n">QApplication</span><span class="o">.</span><span class="n">restoreOverrideCursor</span><span class="p">()</span>
+
+
+<span class="c">### Table model/view helpers ##################################################</span></div>
+<div class="viewcode-block" id="clearTable"><a class="viewcode-back" href="../../api/gsdview.qt4support.html#gsdview.qt4support.clearTable">[docs]</a><span class="k">def</span> <span class="nf">clearTable</span><span class="p">(</span><span class="n">tablewidget</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Remove contents from a table widget preserving labels. &#39;&#39;&#39;</span>
+
+    <span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">tablewidget</span><span class="o">.</span><span class="n">horizontalHeaderItem</span><span class="p">(</span><span class="n">col</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">())</span>
+                            <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">tablewidget</span><span class="o">.</span><span class="n">columnCount</span><span class="p">())]</span>
+    <span class="n">tablewidget</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+    <span class="n">tablewidget</span><span class="o">.</span><span class="n">setHorizontalHeaderLabels</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>
+    <span class="n">tablewidget</span><span class="o">.</span><span class="n">setRowCount</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="selectAllItems"><a class="viewcode-back" href="../../api/gsdview.qt4support.html#gsdview.qt4support.selectAllItems">[docs]</a><span class="k">def</span> <span class="nf">selectAllItems</span><span class="p">(</span><span class="n">itemview</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Select all items in an QAbstractItemView.&#39;&#39;&#39;</span>
+
+    <span class="n">model</span> <span class="o">=</span> <span class="n">itemview</span><span class="o">.</span><span class="n">model</span><span class="p">()</span>
+    <span class="n">topleft</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">bottomright</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">rowCount</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+                                  <span class="n">model</span><span class="o">.</span><span class="n">columnCount</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">):</span>
+        <span class="c"># columnCount is a private method in QAbstractListModel</span>
+        <span class="c"># assume it is a list</span>
+        <span class="n">bottomright</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">rowCount</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">selection</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QItemSelection</span><span class="p">(</span><span class="n">topleft</span><span class="p">,</span> <span class="n">bottomright</span><span class="p">)</span>
+    <span class="n">itemview</span><span class="o">.</span><span class="n">selectionModel</span><span class="p">()</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">selection</span><span class="p">,</span>
+                                     <span class="n">QtGui</span><span class="o">.</span><span class="n">QItemSelectionModel</span><span class="o">.</span><span class="n">Select</span><span class="p">)</span>
+
+
+<span class="c">#@QtCore.Slot(QtGui.QWidget) # @TODO: check</span></div>
+<div class="viewcode-block" id="copySelectedItems"><a class="viewcode-back" href="../../api/gsdview.qt4support.html#gsdview.qt4support.copySelectedItems">[docs]</a><span class="k">def</span> <span class="nf">copySelectedItems</span><span class="p">(</span><span class="n">itemview</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Copy selected items of an QAbstractItemView to the clipboard and</span>
+<span class="sd">    also return copied data.&#39;&#39;&#39;</span>
+
+    <span class="n">selection</span> <span class="o">=</span> <span class="n">itemview</span><span class="o">.</span><span class="n">selectionModel</span><span class="p">()</span><span class="o">.</span><span class="n">selection</span><span class="p">()</span>
+    <span class="n">lines</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">itemrange</span> <span class="ow">in</span> <span class="n">selection</span><span class="p">:</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">itemrange</span><span class="o">.</span><span class="n">model</span><span class="p">()</span>
+        <span class="n">parent</span> <span class="o">=</span> <span class="n">itemrange</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">itemrange</span><span class="o">.</span><span class="n">top</span><span class="p">(),</span> <span class="n">itemrange</span><span class="o">.</span><span class="n">bottom</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">parts</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">itemrange</span><span class="o">.</span><span class="n">left</span><span class="p">(),</span> <span class="n">itemrange</span><span class="o">.</span><span class="n">right</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="n">index</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">parent</span><span class="p">)</span>
+                <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="n">index</span><span class="p">)))</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="s">&#39;</span><span class="se">\t</span><span class="s">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span>
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">data</span><span class="p">:</span>
+        <span class="n">clipboard</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QApplication</span><span class="o">.</span><span class="n">clipboard</span><span class="p">()</span>
+        <span class="n">clipboard</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QClipboard</span><span class="o">.</span><span class="n">Clipboard</span><span class="p">)</span>
+        <span class="n">clipboard</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QClipboard</span><span class="o">.</span><span class="n">Selection</span><span class="p">)</span>
+
+    <span class="c"># @TODO: check</span>
+    <span class="c">#data = QtCore.QByteArray()</span>
+    <span class="c">#data.append(&#39;\n&#39;.join(lines))</span>
+
+    <span class="c">#mimedata = QtCore.QMimeData()</span>
+    <span class="c">#mimedata.setData(&#39;text/csv&#39;, data)</span>
+
+    <span class="c">#clipboard = QtGui.QApplication.clipboard()</span>
+    <span class="c">#clipboard.setMimeData(mimedata, QtGui.QClipboard.Clipboard)</span>
+    <span class="c">#clipboard.setMimeData(mimedata, QtGui.QClipboard.Selection)</span>
+
+    <span class="k">return</span> <span class="n">data</span>
+
+</div>
+<div class="viewcode-block" id="modelToIni"><a class="viewcode-back" href="../../api/gsdview.qt4support.html#gsdview.qt4support.modelToIni">[docs]</a><span class="k">def</span> <span class="nf">modelToIni</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">section</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">cfg</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="n">model</span><span class="o">.</span><span class="n">columnCount</span><span class="p">()</span> <span class="o">==</span> <span class="mi">2</span>
+
+    <span class="k">if</span> <span class="n">cfg</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">cfg</span> <span class="o">=</span> <span class="n">ConfigParser</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">rowCount</span><span class="p">()):</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
+        <span class="n">cfg</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">cfg</span>
+
+</div>
+<div class="viewcode-block" id="modelToCsv"><a class="viewcode-back" href="../../api/gsdview.qt4support.html#gsdview.qt4support.modelToCsv">[docs]</a><span class="k">def</span> <span class="nf">modelToCsv</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">dialect</span><span class="o">=</span><span class="s">&#39;excel&#39;</span><span class="p">):</span>
+    <span class="n">fp</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">()</span>
+    <span class="n">writer</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">writer</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="n">dialect</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">ncols</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">columnCount</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+        <span class="c"># columnCount is a private method in QAbstractListModel</span>
+        <span class="n">ncols</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">rowCount</span><span class="p">()):</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ncols</span><span class="p">):</span>
+            <span class="n">line</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">)</span><span class="o">.</span><span class="n">data</span><span class="p">())</span>
+        <span class="n">writer</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">fp</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span>
+
+</div>
+<div class="viewcode-block" id="modelToTextDocument"><a class="viewcode-back" href="../../api/gsdview.qt4support.html#gsdview.qt4support.modelToTextDocument">[docs]</a><span class="k">def</span> <span class="nf">modelToTextDocument</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">doc</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">doc</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QTextDocument</span><span class="p">()</span>
+
+    <span class="n">cursor</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QTextCursor</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+    <span class="n">cursor</span><span class="o">.</span><span class="n">movePosition</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QTextCursor</span><span class="o">.</span><span class="n">End</span><span class="p">)</span>
+    <span class="n">cursor</span><span class="o">.</span><span class="n">beginEditBlock</span><span class="p">()</span>
+
+    <span class="n">format</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QTextTableFormat</span><span class="p">()</span>
+    <span class="n">format</span><span class="o">.</span><span class="n">setCellPadding</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+    <span class="n">format</span><span class="o">.</span><span class="n">setCellSpacing</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">format</span><span class="o">.</span><span class="n">setBorderStyle</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QTextFrameFormat</span><span class="o">.</span><span class="n">BorderStyle_Solid</span><span class="p">)</span>
+    <span class="n">format</span><span class="o">.</span><span class="n">setHeaderRowCount</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">nrows</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">rowCount</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">ncols</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">columnCount</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+        <span class="c"># columnCount is a private method in QAbstractListModel</span>
+        <span class="n">ncols</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">table</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">insertTable</span><span class="p">(</span><span class="n">nrows</span><span class="p">,</span> <span class="n">ncols</span><span class="p">,</span> <span class="n">format</span><span class="p">)</span>
+
+    <span class="c">#textformat = QtGui.QTextFormat()</span>
+
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nrows</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ncols</span><span class="p">):</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">)</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">text</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+
+            <span class="n">cell</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">cellAt</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">)</span>
+            <span class="n">cellCursor</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">firstCursorPosition</span><span class="p">()</span>
+            <span class="n">cellCursor</span><span class="o">.</span><span class="n">insertText</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>  <span class="c"># , textformat)</span>
+
+    <span class="c"># headers style</span>
+    <span class="n">headerformat</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QTextCharFormat</span><span class="p">()</span>
+    <span class="n">headerformat</span><span class="o">.</span><span class="n">setFontWeight</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QFont</span><span class="o">.</span><span class="n">Bold</span><span class="p">)</span>
+    <span class="n">brush</span> <span class="o">=</span> <span class="n">headerformat</span><span class="o">.</span><span class="n">background</span><span class="p">()</span>
+    <span class="n">brush</span><span class="o">.</span><span class="n">setColor</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">lightGray</span><span class="p">)</span>
+    <span class="n">brush</span><span class="o">.</span><span class="n">setStyle</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">SolidPattern</span><span class="p">)</span>
+    <span class="n">headerformat</span><span class="o">.</span><span class="n">setBackground</span><span class="p">(</span><span class="n">brush</span><span class="p">)</span>
+
+    <span class="c"># horizontal header</span>
+    <span class="n">headers</span> <span class="o">=</span> <span class="p">[</span><span class="n">model</span><span class="o">.</span><span class="n">headerData</span><span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">Horizontal</span><span class="p">)</span>
+                                                    <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ncols</span><span class="p">)]</span>
+    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">headers</span><span class="p">):</span>
+        <span class="n">table</span><span class="o">.</span><span class="n">insertRows</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">col</span><span class="p">,</span> <span class="n">text</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">headers</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">text</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+
+            <span class="n">cell</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">cellAt</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">col</span><span class="p">)</span>
+            <span class="n">cell</span><span class="o">.</span><span class="n">setFormat</span><span class="p">(</span><span class="n">headerformat</span><span class="p">)</span>
+            <span class="n">cellCursor</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">firstCursorPosition</span><span class="p">()</span>
+            <span class="n">cellCursor</span><span class="o">.</span><span class="n">insertText</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+
+    <span class="c"># vertical header</span>
+    <span class="n">headers</span> <span class="o">=</span> <span class="p">[</span><span class="n">model</span><span class="o">.</span><span class="n">headerData</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">Vertical</span><span class="p">)</span>
+                                                    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nrows</span><span class="p">)]</span>
+
+    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">headers</span><span class="p">):</span>
+        <span class="n">table</span><span class="o">.</span><span class="n">insertColumns</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">row</span><span class="p">,</span> <span class="n">text</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">headers</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">text</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+
+            <span class="n">cell</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">cellAt</span><span class="p">(</span><span class="n">row</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">cell</span><span class="o">.</span><span class="n">setFormat</span><span class="p">(</span><span class="n">headerformat</span><span class="p">)</span>
+            <span class="n">cellCursor</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">firstCursorPosition</span><span class="p">()</span>
+            <span class="n">cellCursor</span><span class="o">.</span><span class="n">insertText</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">headerformat</span><span class="p">)</span>
+
+    <span class="n">cursor</span><span class="o">.</span><span class="n">endEditBlock</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">doc</span>
+
+</div>
+<div class="viewcode-block" id="exportTable"><a class="viewcode-back" href="../../api/gsdview.qt4support.html#gsdview.qt4support.exportTable">[docs]</a><span class="k">def</span> <span class="nf">exportTable</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="n">filters</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s">&#39;CSV file (*.csv)&#39;</span><span class="p">,</span>
+        <span class="s">&#39;CSV TAB-delimited file (*.csv)&#39;</span><span class="p">,</span>
+        <span class="s">&#39;HTML file (*.html)&#39;</span><span class="p">,</span>
+        <span class="s">&#39;All files (*)&#39;</span><span class="p">,</span>
+    <span class="p">]</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">ncols</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">columnCount</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+        <span class="c"># columnCount is a private method in QAbstractListModel</span>
+        <span class="n">ncols</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="k">if</span> <span class="n">ncols</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">filters</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s">&#39;Text file (*.txt)&#39;</span><span class="p">)</span>
+        <span class="n">target</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">default_workdir</span><span class="p">(),</span> <span class="s">&#39;data.txt&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ncols</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">filters</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s">&#39;INI file format (*.ini)&#39;</span><span class="p">)</span>
+        <span class="n">target</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">default_workdir</span><span class="p">(),</span> <span class="s">&#39;data.ini&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">target</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">default_workdir</span><span class="p">(),</span> <span class="s">&#39;data.csv&#39;</span><span class="p">)</span>
+
+    <span class="c"># @TODO: check</span>
+    <span class="k">if</span> <span class="n">parent</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">parent</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">window</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="n">parent</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="n">filename</span><span class="p">,</span> <span class="n">filter_</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QFileDialog</span><span class="o">.</span><span class="n">getSaveFileNameAndFilter</span><span class="p">(</span>
+                                            <span class="n">parent</span><span class="p">,</span>
+                                            <span class="n">model</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Save&#39;</span><span class="p">),</span>
+                                            <span class="n">target</span><span class="p">,</span>
+                                            <span class="s">&#39;;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">filters</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">filename</span><span class="p">:</span>
+        <span class="n">ext</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">filename</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">ext</span> <span class="o">=</span> <span class="n">ext</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">ext</span> <span class="o">==</span> <span class="s">&#39;.csv&#39;</span> <span class="ow">or</span> <span class="n">ext</span> <span class="o">==</span> <span class="s">&#39;.txt&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s">&#39;TAB&#39;</span> <span class="ow">in</span> <span class="n">filter_</span><span class="p">:</span>
+                <span class="n">dialect</span> <span class="o">=</span> <span class="s">&#39;excel-tab&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">dialect</span> <span class="o">=</span> <span class="s">&#39;excel&#39;</span>
+
+            <span class="n">data</span> <span class="o">=</span> <span class="n">modelToCsv</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">dialect</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">ext</span> <span class="o">==</span> <span class="s">&#39;.ini&#39;</span><span class="p">:</span>
+            <span class="n">cfg</span> <span class="o">=</span> <span class="n">modelToIni</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+            <span class="n">fp</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">()</span>
+            <span class="n">cfg</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">fp</span><span class="p">)</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">ext</span> <span class="o">==</span> <span class="s">&#39;.html&#39;</span><span class="p">:</span>
+            <span class="n">doc</span> <span class="o">=</span> <span class="n">modelToTextDocument</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">toHtml</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c"># default</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">modelToCsv</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="s">&#39;excel-tab&#39;</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
+            <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="setViewContextActions"><a class="viewcode-back" href="../../api/gsdview.qt4support.html#gsdview.qt4support.setViewContextActions">[docs]</a><span class="k">def</span> <span class="nf">setViewContextActions</span><span class="p">(</span><span class="n">widget</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="p">(</span><span class="n">widget</span><span class="o">.</span><span class="n">contextMenuPolicy</span><span class="p">()</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">ActionsContextMenu</span><span class="p">),</span> \
+        <span class="s">&#39;menu policy is not &quot;QtCore.Qt.ActionsContextMenu&quot;&#39;</span>
+    <span class="c">#if widget.contextMenuPolicy() != QtCore.Qt.ActionsContextMenu:</span>
+    <span class="c">#    widget.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)</span>
+
+    <span class="n">icon</span> <span class="o">=</span> <span class="n">geticon</span><span class="p">(</span><span class="s">&#39;copy.svg&#39;</span><span class="p">,</span> <span class="n">__name__</span><span class="p">)</span>
+    <span class="n">action</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QAction</span><span class="p">(</span><span class="n">icon</span><span class="p">,</span> <span class="n">widget</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;&amp;Copy&#39;</span><span class="p">),</span> <span class="n">widget</span><span class="p">,</span>
+                           <span class="n">objectName</span><span class="o">=</span><span class="s">&#39;copyAction&#39;</span><span class="p">,</span>
+                           <span class="n">shortcut</span><span class="o">=</span><span class="n">widget</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Ctrl+C&#39;</span><span class="p">),</span>
+                           <span class="n">toolTip</span><span class="o">=</span><span class="n">widget</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Copy selected items&#39;</span><span class="p">),</span>
+                           <span class="n">triggered</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">copySelectedItems</span><span class="p">(</span><span class="n">widget</span><span class="p">))</span>
+    <span class="n">widget</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
+
+    <span class="c">#&#39;:/trolltech/dialogs/qprintpreviewdialog/images/view-page-multi-32.png&#39;</span>
+    <span class="n">icon</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QIcon</span><span class="p">(</span>
+        <span class="s">&#39;:/trolltech/styles/commonstyle/images/viewlist-128.png&#39;</span><span class="p">)</span>
+    <span class="n">action</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QAction</span><span class="p">(</span><span class="n">icon</span><span class="p">,</span> <span class="n">widget</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Select &amp;All&#39;</span><span class="p">),</span> <span class="n">widget</span><span class="p">,</span>
+                           <span class="n">objectName</span><span class="o">=</span><span class="s">&#39;selectAllAction&#39;</span><span class="p">,</span>
+                           <span class="c">#shortcut=widget.tr(&#39;Ctrl+A&#39;),</span>
+                           <span class="n">toolTip</span><span class="o">=</span><span class="n">widget</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Select all items&#39;</span><span class="p">),</span>
+                           <span class="n">triggered</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">selectAllItems</span><span class="p">(</span><span class="n">widget</span><span class="p">))</span>
+    <span class="n">widget</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
+
+    <span class="n">icon</span> <span class="o">=</span> <span class="n">widget</span><span class="o">.</span><span class="n">style</span><span class="p">()</span><span class="o">.</span><span class="n">standardIcon</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QStyle</span><span class="o">.</span><span class="n">SP_DialogSaveButton</span><span class="p">)</span>
+    <span class="n">action</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QAction</span><span class="p">(</span><span class="n">icon</span><span class="p">,</span> <span class="n">widget</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;&amp;Save As&#39;</span><span class="p">),</span> <span class="n">widget</span><span class="p">,</span>
+                           <span class="n">objectName</span><span class="o">=</span><span class="s">&#39;saveAsAction&#39;</span><span class="p">,</span>
+                           <span class="n">shortcut</span><span class="o">=</span><span class="n">widget</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Ctrl+S&#39;</span><span class="p">),</span>
+                           <span class="n">statusTip</span><span class="o">=</span><span class="n">widget</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Save as&#39;</span><span class="p">),</span>
+                           <span class="n">triggered</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">exportTable</span><span class="p">(</span><span class="n">widget</span><span class="o">.</span><span class="n">model</span><span class="p">()))</span>
+    <span class="n">widget</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
+
+    <span class="n">icon</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QIcon</span><span class="p">(</span>
+                <span class="s">&#39;:/trolltech/dialogs/qprintpreviewdialog/images/print-32.png&#39;</span><span class="p">)</span>
+    <span class="n">action</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QAction</span><span class="p">(</span><span class="n">icon</span><span class="p">,</span> <span class="n">widget</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;&amp;Print&#39;</span><span class="p">),</span> <span class="n">widget</span><span class="p">,</span>
+                           <span class="n">objectName</span><span class="o">=</span><span class="s">&#39;printAction&#39;</span><span class="p">,</span>
+                           <span class="n">shortcut</span><span class="o">=</span><span class="n">widget</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Ctrl+P&#39;</span><span class="p">),</span>
+                           <span class="n">statusTip</span><span class="o">=</span><span class="n">widget</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Print&#39;</span><span class="p">),</span>
+                           <span class="n">triggered</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">printObject</span><span class="p">(</span><span class="n">widget</span><span class="p">))</span>
+    <span class="n">widget</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
+
+    <span class="c">#~ icon = QtGui.QIcon(</span>
+        <span class="c">#~ &#39;:/trolltech/styles/commonstyle/images/filecontents-128.png&#39;)</span>
+    <span class="c">#~ action = QtGui.QAction(icon, widget.tr(&#39;Print Preview&#39;), widget,</span>
+                           <span class="c">#~ objectName=&#39;printPreviewAction&#39;,</span>
+                           <span class="c">#~ statusTip=widget.tr(&#39;Print Preview&#39;))#,</span>
+                           <span class="c">#~ #triggered=tablePrintPreview)</span>
+                           <span class="c">#~ # @TODO: tablePrintPreview</span>
+    <span class="c">#~ widget.addAction(action)</span>
+
+
+<span class="c">### Printing helpers ##########################################################</span></div>
+<div class="viewcode-block" id="coreprint"><a class="viewcode-back" href="../../api/gsdview.qt4support.html#gsdview.qt4support.coreprint">[docs]</a><span class="k">def</span> <span class="nf">coreprint</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">printer</span><span class="p">):</span>
+    <span class="n">painter</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QPainter</span><span class="p">(</span><span class="n">printer</span><span class="p">)</span>
+    <span class="n">painter</span><span class="o">.</span><span class="n">setRenderHint</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QPainter</span><span class="o">.</span><span class="n">Antialiasing</span><span class="p">)</span>
+    <span class="n">obj</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">painter</span><span class="p">)</span>
+    <span class="n">painter</span><span class="o">.</span><span class="n">end</span><span class="p">()</span>
+
+</div>
+<div class="viewcode-block" id="printObject"><a class="viewcode-back" href="../../api/gsdview.qt4support.html#gsdview.qt4support.printObject">[docs]</a><span class="k">def</span> <span class="nf">printObject</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">printer</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">printer</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">printer</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QPrinter</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QPrinter</span><span class="o">.</span><span class="n">PrinterResolution</span><span class="p">)</span>
+        <span class="c">#printer.setOutputFile(os.path.join(utils.default_workdir().</span>
+        <span class="c">#                                   &#39;filename.pdf&#39;))</span>
+
+    <span class="c"># @TODO: check</span>
+    <span class="k">if</span> <span class="n">parent</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">parent</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">window</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="n">parent</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="c">#dialog = QtGui.QPrintDialog(printer)</span>
+    <span class="c">#try:</span>
+    <span class="c">#    window = obj.window()</span>
+    <span class="c">#except AttributeError:</span>
+    <span class="c">#    window = = None</span>
+    <span class="c">#preview = QtGui.QPrintPreviewWidget(printer, window)</span>
+    <span class="c">#preview.paintRequested.connect(coreprint)</span>
+    <span class="c">#dialog.setOptionTabs([preview])</span>
+    <span class="c">#ret = d.exec_()</span>
+
+    <span class="n">ret</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QPrintDialog</span><span class="p">(</span><span class="n">printer</span><span class="p">,</span> <span class="n">parent</span><span class="p">)</span><span class="o">.</span><span class="n">exec_</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">ret</span> <span class="o">==</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QDialog</span><span class="o">.</span><span class="n">Accepted</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QTextDocument</span><span class="p">,</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QTextEdit</span><span class="p">)):</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">print_</span><span class="p">(</span><span class="n">printer</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s">&#39;model&#39;</span><span class="p">):</span>
+            <span class="n">model</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">model</span><span class="p">()</span>
+            <span class="n">doc</span> <span class="o">=</span> <span class="n">modelToTextDocument</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+            <span class="n">doc</span><span class="o">.</span><span class="n">print_</span><span class="p">(</span><span class="n">printer</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QAbstractItemModel</span><span class="p">):</span>
+            <span class="n">doc</span> <span class="o">=</span> <span class="n">modelToTextDocument</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+            <span class="n">doc</span><span class="o">.</span><span class="n">print_</span><span class="p">(</span><span class="n">printer</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">coreprint</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">printer</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="printPreview"><a class="viewcode-back" href="../../api/gsdview.qt4support.html#gsdview.qt4support.printPreview">[docs]</a><span class="k">def</span> <span class="nf">printPreview</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">printer</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">printer</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">printer</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QPrinter</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QPrinter</span><span class="o">.</span><span class="n">PrinterResolution</span><span class="p">)</span>
+
+    <span class="c"># @TODO: check</span>
+    <span class="k">if</span> <span class="n">parent</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">parent</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">window</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="n">parent</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="n">dialog</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QPrintPreviewDialog</span><span class="p">(</span><span class="n">printer</span><span class="p">,</span> <span class="n">parent</span><span class="p">)</span>
+    <span class="n">dialog</span><span class="o">.</span><span class="n">paintRequested</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">coreprint</span><span class="p">)</span>
+    <span class="n">ret</span> <span class="o">=</span> <span class="n">dialog</span><span class="o">.</span><span class="n">exec_</span><span class="p">()</span>
+
+    <span class="c"># @WARNING: duplicate code</span>
+    <span class="n">ret</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QPrintDialog</span><span class="p">(</span><span class="n">printer</span><span class="p">,</span> <span class="n">parent</span><span class="p">)</span><span class="o">.</span><span class="n">exec_</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">ret</span> <span class="o">==</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QDialog</span><span class="o">.</span><span class="n">Accepted</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QTextDocument</span><span class="p">,</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QTextEdit</span><span class="p">)):</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">print_</span><span class="p">(</span><span class="n">printer</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="s">&#39;model&#39;</span><span class="p">):</span>
+            <span class="n">model</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">model</span><span class="p">()</span>
+            <span class="n">doc</span> <span class="o">=</span> <span class="n">modelToTextDocument</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">print_</span><span class="p">(</span><span class="n">printer</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QAbstractItemModel</span><span class="p">):</span>
+            <span class="n">doc</span> <span class="o">=</span> <span class="n">modelToTextDocument</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+            <span class="n">doc</span><span class="o">.</span><span class="n">print_</span><span class="p">(</span><span class="n">printer</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">coreprint</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">printer</span><span class="p">)</span>
+
+
+<span class="c">### QImage helpers ###########################################################</span>
+<span class="c">#from PyQt4.Qwt5 import toQImage as _toQImage</span>
+<span class="c">#def numpy2qimage(data):</span>
+<span class="c">#    # @NOTE: for Qwt5 &lt; 5.2.0</span>
+<span class="c">#    # return toQImage(data.transpose())</span>
+<span class="c">#    return _toQImage(data)</span>
+</div>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="n">GRAY_COLORTABLE</span> <span class="o">=</span> <span class="p">[</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QColor</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">rgb</span><span class="p">()</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">256</span><span class="p">)]</span>
+
+
+<span class="k">def</span> <span class="nf">_aligned</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">nbyes</span><span class="o">=</span><span class="mi">4</span><span class="p">):</span>
+    <span class="n">h</span><span class="p">,</span> <span class="n">w</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="n">fact</span> <span class="o">=</span> <span class="n">nbyes</span> <span class="o">/</span> <span class="n">data</span><span class="o">.</span><span class="n">itemsize</span>
+    <span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">w</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">fact</span><span class="p">))</span> <span class="o">*</span> <span class="n">nbyes</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">shape</span> <span class="o">!=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
+        <span class="c"># build aligned matrix</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="n">image</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">:</span><span class="n">w</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">:</span><span class="n">w</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">require</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="s">&#39;CO&#39;</span><span class="p">)</span>  <span class="c"># &#39;CAO&#39;</span>
+    <span class="k">return</span> <span class="n">image</span>
+
+
+<div class="viewcode-block" id="numpy2qimage"><a class="viewcode-back" href="../../api/gsdview.qt4support.html#gsdview.qt4support.numpy2qimage">[docs]</a><span class="k">def</span> <span class="nf">numpy2qimage</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Convert a numpy array into a QImage.</span>
+
+<span class="sd">    .. note:: requires sip &gt;= 4.7.5.</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">colortable</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">in</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ubyte</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">byte</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">h</span><span class="p">,</span> <span class="n">w</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span>
+            <span class="n">image</span> <span class="o">=</span> <span class="n">_aligned</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+            <span class="n">format_</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QImage</span><span class="o">.</span><span class="n">Format_Indexed8</span>
+            <span class="n">colortable</span> <span class="o">=</span> <span class="n">GRAY_COLORTABLE</span>
+
+        <span class="k">elif</span> <span class="n">data</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">3</span> <span class="ow">and</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">h</span><span class="p">,</span> <span class="n">w</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span>
+            <span class="n">image</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">h</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">data</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+            <span class="n">image</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">2</span><span class="p">::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span>
+            <span class="n">image</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">255</span>
+            <span class="n">format_</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QImage</span><span class="o">.</span><span class="n">Format_RGB32</span>
+
+        <span class="k">elif</span> <span class="n">data</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">3</span> <span class="ow">and</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="n">h</span><span class="p">,</span> <span class="n">w</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span>
+            <span class="n">image</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">require</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">,</span> <span class="s">&#39;CO&#39;</span><span class="p">)</span>  <span class="c"># &#39;CAO&#39;</span>
+            <span class="n">format_</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QImage</span><span class="o">.</span><span class="n">Format_ARGB32</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;unable to convert data: shape=</span><span class="si">%s</span><span class="s">, &#39;</span>
+                             <span class="s">&#39;dtype=&quot;</span><span class="si">%s</span><span class="s">&quot;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
+                                             <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">dtype</span><span class="p">)))</span>
+
+    <span class="k">elif</span> <span class="n">data</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">uint16</span> <span class="ow">and</span> <span class="n">data</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="c"># @TODO: check</span>
+        <span class="n">h</span><span class="p">,</span> <span class="n">w</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="n">_aligned</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">format_</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QImage</span><span class="o">.</span><span class="n">Format_RGB16</span>
+
+    <span class="k">elif</span> <span class="n">data</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">uint32</span> <span class="ow">and</span> <span class="n">data</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">h</span><span class="p">,</span> <span class="n">w</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">require</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="s">&#39;CO&#39;</span><span class="p">)</span>  <span class="c"># &#39;CAO&#39;</span>
+        <span class="c">#format_ = QtGui.QImage.Format_ARGB32</span>
+        <span class="n">format_</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QImage</span><span class="o">.</span><span class="n">Format_RGB32</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;unable to convert data: shape=</span><span class="si">%s</span><span class="s">, dtype=&quot;</span><span class="si">%s</span><span class="s">&quot;&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                                        <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">dtype</span><span class="p">)))</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QImage</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">format_</span><span class="p">)</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="n">image</span>
+    <span class="k">if</span> <span class="n">colortable</span><span class="p">:</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">setColorTable</span><span class="p">(</span><span class="n">colortable</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">result</span>
+
+
+<span class="c">### Resources helpers #########################################################</span></div>
+<div class="viewcode-block" id="getuifile"><a class="viewcode-back" href="../../api/gsdview.qt4support.html#gsdview.qt4support.getuifile">[docs]</a><span class="k">def</span> <span class="nf">getuifile</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">package</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Return the ui file path.</span>
+
+<span class="sd">    It is assumed that Qt UI files are located in the &quot;ui&quot; subfolfer of</span>
+<span class="sd">    the package.</span>
+
+<span class="sd">    .. seealso:: :func:`gsdview.utils.getresource`</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">getresource</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s">&#39;ui&#39;</span><span class="p">,</span> <span class="n">name</span><span class="p">),</span> <span class="n">package</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="getuiform"><a class="viewcode-back" href="../../api/gsdview.qt4support.html#gsdview.qt4support.getuiform">[docs]</a><span class="k">def</span> <span class="nf">getuiform</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">package</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Return the ui form class.</span>
+
+<span class="sd">    If it is available a pre-built python module the form class is</span>
+<span class="sd">    imported from it (assuming that the module contains a single UI</span>
+<span class="sd">    class having a name that starts with `Ui_`).</span>
+
+<span class="sd">    If no pre-build python module is available than the form call is</span>
+<span class="sd">    loaded directly from the ui file using the PyQt4.uic helper module.</span>
+
+<span class="sd">    .. note:: in the pyside packege is used to provide bindings for Qt4</span>
+<span class="sd">              then the uic module is not available and only pre-built</span>
+<span class="sd">              modules are searched.</span>
+<span class="sd">              When pyside is used an :exc:`ImportError` is raised</span>
+<span class="sd">              if pre-built forms are not available.</span>
+
+<span class="sd">    .. note:: like :func:`gsdview.qt4support.getuifile` this</span>
+<span class="sd">              function assumes that pre-build form modules and Qt UI</span>
+<span class="sd">              files are located in the &quot;ui&quot; subfolfer of the package.</span>
+
+<span class="sd">    .. seealso:: :func:`gsdview.utils.getresource`,</span>
+<span class="sd">                 :func:`gsdview.qt4support.getuifile`</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">fromlist</span> <span class="o">=</span> <span class="n">package</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s">&#39;.&#39;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">fromlist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;ui&#39;</span><span class="p">)</span>
+        <span class="n">modname</span> <span class="o">=</span> <span class="s">&#39;.&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">fromlist</span> <span class="o">+</span> <span class="p">[</span><span class="n">name</span><span class="p">])</span>
+        <span class="n">module</span> <span class="o">=</span> <span class="nb">__import__</span><span class="p">(</span><span class="n">modname</span><span class="p">,</span> <span class="n">fromlist</span><span class="o">=</span><span class="n">fromlist</span><span class="p">)</span>
+        <span class="n">formnames</span> <span class="o">=</span> <span class="p">[</span><span class="n">key</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">module</span><span class="o">.</span><span class="n">__dict__</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+                                                <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&#39;Ui_&#39;</span><span class="p">)]</span>
+        <span class="n">formname</span> <span class="o">=</span> <span class="n">formnames</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">FormClass</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">formname</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;load &quot;</span><span class="si">%s</span><span class="s">&quot; form base class from pre-compiled python &#39;</span>
+                      <span class="s">&#39;module&#39;</span> <span class="o">%</span> <span class="n">formname</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+        <span class="kn">import</span> <span class="nn">qt</span>
+        <span class="k">if</span> <span class="n">qt</span><span class="o">.</span><span class="n">qt_api</span> <span class="o">!=</span> <span class="s">&#39;pyqt&#39;</span><span class="p">:</span>
+            <span class="k">raise</span>
+
+        <span class="kn">from</span> <span class="nn">PyQt4</span> <span class="kn">import</span> <span class="n">uic</span>
+
+        <span class="n">uifile</span> <span class="o">=</span> <span class="n">getuifile</span><span class="p">(</span><span class="n">name</span> <span class="o">+</span> <span class="s">&#39;.ui&#39;</span><span class="p">,</span> <span class="n">package</span><span class="p">)</span>
+        <span class="n">FormClass</span><span class="p">,</span> <span class="n">QtBaseClass</span> <span class="o">=</span> <span class="n">uic</span><span class="o">.</span><span class="n">loadUiType</span><span class="p">(</span><span class="n">uifile</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;load &quot;</span><span class="si">%s</span><span class="s">&quot; form class from ui file&#39;</span> <span class="o">%</span> <span class="n">FormClass</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">FormClass</span>
+
+</div>
+<div class="viewcode-block" id="geticonfile"><a class="viewcode-back" href="../../api/gsdview.qt4support.html#gsdview.qt4support.geticonfile">[docs]</a><span class="k">def</span> <span class="nf">geticonfile</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">package</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Return the icon file path.</span>
+
+<span class="sd">    It is assumed that icon files are located in the &quot;images&quot; subfolder</span>
+<span class="sd">    of the package.</span>
+
+<span class="sd">    .. seealso:: :func:`gsdview.utils.getresource`</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">getresource</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s">&#39;images&#39;</span><span class="p">,</span> <span class="n">name</span><span class="p">),</span> <span class="n">package</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="geticon"><a class="viewcode-back" href="../../api/gsdview.qt4support.html#gsdview.qt4support.geticon">[docs]</a><span class="k">def</span> <span class="nf">geticon</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">package</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Build and return requested icon.</span>
+
+<span class="sd">    It is assumed that icon files are located in the &quot;images&quot; subfolder</span>
+<span class="sd">    of the package.</span>
+
+<span class="sd">    .. seealso:: :func:`gsdview.utils.getresource`</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">iconfile</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">getresource</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s">&#39;images&#39;</span><span class="p">,</span> <span class="n">name</span><span class="p">),</span> <span class="n">package</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QIcon</span><span class="p">(</span><span class="n">iconfile</span><span class="p">)</span>
+
+
+<span class="c">### Misc helpers ##############################################################</span></div>
+<div class="viewcode-block" id="cfgToTextDocument"><a class="viewcode-back" href="../../api/gsdview.qt4support.html#gsdview.qt4support.cfgToTextDocument">[docs]</a><span class="k">def</span> <span class="nf">cfgToTextDocument</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">doc</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">doc</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QTextDocument</span><span class="p">()</span>
+
+    <span class="n">cursor</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QTextCursor</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+    <span class="n">cursor</span><span class="o">.</span><span class="n">movePosition</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QTextCursor</span><span class="o">.</span><span class="n">End</span><span class="p">)</span>
+
+    <span class="c"># table style</span>
+    <span class="n">tableformat</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QTextTableFormat</span><span class="p">()</span>
+    <span class="n">tableformat</span><span class="o">.</span><span class="n">setTopMargin</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+    <span class="n">tableformat</span><span class="o">.</span><span class="n">setBottomMargin</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+    <span class="n">tableformat</span><span class="o">.</span><span class="n">setCellPadding</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+    <span class="n">tableformat</span><span class="o">.</span><span class="n">setCellSpacing</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">tableformat</span><span class="o">.</span><span class="n">setBorderStyle</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QTextFrameFormat</span><span class="o">.</span><span class="n">BorderStyle_Solid</span><span class="p">)</span>
+    <span class="n">tableformat</span><span class="o">.</span><span class="n">setHeaderRowCount</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c"># headers style</span>
+    <span class="n">titleblockformat</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QTextBlockFormat</span><span class="p">()</span>
+    <span class="n">titleblockformat</span><span class="o">.</span><span class="n">setTopMargin</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">titleblockformat</span><span class="o">.</span><span class="n">setBottomMargin</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+
+    <span class="n">titleformat</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QTextCharFormat</span><span class="p">()</span>
+    <span class="n">titleformat</span><span class="o">.</span><span class="n">setFontWeight</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QFont</span><span class="o">.</span><span class="n">Bold</span><span class="p">)</span>
+    <span class="c">#titleformat.setPointSze(12)</span>
+
+    <span class="c"># headers style</span>
+    <span class="n">headerformat</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QTextCharFormat</span><span class="p">()</span>
+    <span class="n">headerformat</span><span class="o">.</span><span class="n">setFontWeight</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QFont</span><span class="o">.</span><span class="n">Bold</span><span class="p">)</span>
+    <span class="n">brush</span> <span class="o">=</span> <span class="n">headerformat</span><span class="o">.</span><span class="n">background</span><span class="p">()</span>
+    <span class="n">brush</span><span class="o">.</span><span class="n">setColor</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">lightGray</span><span class="p">)</span>
+    <span class="n">brush</span><span class="o">.</span><span class="n">setStyle</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">SolidPattern</span><span class="p">)</span>
+    <span class="n">headerformat</span><span class="o">.</span><span class="n">setBackground</span><span class="p">(</span><span class="n">brush</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">section</span> <span class="ow">in</span> <span class="n">cfg</span><span class="o">.</span><span class="n">sections</span><span class="p">():</span>
+        <span class="k">print</span> <span class="s">&#39;section: &quot;</span><span class="si">%s</span><span class="s">&quot;&#39;</span> <span class="o">%</span> <span class="n">section</span>
+        <span class="n">items</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">items</span><span class="p">(</span><span class="n">section</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">items</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="n">cursor</span><span class="o">.</span><span class="n">beginEditBlock</span><span class="p">()</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">movePosition</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QTextCursor</span><span class="o">.</span><span class="n">End</span><span class="p">)</span>
+
+        <span class="c"># title</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">insertBlock</span><span class="p">(</span><span class="n">titleblockformat</span><span class="p">)</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">insertText</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">titleformat</span><span class="p">)</span>
+
+        <span class="n">nrows</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">items</span><span class="p">)</span>
+        <span class="n">ncols</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="n">table</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">insertTable</span><span class="p">(</span><span class="n">nrows</span><span class="p">,</span> <span class="n">ncols</span><span class="p">,</span> <span class="n">tableformat</span><span class="p">)</span>
+
+        <span class="c">#textformat = QtGui.QTextFormat()</span>
+
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">items</span><span class="p">):</span>
+            <span class="n">cell</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">cellAt</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">cellCursor</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">firstCursorPosition</span><span class="p">()</span>
+            <span class="n">cellCursor</span><span class="o">.</span><span class="n">insertText</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+
+            <span class="n">cell</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">cellAt</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">cellCursor</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">firstCursorPosition</span><span class="p">()</span>
+            <span class="n">cellCursor</span><span class="o">.</span><span class="n">insertText</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+        <span class="c"># horizontal header</span>
+        <span class="n">headers</span> <span class="o">=</span> <span class="p">[</span><span class="n">doc</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Key&#39;</span><span class="p">),</span> <span class="n">doc</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Value&#39;</span><span class="p">)]</span>
+        <span class="n">table</span><span class="o">.</span><span class="n">insertRows</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">col</span><span class="p">,</span> <span class="n">text</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">headers</span><span class="p">):</span>
+            <span class="n">cell</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">cellAt</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">col</span><span class="p">)</span>
+            <span class="n">cell</span><span class="o">.</span><span class="n">setFormat</span><span class="p">(</span><span class="n">headerformat</span><span class="p">)</span>
+            <span class="n">cellCursor</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">firstCursorPosition</span><span class="p">()</span>
+            <span class="n">cellCursor</span><span class="o">.</span><span class="n">insertText</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+
+        <span class="c"># vertical header</span>
+        <span class="n">table</span><span class="o">.</span><span class="n">insertColumns</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">nrows</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+
+            <span class="n">cell</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">cellAt</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">cell</span><span class="o">.</span><span class="n">setFormat</span><span class="p">(</span><span class="n">headerformat</span><span class="p">)</span>
+            <span class="n">cellCursor</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">firstCursorPosition</span><span class="p">()</span>
+            <span class="n">cellCursor</span><span class="o">.</span><span class="n">insertText</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">headerformat</span><span class="p">)</span>
+
+        <span class="n">cursor</span><span class="o">.</span><span class="n">endEditBlock</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">doc</span>
+
+</div>
+<div class="viewcode-block" id="imgexport"><a class="viewcode-back" href="../../api/gsdview.qt4support.html#gsdview.qt4support.imgexport">[docs]</a><span class="k">def</span> <span class="nf">imgexport</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="n">filters</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;All files (*)&#39;</span><span class="p">),</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Simple Vector Graphics file (*.svg)&#39;</span><span class="p">),</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;PDF file (*.pdf)&#39;</span><span class="p">),</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;PostScript file (*.ps)&#39;</span><span class="p">),</span>
+    <span class="p">]</span>
+    <span class="n">filters</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%s</span><span class="s"> file (*.</span><span class="si">%s</span><span class="s">)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">fmt</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span> <span class="nb">str</span><span class="p">(</span><span class="n">fmt</span><span class="p">))</span>
+                        <span class="k">for</span> <span class="n">fmt</span> <span class="ow">in</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QImageWriter</span><span class="o">.</span><span class="n">supportedImageFormats</span><span class="p">())</span>
+
+    <span class="n">formats</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">fmt</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">fmt</span> <span class="ow">in</span>
+                                    <span class="n">QtGui</span><span class="o">.</span><span class="n">QImageWriter</span><span class="o">.</span><span class="n">supportedImageFormats</span><span class="p">())</span>
+    <span class="n">formats</span><span class="o">.</span><span class="n">update</span><span class="p">((</span><span class="s">&#39;svg&#39;</span><span class="p">,</span> <span class="s">&#39;pdf&#39;</span><span class="p">,</span> <span class="s">&#39;ps&#39;</span><span class="p">))</span>
+
+    <span class="c"># @TODO: check</span>
+    <span class="k">if</span> <span class="n">parent</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">parent</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">window</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="n">parent</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="n">target</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">default_workdir</span><span class="p">(),</span> <span class="s">&#39;image.jpeg&#39;</span><span class="p">)</span>
+
+    <span class="n">filename</span><span class="p">,</span> <span class="n">filter_</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QFileDialog</span><span class="o">.</span><span class="n">getSaveFileNameAndFilter</span><span class="p">(</span>
+                                    <span class="n">parent</span><span class="p">,</span>
+                                    <span class="n">obj</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Save picture&#39;</span><span class="p">),</span>
+                                    <span class="n">target</span><span class="p">,</span>
+                                    <span class="s">&#39;;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">filters</span><span class="p">))</span>
+    <span class="n">ext</span> <span class="o">=</span> <span class="s">&#39;unknown&#39;</span>
+    <span class="k">while</span> <span class="n">filename</span> <span class="ow">and</span> <span class="p">(</span><span class="n">ext</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">formats</span><span class="p">):</span>
+        <span class="n">ext</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">filename</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">ext</span><span class="p">:</span>
+            <span class="n">ext</span> <span class="o">=</span> <span class="n">ext</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">ext</span> <span class="ow">in</span> <span class="n">formats</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">QtGui</span><span class="o">.</span><span class="n">QMessageBox</span><span class="o">.</span><span class="n">information</span><span class="p">(</span>
+                            <span class="n">parent</span><span class="p">,</span>
+                            <span class="n">obj</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Unknown file format&#39;</span><span class="p">),</span>
+                            <span class="n">obj</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Unknown file format &quot;</span><span class="si">%s</span><span class="s">&quot;.</span><span class="se">\n</span><span class="s">&#39;</span>
+                                   <span class="s">&#39;Please retry.&#39;</span><span class="p">)</span> <span class="o">%</span> <span class="n">ext</span><span class="p">)</span>
+
+                <span class="n">filename</span><span class="p">,</span> <span class="n">filter_</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QFileDialog</span><span class="o">.</span><span class="n">getSaveFileNameAndFilter</span><span class="p">(</span>
+                                            <span class="n">parent</span><span class="p">,</span>
+                                            <span class="n">obj</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Save draw&#39;</span><span class="p">),</span>
+                                            <span class="n">filename</span><span class="p">,</span>
+                                            <span class="s">&#39;;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">filters</span><span class="p">),</span>
+                                            <span class="n">filter_</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ext</span> <span class="o">=</span> <span class="s">&#39;unknown&#39;</span>
+
+    <span class="k">if</span> <span class="n">filename</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s">&#39;viewport&#39;</span><span class="p">):</span>
+            <span class="n">srcsize</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">viewport</span><span class="p">()</span><span class="o">.</span><span class="n">rect</span><span class="p">()</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s">&#39;sceneRect&#39;</span><span class="p">):</span>
+            <span class="c"># QGraphicsViews alsa has a viewport method so they should be</span>
+            <span class="c"># trapped by the previous check</span>
+            <span class="n">srcsize</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">sceneRect</span><span class="p">()</span><span class="o">.</span><span class="n">toRect</span><span class="p">()</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">srcsize</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QSize</span><span class="p">(</span><span class="mi">800</span><span class="p">,</span> <span class="mi">600</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">ext</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39;pdf&#39;</span><span class="p">,</span> <span class="s">&#39;ps&#39;</span><span class="p">):</span>
+            <span class="n">device</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QPrinter</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QPrinter</span><span class="o">.</span><span class="n">HighResolution</span><span class="p">)</span>
+            <span class="n">device</span><span class="o">.</span><span class="n">setOutputFileName</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">ext</span> <span class="o">==</span> <span class="s">&#39;pdf&#39;</span><span class="p">:</span>
+                <span class="n">device</span><span class="o">.</span><span class="n">setOutputFormat</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QPrinter</span><span class="o">.</span><span class="n">PdfFormat</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c"># ext == &#39;ps&#39;</span>
+                <span class="n">device</span><span class="o">.</span><span class="n">setOutputFormat</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QPrinter</span><span class="o">.</span><span class="n">PostScriptFormat</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">ext</span> <span class="o">==</span> <span class="s">&#39;svg&#39;</span><span class="p">:</span>
+            <span class="n">device</span> <span class="o">=</span> <span class="n">QtSvg</span><span class="o">.</span><span class="n">QSvgGenerator</span><span class="p">()</span>
+            <span class="n">device</span><span class="o">.</span><span class="n">setFileName</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+            <span class="n">device</span><span class="o">.</span><span class="n">setSize</span><span class="p">(</span><span class="n">srcsize</span><span class="p">)</span>
+            <span class="c">#device.setViewBox(obj.sceneRect().toRect())</span>
+            <span class="c">#device.setTitle(obj.tr(&#39;Graphics Draw&#39;))</span>
+            <span class="c">#device.setDescription(obj.tr(&#39;Qt SVG drawing.&#39;))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">device</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QPixmap</span><span class="p">(</span><span class="n">srcsize</span><span class="p">)</span>
+            <span class="c"># @TODO: check</span>
+            <span class="n">device</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">white</span><span class="p">)</span>
+
+        <span class="n">painter</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QPainter</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">painter</span><span class="o">.</span><span class="n">begin</span><span class="p">(</span><span class="n">device</span><span class="p">):</span>
+            <span class="c">#painter.setRenderHint(QtGui.QPainter.Antialiasing)</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">painter</span><span class="p">)</span>
+            <span class="n">painter</span><span class="o">.</span><span class="n">end</span><span class="p">()</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="s">&#39;save&#39;</span><span class="p">):</span>
+                <span class="n">device</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">QtGui</span><span class="o">.</span><span class="n">QMessageBox</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                        <span class="n">parent</span><span class="p">,</span>
+                        <span class="n">obj</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Warning&#39;</span><span class="p">),</span>
+                        <span class="n">obj</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Unable initialize painting device.&#39;</span><span class="p">))</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+    
+    
+    <p>
+        <a href="http://sourceforge.net/projects/gsdview">
+            <img src="http://sflogo.sourceforge.net/sflogo.php?group_id=226458&type=14" width="150" height="40" alt="Get GSDView at SourceForge.net. Fast, secure and Free Open Source software downloads" />
+        </a>
+    </p>
+    
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li><a href="../../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../gsdview.html" >gsdview</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2008-2011, Antonio Valentino.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

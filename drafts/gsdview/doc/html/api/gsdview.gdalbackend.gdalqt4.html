@@ -1,0 +1,284 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>gsdview.gdalbackend.gdalqt4 &mdash; GSDView Open Edition Home Page</title>
+    <link rel="stylesheet" href="../_static/sourceforge.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.6.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/logo.ico"/>
+    <link rel="top" title="GSDView Open Edition Home Page" href="../index.html" />
+    <link rel="up" title="API Reference" href="../reference.html" />
+    <link rel="next" title="gsdview.gdalbackend.gdalsupport" href="gsdview.gdalbackend.gdalsupport.html" />
+    <link rel="prev" title="gsdview.gdalbackend.gdalexectools" href="gsdview.gdalbackend.gdalexectools.html" /> 
+  </head>
+  <body>
+    
+        
+    
+    
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li class="right" >
+          <a href="gsdview.gdalbackend.gdalsupport.html" title="gsdview.gdalbackend.gdalsupport"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="gsdview.gdalbackend.gdalexectools.html" title="gsdview.gdalbackend.gdalexectools"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../reference.html" accesskey="U">API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-gsdview.gdalbackend.gdalqt4">
+<span id="gsdview-gdalbackend-gdalqt4"></span><h1>gsdview.gdalbackend.gdalqt4<a class="headerlink" href="#module-gsdview.gdalbackend.gdalqt4" title="Permalink to this headline">¶</a></h1>
+<p>Helper tools and custom components for binding GDAL and Qt4.</p>
+<p class="rubric">Functions</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><tt class="xref py py-obj docutils literal"><span class="pre">GDALTypeCodeToNumericTypeCode</span></tt>(gdal_code)</td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.gdalbackend.gdalqt4.gdalcolorentry2qcolor" title="gsdview.gdalbackend.gdalqt4.gdalcolorentry2qcolor"><tt class="xref py py-obj docutils literal"><span class="pre">gdalcolorentry2qcolor</span></tt></a>(colrentry[,&nbsp;...])</td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.gdalbackend.gdalqt4.graphicsItemFactory" title="gsdview.gdalbackend.gdalqt4.graphicsItemFactory"><tt class="xref py py-obj docutils literal"><span class="pre">graphicsItemFactory</span></tt></a>(gdalobj[,&nbsp;parent,&nbsp;scene])</td>
+<td>Factory function for GDAL graphics items.</td>
+</tr>
+<tr><td><tt class="xref py py-obj docutils literal"><span class="pre">numpy2qimage</span></tt>(data)</td>
+<td>Convert a numpy array into a QImage.</td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.gdalbackend.gdalqt4.safeDataStats" title="gsdview.gdalbackend.gdalqt4.safeDataStats"><tt class="xref py py-obj docutils literal"><span class="pre">safeDataStats</span></tt></a>(data[,&nbsp;nodata])</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Classes</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><a class="reference internal" href="#gsdview.gdalbackend.gdalqt4.BaseGdalGraphicsItem" title="gsdview.gdalbackend.gdalqt4.BaseGdalGraphicsItem"><tt class="xref py py-obj docutils literal"><span class="pre">BaseGdalGraphicsItem</span></tt></a>(gdalobj,&nbsp;**kwargs[,&nbsp;...])</td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.gdalbackend.gdalqt4.GdalComplexGraphicsItem" title="gsdview.gdalbackend.gdalqt4.GdalComplexGraphicsItem"><tt class="xref py py-obj docutils literal"><span class="pre">GdalComplexGraphicsItem</span></tt></a>(band,&nbsp;**kwargs[,&nbsp;...])</td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.gdalbackend.gdalqt4.GdalGraphicsItem" title="gsdview.gdalbackend.gdalqt4.GdalGraphicsItem"><tt class="xref py py-obj docutils literal"><span class="pre">GdalGraphicsItem</span></tt></a>(band,&nbsp;**kwargs[,&nbsp;parent,&nbsp;scene])</td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.gdalbackend.gdalqt4.GdalRgbGraphicsItem" title="gsdview.gdalbackend.gdalqt4.GdalRgbGraphicsItem"><tt class="xref py py-obj docutils literal"><span class="pre">GdalRgbGraphicsItem</span></tt></a>(dataset,&nbsp;**kwargs[,&nbsp;...])</td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.gdalbackend.gdalqt4.UIntGdalGraphicsItem" title="gsdview.gdalbackend.gdalqt4.UIntGdalGraphicsItem"><tt class="xref py py-obj docutils literal"><span class="pre">UIntGdalGraphicsItem</span></tt></a>(band,&nbsp;**kwargs[,&nbsp;...])</td>
+<td>GDAL graphics item specialized for 8 and 16 it unsigned integers.</td>
+</tr>
+</tbody>
+</table>
+<dl class="class">
+<dt id="gsdview.gdalbackend.gdalqt4.BaseGdalGraphicsItem">
+<em class="property">class </em><tt class="descclassname">gsdview.gdalbackend.gdalqt4.</tt><tt class="descname">BaseGdalGraphicsItem</tt><big>(</big><em>gdalobj</em>, <em>parent=None</em>, <em>scene=None</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/gdalqt4.html#BaseGdalGraphicsItem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.gdalqt4.BaseGdalGraphicsItem" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">PyQt4.QtGui.QGraphicsItem</span></tt></p>
+<dl class="method">
+<dt id="gsdview.gdalbackend.gdalqt4.BaseGdalGraphicsItem.boundingRect">
+<tt class="descname">boundingRect</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/gdalqt4.html#BaseGdalGraphicsItem.boundingRect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.gdalqt4.BaseGdalGraphicsItem.boundingRect" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.gdalqt4.BaseGdalGraphicsItem.dataRange">
+<tt class="descname">dataRange</tt><big>(</big><em>data=None</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/gdalqt4.html#BaseGdalGraphicsItem.dataRange"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.gdalqt4.BaseGdalGraphicsItem.dataRange" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.gdalqt4.BaseGdalGraphicsItem.setDefaultStretch">
+<tt class="descname">setDefaultStretch</tt><big>(</big><em>data=None</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/gdalqt4.html#BaseGdalGraphicsItem.setDefaultStretch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.gdalqt4.BaseGdalGraphicsItem.setDefaultStretch" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.gdalqt4.BaseGdalGraphicsItem.type">
+<tt class="descname">type</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/gdalqt4.html#BaseGdalGraphicsItem.type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.gdalqt4.BaseGdalGraphicsItem.type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gsdview.gdalbackend.gdalqt4.GdalComplexGraphicsItem">
+<em class="property">class </em><tt class="descclassname">gsdview.gdalbackend.gdalqt4.</tt><tt class="descname">GdalComplexGraphicsItem</tt><big>(</big><em>band</em>, <em>parent=None</em>, <em>scene=None</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/gdalqt4.html#GdalComplexGraphicsItem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.gdalqt4.GdalComplexGraphicsItem" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gsdview.gdalbackend.gdalqt4.GdalGraphicsItem" title="gsdview.gdalbackend.gdalqt4.GdalGraphicsItem"><tt class="xref py py-class docutils literal"><span class="pre">gsdview.gdalbackend.gdalqt4.GdalGraphicsItem</span></tt></a></p>
+<dl class="method">
+<dt id="gsdview.gdalbackend.gdalqt4.GdalComplexGraphicsItem.dataRange">
+<tt class="descname">dataRange</tt><big>(</big><em>data=None</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/gdalqt4.html#GdalComplexGraphicsItem.dataRange"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.gdalqt4.GdalComplexGraphicsItem.dataRange" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.gdalqt4.GdalComplexGraphicsItem.paint">
+<tt class="descname">paint</tt><big>(</big><em>painter</em>, <em>option</em>, <em>widget</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/gdalqt4.html#GdalComplexGraphicsItem.paint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.gdalqt4.GdalComplexGraphicsItem.paint" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gsdview.gdalbackend.gdalqt4.GdalGraphicsItem">
+<em class="property">class </em><tt class="descclassname">gsdview.gdalbackend.gdalqt4.</tt><tt class="descname">GdalGraphicsItem</tt><big>(</big><em>band</em>, <em>parent=None</em>, <em>scene=None</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/gdalqt4.html#GdalGraphicsItem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.gdalqt4.GdalGraphicsItem" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gsdview.gdalbackend.gdalqt4.BaseGdalGraphicsItem" title="gsdview.gdalbackend.gdalqt4.BaseGdalGraphicsItem"><tt class="xref py py-class docutils literal"><span class="pre">gsdview.gdalbackend.gdalqt4.BaseGdalGraphicsItem</span></tt></a></p>
+<dl class="method">
+<dt id="gsdview.gdalbackend.gdalqt4.GdalGraphicsItem.dataRange">
+<tt class="descname">dataRange</tt><big>(</big><em>data=None</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/gdalqt4.html#GdalGraphicsItem.dataRange"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.gdalqt4.GdalGraphicsItem.dataRange" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.gdalqt4.GdalGraphicsItem.paint">
+<tt class="descname">paint</tt><big>(</big><em>painter</em>, <em>option</em>, <em>widget</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/gdalqt4.html#GdalGraphicsItem.paint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.gdalqt4.GdalGraphicsItem.paint" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gsdview.gdalbackend.gdalqt4.GdalRgbGraphicsItem">
+<em class="property">class </em><tt class="descclassname">gsdview.gdalbackend.gdalqt4.</tt><tt class="descname">GdalRgbGraphicsItem</tt><big>(</big><em>dataset</em>, <em>parent=None</em>, <em>scene=None</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/gdalqt4.html#GdalRgbGraphicsItem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.gdalqt4.GdalRgbGraphicsItem" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gsdview.gdalbackend.gdalqt4.BaseGdalGraphicsItem" title="gsdview.gdalbackend.gdalqt4.BaseGdalGraphicsItem"><tt class="xref py py-class docutils literal"><span class="pre">gsdview.gdalbackend.gdalqt4.BaseGdalGraphicsItem</span></tt></a></p>
+<dl class="method">
+<dt id="gsdview.gdalbackend.gdalqt4.GdalRgbGraphicsItem.paint">
+<tt class="descname">paint</tt><big>(</big><em>painter</em>, <em>option</em>, <em>widget</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/gdalqt4.html#GdalRgbGraphicsItem.paint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.gdalqt4.GdalRgbGraphicsItem.paint" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gsdview.gdalbackend.gdalqt4.UIntGdalGraphicsItem">
+<em class="property">class </em><tt class="descclassname">gsdview.gdalbackend.gdalqt4.</tt><tt class="descname">UIntGdalGraphicsItem</tt><big>(</big><em>band</em>, <em>parent=None</em>, <em>scene=None</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/gdalqt4.html#UIntGdalGraphicsItem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.gdalqt4.UIntGdalGraphicsItem" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gsdview.gdalbackend.gdalqt4.BaseGdalGraphicsItem" title="gsdview.gdalbackend.gdalqt4.BaseGdalGraphicsItem"><tt class="xref py py-class docutils literal"><span class="pre">gsdview.gdalbackend.gdalqt4.BaseGdalGraphicsItem</span></tt></a></p>
+<p>GDAL graphics item specialized for 8 and 16 it unsigned integers.</p>
+<p>Uses an unchecked LUT for transformations.</p>
+<dl class="method">
+<dt id="gsdview.gdalbackend.gdalqt4.UIntGdalGraphicsItem.dataRange">
+<tt class="descname">dataRange</tt><big>(</big><em>data=None</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/gdalqt4.html#UIntGdalGraphicsItem.dataRange"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.gdalqt4.UIntGdalGraphicsItem.dataRange" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.gdalqt4.UIntGdalGraphicsItem.paint">
+<tt class="descname">paint</tt><big>(</big><em>painter</em>, <em>option</em>, <em>widget</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/gdalqt4.html#UIntGdalGraphicsItem.paint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.gdalqt4.UIntGdalGraphicsItem.paint" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="gsdview.gdalbackend.gdalqt4.gdalcolorentry2qcolor">
+<tt class="descclassname">gsdview.gdalbackend.gdalqt4.</tt><tt class="descname">gdalcolorentry2qcolor</tt><big>(</big><em>colrentry</em>, <em>interpretation=1</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/gdalqt4.html#gdalcolorentry2qcolor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.gdalqt4.gdalcolorentry2qcolor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="gsdview.gdalbackend.gdalqt4.graphicsItemFactory">
+<tt class="descclassname">gsdview.gdalbackend.gdalqt4.</tt><tt class="descname">graphicsItemFactory</tt><big>(</big><em>gdalobj</em>, <em>parent=None</em>, <em>scene=None</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/gdalqt4.html#graphicsItemFactory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.gdalqt4.graphicsItemFactory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Factory function for GDAL graphics items.</p>
+<p>Instantiates on object of the GDAL graphics item class taht best
+fits the <em>gdalobj</em> passed as argument.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="gsdview.gdalbackend.gdalqt4.safeDataStats">
+<tt class="descclassname">gsdview.gdalbackend.gdalqt4.</tt><tt class="descname">safeDataStats</tt><big>(</big><em>data</em>, <em>nodata=None</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/gdalqt4.html#safeDataStats"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.gdalqt4.safeDataStats" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo.png" alt="Logo"/>
+            </a></p>
+    
+    
+    <p>
+        <a href="http://sourceforge.net/projects/gsdview">
+            <img src="http://sflogo.sourceforge.net/sflogo.php?group_id=226458&type=14" width="150" height="40" alt="Get GSDView at SourceForge.net. Fast, secure and Free Open Source software downloads" />
+        </a>
+    </p>
+    
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="gsdview.gdalbackend.gdalexectools.html"
+                        title="previous chapter">gsdview.gdalbackend.gdalexectools</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="gsdview.gdalbackend.gdalsupport.html"
+                        title="next chapter">gsdview.gdalbackend.gdalsupport</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/api/gsdview.gdalbackend.gdalqt4.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li class="right" >
+          <a href="gsdview.gdalbackend.gdalsupport.html" title="gsdview.gdalbackend.gdalsupport"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="gsdview.gdalbackend.gdalexectools.html" title="gsdview.gdalbackend.gdalexectools"
+             >previous</a> |</li>
+        <li><a href="../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../reference.html" >API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2008-2011, Antonio Valentino.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

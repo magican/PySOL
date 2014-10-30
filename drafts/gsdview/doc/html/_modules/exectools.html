@@ -1,0 +1,699 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>exectools &mdash; GSDView Open Edition Home Page</title>
+    <link rel="stylesheet" href="../_static/sourceforge.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.6.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/logo.ico"/>
+    <link rel="top" title="GSDView Open Edition Home Page" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" /> 
+  </head>
+  <body>
+    
+        
+    
+    
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li><a href="../index.html">GSDView</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for exectools</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="c">### Copyright (C) 2006-2011 Antonio Valentino &lt;a_valentino@users.sf.net&gt;</span>
+
+<span class="c">### This file is part of exectools.</span>
+
+<span class="c">### This module is free software; you can redistribute it and/or modify</span>
+<span class="c">### it under the terms of the GNU General Public License as published by</span>
+<span class="c">### the Free Software Foundation; either version 2 of the License, or</span>
+<span class="c">### (at your option) any later version.</span>
+
+<span class="c">### This module is distributed in the hope that it will be useful,</span>
+<span class="c">### but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c">### MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c">### GNU General Public License for more details.</span>
+
+<span class="c">### You should have received a copy of the GNU General Public License</span>
+<span class="c">### along with this module; if not, write to the Free Software</span>
+<span class="c">### Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA.</span>
+
+<span class="sd">&#39;&#39;&#39;Tools for running external processes.&#39;&#39;&#39;</span>
+
+
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">cStringIO</span> <span class="kn">import</span> <span class="n">StringIO</span>
+
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s">&#39;Antonio Valentino &lt;a_valentino@users.sf.net&gt;&#39;</span>
+<span class="n">__revision__</span> <span class="o">=</span> <span class="s">&#39;$Revision: 971 $&#39;</span>
+<span class="n">__date__</span> <span class="o">=</span> <span class="s">&#39;$Date: 2011-07-30 11:07:42 +0200 (sab, 30 lug 2011) $&#39;</span>
+<span class="n">__version__</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;EX_OK&#39;</span><span class="p">,</span> <span class="s">&#39;PROGRESS&#39;</span><span class="p">,</span> <span class="s">&#39;TAGS&#39;</span><span class="p">,</span> <span class="s">&#39;level2tag&#39;</span><span class="p">,</span>
+           <span class="s">&#39;BaseOutputHandler&#39;</span><span class="p">,</span> <span class="s">&#39;BaseToolController&#39;</span><span class="p">,</span> <span class="s">&#39;ToolDescriptor&#39;</span><span class="p">]</span>
+
+<span class="n">version</span> <span class="o">=</span> <span class="s">&#39;.&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">__version__</span><span class="p">))</span>
+
+<span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;win&#39;</span><span class="p">:</span>
+    <span class="n">EX_OK</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">EX_OK</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">EX_OK</span>
+
+<span class="n">PROGRESS</span> <span class="o">=</span> <span class="mi">15</span>
+<span class="n">TAGS</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;error&#39;</span><span class="p">,</span> <span class="s">&#39;warning&#39;</span><span class="p">,</span> <span class="s">&#39;info&#39;</span><span class="p">,</span> <span class="s">&#39;progress&#39;</span><span class="p">,</span> <span class="s">&#39;debug&#39;</span><span class="p">,</span> <span class="s">&#39;cmd&#39;</span><span class="p">]</span>
+
+<span class="n">_LEVEL2TAG</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">CRITICAL</span><span class="p">:</span> <span class="s">&#39;error&#39;</span><span class="p">,</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">:</span> <span class="s">&#39;error&#39;</span><span class="p">,</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">:</span> <span class="s">&#39;warning&#39;</span><span class="p">,</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">:</span> <span class="s">&#39;info&#39;</span><span class="p">,</span>
+    <span class="n">PROGRESS</span><span class="p">:</span> <span class="s">&#39;progress&#39;</span><span class="p">,</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">:</span> <span class="s">&#39;debug&#39;</span><span class="p">,</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">NOTSET</span><span class="p">:</span> <span class="s">&#39;&#39;</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="level2tag"><a class="viewcode-back" href="../api/exectools.html#exectools.level2tag">[docs]</a><span class="k">def</span> <span class="nf">level2tag</span><span class="p">(</span><span class="n">level</span><span class="p">):</span>
+    <span class="c"># @TODO: intermediate levels</span>
+    <span class="k">return</span> <span class="n">_LEVEL2TAG</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="BaseOutputHandler"><a class="viewcode-back" href="../api/exectools.html#exectools.BaseOutputHandler">[docs]</a><span class="k">class</span> <span class="nc">BaseOutputHandler</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Base class for output handlers&#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">BaseOutputHandler</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_wpos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="o">.</span><span class="n">tell</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">logger</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">logger</span><span class="p">,</span> <span class="nb">basestring</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">logger</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c"># @TODO: remove assertion</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">logger</span><span class="p">,</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logger</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">percentage_fmt</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%5.1f</span><span class="s"> </span><span class="si">%%</span><span class="s">&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handlers</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;progress&#39;</span><span class="p">,</span> <span class="s">&#39;line&#39;</span><span class="p">]</span>
+
+        <span class="c"># NOTE: pulse, percentage and text are all optional. The regexp</span>
+        <span class="c">#       consumes the &#39;\r&#39; character in any case.</span>
+        <span class="n">pattern</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;[ </span><span class="se">\t</span><span class="s">]*&#39;</span>
+                   <span class="s">&#39;</span><span class="se">\r</span><span class="s">+&#39;</span>
+                   <span class="s">&#39;[ </span><span class="se">\t</span><span class="s">]*&#39;</span>
+                   <span class="s">&#39;(?P&lt;pulse&gt;[</span><span class="se">\\</span><span class="s">\|/-])?&#39;</span>
+                   <span class="s">&#39;[ </span><span class="se">\t</span><span class="s">]*&#39;</span>
+                   <span class="s">&#39;((?P&lt;percentage&gt;\d{1,3}(\.\d*)?)[ </span><span class="se">\t</span><span class="s">]*%)?&#39;</span>
+                   <span class="s">&#39;[ </span><span class="se">\t</span><span class="s">]*&#39;</span>
+                   <span class="s">&#39;((?P&lt;text&gt;.*?)(?=</span><span class="se">\r</span><span class="s">|</span><span class="se">\n</span><span class="s">))&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_progress_pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_text_patterns</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s">&#39;error&#39;</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">&#39;error&#39;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">),</span>
+            <span class="s">&#39;warning&#39;</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">&#39;warning&#39;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">),</span>
+        <span class="p">}</span>
+
+<div class="viewcode-block" id="BaseOutputHandler.reset"><a class="viewcode-back" href="../api/exectools.html#exectools.BaseOutputHandler.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Reset the handler instance.</span>
+
+<span class="sd">        Loses all unprocessed data. This is called implicitly at</span>
+<span class="sd">        instantiation time.</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_wpos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="o">.</span><span class="n">tell</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="BaseOutputHandler.close"><a class="viewcode-back" href="../api/exectools.html#exectools.BaseOutputHandler.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Force processing of all buffered data and reset the instance&#39;&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_parse</span><span class="p">()</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">data</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">data</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">):</span>
+                <span class="n">data</span> <span class="o">+=</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">handle_line</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="BaseOutputHandler.feed"><a class="viewcode-back" href="../api/exectools.html#exectools.BaseOutputHandler.feed">[docs]</a>    <span class="k">def</span> <span class="nf">feed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Feed some data to the parser.</span>
+
+<span class="sd">        It is processed insofar as it consists of complete elements;</span>
+<span class="sd">        incomplete data is buffered until more data is fed or close()</span>
+<span class="sd">        is called.</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="n">rpos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="o">.</span><span class="n">tell</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_wpos</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_wpos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="o">.</span><span class="n">tell</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="n">rpos</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_parse</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="BaseOutputHandler.get_progress"><a class="viewcode-back" href="../api/exectools.html#exectools.BaseOutputHandler.get_progress">[docs]</a>    <span class="k">def</span> <span class="nf">get_progress</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Search and decode progress patterns&#39;&#39;&#39;</span>
+
+        <span class="n">pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="o">.</span><span class="n">tell</span><span class="p">()</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="n">match</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_progress_pattern</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s">&#39;pulse&#39;</span><span class="p">:</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s">&#39;pulse&#39;</span><span class="p">),</span>
+                <span class="s">&#39;percentage&#39;</span><span class="p">:</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s">&#39;percentage&#39;</span><span class="p">),</span>
+                <span class="s">&#39;text&#39;</span><span class="p">:</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s">&#39;text&#39;</span><span class="p">),</span>
+                <span class="s">&#39;rawdata&#39;</span><span class="p">:</span> <span class="n">data</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="n">pos</span> <span class="o">+</span> <span class="n">match</span><span class="o">.</span><span class="n">end</span><span class="p">())</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">None</span>
+
+        <span class="k">if</span> <span class="n">result</span><span class="p">[</span><span class="s">&#39;percentage&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">result</span><span class="p">[</span><span class="s">&#39;percentage&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s">&#39;percentage&#39;</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">result</span>
+</div>
+<div class="viewcode-block" id="BaseOutputHandler.get_line"><a class="viewcode-back" href="../api/exectools.html#exectools.BaseOutputHandler.get_line">[docs]</a>    <span class="k">def</span> <span class="nf">get_line</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Extract complete lines&#39;&#39;&#39;</span>
+
+        <span class="n">pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="o">.</span><span class="n">tell</span><span class="p">()</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">data</span> <span class="ow">and</span> <span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">data</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>  <span class="c"># remove &#39;\n&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">None</span>
+</div>
+    <span class="k">def</span> <span class="nf">_parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">handlers</span><span class="p">:</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s">&#39;get_&#39;</span> <span class="o">+</span> <span class="n">name</span><span class="p">)()</span>
+                <span class="k">if</span> <span class="n">data</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">):</span>
+                    <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s">&#39;handle_&#39;</span> <span class="o">+</span> <span class="n">name</span><span class="p">)(</span><span class="n">data</span><span class="p">)</span>
+                    <span class="k">break</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c"># no pattern matches</span>
+                <span class="k">break</span>
+
+<div class="viewcode-block" id="BaseOutputHandler.handle_progress"><a class="viewcode-back" href="../api/exectools.html#exectools.BaseOutputHandler.handle_progress">[docs]</a>    <span class="k">def</span> <span class="nf">handle_progress</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Handle progress data.</span>
+
+<span class="sd">        This method is not meant to be called by the user.</span>
+
+<span class="sd">        The user, anyway, can provide a custom implementation in</span>
+<span class="sd">        derived classes.</span>
+
+<span class="sd">        :param data:</span>
+<span class="sd">            a list containing an item for each named group in the</span>
+<span class="sd">            &quot;progress&quot; regular expression: (pulse, percentage, text)</span>
+<span class="sd">            for the default implementation.</span>
+<span class="sd">            Each item can be None.</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="n">pulse</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;pulse&#39;</span><span class="p">)</span>
+        <span class="n">percentage</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;percentage&#39;</span><span class="p">)</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;text&#39;</span><span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">pulse</span><span class="p">:</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pulse</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">percentage</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">percentage_fmt</span> <span class="o">%</span> <span class="n">percentage</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">text</span><span class="p">:</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+
+        <span class="n">extra</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s">&#39;tag&#39;</span><span class="p">:</span> <span class="s">&#39;progress&#39;</span><span class="p">,</span>
+            <span class="s">&#39;pulse&#39;</span><span class="p">:</span> <span class="n">pulse</span><span class="p">,</span>
+            <span class="s">&#39;percentage&#39;</span><span class="p">:</span> <span class="n">percentage</span><span class="p">,</span>
+            <span class="s">&#39;text&#39;</span><span class="p">:</span> <span class="n">text</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">PROGRESS</span><span class="p">,</span> <span class="s">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">result</span><span class="p">),</span> <span class="n">extra</span><span class="o">=</span><span class="n">extra</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="BaseOutputHandler.handle_line"><a class="viewcode-back" href="../api/exectools.html#exectools.BaseOutputHandler.handle_line">[docs]</a>    <span class="k">def</span> <span class="nf">handle_line</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Handle output lines.</span>
+
+<span class="sd">        This method is not meant to be directly called by the user.</span>
+
+<span class="sd">        The user, anyway, can provide a custom implementation in</span>
+<span class="sd">        derived classes.</span>
+
+<span class="sd">        :param data:</span>
+<span class="sd">            an entire output line (including the trailing &quot;end of line&quot;</span>
+<span class="sd">            character.</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">for</span> <span class="n">tag_name</span><span class="p">,</span> <span class="n">pattern</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_text_patterns</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">match</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;tag&#39;</span><span class="p">:</span> <span class="n">tag_name</span><span class="p">})</span>
+                <span class="k">break</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+</div></div>
+<div class="viewcode-block" id="ToolDescriptor"><a class="viewcode-back" href="../api/exectools.html#exectools.ToolDescriptor">[docs]</a><span class="k">class</span> <span class="nc">ToolDescriptor</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Command line tool desctiptor.</span>
+
+<span class="sd">    A :class:`ToolDescriptor` instance describes a command line tool</span>
+<span class="sd">    (:attr:`executable`), how to run it (:attr:`args`, :attr:`cwd`,</span>
+<span class="sd">    :attr:`env`) and how to handle its output (:attr:`stdout_handler`,</span>
+<span class="sd">    :attr:`stderr_handler`).</span>
+
+<span class="sd">    Example::</span>
+
+<span class="sd">        handler = BaseOutputHandler()</span>
+<span class="sd">        ll = ToolDescriptor(executable=&#39;ls&#39;, args=[&#39;-l&#39;],</span>
+<span class="sd">                            stdout_handler=handler)</span>
+<span class="sd">        controller.run_tool(ll)</span>
+
+<span class="sd">        # In this case no executabe is set in the descriptor.</span>
+<span class="sd">        cmd = ToolDescriptor(stdout_handler=handler)</span>
+
+<span class="sd">        # The executable name is passed at execution time (first argument)</span>
+<span class="sd">        controller.run_tool(cmd, &#39;ls&#39;, &#39;-l&#39;)</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">executable</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">env</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                 <span class="n">stdout_handler</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">stderr_handler</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        :param executable:</span>
+<span class="sd">            full path of the tool executable or just the tool program</span>
+<span class="sd">            name if it is in the system search path</span>
+<span class="sd">        :param args:</span>
+<span class="sd">            default args for command (list of strings)</span>
+<span class="sd">        :type args:</span>
+<span class="sd">            list</span>
+<span class="sd">        :param cwd:</span>
+<span class="sd">            program working directory</span>
+<span class="sd">        :param env:</span>
+<span class="sd">            environment dictionary</span>
+<span class="sd">        :param envmerge:</span>
+<span class="sd">            if set to True (default) it is the :attr:`env` dictionaty is</span>
+<span class="sd">            used to update the system environment</span>
+<span class="sd">        :param stdout_handler:</span>
+<span class="sd">            *OutputHandler* for the stdout of the tool</span>
+<span class="sd">        :param stderr_handler:</span>
+<span class="sd">            *OutputHandler* for the stderr of the tool</span>
+
+<span class="sd">        .. seealso:: :class:`BaseOutputHandler`</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">ToolDescriptor</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+
+        <span class="c">#: full path of the tool executable or just the tool program name</span>
+        <span class="c">#  if it is in the system search path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">executable</span> <span class="o">=</span> <span class="n">executable</span>
+
+        <span class="c">#: default args for command</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">args</span>
+
+        <span class="c">#: program working directory</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cwd</span> <span class="o">=</span> <span class="n">cwd</span>
+
+        <span class="c">#: if set to True (default) then the :attr:`env` dictionaty is used</span>
+        <span class="c">#: to update the system environment</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">envmerge</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_env</span> <span class="o">=</span> <span class="n">env</span>
+
+        <span class="c">#: is set to true the external too is executed in a system shell</span>
+        <span class="c">#:</span>
+        <span class="c">#: .. warning:: some implementation don&#39;t allow to stop a subprocess</span>
+        <span class="c">#:              executed via shell</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shell</span> <span class="o">=</span> <span class="bp">False</span>
+
+        <span class="c">#: the *OutputHandler* for the stdout of the tool</span>
+        <span class="c">#:</span>
+        <span class="c">#: .. seealso:: :class:`BaseOutputHandler`</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stdout_handler</span> <span class="o">=</span> <span class="n">stdout_handler</span>
+
+        <span class="c">#: the *OutputHandler* for the stderr of the tool</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stderr_handler</span> <span class="o">=</span> <span class="n">stderr_handler</span>
+
+    <span class="k">def</span> <span class="nf">_getenv</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">envmerge</span><span class="p">:</span>
+            <span class="n">env</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_env</span><span class="p">:</span>
+                <span class="n">env</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_env</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">env</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_env</span>
+
+    <span class="k">def</span> <span class="nf">_setenv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">env</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_env</span> <span class="o">=</span> <span class="n">env</span>
+
+    <span class="n">env</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_getenv</span><span class="p">,</span> <span class="n">_setenv</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s">&#39;the tool environment&#39;</span><span class="p">)</span>
+
+    <span class="c">## @COMPATIBILITY: property.setter nedds Python &gt;= 2.6</span>
+    <span class="c">#@property</span>
+    <span class="c">#def env(self):</span>
+    <span class="c">#    if self.envmerge:</span>
+    <span class="c">#        env = os.environ.copy()</span>
+    <span class="c">#        if self._env:</span>
+    <span class="c">#            env.update(self._env)</span>
+    <span class="c">#        return env</span>
+    <span class="c">#    else:</span>
+    <span class="c">#        return self._env</span>
+    <span class="c">#</span>
+    <span class="c">#@env.setter</span>
+    <span class="c">#def env(self, env):</span>
+    <span class="c">#    self._env = env</span>
+
+<div class="viewcode-block" id="ToolDescriptor.cmdline"><a class="viewcode-back" href="../api/exectools.html#exectools.ToolDescriptor.cmdline">[docs]</a>    <span class="k">def</span> <span class="nf">cmdline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Generate the complete command-line for the tool.</span>
+
+<span class="sd">        This method is meant to be used together with &quot;subprocess&quot;</span>
+<span class="sd">        so the &quot;comman-line&quot; actually is a list of strings.</span>
+
+<span class="sd">        If the executable attribute is not set (evaluate false) then</span>
+<span class="sd">        the first non-keyword argument is considered to be the</span>
+<span class="sd">        executable tool name.</span>
+
+<span class="sd">        The command line is build as follows::</span>
+
+<span class="sd">          executable keyword-arguments args</span>
+
+<span class="sd">        If you need a command-line in single string form use something</span>
+<span class="sd">        like::</span>
+
+<span class="sd">          &#39; &#39;.join(tool.cmdline(arg1, arg2, arg3))</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+
+        <span class="n">executable</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">executable</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">executable</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">executable</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">args</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+            <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;&quot;executable&quot; not set&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">executable</span><span class="p">,</span> <span class="nb">basestring</span><span class="p">):</span>
+            <span class="n">parts</span> <span class="o">=</span> <span class="p">[</span><span class="n">executable</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c"># handle cases like: executable = [&#39;python&#39;, &#39;-u&#39;, &#39;script.py&#39;]</span>
+            <span class="n">parts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">executable</span><span class="p">)</span>
+
+        <span class="n">parts</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%s</span><span class="s">=</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+        <span class="n">parts</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span> <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">args</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">parts</span>
+</div>
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmdline</span><span class="p">())</span>
+
+</div>
+<div class="viewcode-block" id="BaseToolController"><a class="viewcode-back" href="../api/exectools.html#exectools.BaseToolController">[docs]</a><span class="k">class</span> <span class="nc">BaseToolController</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Base class for controlling command line tools.</span>
+
+<span class="sd">    A tool controller runs an external tool in controlled way.</span>
+<span class="sd">    The output of the child process is handled by the controller and,</span>
+<span class="sd">    optionally, notifications can be achieved at sub-process</span>
+<span class="sd">    termination.</span>
+
+<span class="sd">    A tool controller also allows to stop the controlled process.</span>
+
+<span class="sd">    .. note:: after the process termination the user can still query</span>
+<span class="sd">              both :attr:`subprocess` and :attr:`stopped` for getting</span>
+<span class="sd">              info about the executed process.</span>
+
+<span class="sd">              The user should have care of calling :meth:`reset` when</span>
+<span class="sd">              info n executed process are no more needed or before</span>
+<span class="sd">              executing a new process.</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">BaseToolController</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+
+        <span class="c">#: the subprocess instance</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_userstop</span> <span class="o">=</span> <span class="bp">False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tool</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="k">if</span> <span class="n">logger</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">logger</span><span class="p">,</span> <span class="nb">basestring</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">logger</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">logger</span><span class="p">,</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logger</span>
+
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="BaseToolController.isbusy"><a class="viewcode-back" href="../api/exectools.html#exectools.BaseToolController.isbusy">[docs]</a>    <span class="k">def</span> <span class="nf">isbusy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;If True then the controller is already running a subprocess.&#39;&#39;&#39;</span>
+
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s">&#39;BaseToolController.busy&#39;</span><span class="p">)</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="BaseToolController.userstop"><a class="viewcode-back" href="../api/exectools.html#exectools.BaseToolController.userstop">[docs]</a>    <span class="k">def</span> <span class="nf">userstop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;If True the process has been stopped by the user.&#39;&#39;&#39;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_userstop</span>
+</div>
+<div class="viewcode-block" id="BaseToolController.finalize_run_hook"><a class="viewcode-back" href="../api/exectools.html#exectools.BaseToolController.finalize_run_hook">[docs]</a>    <span class="k">def</span> <span class="nf">finalize_run_hook</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Hook method for extra finalization tasks.</span>
+
+<span class="sd">        This method is always called after finalization and before</span>
+<span class="sd">        controller reset.</span>
+
+<span class="sd">        The user can provide a custom implementation in derived classes</span>
+<span class="sd">        in order to perform extra finalization actions.</span>
+
+<span class="sd">        This method is not meant to be called from the user.</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">pass</span>
+</div>
+<div class="viewcode-block" id="BaseToolController.finalize_run"><a class="viewcode-back" href="../api/exectools.html#exectools.BaseToolController.finalize_run">[docs]</a>    <span class="k">def</span> <span class="nf">finalize_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s">&#39;finalize_run&#39;</span><span class="p">)</span>
+</div>
+    <span class="k">def</span> <span class="nf">_reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Internal reset.</span>
+
+<span class="sd">        Kill the controlled subprocess and reset I/O channels loosing</span>
+<span class="sd">        all unprocessed data.</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tool</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tool</span><span class="o">.</span><span class="n">stdout_handler</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_tool</span><span class="o">.</span><span class="n">stdout_handler</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tool</span><span class="o">.</span><span class="n">stderr_handler</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_tool</span><span class="o">.</span><span class="n">stderr_handler</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+
+<div class="viewcode-block" id="BaseToolController.reset"><a class="viewcode-back" href="../api/exectools.html#exectools.BaseToolController.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Reset the tool controller instance&#39;&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reset</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_userstop</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tool</span> <span class="o">=</span> <span class="bp">None</span>
+</div>
+<div class="viewcode-block" id="BaseToolController.prerun_hook"><a class="viewcode-back" href="../api/exectools.html#exectools.BaseToolController.prerun_hook">[docs]</a>    <span class="k">def</span> <span class="nf">prerun_hook</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Hook method for extra pre-run actions.</span>
+
+<span class="sd">        This method is always called before the controlled subprocess</span>
+<span class="sd">        is actually started.  The user can provide its own custom</span>
+<span class="sd">        implementation in derived classes in order to perform</span>
+<span class="sd">        additional actions.</span>
+
+<span class="sd">        This method is not meant to be called from the user.</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;win&#39;</span><span class="p">:</span>
+            <span class="n">prompt</span> <span class="o">=</span> <span class="s">&#39;cmd &gt;&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">prompt</span> <span class="o">=</span> <span class="s">&#39;$&#39;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="nb">basestring</span><span class="p">):</span>
+            <span class="n">cmd</span> <span class="o">=</span> <span class="s">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">prompt</span><span class="p">,</span> <span class="n">cmd</span><span class="p">),</span> <span class="n">extra</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;tag&#39;</span><span class="p">:</span> <span class="s">&#39;cmd&#39;</span><span class="p">})</span>
+</div>
+<div class="viewcode-block" id="BaseToolController.connect_output_handlers"><a class="viewcode-back" href="../api/exectools.html#exectools.BaseToolController.connect_output_handlers">[docs]</a>    <span class="k">def</span> <span class="nf">connect_output_handlers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+</div>
+<div class="viewcode-block" id="BaseToolController.handle_stdout"><a class="viewcode-back" href="../api/exectools.html#exectools.BaseToolController.handle_stdout">[docs]</a>    <span class="k">def</span> <span class="nf">handle_stdout</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s">&#39;handle_stdout&#39;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="BaseToolController.handle_stderr"><a class="viewcode-back" href="../api/exectools.html#exectools.BaseToolController.handle_stderr">[docs]</a>    <span class="k">def</span> <span class="nf">handle_stderr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s">&#39;handle_stderr&#39;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="BaseToolController.run_tool"><a class="viewcode-back" href="../api/exectools.html#exectools.BaseToolController.run_tool">[docs]</a>    <span class="k">def</span> <span class="nf">run_tool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tool</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s">&#39;run_tool&#39;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="BaseToolController.stop_tool"><a class="viewcode-back" href="../api/exectools.html#exectools.BaseToolController.stop_tool">[docs]</a>    <span class="k">def</span> <span class="nf">stop_tool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s">&#39;stop_tool&#39;</span><span class="p">)</span>
+
+</div></div>
+<span class="k">if</span><span class="p">(</span><span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">):</span>
+    <span class="kn">import</span> <span class="nn">time</span>
+
+    <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+
+    <span class="k">class</span> <span class="nc">DummyToolController</span><span class="p">(</span><span class="n">BaseToolController</span><span class="p">):</span>
+
+        <span class="k">def</span> <span class="nf">connect_output_handlers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">handle_stdout</span><span class="p">()</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+
+    <span class="n">h</span> <span class="o">=</span> <span class="n">BaseOutputHandler</span><span class="p">()</span>
+    <span class="n">h</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\r</span><span class="s">line</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+    <span class="n">h</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\r</span><span class="s">-&#39;</span><span class="p">)</span>
+    <span class="n">h</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="s">&#39; </span><span class="se">\r</span><span class="s">/&#39;</span><span class="p">)</span>
+    <span class="n">h</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\r</span><span class="s"> </span><span class="se">\\</span><span class="s">&#39;</span><span class="p">)</span>
+    <span class="n">h</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\r</span><span class="s">| &#39;</span><span class="p">)</span>
+    <span class="n">h</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="s">&#39; </span><span class="se">\r</span><span class="s"> - &#39;</span><span class="p">)</span>
+
+    <span class="n">h</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\r</span><span class="s">line</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+    <span class="n">h</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\r</span><span class="s">12%&#39;</span><span class="p">)</span>
+    <span class="n">h</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="s">&#39; </span><span class="se">\r</span><span class="s">13%&#39;</span><span class="p">)</span>
+    <span class="n">h</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\r</span><span class="s"> 14%&#39;</span><span class="p">)</span>
+    <span class="n">h</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\r</span><span class="s">15 %&#39;</span><span class="p">)</span>
+    <span class="n">h</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\r</span><span class="s">16% &#39;</span><span class="p">)</span>
+    <span class="n">h</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="s">&#39; </span><span class="se">\r</span><span class="s"> 17 % &#39;</span><span class="p">)</span>
+
+    <span class="n">h</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\r</span><span class="s">line</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+    <span class="n">h</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\r</span><span class="s">17.1%&#39;</span><span class="p">)</span>
+    <span class="n">h</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="s">&#39; </span><span class="se">\r</span><span class="s">17.2%&#39;</span><span class="p">)</span>
+    <span class="n">h</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\r</span><span class="s"> 17.3%&#39;</span><span class="p">)</span>
+    <span class="n">h</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\r</span><span class="s">17.4 %&#39;</span><span class="p">)</span>
+    <span class="n">h</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\r</span><span class="s">17.5% &#39;</span><span class="p">)</span>
+    <span class="n">h</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="s">&#39; </span><span class="se">\r</span><span class="s"> 17.6 % &#39;</span><span class="p">)</span>
+
+    <span class="n">h</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\r</span><span class="s">line</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+    <span class="n">h</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\r</span><span class="s">-18%&#39;</span><span class="p">)</span>
+    <span class="n">h</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="s">&#39; </span><span class="se">\r</span><span class="s">/18%&#39;</span><span class="p">)</span>
+    <span class="n">h</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\r</span><span class="s"> |18% &#39;</span><span class="p">)</span>
+    <span class="n">h</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\r\\</span><span class="s"> 18%&#39;</span><span class="p">)</span>
+    <span class="n">h</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\r</span><span class="s">-18 %&#39;</span><span class="p">)</span>
+    <span class="n">h</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\r</span><span class="s">/18% &#39;</span><span class="p">)</span>
+    <span class="n">h</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="s">&#39; </span><span class="se">\r</span><span class="s">   |   18 % &#39;</span><span class="p">)</span>
+
+    <span class="n">h</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\r</span><span class="s">line</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+    <span class="n">h</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\r</span><span class="s">-19.0%&#39;</span><span class="p">)</span>
+    <span class="n">h</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="s">&#39; </span><span class="se">\r</span><span class="s">/19.1%&#39;</span><span class="p">)</span>
+    <span class="n">h</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\r</span><span class="s"> |19.2%&#39;</span><span class="p">)</span>
+    <span class="n">h</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\r\\</span><span class="s"> 19.3%&#39;</span><span class="p">)</span>
+    <span class="n">h</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\r</span><span class="s">-19.4 %&#39;</span><span class="p">)</span>
+    <span class="n">h</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\r</span><span class="s">/19.5% &#39;</span><span class="p">)</span>
+    <span class="n">h</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="s">&#39; </span><span class="se">\r</span><span class="s">   |   19.5 % &#39;</span><span class="p">)</span>
+
+    <span class="n">h</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\r</span><span class="s">line</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+    <span class="n">h</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\r</span><span class="s">elapsed time: 1&#39;</span><span class="p">)</span>
+    <span class="n">h</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\r</span><span class="s">elapsed time: 2&#39;</span><span class="p">)</span>
+    <span class="n">h</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\r</span><span class="s">elapsed time: 3&#39;</span><span class="p">)</span>
+
+    <span class="n">h</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\r</span><span class="s">line</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+    <span class="n">h</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\r</span><span class="s">- 1.0</span><span class="si">% c</span><span class="s">ompleted.&#39;</span><span class="p">)</span>
+    <span class="n">h</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\r</span><span class="s">/ 2.0</span><span class="si">% c</span><span class="s">ompleted.&#39;</span><span class="p">)</span>
+    <span class="n">h</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\r</span><span class="s">| 3.0</span><span class="si">% c</span><span class="s">ompleted.&#39;</span><span class="p">)</span>
+    <span class="n">h</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\r\\</span><span class="s"> 4.0</span><span class="si">% c</span><span class="s">ompleted.&#39;</span><span class="p">)</span>
+
+    <span class="n">h</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\r</span><span class="s">done</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+    <span class="n">h</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="c">#~ import doctest</span>
+    <span class="c">#~ doctest.testmod()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo.png" alt="Logo"/>
+            </a></p>
+    
+    
+    <p>
+        <a href="http://sourceforge.net/projects/gsdview">
+            <img src="http://sflogo.sourceforge.net/sflogo.php?group_id=226458&type=14" width="150" height="40" alt="Get GSDView at SourceForge.net. Fast, secure and Free Open Source software downloads" />
+        </a>
+    </p>
+    
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li><a href="../index.html">GSDView</a> &raquo;</li>
+          <li><a href="index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2008-2011, Antonio Valentino.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

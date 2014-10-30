@@ -1,0 +1,250 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>gsdtools.ras2vec &mdash; GSDView Open Edition Home Page</title>
+    <link rel="stylesheet" href="../_static/sourceforge.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.6.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/logo.ico"/>
+    <link rel="top" title="GSDView Open Edition Home Page" href="../index.html" />
+    <link rel="up" title="API Reference" href="../reference.html" />
+    <link rel="next" title="logplane" href="logplane.html" />
+    <link rel="prev" title="gsdtools.stats" href="gsdtools.stats.html" /> 
+  </head>
+  <body>
+    
+        
+    
+    
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li class="right" >
+          <a href="logplane.html" title="logplane"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="gsdtools.stats.html" title="gsdtools.stats"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../reference.html" accesskey="U">API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-gsdtools.ras2vec">
+<span id="gsdtools-ras2vec"></span><h1>gsdtools.ras2vec<a class="headerlink" href="#module-gsdtools.ras2vec" title="Permalink to this headline">¶</a></h1>
+<p>Generate a vector file containing the bounding box of raster data.</p>
+<p>Take in input one or more raster datasets and generate a vector file
+containing the bounding box polygon and, optionally, a GCP layer of
+each input dataset.</p>
+<p>Note: currently only the KML format is supported for output.</p>
+<p>This program aims to be an improved and more flexible version of the
+gdaltindex utility.</p>
+<p class="rubric">Functions</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><a class="reference internal" href="#gsdtools.ras2vec.compact_index" title="gsdtools.ras2vec.compact_index"><tt class="xref py py-obj docutils literal"><span class="pre">compact_index</span></tt></a>(srclist,&nbsp;dst)</td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdtools.ras2vec.create_GCP_layer" title="gsdtools.ras2vec.create_GCP_layer"><tt class="xref py py-obj docutils literal"><span class="pre">create_GCP_layer</span></tt></a>(ds[,&nbsp;name,&nbsp;srs,&nbsp;gtype,&nbsp;opt])</td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdtools.ras2vec.create_box_layer" title="gsdtools.ras2vec.create_box_layer"><tt class="xref py py-obj docutils literal"><span class="pre">create_box_layer</span></tt></a>(ds[,&nbsp;name,&nbsp;srs,&nbsp;gtype,&nbsp;opt])</td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdtools.ras2vec.create_datasource" title="gsdtools.ras2vec.create_datasource"><tt class="xref py py-obj docutils literal"><span class="pre">create_datasource</span></tt></a>(filename[,&nbsp;drivername])</td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdtools.ras2vec.export_bounding_box" title="gsdtools.ras2vec.export_bounding_box"><tt class="xref py py-obj docutils literal"><span class="pre">export_bounding_box</span></tt></a>(layer,&nbsp;corners[,&nbsp;...])</td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdtools.ras2vec.export_gcps" title="gsdtools.ras2vec.export_gcps"><tt class="xref py py-obj docutils literal"><span class="pre">export_gcps</span></tt></a>(layer,&nbsp;gcps)</td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdtools.ras2vec.export_raster" title="gsdtools.ras2vec.export_raster"><tt class="xref py py-obj docutils literal"><span class="pre">export_raster</span></tt></a>(src,&nbsp;dst[,&nbsp;boxlayer,&nbsp;...])</td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdtools.ras2vec.geographic_info" title="gsdtools.ras2vec.geographic_info"><tt class="xref py py-obj docutils literal"><span class="pre">geographic_info</span></tt></a>(ds[,&nbsp;srsout])</td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdtools.ras2vec.handlecmd" title="gsdtools.ras2vec.handlecmd"><tt class="xref py py-obj docutils literal"><span class="pre">handlecmd</span></tt></a>([argv])</td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdtools.ras2vec.main" title="gsdtools.ras2vec.main"><tt class="xref py py-obj docutils literal"><span class="pre">main</span></tt></a>(*argv)</td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdtools.ras2vec.makesrs" title="gsdtools.ras2vec.makesrs"><tt class="xref py py-obj docutils literal"><span class="pre">makesrs</span></tt></a>(srs)</td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdtools.ras2vec.raster_index" title="gsdtools.ras2vec.raster_index"><tt class="xref py py-obj docutils literal"><span class="pre">raster_index</span></tt></a>(srclist,&nbsp;dst[,&nbsp;gcplayer,&nbsp;...])</td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdtools.ras2vec.raster_tree_index" title="gsdtools.ras2vec.raster_tree_index"><tt class="xref py py-obj docutils literal"><span class="pre">raster_tree_index</span></tt></a>(src,&nbsp;dst[,&nbsp;boxlayer,&nbsp;...])</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="function">
+<dt id="gsdtools.ras2vec.compact_index">
+<tt class="descclassname">gsdtools.ras2vec.</tt><tt class="descname">compact_index</tt><big>(</big><em>srclist</em>, <em>dst</em><big>)</big><a class="reference internal" href="../_modules/gsdtools/ras2vec.html#compact_index"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdtools.ras2vec.compact_index" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="gsdtools.ras2vec.create_GCP_layer">
+<tt class="descclassname">gsdtools.ras2vec.</tt><tt class="descname">create_GCP_layer</tt><big>(</big><em>ds</em>, <em>name=''</em>, <em>srs=None</em>, <em>gtype=-2147483647</em>, <em>opt=None</em><big>)</big><a class="reference internal" href="../_modules/gsdtools/ras2vec.html#create_GCP_layer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdtools.ras2vec.create_GCP_layer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="gsdtools.ras2vec.create_box_layer">
+<tt class="descclassname">gsdtools.ras2vec.</tt><tt class="descname">create_box_layer</tt><big>(</big><em>ds</em>, <em>name=''</em>, <em>srs=None</em>, <em>gtype=0</em>, <em>opt=None</em><big>)</big><a class="reference internal" href="../_modules/gsdtools/ras2vec.html#create_box_layer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdtools.ras2vec.create_box_layer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="gsdtools.ras2vec.create_datasource">
+<tt class="descclassname">gsdtools.ras2vec.</tt><tt class="descname">create_datasource</tt><big>(</big><em>filename</em>, <em>drivername=None</em><big>)</big><a class="reference internal" href="../_modules/gsdtools/ras2vec.html#create_datasource"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdtools.ras2vec.create_datasource" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="gsdtools.ras2vec.export_bounding_box">
+<tt class="descclassname">gsdtools.ras2vec.</tt><tt class="descname">export_bounding_box</tt><big>(</big><em>layer</em>, <em>corners</em>, <em>description=''</em>, <em>mark_corners=True</em><big>)</big><a class="reference internal" href="../_modules/gsdtools/ras2vec.html#export_bounding_box"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdtools.ras2vec.export_bounding_box" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="gsdtools.ras2vec.export_gcps">
+<tt class="descclassname">gsdtools.ras2vec.</tt><tt class="descname">export_gcps</tt><big>(</big><em>layer</em>, <em>gcps</em><big>)</big><a class="reference internal" href="../_modules/gsdtools/ras2vec.html#export_gcps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdtools.ras2vec.export_gcps" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="gsdtools.ras2vec.export_raster">
+<tt class="descclassname">gsdtools.ras2vec.</tt><tt class="descname">export_raster</tt><big>(</big><em>src</em>, <em>dst</em>, <em>boxlayer=None</em>, <em>gcplayer=None</em>, <em>srsout=None</em>, <em>mark_corners=True</em><big>)</big><a class="reference internal" href="../_modules/gsdtools/ras2vec.html#export_raster"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdtools.ras2vec.export_raster" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="gsdtools.ras2vec.geographic_info">
+<tt class="descclassname">gsdtools.ras2vec.</tt><tt class="descname">geographic_info</tt><big>(</big><em>ds</em>, <em>srsout=None</em><big>)</big><a class="reference internal" href="../_modules/gsdtools/ras2vec.html#geographic_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdtools.ras2vec.geographic_info" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="gsdtools.ras2vec.handlecmd">
+<tt class="descclassname">gsdtools.ras2vec.</tt><tt class="descname">handlecmd</tt><big>(</big><em>argv=None</em><big>)</big><a class="reference internal" href="../_modules/gsdtools/ras2vec.html#handlecmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdtools.ras2vec.handlecmd" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="gsdtools.ras2vec.main">
+<tt class="descclassname">gsdtools.ras2vec.</tt><tt class="descname">main</tt><big>(</big><em>*argv</em><big>)</big><a class="reference internal" href="../_modules/gsdtools/ras2vec.html#main"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdtools.ras2vec.main" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="gsdtools.ras2vec.makesrs">
+<tt class="descclassname">gsdtools.ras2vec.</tt><tt class="descname">makesrs</tt><big>(</big><em>srs</em><big>)</big><a class="reference internal" href="../_modules/gsdtools/ras2vec.html#makesrs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdtools.ras2vec.makesrs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="gsdtools.ras2vec.raster_index">
+<tt class="descclassname">gsdtools.ras2vec.</tt><tt class="descname">raster_index</tt><big>(</big><em>srclist</em>, <em>dst</em>, <em>gcplayer=False</em>, <em>mark_corners=False</em><big>)</big><a class="reference internal" href="../_modules/gsdtools/ras2vec.html#raster_index"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdtools.ras2vec.raster_index" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="gsdtools.ras2vec.raster_tree_index">
+<tt class="descclassname">gsdtools.ras2vec.</tt><tt class="descname">raster_tree_index</tt><big>(</big><em>src</em>, <em>dst</em>, <em>boxlayer=None</em>, <em>gcplayer=None</em>, <em>mark_corners=False</em><big>)</big><a class="reference internal" href="../_modules/gsdtools/ras2vec.html#raster_tree_index"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdtools.ras2vec.raster_tree_index" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo.png" alt="Logo"/>
+            </a></p>
+    
+    
+    <p>
+        <a href="http://sourceforge.net/projects/gsdview">
+            <img src="http://sflogo.sourceforge.net/sflogo.php?group_id=226458&type=14" width="150" height="40" alt="Get GSDView at SourceForge.net. Fast, secure and Free Open Source software downloads" />
+        </a>
+    </p>
+    
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="gsdtools.stats.html"
+                        title="previous chapter">gsdtools.stats</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="logplane.html"
+                        title="next chapter">logplane</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/api/gsdtools.ras2vec.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li class="right" >
+          <a href="logplane.html" title="logplane"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="gsdtools.stats.html" title="gsdtools.stats"
+             >previous</a> |</li>
+        <li><a href="../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../reference.html" >API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2008-2011, Antonio Valentino.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

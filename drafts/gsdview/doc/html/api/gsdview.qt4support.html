@@ -1,0 +1,386 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>gsdview.qt4support &mdash; GSDView Open Edition Home Page</title>
+    <link rel="stylesheet" href="../_static/sourceforge.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.6.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/logo.ico"/>
+    <link rel="top" title="GSDView Open Edition Home Page" href="../index.html" />
+    <link rel="up" title="API Reference" href="../reference.html" />
+    <link rel="next" title="gsdview.qtwindowlistmenu" href="gsdview.qtwindowlistmenu.html" />
+    <link rel="prev" title="gsdview.qt4draw" href="gsdview.qt4draw.html" /> 
+  </head>
+  <body>
+    
+        
+    
+    
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li class="right" >
+          <a href="gsdview.qtwindowlistmenu.html" title="gsdview.qtwindowlistmenu"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="gsdview.qt4draw.html" title="gsdview.qt4draw"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../reference.html" accesskey="U">API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-gsdview.qt4support">
+<span id="gsdview-qt4support"></span><h1>gsdview.qt4support<a class="headerlink" href="#module-gsdview.qt4support" title="Permalink to this headline">¶</a></h1>
+<p>Utility functions and classes for Qt4 applicaions.</p>
+<p class="rubric">Functions</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><tt class="xref py py-obj docutils literal"><span class="pre">StringIO</span></tt></td>
+<td>StringIO([s]) &#8211; Return a StringIO-like stream for reading or writing</td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.qt4support.actionGroupToMenu" title="gsdview.qt4support.actionGroupToMenu"><tt class="xref py py-obj docutils literal"><span class="pre">actionGroupToMenu</span></tt></a>(actionGroup,&nbsp;label,&nbsp;mainwin)</td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.qt4support.actionGroupToToolbar" title="gsdview.qt4support.actionGroupToToolbar"><tt class="xref py py-obj docutils literal"><span class="pre">actionGroupToToolbar</span></tt></a>(actionGroup,&nbsp;label[,&nbsp;name])</td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.qt4support.callExpensiveFunc" title="gsdview.qt4support.callExpensiveFunc"><tt class="xref py py-obj docutils literal"><span class="pre">callExpensiveFunc</span></tt></a>(func,&nbsp;*args,&nbsp;**kwargs)</td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.qt4support.cfgToTextDocument" title="gsdview.qt4support.cfgToTextDocument"><tt class="xref py py-obj docutils literal"><span class="pre">cfgToTextDocument</span></tt></a>(cfg[,&nbsp;doc])</td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.qt4support.clearTable" title="gsdview.qt4support.clearTable"><tt class="xref py py-obj docutils literal"><span class="pre">clearTable</span></tt></a>(tablewidget)</td>
+<td>Remove contents from a table widget preserving labels.</td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.qt4support.copySelectedItems" title="gsdview.qt4support.copySelectedItems"><tt class="xref py py-obj docutils literal"><span class="pre">copySelectedItems</span></tt></a>(itemview)</td>
+<td>Copy selected items of an QAbstractItemView to the clipboard and</td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.qt4support.coreprint" title="gsdview.qt4support.coreprint"><tt class="xref py py-obj docutils literal"><span class="pre">coreprint</span></tt></a>(obj,&nbsp;printer)</td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.qt4support.exportTable" title="gsdview.qt4support.exportTable"><tt class="xref py py-obj docutils literal"><span class="pre">exportTable</span></tt></a>(model[,&nbsp;parent])</td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.qt4support.geticon" title="gsdview.qt4support.geticon"><tt class="xref py py-obj docutils literal"><span class="pre">geticon</span></tt></a>(name[,&nbsp;package])</td>
+<td>Build and return requested icon.</td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.qt4support.geticonfile" title="gsdview.qt4support.geticonfile"><tt class="xref py py-obj docutils literal"><span class="pre">geticonfile</span></tt></a>(name[,&nbsp;package])</td>
+<td>Return the icon file path.</td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.qt4support.getuifile" title="gsdview.qt4support.getuifile"><tt class="xref py py-obj docutils literal"><span class="pre">getuifile</span></tt></a>(name[,&nbsp;package])</td>
+<td>Return the ui file path.</td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.qt4support.getuiform" title="gsdview.qt4support.getuiform"><tt class="xref py py-obj docutils literal"><span class="pre">getuiform</span></tt></a>(name[,&nbsp;package])</td>
+<td>Return the ui form class.</td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.qt4support.imgexport" title="gsdview.qt4support.imgexport"><tt class="xref py py-obj docutils literal"><span class="pre">imgexport</span></tt></a>(obj[,&nbsp;parent])</td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.qt4support.modelToCsv" title="gsdview.qt4support.modelToCsv"><tt class="xref py py-obj docutils literal"><span class="pre">modelToCsv</span></tt></a>(model[,&nbsp;dialect])</td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.qt4support.modelToIni" title="gsdview.qt4support.modelToIni"><tt class="xref py py-obj docutils literal"><span class="pre">modelToIni</span></tt></a>(model[,&nbsp;section,&nbsp;cfg])</td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.qt4support.modelToTextDocument" title="gsdview.qt4support.modelToTextDocument"><tt class="xref py py-obj docutils literal"><span class="pre">modelToTextDocument</span></tt></a>(model[,&nbsp;doc])</td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.qt4support.numpy2qimage" title="gsdview.qt4support.numpy2qimage"><tt class="xref py py-obj docutils literal"><span class="pre">numpy2qimage</span></tt></a>(data)</td>
+<td>Convert a numpy array into a QImage.</td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.qt4support.overrideCursor" title="gsdview.qt4support.overrideCursor"><tt class="xref py py-obj docutils literal"><span class="pre">overrideCursor</span></tt></a>(func)</td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.qt4support.printObject" title="gsdview.qt4support.printObject"><tt class="xref py py-obj docutils literal"><span class="pre">printObject</span></tt></a>(obj[,&nbsp;printer,&nbsp;parent])</td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.qt4support.printPreview" title="gsdview.qt4support.printPreview"><tt class="xref py py-obj docutils literal"><span class="pre">printPreview</span></tt></a>(obj[,&nbsp;printer,&nbsp;parent])</td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.qt4support.selectAllItems" title="gsdview.qt4support.selectAllItems"><tt class="xref py py-obj docutils literal"><span class="pre">selectAllItems</span></tt></a>(itemview)</td>
+<td>Select all items in an QAbstractItemView.</td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.qt4support.setViewContextActions" title="gsdview.qt4support.setViewContextActions"><tt class="xref py py-obj docutils literal"><span class="pre">setViewContextActions</span></tt></a>(widget)</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Classes</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><tt class="xref py py-obj docutils literal"><span class="pre">ConfigParser</span></tt>([defaults,&nbsp;dict_type,&nbsp;...])</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="function">
+<dt id="gsdview.qt4support.actionGroupToMenu">
+<tt class="descclassname">gsdview.qt4support.</tt><tt class="descname">actionGroupToMenu</tt><big>(</big><em>actionGroup</em>, <em>label</em>, <em>mainwin</em><big>)</big><a class="reference internal" href="../_modules/gsdview/qt4support.html#actionGroupToMenu"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.qt4support.actionGroupToMenu" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="gsdview.qt4support.actionGroupToToolbar">
+<tt class="descclassname">gsdview.qt4support.</tt><tt class="descname">actionGroupToToolbar</tt><big>(</big><em>actionGroup</em>, <em>label</em>, <em>name=None</em><big>)</big><a class="reference internal" href="../_modules/gsdview/qt4support.html#actionGroupToToolbar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.qt4support.actionGroupToToolbar" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="gsdview.qt4support.callExpensiveFunc">
+<tt class="descclassname">gsdview.qt4support.</tt><tt class="descname">callExpensiveFunc</tt><big>(</big><em>func</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/gsdview/qt4support.html#callExpensiveFunc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.qt4support.callExpensiveFunc" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="gsdview.qt4support.cfgToTextDocument">
+<tt class="descclassname">gsdview.qt4support.</tt><tt class="descname">cfgToTextDocument</tt><big>(</big><em>cfg</em>, <em>doc=None</em><big>)</big><a class="reference internal" href="../_modules/gsdview/qt4support.html#cfgToTextDocument"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.qt4support.cfgToTextDocument" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="gsdview.qt4support.clearTable">
+<tt class="descclassname">gsdview.qt4support.</tt><tt class="descname">clearTable</tt><big>(</big><em>tablewidget</em><big>)</big><a class="reference internal" href="../_modules/gsdview/qt4support.html#clearTable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.qt4support.clearTable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove contents from a table widget preserving labels.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="gsdview.qt4support.copySelectedItems">
+<tt class="descclassname">gsdview.qt4support.</tt><tt class="descname">copySelectedItems</tt><big>(</big><em>itemview</em><big>)</big><a class="reference internal" href="../_modules/gsdview/qt4support.html#copySelectedItems"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.qt4support.copySelectedItems" title="Permalink to this definition">¶</a></dt>
+<dd><p>Copy selected items of an QAbstractItemView to the clipboard and
+also return copied data.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="gsdview.qt4support.coreprint">
+<tt class="descclassname">gsdview.qt4support.</tt><tt class="descname">coreprint</tt><big>(</big><em>obj</em>, <em>printer</em><big>)</big><a class="reference internal" href="../_modules/gsdview/qt4support.html#coreprint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.qt4support.coreprint" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="gsdview.qt4support.exportTable">
+<tt class="descclassname">gsdview.qt4support.</tt><tt class="descname">exportTable</tt><big>(</big><em>model</em>, <em>parent=None</em><big>)</big><a class="reference internal" href="../_modules/gsdview/qt4support.html#exportTable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.qt4support.exportTable" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="gsdview.qt4support.geticon">
+<tt class="descclassname">gsdview.qt4support.</tt><tt class="descname">geticon</tt><big>(</big><em>name</em>, <em>package=None</em><big>)</big><a class="reference internal" href="../_modules/gsdview/qt4support.html#geticon"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.qt4support.geticon" title="Permalink to this definition">¶</a></dt>
+<dd><p>Build and return requested icon.</p>
+<p>It is assumed that icon files are located in the &#8220;images&#8221; subfolder
+of the package.</p>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="gsdview.utils.html#gsdview.utils.getresource" title="gsdview.utils.getresource"><tt class="xref py py-func docutils literal"><span class="pre">gsdview.utils.getresource()</span></tt></a></p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="gsdview.qt4support.geticonfile">
+<tt class="descclassname">gsdview.qt4support.</tt><tt class="descname">geticonfile</tt><big>(</big><em>name</em>, <em>package=None</em><big>)</big><a class="reference internal" href="../_modules/gsdview/qt4support.html#geticonfile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.qt4support.geticonfile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the icon file path.</p>
+<p>It is assumed that icon files are located in the &#8220;images&#8221; subfolder
+of the package.</p>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="gsdview.utils.html#gsdview.utils.getresource" title="gsdview.utils.getresource"><tt class="xref py py-func docutils literal"><span class="pre">gsdview.utils.getresource()</span></tt></a></p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="gsdview.qt4support.getuifile">
+<tt class="descclassname">gsdview.qt4support.</tt><tt class="descname">getuifile</tt><big>(</big><em>name</em>, <em>package=None</em><big>)</big><a class="reference internal" href="../_modules/gsdview/qt4support.html#getuifile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.qt4support.getuifile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the ui file path.</p>
+<p>It is assumed that Qt UI files are located in the &#8220;ui&#8221; subfolfer of
+the package.</p>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="gsdview.utils.html#gsdview.utils.getresource" title="gsdview.utils.getresource"><tt class="xref py py-func docutils literal"><span class="pre">gsdview.utils.getresource()</span></tt></a></p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="gsdview.qt4support.getuiform">
+<tt class="descclassname">gsdview.qt4support.</tt><tt class="descname">getuiform</tt><big>(</big><em>name</em>, <em>package=None</em><big>)</big><a class="reference internal" href="../_modules/gsdview/qt4support.html#getuiform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.qt4support.getuiform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the ui form class.</p>
+<p>If it is available a pre-built python module the form class is
+imported from it (assuming that the module contains a single UI
+class having a name that starts with <cite>Ui_</cite>).</p>
+<p>If no pre-build python module is available than the form call is
+loaded directly from the ui file using the PyQt4.uic helper module.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">in the pyside packege is used to provide bindings for Qt4
+then the uic module is not available and only pre-built
+modules are searched.
+When pyside is used an <tt class="xref py py-exc docutils literal"><span class="pre">ImportError</span></tt> is raised
+if pre-built forms are not available.</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">like <a class="reference internal" href="#gsdview.qt4support.getuifile" title="gsdview.qt4support.getuifile"><tt class="xref py py-func docutils literal"><span class="pre">gsdview.qt4support.getuifile()</span></tt></a> this
+function assumes that pre-build form modules and Qt UI
+files are located in the &#8220;ui&#8221; subfolfer of the package.</p>
+</div>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="gsdview.utils.html#gsdview.utils.getresource" title="gsdview.utils.getresource"><tt class="xref py py-func docutils literal"><span class="pre">gsdview.utils.getresource()</span></tt></a>,
+<a class="reference internal" href="#gsdview.qt4support.getuifile" title="gsdview.qt4support.getuifile"><tt class="xref py py-func docutils literal"><span class="pre">gsdview.qt4support.getuifile()</span></tt></a></p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="gsdview.qt4support.imgexport">
+<tt class="descclassname">gsdview.qt4support.</tt><tt class="descname">imgexport</tt><big>(</big><em>obj</em>, <em>parent=None</em><big>)</big><a class="reference internal" href="../_modules/gsdview/qt4support.html#imgexport"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.qt4support.imgexport" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="gsdview.qt4support.modelToCsv">
+<tt class="descclassname">gsdview.qt4support.</tt><tt class="descname">modelToCsv</tt><big>(</big><em>model</em>, <em>dialect='excel'</em><big>)</big><a class="reference internal" href="../_modules/gsdview/qt4support.html#modelToCsv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.qt4support.modelToCsv" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="gsdview.qt4support.modelToIni">
+<tt class="descclassname">gsdview.qt4support.</tt><tt class="descname">modelToIni</tt><big>(</big><em>model</em>, <em>section=None</em>, <em>cfg=None</em><big>)</big><a class="reference internal" href="../_modules/gsdview/qt4support.html#modelToIni"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.qt4support.modelToIni" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="gsdview.qt4support.modelToTextDocument">
+<tt class="descclassname">gsdview.qt4support.</tt><tt class="descname">modelToTextDocument</tt><big>(</big><em>model</em>, <em>doc=None</em><big>)</big><a class="reference internal" href="../_modules/gsdview/qt4support.html#modelToTextDocument"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.qt4support.modelToTextDocument" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="gsdview.qt4support.numpy2qimage">
+<tt class="descclassname">gsdview.qt4support.</tt><tt class="descname">numpy2qimage</tt><big>(</big><em>data</em><big>)</big><a class="reference internal" href="../_modules/gsdview/qt4support.html#numpy2qimage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.qt4support.numpy2qimage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a numpy array into a QImage.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">requires sip &gt;= 4.7.5.</p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="gsdview.qt4support.overrideCursor">
+<tt class="descclassname">gsdview.qt4support.</tt><tt class="descname">overrideCursor</tt><big>(</big><em>func</em><big>)</big><a class="reference internal" href="../_modules/gsdview/qt4support.html#overrideCursor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.qt4support.overrideCursor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="gsdview.qt4support.printObject">
+<tt class="descclassname">gsdview.qt4support.</tt><tt class="descname">printObject</tt><big>(</big><em>obj</em>, <em>printer=None</em>, <em>parent=None</em><big>)</big><a class="reference internal" href="../_modules/gsdview/qt4support.html#printObject"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.qt4support.printObject" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="gsdview.qt4support.printPreview">
+<tt class="descclassname">gsdview.qt4support.</tt><tt class="descname">printPreview</tt><big>(</big><em>obj</em>, <em>printer=None</em>, <em>parent=None</em><big>)</big><a class="reference internal" href="../_modules/gsdview/qt4support.html#printPreview"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.qt4support.printPreview" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="gsdview.qt4support.selectAllItems">
+<tt class="descclassname">gsdview.qt4support.</tt><tt class="descname">selectAllItems</tt><big>(</big><em>itemview</em><big>)</big><a class="reference internal" href="../_modules/gsdview/qt4support.html#selectAllItems"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.qt4support.selectAllItems" title="Permalink to this definition">¶</a></dt>
+<dd><p>Select all items in an QAbstractItemView.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="gsdview.qt4support.setViewContextActions">
+<tt class="descclassname">gsdview.qt4support.</tt><tt class="descname">setViewContextActions</tt><big>(</big><em>widget</em><big>)</big><a class="reference internal" href="../_modules/gsdview/qt4support.html#setViewContextActions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.qt4support.setViewContextActions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo.png" alt="Logo"/>
+            </a></p>
+    
+    
+    <p>
+        <a href="http://sourceforge.net/projects/gsdview">
+            <img src="http://sflogo.sourceforge.net/sflogo.php?group_id=226458&type=14" width="150" height="40" alt="Get GSDView at SourceForge.net. Fast, secure and Free Open Source software downloads" />
+        </a>
+    </p>
+    
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="gsdview.qt4draw.html"
+                        title="previous chapter">gsdview.qt4draw</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="gsdview.qtwindowlistmenu.html"
+                        title="next chapter">gsdview.qtwindowlistmenu</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/api/gsdview.qt4support.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li class="right" >
+          <a href="gsdview.qtwindowlistmenu.html" title="gsdview.qtwindowlistmenu"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="gsdview.qt4draw.html" title="gsdview.qt4draw"
+             >previous</a> |</li>
+        <li><a href="../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../reference.html" >API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2008-2011, Antonio Valentino.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

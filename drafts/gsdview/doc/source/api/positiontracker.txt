@@ -1,0 +1,25 @@
+positiontracker
+===============
+
+.. automodule:: positiontracker
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      close
+      init
+      loadSettings
+      saveSettings
+   
+   
+
+   
+   
+   
+
+   
+   
+   

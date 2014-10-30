@@ -1,0 +1,362 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>gsdtoolsui.core &mdash; GSDView Open Edition Home Page</title>
+    <link rel="stylesheet" href="../../_static/sourceforge.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.6.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/logo.ico"/>
+    <link rel="top" title="GSDView Open Edition Home Page" href="../../index.html" />
+    <link rel="up" title="gsdtoolsui" href="../gsdtoolsui.html" /> 
+  </head>
+  <body>
+    
+        
+    
+    
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li><a href="../../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../gsdtoolsui.html" accesskey="U">gsdtoolsui</a> &raquo;</li> 
+      </ul>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for gsdtoolsui.core</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="c">### Copyright (C) 2008-2011 Antonio Valentino &lt;a_valentino@users.sf.net&gt;</span>
+
+<span class="c">### This file is part of GSDView.</span>
+
+<span class="c">### GSDView is free software; you can redistribute it and/or modify</span>
+<span class="c">### it under the terms of the GNU General Public License as published by</span>
+<span class="c">### the Free Software Foundation; either version 2 of the License, or</span>
+<span class="c">### (at your option) any later version.</span>
+
+<span class="c">### GSDView is distributed in the hope that it will be useful,</span>
+<span class="c">### but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c">### MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c">### GNU General Public License for more details.</span>
+
+<span class="c">### You should have received a copy of the GNU General Public License</span>
+<span class="c">### along with GSDView; if not, write to the Free Software</span>
+<span class="c">### Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA.</span>
+
+
+<span class="sd">&#39;&#39;&#39;UI front-end for GSDTools.&#39;&#39;&#39;</span>
+
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">tempfile</span>
+
+<span class="kn">from</span> <span class="nn">qt</span> <span class="kn">import</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtGui</span>
+
+<span class="kn">from</span> <span class="nn">gsdview</span> <span class="kn">import</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">gsdview</span> <span class="kn">import</span> <span class="n">qt4support</span>
+<span class="kn">from</span> <span class="nn">gsdtools</span> <span class="kn">import</span> <span class="n">ras2vec</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">info</span>
+
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s">&#39;Antonio Valentino &lt;a_valentino@users.sf.net&gt;&#39;</span>
+<span class="n">__date__</span> <span class="o">=</span> <span class="s">&#39;$Date: 2011-11-13 11:55:31 +0100 (dom, 13 nov 2011) $&#39;</span>
+<span class="n">__revision__</span> <span class="o">=</span> <span class="s">&#39;$Revision: 1009 $&#39;</span>
+
+
+<div class="viewcode-block" id="GSDToolsController"><a class="viewcode-back" href="../../api/gsdtoolsui.core.html#gsdtoolsui.core.GSDToolsController">[docs]</a><span class="k">class</span> <span class="nc">GSDToolsController</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QObject</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">GSDToolsController</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">app</span> <span class="o">=</span> <span class="n">app</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">googleearth</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setupActions</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">mdiarea</span><span class="o">.</span><span class="n">subWindowActivated</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">onSubWindowChanged</span><span class="p">)</span>
+        <span class="c">#app.subWindowClosed.connect(self.onSubWindowChanged)</span>
+        <span class="c">#~ app.treeview.clicked.connect(self.onItemChanged)</span>
+        <span class="c">#~ app.treeview.selectionModel().selectionChanged(self.self.onItemChanged)</span>
+        <span class="c">#~ ##void currentChanged(const QModelIndex&amp; current,</span>
+        <span class="c">#~ ##                    const QModelIndex&amp; previous)</span>
+
+    <span class="k">def</span> <span class="nf">_googleEarthBin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">_setupActions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">actions</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QActionGroup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="c"># KML export</span>
+        <span class="n">icon</span> <span class="o">=</span> <span class="n">qt4support</span><span class="o">.</span><span class="n">geticon</span><span class="p">(</span><span class="s">&#39;area.svg&#39;</span><span class="p">,</span> <span class="s">&#39;gsdview&#39;</span><span class="p">)</span>
+        <span class="n">QtGui</span><span class="o">.</span><span class="n">QAction</span><span class="p">(</span><span class="n">icon</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;KML export&#39;</span><span class="p">),</span> <span class="n">actions</span><span class="p">,</span>
+                      <span class="n">objectName</span><span class="o">=</span><span class="s">&#39;kmlExportAction&#39;</span><span class="p">,</span>
+                      <span class="n">statusTip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;KML export&#39;</span><span class="p">),</span>
+                      <span class="n">triggered</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">exportKML</span><span class="p">)</span>
+
+        <span class="c"># Open in google earth</span>
+        <span class="n">icon</span> <span class="o">=</span> <span class="n">qt4support</span><span class="o">.</span><span class="n">geticon</span><span class="p">(</span><span class="s">&#39;earth.svg&#39;</span><span class="p">,</span> <span class="n">__name__</span><span class="p">)</span>
+        <span class="n">QtGui</span><span class="o">.</span><span class="n">QAction</span><span class="p">(</span><span class="n">icon</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Open in Google Earth&#39;</span><span class="p">),</span> <span class="n">actions</span><span class="p">,</span>
+                      <span class="n">objectName</span><span class="o">=</span><span class="s">&#39;openInGoogleEarthAction&#39;</span><span class="p">,</span>
+                      <span class="n">statusTip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Open in Google Earth&#39;</span><span class="p">),</span>
+                      <span class="n">triggered</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">openInGoogleEarth</span><span class="p">)</span>
+
+        <span class="c"># Open in google maps</span>
+        <span class="n">icon</span> <span class="o">=</span> <span class="n">qt4support</span><span class="o">.</span><span class="n">geticon</span><span class="p">(</span><span class="s">&#39;overview.svg&#39;</span><span class="p">,</span> <span class="s">&#39;gsdview.gdalbackend&#39;</span><span class="p">)</span>
+        <span class="n">QtGui</span><span class="o">.</span><span class="n">QAction</span><span class="p">(</span><span class="n">icon</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Open in Google Maps&#39;</span><span class="p">),</span> <span class="n">actions</span><span class="p">,</span>
+                      <span class="n">objectName</span><span class="o">=</span><span class="s">&#39;openInGoogleMapsAction&#39;</span><span class="p">,</span>
+                      <span class="n">statusTip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Open in Google Maps&#39;</span><span class="p">),</span>
+                      <span class="n">triggered</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">openInGoogleMaps</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">actions</span>
+
+<div class="viewcode-block" id="GSDToolsController.loadSettings"><a class="viewcode-back" href="../../api/gsdtoolsui.core.html#gsdtoolsui.core.GSDToolsController.loadSettings">[docs]</a>    <span class="k">def</span> <span class="nf">loadSettings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">):</span>
+        <span class="n">settings</span><span class="o">.</span><span class="n">beginGroup</span><span class="p">(</span><span class="s">&#39;plugins/</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">info</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">googleearth</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s">&#39;gogle_earth_path&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">googleearth</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&#39;win&#39;</span><span class="p">):</span>
+                    <span class="n">googleearth</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">which</span><span class="p">(</span><span class="s">&#39;googleearth.exe&#39;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39;googleearth&#39;</span><span class="p">,</span> <span class="s">&#39;google-earth&#39;</span><span class="p">):</span>
+                        <span class="n">googleearth</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">which</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">googleearth</span><span class="p">:</span>
+                            <span class="k">break</span>
+
+            <span class="n">action</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">findChild</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QAction</span><span class="p">,</span>
+                                            <span class="s">&#39;openInGoogleEarthAction&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">googleearth</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">googleearth</span> <span class="o">=</span> <span class="n">googleearth</span>
+                <span class="n">action</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">googleearth</span> <span class="o">=</span> <span class="bp">None</span>
+                <span class="n">action</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">settings</span><span class="o">.</span><span class="n">endGroup</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="GSDToolsController.saveSettings"><a class="viewcode-back" href="../../api/gsdtoolsui.core.html#gsdtoolsui.core.GSDToolsController.saveSettings">[docs]</a>    <span class="k">def</span> <span class="nf">saveSettings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">):</span>
+        <span class="k">pass</span>
+</div>
+    <span class="k">def</span> <span class="nf">_currentDatasetItem</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subwin</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">subwin</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">subwin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">mdiarea</span><span class="o">.</span><span class="n">activeSubWindow</span><span class="p">()</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="n">subwin</span><span class="o">.</span><span class="n">item</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">currentItem</span><span class="p">()</span>
+
+        <span class="k">while</span> <span class="n">item</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="s">&#39;filename&#39;</span><span class="p">):</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">item</span>
+
+    <span class="nd">@QtCore.Slot</span><span class="p">()</span>
+<div class="viewcode-block" id="GSDToolsController.exportKML"><a class="viewcode-back" href="../../api/gsdtoolsui.core.html#gsdtoolsui.core.GSDToolsController.exportKML">[docs]</a>    <span class="k">def</span> <span class="nf">exportKML</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_currentDatasetItem</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">item</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;no item to export.&#39;</span><span class="p">)</span>
+            <span class="n">QtGui</span><span class="o">.</span><span class="n">QMessageBox</span><span class="o">.</span><span class="n">information</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Information&#39;</span><span class="p">),</span>
+                                          <span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;No item to export.&#39;</span><span class="p">))</span>
+            <span class="k">return</span>
+
+        <span class="n">src</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">filename</span>
+        <span class="n">filters</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s">&#39;KML files (*.kml)&#39;</span><span class="p">,</span>
+            <span class="s">&#39;All files (*)&#39;</span><span class="p">,</span>
+        <span class="p">]</span>
+        <span class="n">target</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
+        <span class="n">target</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">target</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s">&#39;.kml&#39;</span>
+        <span class="n">target</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">default_workdir</span><span class="p">(),</span> <span class="n">target</span><span class="p">)</span>
+
+        <span class="n">dst</span><span class="p">,</span> <span class="n">filter_</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QFileDialog</span><span class="o">.</span><span class="n">getSaveFileNameAndFilter</span><span class="p">(</span>
+                                        <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="p">,</span>
+                                        <span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Save KML&#39;</span><span class="p">),</span>
+                                        <span class="n">target</span><span class="p">,</span>
+                                        <span class="s">&#39;;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">filters</span><span class="p">))</span>
+
+        <span class="n">dst</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">dst</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">dst</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">ras2vec</span><span class="o">.</span><span class="n">export_raster</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="n">boxlayer</span><span class="o">=</span><span class="s">&#39;box&#39;</span><span class="p">,</span>
+                                      <span class="n">gcplayer</span><span class="o">=</span><span class="s">&#39;GCPs&#39;</span><span class="p">,</span> <span class="n">mark_corners</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+            <span class="k">except</span> <span class="p">(</span><span class="ne">OSError</span><span class="p">,</span> <span class="ne">RuntimeError</span><span class="p">):</span>
+                <span class="c"># @TODO: QtGui.QMessageBox.error(...)</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&#39;unable to export &quot;</span><span class="si">%s</span><span class="s">&quot; to &quot;</span><span class="si">%s</span><span class="s">&quot;.&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">))</span>
+</div>
+    <span class="nd">@QtCore.Slot</span><span class="p">()</span>
+<div class="viewcode-block" id="GSDToolsController.openInGoogleEarth"><a class="viewcode-back" href="../../api/gsdtoolsui.core.html#gsdtoolsui.core.GSDToolsController.openInGoogleEarth">[docs]</a>    <span class="k">def</span> <span class="nf">openInGoogleEarth</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_currentDatasetItem</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">item</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;no item selected.&#39;</span><span class="p">)</span>
+            <span class="n">QtGui</span><span class="o">.</span><span class="n">QMessageBox</span><span class="o">.</span><span class="n">information</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Information&#39;</span><span class="p">),</span>
+                                          <span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;No item selected.&#39;</span><span class="p">))</span>
+            <span class="k">return</span>
+
+        <span class="n">src</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">filename</span>
+        <span class="n">prefix</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">src</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">prefix</span> <span class="o">=</span> <span class="s">&#39;gsdview_ras2vec_</span><span class="si">%s</span><span class="s">_&#39;</span> <span class="o">%</span> <span class="n">prefix</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">dst</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkstemp</span><span class="p">(</span><span class="s">&#39;.kml&#39;</span><span class="p">,</span> <span class="n">prefix</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">ras2vec</span><span class="o">.</span><span class="n">export_raster</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="n">boxlayer</span><span class="o">=</span><span class="s">&#39;box&#39;</span><span class="p">,</span> <span class="n">gcplayer</span><span class="o">=</span><span class="s">&#39;GCPs&#39;</span><span class="p">,</span>
+                                  <span class="n">mark_corners</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">OSError</span><span class="p">,</span> <span class="ne">RuntimeError</span><span class="p">):</span>
+            <span class="c"># @TODO: QtGui.QMessageBox.error(...)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&#39;unable to export &quot;</span><span class="si">%s</span><span class="s">&quot; to &quot;</span><span class="si">%s</span><span class="s">&quot;.&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">))</span>
+
+        <span class="c">#success = QtCore.QProcess.startDetached(self.googleearth, [dst])</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;GoogleEarth: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">googleearth</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;KML: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">dst</span><span class="p">)</span>
+        <span class="n">success</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QProcess</span><span class="o">.</span><span class="n">startDetached</span><span class="p">(</span><span class="s">&#39;sh&#39;</span><span class="p">,</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">googleearth</span><span class="p">,</span> <span class="n">dst</span><span class="p">],</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">googleearth</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">success</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&#39;unable to open &quot;</span><span class="si">%s</span><span class="s">&quot; in GoogleEarth.&#39;</span> <span class="o">%</span> <span class="n">dst</span><span class="p">)</span>
+            <span class="c"># @TODO: check</span>
+            <span class="n">QtGui</span><span class="o">.</span><span class="n">QMessageBox</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Warning&#39;</span><span class="p">),</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Unable to open &quot;</span><span class="si">%s</span><span class="s">&quot; in GoogleEarth.&#39;</span><span class="p">)</span> <span class="o">%</span> <span class="n">dst</span><span class="p">)</span>
+</div>
+    <span class="nd">@QtCore.Slot</span><span class="p">()</span>
+<div class="viewcode-block" id="GSDToolsController.openInGoogleMaps"><a class="viewcode-back" href="../../api/gsdtoolsui.core.html#gsdtoolsui.core.GSDToolsController.openInGoogleMaps">[docs]</a>    <span class="k">def</span> <span class="nf">openInGoogleMaps</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Open google-maps centering the map on scene centre.</span>
+
+<span class="sd">        .. seealso:: http://mapki.com/wiki/Google_Map_Parameters</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_currentDatasetItem</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">item</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;no item selected.&#39;</span><span class="p">)</span>
+            <span class="n">QtGui</span><span class="o">.</span><span class="n">QMessageBox</span><span class="o">.</span><span class="n">information</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Information&#39;</span><span class="p">),</span>
+                                          <span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;No item selected.&#39;</span><span class="p">))</span>
+            <span class="k">return</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">cmapper</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">cmapper</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&#39;item &quot;</span><span class="si">%s</span><span class="s">&quot; seems to heve no geographic info.&#39;</span> <span class="o">%</span>
+                                                                <span class="n">item</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">pixel</span><span class="p">,</span> <span class="n">line</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">RasterXSize</span> <span class="o">/</span> <span class="mf">2.</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">RasterYSize</span> <span class="o">/</span> <span class="mf">2.</span>
+        <span class="n">lon</span><span class="p">,</span> <span class="n">lat</span> <span class="o">=</span> <span class="n">cmapper</span><span class="o">.</span><span class="n">imgToGeoPoints</span><span class="p">(</span><span class="n">pixel</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
+
+        <span class="n">url</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QUrl</span><span class="p">(</span><span class="s">&#39;http://maps.google.com/maps&#39;</span><span class="p">)</span>
+        <span class="n">url</span><span class="o">.</span><span class="n">addQueryItem</span><span class="p">(</span><span class="s">&#39;q&#39;</span><span class="p">,</span> <span class="s">&#39;</span><span class="si">%f</span><span class="s">N,</span><span class="si">%f</span><span class="s">E&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">lat</span><span class="p">,</span> <span class="n">lon</span><span class="p">))</span>   <span class="c"># coordinates</span>
+        <span class="n">url</span><span class="o">.</span><span class="n">addQueryItem</span><span class="p">(</span><span class="s">&#39;t&#39;</span><span class="p">,</span> <span class="s">&#39;h&#39;</span><span class="p">)</span>                      <span class="c"># map type (hybrid)</span>
+        <span class="n">url</span><span class="o">.</span><span class="n">addQueryItem</span><span class="p">(</span><span class="s">&#39;z&#39;</span><span class="p">,</span> <span class="s">&#39;9&#39;</span><span class="p">)</span>                      <span class="c"># zoom level (1, 20)</span>
+
+        <span class="n">success</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QDesktopServices</span><span class="o">.</span><span class="n">openUrl</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">success</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&#39;unable to open URL: &quot;</span><span class="si">%s</span><span class="s">&quot;&#39;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">url</span><span class="p">))</span>
+            <span class="c"># @TODO: check</span>
+            <span class="n">QtGui</span><span class="o">.</span><span class="n">QMessageBox</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Warning&#39;</span><span class="p">),</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Unable to open URL: &quot;</span><span class="si">%s</span><span class="s">&quot;&#39;</span><span class="p">)</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">url</span><span class="p">))</span>
+</div>
+    <span class="nd">@QtCore.Slot</span><span class="p">()</span>
+    <span class="nd">@QtCore.Slot</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QMdiSubWindow</span><span class="p">)</span>
+<div class="viewcode-block" id="GSDToolsController.onSubWindowChanged"><a class="viewcode-back" href="../../api/gsdtoolsui.core.html#gsdtoolsui.core.GSDToolsController.onSubWindowChanged">[docs]</a>    <span class="k">def</span> <span class="nf">onSubWindowChanged</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subwin</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_currentDatasetItem</span><span class="p">()</span>
+        <span class="n">enabled</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">item</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="s">&#39;cmapper&#39;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="n">enabled</span><span class="p">)</span>
+
+    <span class="c">#~ @QtCore.Slot(QtCore.QModelIndex)</span>
+    <span class="c">#~ def onItemClicked(self, index):</span>
+        <span class="c">#~ if not self.app.mdiarea.activeSubWindow():</span>
+            <span class="c">#~ item = self.app.datamodel.itemFromIndex(index)</span>
+            <span class="c">#~ self.setItemFootprint(item)</span>
+
+    <span class="c">#~ @QtCore.Slot()</span>
+    <span class="c">#~ @QtCore.Slot(QtCore.QModelIndex, int, int)</span>
+    <span class="c">#~ def onModelChanged(self, index=None, start=None, stop=None):</span>
+        <span class="c">#~ subwin = self.app.mdiarea.activeSubWindow()</span>
+        <span class="c">#~ if subwin:</span>
+            <span class="c">#~ self.onSubWindowChanged(subwin)</span>
+        <span class="c">#~ else:</span>
+            <span class="c">#~ item = self.app.currentItem()</span>
+            <span class="c">#~ self.setItemFootprint(item)</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+    
+    
+    <p>
+        <a href="http://sourceforge.net/projects/gsdview">
+            <img src="http://sflogo.sourceforge.net/sflogo.php?group_id=226458&type=14" width="150" height="40" alt="Get GSDView at SourceForge.net. Fast, secure and Free Open Source software downloads" />
+        </a>
+    </p>
+    
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li><a href="../../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../gsdtoolsui.html" >gsdtoolsui</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2008-2011, Antonio Valentino.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

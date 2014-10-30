@@ -1,0 +1,30 @@
+/**
+ * SourceForge stylesheet -- sourceforge theme
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ */
+
+@import url("default.css");
+
+/* -- body styles ----------------------------------------------------------- */
+div.docstitle {
+    color: #ffffff;
+    text-align: right;
+    padding-right: 1em;
+}
+
+div.admonition-todo {
+    background-color: #ffe4e4;
+    border: 1px solid #ff6666;
+}
+
+/* -- misc styles ----------------------------------------------------------- */
+dl.class dt, dl.function dt {
+    border-bottom: 1px solid #CCCCCC;
+}
+
+/*
+tt.descclassname {
+    font-style: bold;
+    font-size: 1.2em;
+}
+*/

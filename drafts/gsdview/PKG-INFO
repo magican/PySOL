@@ -1,0 +1,41 @@
+Metadata-Version: 1.1
+Name: gsdview
+Version: 0.6.5
+Summary: Geo-Spatial Data Viewer Open Source Edition
+Home-page: http://gsdview.sourceforge.net
+Author: Antonio Valentino
+Author-email: a_valentino@users.sf.net
+License: GNU GPL
+Download-URL: http://sourceforge.net/projects/gsdview/files
+Description: GSDView (Geo-Spatial Data Viewer) is a lightweight
+        viewer for geo-spatial data and products.
+        
+        It is written in python and Qt4 and it is mainly intended to be a graphical
+        frotend for the GDAL library and tools.
+        
+        GSDView is modular and has a simple plug-in architecture.
+        
+        
+Keywords: gsdview gdal
+Platform: any
+Classifier: Development Status :: 4 - Beta
+Classifier: Environment :: Win32 (MS Windows)
+Classifier: Environment :: X11 Applications :: Qt
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Education
+Classifier: Intended Audience :: End Users/Desktop
+Classifier: Intended Audience :: Science/Research
+Classifier: License :: OSI Approved :: GNU General Public License (GPL)
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Topic :: Education
+Classifier: Topic :: Scientific/Engineering :: Astronomy
+Classifier: Topic :: Scientific/Engineering :: GIS
+Classifier: Topic :: Scientific/Engineering :: Visualization
+Requires: GDAL (>= 1.6.1)
+Requires: numpy (>= 1.3.0)
+Requires: sip (>= 4.7.5)
+Requires: PyQt4 (>= 4.6)
+Provides: gsdview (0.6.5)
+Provides: exectools (0.6.5)
+Provides: gsdtools (1.0)

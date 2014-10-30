@@ -1,0 +1,22 @@
+gsdview.assistanthelper
+=======================
+
+.. automodule:: gsdview.assistanthelper
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      Assistant
+   
+   
+
+   
+   
+   

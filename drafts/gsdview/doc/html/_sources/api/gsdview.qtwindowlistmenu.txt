@@ -1,0 +1,22 @@
+gsdview.qtwindowlistmenu
+========================
+
+.. automodule:: gsdview.qtwindowlistmenu
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      QtWindowListMenu
+   
+   
+
+   
+   
+   

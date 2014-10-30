@@ -1,0 +1,276 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>gsdview.gdalbackend.ogrqt4 &mdash; GSDView Open Edition Home Page</title>
+    <link rel="stylesheet" href="../_static/sourceforge.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.6.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/logo.ico"/>
+    <link rel="top" title="GSDView Open Edition Home Page" href="../index.html" />
+    <link rel="up" title="API Reference" href="../reference.html" />
+    <link rel="next" title="gsdview.gdalbackend.widgets" href="gsdview.gdalbackend.widgets.html" />
+    <link rel="prev" title="gsdview.gdalbackend.modelitems" href="gsdview.gdalbackend.modelitems.html" /> 
+  </head>
+  <body>
+    
+        
+    
+    
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li class="right" >
+          <a href="gsdview.gdalbackend.widgets.html" title="gsdview.gdalbackend.widgets"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="gsdview.gdalbackend.modelitems.html" title="gsdview.gdalbackend.modelitems"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../reference.html" accesskey="U">API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-gsdview.gdalbackend.ogrqt4">
+<span id="gsdview-gdalbackend-ogrqt4"></span><h1>gsdview.gdalbackend.ogrqt4<a class="headerlink" href="#module-gsdview.gdalbackend.ogrqt4" title="Permalink to this headline">¶</a></h1>
+<p>Helper tools and custom components for binding OGR and Qt4.</p>
+<p class="rubric">Functions</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><a class="reference internal" href="#gsdview.gdalbackend.ogrqt4.geometryToGraphicsItem" title="gsdview.gdalbackend.ogrqt4.geometryToGraphicsItem"><tt class="xref py py-obj docutils literal"><span class="pre">geometryToGraphicsItem</span></tt></a>(geom[,&nbsp;transform])</td>
+<td>Convert an OGR geometry into a Qt4 graphics item.</td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.gdalbackend.ogrqt4.layerToGraphicsItem" title="gsdview.gdalbackend.ogrqt4.layerToGraphicsItem"><tt class="xref py py-obj docutils literal"><span class="pre">layerToGraphicsItem</span></tt></a>(layer[,&nbsp;srs,&nbsp;transform])</td>
+<td>Convert an OGR layer into a Qt4 graphics item.</td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.gdalbackend.ogrqt4.singleGeometryToGraphicsItem" title="gsdview.gdalbackend.ogrqt4.singleGeometryToGraphicsItem"><tt class="xref py py-obj docutils literal"><span class="pre">singleGeometryToGraphicsItem</span></tt></a>(geom[,&nbsp;transform])</td>
+<td>Convert a single OGR geometry into a Qt4 graphics item.</td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.gdalbackend.ogrqt4.transformGeometry" title="gsdview.gdalbackend.ogrqt4.transformGeometry"><tt class="xref py py-obj docutils literal"><span class="pre">transformGeometry</span></tt></a>(geom,&nbsp;transform)</td>
+<td>Apply an OSR transform to an OGR geometry.</td>
+</tr>
+</tbody>
+</table>
+<dl class="data">
+<dt id="gsdview.gdalbackend.ogrqt4.MAX_FEATURE_COUNT">
+<tt class="descclassname">gsdview.gdalbackend.ogrqt4.</tt><tt class="descname">MAX_FEATURE_COUNT</tt><a class="headerlink" href="#gsdview.gdalbackend.ogrqt4.MAX_FEATURE_COUNT" title="Permalink to this definition">¶</a></dt>
+<dd><p>the max number of features that are converted whan the graphics item
+for a layer is generated</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="gsdview.gdalbackend.ogrqt4.geometryToGraphicsItem">
+<tt class="descclassname">gsdview.gdalbackend.ogrqt4.</tt><tt class="descname">geometryToGraphicsItem</tt><big>(</big><em>geom</em>, <em>transform=None</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/ogrqt4.html#geometryToGraphicsItem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.ogrqt4.geometryToGraphicsItem" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert an OGR geometry into a Qt4 graphics item.</p>
+<p>If the <em>transform</em> callable is provided then each point in the
+geometry is converted using the <cite>transform(x, y, z)</cite> call before
+genereting the graphics item path.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>geom</strong> &#8211; an OGR geometry</li>
+<li><strong>transform</strong> &#8211; callable object for arbitrary coordinate conversion</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">a Qt4 graphics item representing the geometry</p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#gsdview.gdalbackend.ogrqt4.singleGeometryToGraphicsItem" title="gsdview.gdalbackend.ogrqt4.singleGeometryToGraphicsItem"><tt class="xref py py-func docutils literal"><span class="pre">singleGeometryToGraphicsItem()</span></tt></a></p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="gsdview.gdalbackend.ogrqt4.layerToGraphicsItem">
+<tt class="descclassname">gsdview.gdalbackend.ogrqt4.</tt><tt class="descname">layerToGraphicsItem</tt><big>(</big><em>layer</em>, <em>srs=None</em>, <em>transform=None</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/ogrqt4.html#layerToGraphicsItem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.ogrqt4.layerToGraphicsItem" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert an OGR layer into a Qt4 graphics item.</p>
+<p>If the <em>srs</em> parameter is provided each feature is converted into
+the target spatial reference system before generating the graphics
+item.</p>
+<p>If the <em>transform</em> callable is provided then each point in the
+geometry is converted using the <cite>transform(x, y, z)</cite> call before
+genereting the graphics item path.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>layer</strong> &#8211; ane OGR layer</li>
+<li><strong>srs</strong> &#8211; the target OSR spatial reference system</li>
+<li><strong>transform</strong> &#8211; callable object for arbitrary coordinate conversion</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">a Qt4 graphics item (QGraphicsItemGroup) representing the layer</p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#gsdview.gdalbackend.ogrqt4.singleGeometryToGraphicsItem" title="gsdview.gdalbackend.ogrqt4.singleGeometryToGraphicsItem"><tt class="xref py py-func docutils literal"><span class="pre">singleGeometryToGraphicsItem()</span></tt></a>,
+<a class="reference internal" href="#gsdview.gdalbackend.ogrqt4.geometryToGraphicsItem" title="gsdview.gdalbackend.ogrqt4.geometryToGraphicsItem"><tt class="xref py py-func docutils literal"><span class="pre">geometryToGraphicsItem()</span></tt></a> and
+<a class="reference internal" href="#gsdview.gdalbackend.ogrqt4.MAX_FEATURE_COUNT" title="gsdview.gdalbackend.ogrqt4.MAX_FEATURE_COUNT"><tt class="xref py py-data docutils literal"><span class="pre">MAX_FEATURE_COUNT</span></tt></a></p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="gsdview.gdalbackend.ogrqt4.singleGeometryToGraphicsItem">
+<tt class="descclassname">gsdview.gdalbackend.ogrqt4.</tt><tt class="descname">singleGeometryToGraphicsItem</tt><big>(</big><em>geom</em>, <em>transform=None</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/ogrqt4.html#singleGeometryToGraphicsItem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.ogrqt4.singleGeometryToGraphicsItem" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a single OGR geometry into a Qt4 graphics item.</p>
+<p>A &#8220;single geometry&#8221; is an OGR gemetry that don&#8217;t include other
+geometries (GetGeometryCount() == 0).</p>
+<p>If the <em>transform</em> callable is provided then each point in the
+geometry is converted using the <cite>transform(x, y, z)</cite> call before
+genereting the graphics item path.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>geom</strong> &#8211; a single OGR geometry</li>
+<li><strong>transform</strong> &#8211; callable object for arbitrary coordinate conversion</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">a Qt4 graphics item representing the geometry</p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#gsdview.gdalbackend.ogrqt4.geometryToGraphicsItem" title="gsdview.gdalbackend.ogrqt4.geometryToGraphicsItem"><tt class="xref py py-func docutils literal"><span class="pre">geometryToGraphicsItem()</span></tt></a></p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="gsdview.gdalbackend.ogrqt4.transformGeometry">
+<tt class="descclassname">gsdview.gdalbackend.ogrqt4.</tt><tt class="descname">transformGeometry</tt><big>(</big><em>geom</em>, <em>transform</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/ogrqt4.html#transformGeometry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.ogrqt4.transformGeometry" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply an OSR transform to an OGR geometry.</p>
+<p>This function is almost equal to the ogr.Geometry.Transform method
+but raises an exception if the conversion fails and clone the
+geometry before performing the transformation in order to leave the
+original geometry unmodified.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>geom</strong> &#8211; OGR geometry</li>
+<li><strong>transform</strong> &#8211; OSR transformer</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">a new geometry instance with transforation applied</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo.png" alt="Logo"/>
+            </a></p>
+    
+    
+    <p>
+        <a href="http://sourceforge.net/projects/gsdview">
+            <img src="http://sflogo.sourceforge.net/sflogo.php?group_id=226458&type=14" width="150" height="40" alt="Get GSDView at SourceForge.net. Fast, secure and Free Open Source software downloads" />
+        </a>
+    </p>
+    
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="gsdview.gdalbackend.modelitems.html"
+                        title="previous chapter">gsdview.gdalbackend.modelitems</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="gsdview.gdalbackend.widgets.html"
+                        title="next chapter">gsdview.gdalbackend.widgets</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/api/gsdview.gdalbackend.ogrqt4.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li class="right" >
+          <a href="gsdview.gdalbackend.widgets.html" title="gsdview.gdalbackend.widgets"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="gsdview.gdalbackend.modelitems.html" title="gsdview.gdalbackend.modelitems"
+             >previous</a> |</li>
+        <li><a href="../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../reference.html" >API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2008-2011, Antonio Valentino.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

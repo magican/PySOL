@@ -1,0 +1,430 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>stretch.widgets &mdash; GSDView Open Edition Home Page</title>
+    <link rel="stylesheet" href="../../_static/sourceforge.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.6.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/logo.ico"/>
+    <link rel="top" title="GSDView Open Edition Home Page" href="../../index.html" />
+    <link rel="up" title="stretch" href="../stretch.html" /> 
+  </head>
+  <body>
+    
+        
+    
+    
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li><a href="../../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../stretch.html" accesskey="U">stretch</a> &raquo;</li> 
+      </ul>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for stretch.widgets</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="c">### Copyright (C) 2008-2011 Antonio Valentino &lt;a_valentino@users.sf.net&gt;</span>
+
+<span class="c">### This file is part of GSDView.</span>
+
+<span class="c">### GSDView is free software; you can redistribute it and/or modify</span>
+<span class="c">### it under the terms of the GNU General Public License as published by</span>
+<span class="c">### the Free Software Foundation; either version 2 of the License, or</span>
+<span class="c">### (at your option) any later version.</span>
+
+<span class="c">### GSDView is distributed in the hope that it will be useful,</span>
+<span class="c">### but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c">### MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c">### GNU General Public License for more details.</span>
+
+<span class="c">### You should have received a copy of the GNU General Public License</span>
+<span class="c">### along with GSDView; if not, write to the Free Software</span>
+<span class="c">### Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA.</span>
+
+
+<span class="sd">&#39;&#39;&#39;Widgets and dialogs for GSDView.&#39;&#39;&#39;</span>
+
+
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">from</span> <span class="nn">qt</span> <span class="kn">import</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtGui</span>
+
+<span class="kn">from</span> <span class="nn">gsdview</span> <span class="kn">import</span> <span class="n">qt4support</span>
+
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s">&#39;$Author: a_valentino $&#39;</span>
+<span class="n">__date__</span> <span class="o">=</span> <span class="s">&#39;$Date: 2010/02/14 12:21:23 $&#39;</span>
+<span class="n">__revision__</span> <span class="o">=</span> <span class="s">&#39;$Revision: 003973572867 $&#39;</span>
+
+
+<span class="n">StretchWidgetBase</span> <span class="o">=</span> <span class="n">qt4support</span><span class="o">.</span><span class="n">getuiform</span><span class="p">(</span><span class="s">&#39;doubleslider&#39;</span><span class="p">,</span> <span class="n">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="StretchWidget"><a class="viewcode-back" href="../../api/stretch.widgets.html#stretch.widgets.StretchWidget">[docs]</a><span class="k">class</span> <span class="nc">StretchWidget</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QWidget</span><span class="p">,</span> <span class="n">StretchWidgetBase</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Stretch widget.</span>
+
+<span class="sd">    :SIGNALS:</span>
+
+<span class="sd">        * :attr:`valueChanged`</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="c">#: SIGNAL: it is emitted when the stretch value changes</span>
+    <span class="c">#:</span>
+    <span class="c">#: :C++ signature: `void valueChanged()`</span>
+    <span class="n">valueChanged</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">WindowFlags</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">StretchWidget</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">flags</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setupUi</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_floatmode</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lowSlider</span><span class="o">.</span><span class="n">valueChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_onLowSliderChanged</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">highSlider</span><span class="o">.</span><span class="n">valueChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_onHighSliderChanged</span><span class="p">)</span>
+        <span class="c"># @COMPATIBILITY: the following code breaks PySide 1.0.1.</span>
+        <span class="c">#                 It is OK in PyQt4 and PySide 1.0.4</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">minSpinBox</span><span class="o">.</span><span class="n">valueChanged</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_onMinimumChanged</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">maxSpinBox</span><span class="o">.</span><span class="n">valueChanged</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_onMaximumChanged</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lowSpinBox</span><span class="o">.</span><span class="n">valueChanged</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">setLow</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">highSpinBox</span><span class="o">.</span><span class="n">valueChanged</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">setHigh</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">minSpinBox</span><span class="o">.</span><span class="n">valueChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_onMinimumChanged</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">maxSpinBox</span><span class="o">.</span><span class="n">valueChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_onMaximumChanged</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lowSpinBox</span><span class="o">.</span><span class="n">valueChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">setLow</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">highSpinBox</span><span class="o">.</span><span class="n">valueChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">setHigh</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lowSpinBox</span><span class="o">.</span><span class="n">valueChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">valueChanged</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">highSpinBox</span><span class="o">.</span><span class="n">valueChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">valueChanged</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fixStep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">minSpinBox</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fixStep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">maxSpinBox</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_getFloatMode</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_floatmode</span>
+
+    <span class="k">def</span> <span class="nf">_setFloatMode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">floatmode</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="n">floatmode</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">floatmode</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">floatmode</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_floatmode</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_floatmode</span> <span class="o">=</span> <span class="n">floatmode</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_floatmode</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lowSlider</span><span class="o">.</span><span class="n">setRange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">highSlider</span><span class="o">.</span><span class="n">setRange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lowSlider</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pos</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lowSpinBox</span><span class="o">.</span><span class="n">value</span><span class="p">()))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">highSlider</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pos</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">highSpinBox</span><span class="o">.</span><span class="n">value</span><span class="p">()))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">vmin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">minSpinBox</span><span class="o">.</span><span class="n">value</span><span class="p">()</span>
+            <span class="n">vmax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">minSpinBox</span><span class="o">.</span><span class="n">value</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lowSlider</span><span class="o">.</span><span class="n">setRange</span><span class="p">(</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">highSlider</span><span class="o">.</span><span class="n">setRange</span><span class="p">(</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lowSlider</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lowSpinBox</span><span class="o">.</span><span class="n">value</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">highSlider</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">highSpinBox</span><span class="o">.</span><span class="n">value</span><span class="p">())</span>
+
+    <span class="n">floatmode</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_getFloatMode</span><span class="p">,</span> <span class="n">_setFloatMode</span><span class="p">,</span>
+                         <span class="n">doc</span><span class="o">=</span><span class="s">&#39;Set the tretch widget in floating point mode.&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_pos</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="n">N</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">highSlider</span><span class="o">.</span><span class="n">maximum</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">lowSlider</span><span class="o">.</span><span class="n">minimum</span><span class="p">()</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">maxSpinBox</span><span class="o">.</span><span class="n">value</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">minSpinBox</span><span class="o">.</span><span class="n">value</span><span class="p">())</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">value</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">minSpinBox</span><span class="o">.</span><span class="n">value</span><span class="p">())</span> <span class="o">/</span> <span class="n">k</span>
+
+    <span class="k">def</span> <span class="nf">_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pos</span><span class="p">):</span>
+        <span class="n">N</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">highSlider</span><span class="o">.</span><span class="n">maximum</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">lowSlider</span><span class="o">.</span><span class="n">minimum</span><span class="p">()</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">maxSpinBox</span><span class="o">.</span><span class="n">value</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">minSpinBox</span><span class="o">.</span><span class="n">value</span><span class="p">())</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">k</span> <span class="o">*</span> <span class="n">pos</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">minSpinBox</span><span class="o">.</span><span class="n">value</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_setValue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">spinbox</span><span class="p">,</span> <span class="n">slider</span><span class="p">):</span>
+        <span class="n">spinbox</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">floatmode</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pos</span><span class="p">(</span><span class="n">spinbox</span><span class="o">.</span><span class="n">value</span><span class="p">())</span>
+        <span class="n">slider</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+<div class="viewcode-block" id="StretchWidget.low"><a class="viewcode-back" href="../../api/stretch.widgets.html#stretch.widgets.StretchWidget.low">[docs]</a>    <span class="k">def</span> <span class="nf">low</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">lowSpinBox</span><span class="o">.</span><span class="n">value</span><span class="p">()</span>
+</div>
+    <span class="nd">@QtCore.Slot</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+<div class="viewcode-block" id="StretchWidget.setLow"><a class="viewcode-back" href="../../api/stretch.widgets.html#stretch.widgets.StretchWidget.setLow">[docs]</a>    <span class="k">def</span> <span class="nf">setLow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setValue</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lowSpinBox</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lowSlider</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lowSpinBox</span><span class="o">.</span><span class="n">value</span><span class="p">()</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">highSpinBox</span><span class="o">.</span><span class="n">value</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">highSpinBox</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lowSpinBox</span><span class="o">.</span><span class="n">value</span><span class="p">())</span>
+</div>
+<div class="viewcode-block" id="StretchWidget.high"><a class="viewcode-back" href="../../api/stretch.widgets.html#stretch.widgets.StretchWidget.high">[docs]</a>    <span class="k">def</span> <span class="nf">high</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">highSpinBox</span><span class="o">.</span><span class="n">value</span><span class="p">()</span>
+</div>
+    <span class="nd">@QtCore.Slot</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+<div class="viewcode-block" id="StretchWidget.setHigh"><a class="viewcode-back" href="../../api/stretch.widgets.html#stretch.widgets.StretchWidget.setHigh">[docs]</a>    <span class="k">def</span> <span class="nf">setHigh</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setValue</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">highSpinBox</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">highSlider</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lowSpinBox</span><span class="o">.</span><span class="n">value</span><span class="p">()</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">highSpinBox</span><span class="o">.</span><span class="n">value</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lowSpinBox</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">highSpinBox</span><span class="o">.</span><span class="n">value</span><span class="p">())</span>
+</div>
+    <span class="nd">@QtCore.Slot</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_onLowSliderChanged</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">floatmode</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_value</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="n">N</span> <span class="o">=</span> <span class="mf">10.</span> <span class="o">**</span> <span class="bp">self</span><span class="o">.</span><span class="n">lowSpinBox</span><span class="o">.</span><span class="n">decimals</span><span class="p">()</span>
+            <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">value</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">lowSpinBox</span><span class="o">.</span><span class="n">value</span><span class="p">())</span> <span class="o">&lt;</span> <span class="mf">1.</span> <span class="o">/</span> <span class="n">N</span><span class="p">:</span>
+                <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setLow</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="nd">@QtCore.Slot</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_onHighSliderChanged</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">floatmode</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_value</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="n">N</span> <span class="o">=</span> <span class="mf">10.</span> <span class="o">**</span> <span class="bp">self</span><span class="o">.</span><span class="n">highSpinBox</span><span class="o">.</span><span class="n">decimals</span><span class="p">()</span>
+            <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">value</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">highSpinBox</span><span class="o">.</span><span class="n">value</span><span class="p">())</span> <span class="o">&lt;</span> <span class="mf">1.</span> <span class="o">/</span> <span class="n">N</span><span class="p">:</span>
+                <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setHigh</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+<div class="viewcode-block" id="StretchWidget.values"><a class="viewcode-back" href="../../api/stretch.widgets.html#stretch.widgets.StretchWidget.values">[docs]</a>    <span class="k">def</span> <span class="nf">values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">low</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">high</span><span class="p">()</span>
+</div>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_fixStep</span><span class="p">(</span><span class="n">spinbox</span><span class="p">):</span>
+        <span class="n">newstep</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">spinbox</span><span class="o">.</span><span class="n">value</span><span class="p">())</span> <span class="o">/</span> <span class="mi">20</span>
+        <span class="n">newstep</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">newstep</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">spinbox</span><span class="o">.</span><span class="n">setSingleStep</span><span class="p">(</span><span class="n">newstep</span><span class="p">)</span>
+
+<div class="viewcode-block" id="StretchWidget.minimum"><a class="viewcode-back" href="../../api/stretch.widgets.html#stretch.widgets.StretchWidget.minimum">[docs]</a>    <span class="k">def</span> <span class="nf">minimum</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">minSpinBox</span><span class="o">.</span><span class="n">value</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="StretchWidget.setMinimum"><a class="viewcode-back" href="../../api/stretch.widgets.html#stretch.widgets.StretchWidget.setMinimum">[docs]</a>    <span class="k">def</span> <span class="nf">setMinimum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">minSpinBox</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+</div>
+    <span class="nd">@QtCore.Slot</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_onMinimumChanged</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">minSpinBox</span><span class="o">.</span><span class="n">value</span><span class="p">()</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxSpinBox</span><span class="o">.</span><span class="n">value</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">maxSpinBox</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">minSpinBox</span><span class="o">.</span><span class="n">value</span><span class="p">())</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lowSpinBox</span><span class="o">.</span><span class="n">setMinimum</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">highSpinBox</span><span class="o">.</span><span class="n">setMinimum</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">floatmode</span><span class="p">:</span>
+            <span class="n">vmin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pos</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lowSpinBox</span><span class="o">.</span><span class="n">value</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lowSlider</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">vmin</span><span class="p">)</span>
+            <span class="n">vmax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pos</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">highSpinBox</span><span class="o">.</span><span class="n">value</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">highSlider</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">vmax</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lowSlider</span><span class="o">.</span><span class="n">setMinimum</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">highSlider</span><span class="o">.</span><span class="n">setMinimum</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lowSpinBox</span><span class="o">.</span><span class="n">value</span><span class="p">()</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">highSpinBox</span><span class="o">.</span><span class="n">value</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">highSpinBox</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lowSpinBox</span><span class="o">.</span><span class="n">value</span><span class="p">())</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fixStep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">minSpinBox</span><span class="p">)</span>
+
+<div class="viewcode-block" id="StretchWidget.maximum"><a class="viewcode-back" href="../../api/stretch.widgets.html#stretch.widgets.StretchWidget.maximum">[docs]</a>    <span class="k">def</span> <span class="nf">maximum</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxSpinBox</span><span class="o">.</span><span class="n">value</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="StretchWidget.setMaximum"><a class="viewcode-back" href="../../api/stretch.widgets.html#stretch.widgets.StretchWidget.setMaximum">[docs]</a>    <span class="k">def</span> <span class="nf">setMaximum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">maxSpinBox</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+</div>
+    <span class="nd">@QtCore.Slot</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_onMaximumChanged</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">minSpinBox</span><span class="o">.</span><span class="n">value</span><span class="p">()</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxSpinBox</span><span class="o">.</span><span class="n">value</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">minSpinBox</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">maxSpinBox</span><span class="o">.</span><span class="n">value</span><span class="p">())</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lowSpinBox</span><span class="o">.</span><span class="n">setMaximum</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">highSpinBox</span><span class="o">.</span><span class="n">setMaximum</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">floatmode</span><span class="p">:</span>
+            <span class="n">vmin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pos</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lowSpinBox</span><span class="o">.</span><span class="n">value</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lowSlider</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">vmin</span><span class="p">)</span>
+            <span class="n">vmax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pos</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">highSpinBox</span><span class="o">.</span><span class="n">value</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">highSlider</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">vmax</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lowSlider</span><span class="o">.</span><span class="n">setMaximum</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">highSlider</span><span class="o">.</span><span class="n">setMaximum</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lowSpinBox</span><span class="o">.</span><span class="n">value</span><span class="p">()</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">highSpinBox</span><span class="o">.</span><span class="n">value</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lowSpinBox</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">highSpinBox</span><span class="o">.</span><span class="n">value</span><span class="p">())</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fixStep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">maxSpinBox</span><span class="p">)</span>
+
+<div class="viewcode-block" id="StretchWidget.setState"><a class="viewcode-back" href="../../api/stretch.widgets.html#stretch.widgets.StretchWidget.setState">[docs]</a>    <span class="k">def</span> <span class="nf">setState</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">minSpinBox</span><span class="o">.</span><span class="n">setMinimum</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s">&#39;minSpinBox.minimum&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">minSpinBox</span><span class="o">.</span><span class="n">setMaximum</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s">&#39;minSpinBox.maximum&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">maxSpinBox</span><span class="o">.</span><span class="n">setMinimum</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s">&#39;maxSpinBox.minimum&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">maxSpinBox</span><span class="o">.</span><span class="n">setMaximum</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s">&#39;maxSpinBox.maximum&#39;</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">floatmode</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s">&#39;floatmode&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMinimum</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s">&#39;minimum&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMaximum</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s">&#39;maximum&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setLow</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s">&#39;low&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setHigh</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s">&#39;high&#39;</span><span class="p">])</span>
+</div>
+<div class="viewcode-block" id="StretchWidget.state"><a class="viewcode-back" href="../../api/stretch.widgets.html#stretch.widgets.StretchWidget.state">[docs]</a>    <span class="k">def</span> <span class="nf">state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">d</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+        <span class="n">d</span><span class="p">[</span><span class="s">&#39;floatmode&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">floatmode</span>
+        <span class="n">d</span><span class="p">[</span><span class="s">&#39;minimum&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">minimum</span><span class="p">()</span>
+        <span class="n">d</span><span class="p">[</span><span class="s">&#39;maximum&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">maximum</span><span class="p">()</span>
+        <span class="n">d</span><span class="p">[</span><span class="s">&#39;low&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">low</span><span class="p">()</span>
+        <span class="n">d</span><span class="p">[</span><span class="s">&#39;high&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">high</span><span class="p">()</span>
+
+        <span class="n">d</span><span class="p">[</span><span class="s">&#39;minSpinBox.minimum&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">minSpinBox</span><span class="o">.</span><span class="n">minimum</span><span class="p">()</span>
+        <span class="n">d</span><span class="p">[</span><span class="s">&#39;minSpinBox.maximum&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">minSpinBox</span><span class="o">.</span><span class="n">maximum</span><span class="p">()</span>
+
+        <span class="n">d</span><span class="p">[</span><span class="s">&#39;maxSpinBox.minimum&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxSpinBox</span><span class="o">.</span><span class="n">minimum</span><span class="p">()</span>
+        <span class="n">d</span><span class="p">[</span><span class="s">&#39;maxSpinBox.maximum&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxSpinBox</span><span class="o">.</span><span class="n">maximum</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">d</span>
+
+</div></div>
+<span class="n">StretchDialogBase</span> <span class="o">=</span> <span class="n">qt4support</span><span class="o">.</span><span class="n">getuiform</span><span class="p">(</span><span class="s">&#39;stretchdialog&#39;</span><span class="p">,</span> <span class="n">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="StretchDialog"><a class="viewcode-back" href="../../api/stretch.widgets.html#stretch.widgets.StretchDialog">[docs]</a><span class="k">class</span> <span class="nc">StretchDialog</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QDialog</span><span class="p">,</span> <span class="n">StretchDialogBase</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Stretch dialog.</span>
+
+<span class="sd">    :SIGNALS:</span>
+
+<span class="sd">        * :attr:`valueChanged`</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="c">#: SIGNAL: it is emitted when the stretch value changes</span>
+    <span class="c">#:</span>
+    <span class="c">#: :C++ signature: `void valueChanged()`</span>
+    <span class="n">valueChanged</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">WindowFlags</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">StretchDialog</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">flags</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setupUi</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">stretchwidget</span> <span class="o">=</span> <span class="n">StretchWidget</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mainLayout</span><span class="o">.</span><span class="n">insertWidget</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">stretchwidget</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">checkBox</span><span class="o">.</span><span class="n">isChecked</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setAdvanced</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">saveState</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">checkBox</span><span class="o">.</span><span class="n">toggled</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">setAdvanced</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resetButton</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reset</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">stretchwidget</span><span class="o">.</span><span class="n">valueChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">valueChanged</span><span class="p">)</span>
+
+        <span class="c">#~ self.stretchwidget.lowSpinBox.valueChanged.connect(self.valueChanged)</span>
+        <span class="c">#~ self.stretchwidget.highSpinBox.valueChanged.connect(self.valueChanged)</span>
+
+<div class="viewcode-block" id="StretchDialog.advanced"><a class="viewcode-back" href="../../api/stretch.widgets.html#stretch.widgets.StretchDialog.advanced">[docs]</a>    <span class="k">def</span> <span class="nf">advanced</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">stretchwidget</span><span class="o">.</span><span class="n">lowSpinBox</span><span class="o">.</span><span class="n">isVisible</span><span class="p">()</span>
+</div>
+    <span class="nd">@QtCore.Slot</span><span class="p">()</span>
+    <span class="nd">@QtCore.Slot</span><span class="p">(</span><span class="nb">bool</span><span class="p">)</span>
+<div class="viewcode-block" id="StretchDialog.setAdvanced"><a class="viewcode-back" href="../../api/stretch.widgets.html#stretch.widgets.StretchDialog.setAdvanced">[docs]</a>    <span class="k">def</span> <span class="nf">setAdvanced</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">advmode</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stretchwidget</span><span class="o">.</span><span class="n">lowSpinBox</span><span class="o">.</span><span class="n">setVisible</span><span class="p">(</span><span class="n">advmode</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stretchwidget</span><span class="o">.</span><span class="n">lowSlider</span><span class="o">.</span><span class="n">setVisible</span><span class="p">(</span><span class="n">advmode</span><span class="p">)</span>
+</div>
+    <span class="k">def</span> <span class="nf">_getFloatmode</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">stretchwidget</span><span class="o">.</span><span class="n">floatmode</span>
+
+    <span class="k">def</span> <span class="nf">_setFloatmode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stretchwidget</span><span class="o">.</span><span class="n">floatmode</span> <span class="o">=</span> <span class="n">mode</span>
+
+    <span class="n">floatmode</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_getFloatmode</span><span class="p">,</span> <span class="n">_setFloatmode</span><span class="p">)</span>
+
+<div class="viewcode-block" id="StretchDialog.saveState"><a class="viewcode-back" href="../../api/stretch.widgets.html#stretch.widgets.StretchDialog.saveState">[docs]</a>    <span class="k">def</span> <span class="nf">saveState</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stretchwidget</span><span class="o">.</span><span class="n">state</span><span class="p">()</span>
+</div>
+    <span class="nd">@QtCore.Slot</span><span class="p">()</span>
+<div class="viewcode-block" id="StretchDialog.reset"><a class="viewcode-back" href="../../api/stretch.widgets.html#stretch.widgets.StretchDialog.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">d</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span>
+        <span class="k">if</span> <span class="n">d</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stretchwidget</span><span class="o">.</span><span class="n">setState</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;unable to set state: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="StretchDialog.values"><a class="viewcode-back" href="../../api/stretch.widgets.html#stretch.widgets.StretchDialog.values">[docs]</a>    <span class="k">def</span> <span class="nf">values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">stretchwidget</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+        <span class="c"># @TODO: working on linux</span>
+        <span class="c">#return 0, self.stretchwidget.maxStretch()</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+    
+    
+    <p>
+        <a href="http://sourceforge.net/projects/gsdview">
+            <img src="http://sflogo.sourceforge.net/sflogo.php?group_id=226458&type=14" width="150" height="40" alt="Get GSDView at SourceForge.net. Fast, secure and Free Open Source software downloads" />
+        </a>
+    </p>
+    
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li><a href="../../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../stretch.html" >stretch</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2008-2011, Antonio Valentino.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

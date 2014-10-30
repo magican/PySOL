@@ -1,0 +1,522 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>exectools.qt4 &mdash; GSDView Open Edition Home Page</title>
+    <link rel="stylesheet" href="../_static/sourceforge.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.6.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/logo.ico"/>
+    <link rel="top" title="GSDView Open Edition Home Page" href="../index.html" />
+    <link rel="up" title="API Reference" href="../reference.html" />
+    <link rel="next" title="exectools.gtk2" href="exectools.gtk2.html" />
+    <link rel="prev" title="exectools.std" href="exectools.std.html" /> 
+  </head>
+  <body>
+    
+        
+    
+    
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li class="right" >
+          <a href="exectools.gtk2.html" title="exectools.gtk2"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="exectools.std.html" title="exectools.std"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../reference.html" accesskey="U">API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-exectools.qt4">
+<span id="exectools-qt4"></span><h1>exectools.qt4<a class="headerlink" href="#module-exectools.qt4" title="Permalink to this headline">¶</a></h1>
+<p>Tools for running external processes in a Qt4 GUI.</p>
+<p class="rubric">Functions</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><tt class="xref py py-obj docutils literal"><span class="pre">level2tag</span></tt>(level)</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Classes</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><tt class="xref py py-obj docutils literal"><span class="pre">BaseOutputHandler</span></tt>([logger])</td>
+<td>Base class for output handlers</td>
+</tr>
+<tr><td><tt class="xref py py-obj docutils literal"><span class="pre">BaseToolController</span></tt>([logger])</td>
+<td>Base class for controlling command line tools.</td>
+</tr>
+<tr><td><a class="reference internal" href="#exectools.qt4.Qt4Blinker" title="exectools.qt4.Qt4Blinker"><tt class="xref py py-obj docutils literal"><span class="pre">Qt4Blinker</span></tt></a>(**kwargs[,&nbsp;parent,&nbsp;flags])</td>
+<td>Qt4 linker.</td>
+</tr>
+<tr><td><a class="reference internal" href="#exectools.qt4.Qt4DialogLoggingHandler" title="exectools.qt4.Qt4DialogLoggingHandler"><tt class="xref py py-obj docutils literal"><span class="pre">Qt4DialogLoggingHandler</span></tt></a>([dialog,&nbsp;parent])</td>
+<td>Qt4 handler for the logging dialog.</td>
+</tr>
+<tr><td><a class="reference internal" href="#exectools.qt4.Qt4LoggingHandler" title="exectools.qt4.Qt4LoggingHandler"><tt class="xref py py-obj docutils literal"><span class="pre">Qt4LoggingHandler</span></tt></a>(textview)</td>
+<td>Custom handler for logging on Qt4 textviews.</td>
+</tr>
+<tr><td><a class="reference internal" href="#exectools.qt4.Qt4OutputHandler" title="exectools.qt4.Qt4OutputHandler"><tt class="xref py py-obj docutils literal"><span class="pre">Qt4OutputHandler</span></tt></a>(**kwargs[,&nbsp;logger,&nbsp;...])</td>
+<td>Qt4 Output Handler.</td>
+</tr>
+<tr><td><a class="reference internal" href="#exectools.qt4.Qt4OutputPlane" title="exectools.qt4.Qt4OutputPlane"><tt class="xref py py-obj docutils literal"><span class="pre">Qt4OutputPlane</span></tt></a>(**kwargs[,&nbsp;parent])</td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#exectools.qt4.Qt4ToolController" title="exectools.qt4.Qt4ToolController"><tt class="xref py py-obj docutils literal"><span class="pre">Qt4ToolController</span></tt></a>(**kwargs[,&nbsp;logger,&nbsp;parent])</td>
+<td>Qt4 tool controller.</td>
+</tr>
+</tbody>
+</table>
+<dl class="class">
+<dt id="exectools.qt4.Qt4Blinker">
+<em class="property">class </em><tt class="descclassname">exectools.qt4.</tt><tt class="descname">Qt4Blinker</tt><big>(</big><em>parent=None</em>, <em>flags=&lt;PyQt4.QtCore.WindowFlags object at 0x33e7ec0&gt;</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/exectools/qt4.html#Qt4Blinker"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#exectools.qt4.Qt4Blinker" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">PyQt4.QtGui.QLabel</span></tt></p>
+<p>Qt4 linker.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Slots :</th><td class="field-body"><ul class="first last simple">
+<li><a class="reference internal" href="#exectools.qt4.Qt4Blinker.pulse" title="exectools.qt4.Qt4Blinker.pulse"><tt class="xref py py-meth docutils literal"><span class="pre">pulse()</span></tt></a></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="exectools.qt4.Qt4Blinker.flush">
+<tt class="descname">flush</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/exectools/qt4.html#Qt4Blinker.flush"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#exectools.qt4.Qt4Blinker.flush" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="exectools.qt4.Qt4Blinker.pulse">
+<tt class="descname">pulse</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/exectools/qt4.html#Qt4Blinker.pulse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#exectools.qt4.Qt4Blinker.pulse" title="Permalink to this definition">¶</a></dt>
+<dd><p>A blinker pulse.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">C++ signature:</th><td class="field-body"><cite>void pulse()</cite></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="exectools.qt4.Qt4Blinker.reset">
+<tt class="descname">reset</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/exectools/qt4.html#Qt4Blinker.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#exectools.qt4.Qt4Blinker.reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reset the blinker.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="exectools.qt4.Qt4OutputPlane">
+<em class="property">class </em><tt class="descclassname">exectools.qt4.</tt><tt class="descname">Qt4OutputPlane</tt><big>(</big><em>parent=None</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/exectools/qt4.html#Qt4OutputPlane"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#exectools.qt4.Qt4OutputPlane" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">PyQt4.QtGui.QTextEdit</span></tt></p>
+<dl class="method">
+<dt id="exectools.qt4.Qt4OutputPlane.contextMenuEvent">
+<tt class="descname">contextMenuEvent</tt><big>(</big><em>event</em><big>)</big><a class="reference internal" href="../_modules/exectools/qt4.html#Qt4OutputPlane.contextMenuEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#exectools.qt4.Qt4OutputPlane.contextMenuEvent" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="exectools.qt4.Qt4OutputPlane.planeHideRequest">
+<tt class="descname">planeHideRequest</tt><a class="headerlink" href="#exectools.qt4.Qt4OutputPlane.planeHideRequest" title="Permalink to this definition">¶</a></dt>
+<dd><p>SIGNAL: emits a hide request.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">C++ signature:</th><td class="field-body"><cite>void planeHideRequest()</cite></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="exectools.qt4.Qt4OutputPlane.save">
+<tt class="descname">save</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/exectools/qt4.html#Qt4OutputPlane.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#exectools.qt4.Qt4OutputPlane.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save a file.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="exectools.qt4.Qt4OutputHandler">
+<em class="property">class </em><tt class="descclassname">exectools.qt4.</tt><tt class="descname">Qt4OutputHandler</tt><big>(</big><em>logger=None</em>, <em>statusbar=None</em>, <em>progressbar=None</em>, <em>blinker=None</em>, <em>parent=None</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/exectools/qt4.html#Qt4OutputHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#exectools.qt4.Qt4OutputHandler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">PyQt4.QtCore.QObject</span></tt>, <a class="reference internal" href="exectools.html#exectools.BaseOutputHandler" title="exectools.BaseOutputHandler"><tt class="xref py py-class docutils literal"><span class="pre">exectools.BaseOutputHandler</span></tt></a></p>
+<p>Qt4 Output Handler.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Signals :</th><td class="field-body"><ul class="first last simple">
+<li><a class="reference internal" href="#exectools.qt4.Qt4OutputHandler.pulse" title="exectools.qt4.Qt4OutputHandler.pulse"><tt class="xref py py-attr docutils literal"><span class="pre">pulse</span></tt></a></li>
+<li><a class="reference internal" href="#exectools.qt4.Qt4OutputHandler.percentageChanged" title="exectools.qt4.Qt4OutputHandler.percentageChanged"><tt class="xref py py-attr docutils literal"><span class="pre">percentageChanged</span></tt></a></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="exectools.qt4.Qt4OutputHandler.close">
+<tt class="descname">close</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/exectools/qt4.html#Qt4OutputHandler.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#exectools.qt4.Qt4OutputHandler.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reset the instance.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="exectools.qt4.Qt4OutputHandler.feed">
+<tt class="descname">feed</tt><big>(</big><em>data</em><big>)</big><a class="reference internal" href="../_modules/exectools/qt4.html#Qt4OutputHandler.feed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#exectools.qt4.Qt4OutputHandler.feed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Feed some data to the parser.</p>
+<p>It is processed insofar as it consists of complete elements;
+incomplete data is buffered until more data is fed or close()
+is called.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="exectools.qt4.Qt4OutputHandler.handle_progress">
+<tt class="descname">handle_progress</tt><big>(</big><em>data</em><big>)</big><a class="reference internal" href="../_modules/exectools/qt4.html#Qt4OutputHandler.handle_progress"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#exectools.qt4.Qt4OutputHandler.handle_progress" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handle progress data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data</strong> &#8211; a list containing an item for each named group in the
+&#8220;progress&#8221; regular expression: (pulse, percentage, text)
+for the default implementation.
+Each item can be None.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="exectools.qt4.Qt4OutputHandler.percentageChanged">
+<tt class="descname">percentageChanged</tt><a class="headerlink" href="#exectools.qt4.Qt4OutputHandler.percentageChanged" title="Permalink to this definition">¶</a></dt>
+<dd><p>SIGNAL: it is emitted when the progress percentage changes</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><strong>percentage</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; the new completion percentage [0, 100]</td>
+</tr>
+<tr class="field"><th class="field-name">C++ signature:</th><td class="field-body"><cite>void percentageChanged(float)</cite></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="exectools.qt4.Qt4OutputHandler.pulse">
+<tt class="descname">pulse</tt><a class="headerlink" href="#exectools.qt4.Qt4OutputHandler.pulse" title="Permalink to this definition">¶</a></dt>
+<dd><p>SIGNAL: it is emitted to signal some kind of activity of the external
+process</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><strong>text</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; an optional text describing the kind activity of the external
+process</td>
+</tr>
+<tr class="field"><th class="field-name">C++ signature:</th><td class="field-body"><cite>void pulse(QString)</cite></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="exectools.qt4.Qt4OutputHandler.reset">
+<tt class="descname">reset</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/exectools/qt4.html#Qt4OutputHandler.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#exectools.qt4.Qt4OutputHandler.reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reset the handler instance.</p>
+<p>Loses all unprocessed data. This is called implicitly at
+instantiation time.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="exectools.qt4.Qt4LoggingHandler">
+<em class="property">class </em><tt class="descclassname">exectools.qt4.</tt><tt class="descname">Qt4LoggingHandler</tt><big>(</big><em>textview</em><big>)</big><a class="reference internal" href="../_modules/exectools/qt4.html#Qt4LoggingHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#exectools.qt4.Qt4LoggingHandler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">logging.Handler</span></tt></p>
+<p>Custom handler for logging on Qt4 textviews.</p>
+<dl class="method">
+<dt id="exectools.qt4.Qt4LoggingHandler.emit">
+<tt class="descname">emit</tt><big>(</big><em>record</em><big>)</big><a class="reference internal" href="../_modules/exectools/qt4.html#Qt4LoggingHandler.emit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#exectools.qt4.Qt4LoggingHandler.emit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="exectools.qt4.Qt4DialogLoggingHandler">
+<em class="property">class </em><tt class="descclassname">exectools.qt4.</tt><tt class="descname">Qt4DialogLoggingHandler</tt><big>(</big><em>dialog=None</em>, <em>parent=None</em><big>)</big><a class="reference internal" href="../_modules/exectools/qt4.html#Qt4DialogLoggingHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#exectools.qt4.Qt4DialogLoggingHandler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">logging.Handler</span></tt></p>
+<p>Qt4 handler for the logging dialog.</p>
+<dl class="method">
+<dt id="exectools.qt4.Qt4DialogLoggingHandler.emit">
+<tt class="descname">emit</tt><big>(</big><em>record</em><big>)</big><a class="reference internal" href="../_modules/exectools/qt4.html#Qt4DialogLoggingHandler.emit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#exectools.qt4.Qt4DialogLoggingHandler.emit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="exectools.qt4.Qt4ToolController">
+<em class="property">class </em><tt class="descclassname">exectools.qt4.</tt><tt class="descname">Qt4ToolController</tt><big>(</big><em>logger=None</em>, <em>parent=None</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/exectools/qt4.html#Qt4ToolController"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#exectools.qt4.Qt4ToolController" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">PyQt4.QtCore.QObject</span></tt>, <a class="reference internal" href="exectools.html#exectools.BaseToolController" title="exectools.BaseToolController"><tt class="xref py py-class docutils literal"><span class="pre">exectools.BaseToolController</span></tt></a></p>
+<p>Qt4 tool controller.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Signals :</th><td class="field-body"><ul class="first simple">
+<li><a class="reference internal" href="#exectools.qt4.Qt4ToolController.finished" title="exectools.qt4.Qt4ToolController.finished"><tt class="xref py py-attr docutils literal"><span class="pre">finished</span></tt></a></li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Slots :</th><td class="field-body"><ul class="first last simple">
+<li><a class="reference internal" href="#exectools.qt4.Qt4ToolController.stop_tool" title="exectools.qt4.Qt4ToolController.stop_tool"><tt class="xref py py-meth docutils literal"><span class="pre">stop_tool()</span></tt></a></li>
+<li><a class="reference internal" href="#exectools.qt4.Qt4ToolController.finalize_run" title="exectools.qt4.Qt4ToolController.finalize_run"><tt class="xref py py-meth docutils literal"><span class="pre">finalize_run()</span></tt></a></li>
+<li><a class="reference internal" href="#exectools.qt4.Qt4ToolController.handle_stdout" title="exectools.qt4.Qt4ToolController.handle_stdout"><tt class="xref py py-meth docutils literal"><span class="pre">handle_stdout()</span></tt></a></li>
+<li><a class="reference internal" href="#exectools.qt4.Qt4ToolController.handle_stderr" title="exectools.qt4.Qt4ToolController.handle_stderr"><tt class="xref py py-meth docutils literal"><span class="pre">handle_stderr()</span></tt></a></li>
+<li><a class="reference internal" href="#exectools.qt4.Qt4ToolController.handle_error" title="exectools.qt4.Qt4ToolController.handle_error"><tt class="xref py py-meth docutils literal"><span class="pre">handle_error()</span></tt></a></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="exectools.qt4.Qt4ToolController.finalize_run">
+<tt class="descname">finalize_run</tt><big>(</big><em>exitCode=None</em>, <em>exitStatus=None</em><big>)</big><a class="reference internal" href="../_modules/exectools/qt4.html#Qt4ToolController.finalize_run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#exectools.qt4.Qt4ToolController.finalize_run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform finalization actions.</p>
+<p>This method is called when the controlled process terminates
+to perform finalization actions like:</p>
+<ul class="simple">
+<li>read and handle residual data in buffers,</li>
+<li>flush and close output handlers,</li>
+<li>close subprocess file descriptors</li>
+<li>run the &#8220;finalize_run_hook&#8221; method</li>
+<li>reset the controller instance</li>
+</ul>
+<p>If one just needs to perfor some additional finalization action
+it should be better to use a custom &#8220;finalize_run_hook&#8221; instead
+of overriging &#8220;finalize_run&#8221;.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">C++ signature:</th><td class="field-body"><cite>finalize_run(int, QProcess::ExitStatus)</cite></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="exectools.qt4.Qt4ToolController.finished">
+<tt class="descname">finished</tt><a class="headerlink" href="#exectools.qt4.Qt4ToolController.finished" title="Permalink to this definition">¶</a></dt>
+<dd><p>SIGNAL: it is emitted when the processing is finished.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><strong>exitcode</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; the external proces exit code</td>
+</tr>
+<tr class="field"><th class="field-name">C++ signature:</th><td class="field-body"><cite>void finished(int exitCode)</cite></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="exectools.qt4.Qt4ToolController.handle_error">
+<tt class="descname">handle_error</tt><big>(</big><em>error</em><big>)</big><a class="reference internal" href="../_modules/exectools/qt4.html#Qt4ToolController.handle_error"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#exectools.qt4.Qt4ToolController.handle_error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handle a error in process execution.</p>
+<p>Can be handle different types of errors:</p>
+<ul class="simple">
+<li>starting failed</li>
+<li>crashing after starts successfully</li>
+<li>timeout elapsed</li>
+<li>write error</li>
+<li>read error</li>
+<li>unknow error</li>
+</ul>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">C++ signature:</th><td class="field-body"><cite>void handle_error(QProcess::ProcessError)</cite></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="exectools.qt4.Qt4ToolController.handle_stderr">
+<tt class="descname">handle_stderr</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/exectools/qt4.html#Qt4ToolController.handle_stderr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#exectools.qt4.Qt4ToolController.handle_stderr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handle standard error.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">C++ signature:</th><td class="field-body"><cite>void handle_stderr()</cite></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="exectools.qt4.Qt4ToolController.handle_stdout">
+<tt class="descname">handle_stdout</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/exectools/qt4.html#Qt4ToolController.handle_stdout"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#exectools.qt4.Qt4ToolController.handle_stdout" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handle standard output.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">C++ signature:</th><td class="field-body"><cite>void handle_stdout()</cite></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="exectools.qt4.Qt4ToolController.isbusy">
+<tt class="descname">isbusy</tt><a class="reference internal" href="../_modules/exectools/qt4.html#Qt4ToolController.isbusy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#exectools.qt4.Qt4ToolController.isbusy" title="Permalink to this definition">¶</a></dt>
+<dd><p>If True then the controller is already running a subprocess.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="exectools.qt4.Qt4ToolController.run_tool">
+<tt class="descname">run_tool</tt><big>(</big><em>tool</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/exectools/qt4.html#Qt4ToolController.run_tool"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#exectools.qt4.Qt4ToolController.run_tool" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run an external tool in controlled way.</p>
+<p>The output of the child process is handled by the controller
+and, optionally, notifications can be achieved at sub-process
+termination.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="exectools.qt4.Qt4ToolController.stop_tool">
+<tt class="descname">stop_tool</tt><big>(</big><em>force=True</em><big>)</big><a class="reference internal" href="../_modules/exectools/qt4.html#Qt4ToolController.stop_tool"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#exectools.qt4.Qt4ToolController.stop_tool" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop the execution of controlled subprocess.</p>
+<p>When this method is invoked the controller instance is always
+reset even if the controller is unable to stop the subprocess.</p>
+<p>When possible the controller try to kill the subprocess in a
+polite way.  If this fails it also tryes brute killing by
+default (force=True).  This behaviour can be controlled using
+the <cite>force</cite> parameter.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">C++ signature:</th><td class="field-body"><cite>void stop_tool(bool)</cite></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo.png" alt="Logo"/>
+            </a></p>
+    
+    
+    <p>
+        <a href="http://sourceforge.net/projects/gsdview">
+            <img src="http://sflogo.sourceforge.net/sflogo.php?group_id=226458&type=14" width="150" height="40" alt="Get GSDView at SourceForge.net. Fast, secure and Free Open Source software downloads" />
+        </a>
+    </p>
+    
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="exectools.std.html"
+                        title="previous chapter">exectools.std</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="exectools.gtk2.html"
+                        title="next chapter">exectools.gtk2</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/api/exectools.qt4.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li class="right" >
+          <a href="exectools.gtk2.html" title="exectools.gtk2"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="exectools.std.html" title="exectools.std"
+             >previous</a> |</li>
+        <li><a href="../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../reference.html" >API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2008-2011, Antonio Valentino.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,1098 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>gsdview.gdalbackend.gdalsupport &mdash; GSDView Open Edition Home Page</title>
+    <link rel="stylesheet" href="../../../_static/sourceforge.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.6.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../../_static/logo.ico"/>
+    <link rel="top" title="GSDView Open Edition Home Page" href="../../../index.html" />
+    <link rel="up" title="gsdview.gdalbackend" href="../gdalbackend.html" /> 
+  </head>
+  <body>
+    
+        
+    
+    
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li><a href="../../../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../gsdview.html" >gsdview</a> &raquo;</li>
+          <li><a href="../gdalbackend.html" accesskey="U">gsdview.gdalbackend</a> &raquo;</li> 
+      </ul>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for gsdview.gdalbackend.gdalsupport</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="c">### Copyright (C) 2008-2011 Antonio Valentino &lt;a_valentino@users.sf.net&gt;</span>
+
+<span class="c">### This file is part of GSDView.</span>
+
+<span class="c">### GSDView is free software; you can redistribute it and/or modify</span>
+<span class="c">### it under the terms of the GNU General Public License as published by</span>
+<span class="c">### the Free Software Foundation; either version 2 of the License, or</span>
+<span class="c">### (at your option) any later version.</span>
+
+<span class="c">### GSDView is distributed in the hope that it will be useful,</span>
+<span class="c">### but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c">### MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c">### GNU General Public License for more details.</span>
+
+<span class="c">### You should have received a copy of the GNU General Public License</span>
+<span class="c">### along with GSDView; if not, write to the Free Software</span>
+<span class="c">### Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA.</span>
+
+
+<span class="sd">&#39;&#39;&#39;Support tools and classes for the GDAL library.&#39;&#39;&#39;</span>
+
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">gdal</span>
+<span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">osr</span>
+
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s">&#39;Antonio Valentino &lt;a_valentino@users.sf.net&gt;&#39;</span>
+<span class="n">__date__</span> <span class="o">=</span> <span class="s">&#39;$Date: 2011-07-30 11:07:42 +0200 (sab, 30 lug 2011) $&#39;</span>
+<span class="n">__revision__</span> <span class="o">=</span> <span class="s">&#39;$Revision: 971 $&#39;</span>
+
+
+<span class="n">GDAL_CONFIG_OPTIONS</span> <span class="o">=</span> <span class="s">&#39;&#39;&#39;</span><span class="se">\</span>
+<span class="s">GDAL_DATA</span>
+<span class="s">GDAL_SKIP</span>
+<span class="s">GDAL_DRIVER_PATH</span>
+<span class="s">OGR_DRIVER_PATH</span>
+
+<span class="s">GDAL_CACHEMAX</span>
+<span class="s">GDAL_FORCE_CACHING</span>
+<span class="s">GDAL_DISABLE_READDIR_ON_OPEN</span>
+<span class="s">GDAL_MAX_DATASET_POOL_SIZE</span>
+<span class="s">GDAL_IGNORE_AXIS_ORIENTATION</span>
+<span class="s">GDAL_SWATH_SIZE</span>
+<span class="s">GDAL_DISABLE_READDIR_ON_OPEN</span>
+<span class="s">GDAL_VALIDATE_CREATION_OPTIONS</span>
+<span class="s">GDAL_ONE_BIG_READ</span>
+<span class="s">GDAL_DTED_SINGLE_BLOCK</span>
+
+<span class="s">GDAL_PAM_ENABLED</span>
+<span class="s">GDAL_PAM_MODE</span>
+<span class="s">GDAL_PAM_PROXY_DIR</span>
+
+<span class="s">GDAL_TIFF_INTERNAL_MASK</span>
+<span class="s">GDAL_TIFF_ENDIANNESS</span>
+
+<span class="s">GDAL_JPEG_TO_RGB</span>
+<span class="s">GDAL_ECW_CACHE_MAXMEM</span>
+
+<span class="s">OGR_XPLANE_READ_WHOLE_FILE</span>
+<span class="s">OGR_SDE_GETLAYERTYPE</span>
+<span class="s">OGR_SDE_SEARCHORDER</span>
+<span class="s">OGR_S57_OPTIONS</span>
+<span class="s">OGR_DEBUG_ORGANIZE_POLYGONS</span>
+<span class="s">OGR_ORGANIZE_POLYGONS</span>
+
+<span class="s">CPL_DEBUG</span>
+<span class="s">CPL_LOG</span>
+<span class="s">CPL_LOG_ERRORS</span>
+<span class="s">CPL_ACCUM_ERROR_MSG</span>
+<span class="s">CPL_MAX_ERROR_REPORTS</span>
+<span class="s">CPL_TIMESTAMP</span>
+<span class="s">CPL_TMPDIR</span>
+
+<span class="s">COMPRESS_OVERVIEW</span>
+<span class="s">INTERLEAVE_OVERVIEW</span>
+<span class="s">PHOTOMETRIC_OVERVIEW</span>
+
+<span class="s">TMPDIR</span>
+<span class="s">TEMP</span>
+
+<span class="s">USE_RRD</span>
+<span class="s">USE_SPILL</span>
+
+<span class="s">PROJSO</span>
+
+<span class="s">GMLJP2OVERRIDE</span>
+<span class="s">GEOTIFF_CSV</span>
+<span class="s">JPEGMEM</span>
+
+<span class="s">DODS_CONF</span>
+<span class="s">DODS_AIS_FILE</span>
+
+<span class="s">BSB_PALETTE</span>
+
+<span class="s">CONVERT_YCBCR_TO_RGB</span>
+<span class="s">ECW_LARGE_OK</span>
+<span class="s">IDRISIDIR</span>
+<span class="s">DTED_VERIFY_CHECKSUM</span>
+<span class="s">IDA_COLOR_FILE</span>
+<span class="s">RPFTOC_FORCE_RGBA</span>
+<span class="s">HFA_USE_RRD</span>
+<span class="s">ADRG_SIMULATE_MULTI_GEN</span>
+<span class="s">HDF4_BLOCK_PIXELS</span>
+<span class="s">GEOL_AS_GCPS</span>
+
+<span class="s">CENTER_LONG</span>
+
+<span class="s">OCI_FID</span>
+<span class="s">OCI_DEFAULT_DIM</span>
+
+<span class="s">MDBDRIVER_PATH</span>
+<span class="s">ODBC_OGR_FID</span>
+<span class="s">DGN_LINK_FORMAT</span>
+
+<span class="s">TIGER_VERSION</span>
+<span class="s">TIGER_LFIELD_AS_STRING</span>
+
+<span class="s">PGSQL_OGR_FID</span>
+<span class="s">PGCLIENTENCODING</span>
+<span class="s">PG_USE_COPY</span>
+<span class="s">PG_USE_POSTGIS</span>
+<span class="s">PG_LIST_ALL_TABLES</span>
+
+<span class="s">S57_CSV</span>
+<span class="s">S57_PROFILE</span>
+
+<span class="s">INGRES_INSERT_SUB</span>
+
+<span class="s">IDB_OGR_FID</span>
+
+<span class="s">GPX_N_MAX_LINKS</span>
+<span class="s">GPX_ELE_AS_25D</span>
+<span class="s">GPX_USE_EXTENSIONS</span>
+
+<span class="s">SDE_VERSIONEDITS</span>
+<span class="s">SDE_VERSIONOVERWRITE</span>
+<span class="s">SDE_DESCRIPTION</span>
+<span class="s">SDE_FID</span>
+
+<span class="s">GML_FIELDTYPES</span>
+<span class="s">MYSQL_TIMEOUT</span>
+<span class="s">GEOMETRY_AS_COLLECTION</span>
+<span class="s">ATTRIBUTES_SKIP</span>
+<span class="s">KML_DEBUG&#39;&#39;&#39;</span>
+
+
+<div class="viewcode-block" id="uniqueDatasetID"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.gdalsupport.html#gsdview.gdalbackend.gdalsupport.uniqueDatasetID">[docs]</a><span class="k">def</span> <span class="nf">uniqueDatasetID</span><span class="p">(</span><span class="n">prod</span><span class="p">):</span>
+    <span class="c"># @TODO: use also gdal.Band.Checksum or similia</span>
+
+    <span class="n">d</span> <span class="o">=</span> <span class="n">prod</span><span class="o">.</span><span class="n">GetDriver</span><span class="p">()</span>
+    <span class="n">driver_name</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">GetDescription</span><span class="p">()</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;driver_name = </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">driver_name</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">driver_name</span> <span class="o">==</span> <span class="s">&#39;SAR_CEOS&#39;</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c"># &#39;CEOS_LOGICAL_VOLUME_ID&#39;</span>
+            <span class="n">metadata</span> <span class="o">=</span> <span class="n">prod</span><span class="o">.</span><span class="n">GetMetadata</span><span class="p">()</span>
+            <span class="n">prod_id</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s">-</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">metadata</span><span class="p">[</span><span class="s">&#39;CEOS_SOFTWARE_ID&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span>
+                                 <span class="n">metadata</span><span class="p">[</span><span class="s">&#39;CEOS_ACQUISITION_TIME&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">prod_id</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">prod</span><span class="o">.</span><span class="n">GetDescription</span><span class="p">())</span>
+    <span class="k">elif</span> <span class="n">driver_name</span> <span class="o">==</span> <span class="s">&#39;ESAT&#39;</span><span class="p">:</span>
+        <span class="n">metadata</span> <span class="o">=</span> <span class="n">prod</span><span class="o">.</span><span class="n">GetMetadata</span><span class="p">()</span>
+        <span class="n">prod_id</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">metadata</span><span class="p">[</span><span class="s">&#39;MPH_PRODUCT&#39;</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="c">#~ elif driver_name = &#39;GTiff&#39;:</span>
+        <span class="c">#~ # ERS BTIF</span>
+        <span class="c">#~ pass</span>
+    <span class="k">elif</span> <span class="n">driver_name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&#39;HDF5&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">driver_name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&#39;CSK&#39;</span><span class="p">):</span>
+        <span class="n">prod_id</span> <span class="o">=</span> <span class="n">prod</span><span class="o">.</span><span class="n">GetDescription</span><span class="p">()</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="n">prod_id</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;:&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="s">&#39;:&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">])</span>
+            <span class="n">parts</span> <span class="o">=</span> <span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">filename</span><span class="p">,</span> <span class="n">parts</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s">&#39;&quot;&#39;</span><span class="p">))</span>
+            <span class="n">h5path</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;//&#39;</span><span class="p">,</span> <span class="s">&#39;/&#39;</span><span class="p">)</span>
+            <span class="n">prod_id</span> <span class="o">=</span> <span class="n">filename</span> <span class="o">+</span> <span class="n">h5path</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">,</span> <span class="s">&#39;_&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">prod_id</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">prod_id</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">driver_name</span> <span class="o">==</span> <span class="s">&#39;RS2&#39;</span><span class="p">:</span>
+        <span class="n">metadata</span> <span class="o">=</span> <span class="n">prod</span><span class="o">.</span><span class="n">GetMetadata</span><span class="p">()</span>
+        <span class="n">keys</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s">&#39;SATELLITE_IDENTIFIER&#39;</span><span class="p">,</span>     <span class="c"># &#39;RADARSAT-2&#39;</span>
+            <span class="s">&#39;SENSOR_IDENTIFIER&#39;</span><span class="p">,</span>        <span class="c"># &#39;SAR&#39;</span>
+            <span class="s">&#39;PRODUCT_TYPE&#39;</span><span class="p">,</span>             <span class="c"># &#39;SGF&#39;</span>
+            <span class="s">&#39;BEAM_MODE&#39;</span><span class="p">,</span>                <span class="c"># &#39;W2&#39;</span>
+            <span class="s">&#39;ACQUISITION_START_TIME&#39;</span><span class="p">,</span>   <span class="c"># &#39;2008-05-30T14:25:38.076608Z&#39;</span>
+        <span class="p">)</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="p">[</span><span class="n">metadata</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">]</span>
+        <span class="n">parts</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;:&#39;</span><span class="p">,</span> <span class="s">&#39;_&#39;</span><span class="p">)</span>
+        <span class="n">prod_id</span> <span class="o">=</span> <span class="s">&#39;-&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">prod_id</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">prod</span><span class="o">.</span><span class="n">GetDescription</span><span class="p">())</span>
+
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;prod_id = </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">prod_id</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">prod_id</span>
+
+</div>
+<div class="viewcode-block" id="driverList"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.gdalsupport.html#gsdview.gdalbackend.gdalsupport.driverList">[docs]</a><span class="k">def</span> <span class="nf">driverList</span><span class="p">(</span><span class="n">drivertype</span><span class="o">=</span><span class="s">&#39;raster&#39;</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Return the list of available GDAL/OGR drivers&#39;&#39;&#39;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">drivertype</span><span class="p">:</span>
+        <span class="n">types</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;gdal&#39;</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">drivertype</span><span class="p">,</span> <span class="nb">basestring</span><span class="p">):</span>
+        <span class="n">types</span> <span class="o">=</span> <span class="p">[</span><span class="n">drivertype</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">types</span> <span class="o">=</span> <span class="n">drivertype</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">set</span><span class="p">((</span><span class="s">&#39;raster&#39;</span><span class="p">,</span> <span class="s">&#39;vector&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">issuperset</span><span class="p">(</span><span class="n">types</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;invalid type list: &quot;</span><span class="si">%s</span><span class="s">&quot;&#39;</span> <span class="o">%</span> <span class="n">types</span><span class="p">)</span>
+
+    <span class="n">drivers</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="s">&#39;raster&#39;</span> <span class="ow">in</span> <span class="n">types</span><span class="p">:</span>
+        <span class="n">drivers</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">gdal</span><span class="o">.</span><span class="n">GetDriver</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+                                    <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">gdal</span><span class="o">.</span><span class="n">GetDriverCount</span><span class="p">()))</span>
+
+    <span class="k">if</span> <span class="s">&#39;vector&#39;</span> <span class="ow">in</span> <span class="n">types</span><span class="p">:</span>
+        <span class="c"># @TODO: check</span>
+        <span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span>
+        <span class="n">drivers</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">ogr</span><span class="o">.</span><span class="n">GetDriver</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+                                    <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ogr</span><span class="o">.</span><span class="n">GetDriverCount</span><span class="p">()))</span>
+
+    <span class="k">return</span> <span class="n">drivers</span>
+
+</div>
+<div class="viewcode-block" id="gdalFilters"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.gdalsupport.html#gsdview.gdalbackend.gdalsupport.gdalFilters">[docs]</a><span class="k">def</span> <span class="nf">gdalFilters</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s">&#39;r&#39;</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Returns the list of GDAL file filters as expected by Qt.&#39;&#39;&#39;</span>
+
+    <span class="c"># @TODO: move to gdalqt4</span>
+    <span class="n">filters</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">filters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;All files (*)&#39;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">driver</span> <span class="ow">in</span> <span class="n">driverList</span><span class="p">():</span>
+        <span class="n">metadata</span> <span class="o">=</span> <span class="n">driver</span><span class="o">.</span><span class="n">GetMetadata</span><span class="p">()</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">metadata</span><span class="p">[</span><span class="s">&#39;DMD_LONGNAME&#39;</span><span class="p">]</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">ext</span> <span class="o">=</span> <span class="n">metadata</span><span class="p">[</span><span class="s">&#39;DMD_EXTENSION&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">ext</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&#39; (.</span><span class="si">%s</span><span class="s">)&#39;</span> <span class="o">%</span> <span class="n">ext</span><span class="p">):</span>
+                    <span class="n">name</span> <span class="o">=</span> <span class="n">name</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span> <span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">ext</span><span class="p">)</span> <span class="o">-</span> <span class="mi">4</span><span class="p">]</span>
+
+                <span class="k">if</span> <span class="s">&#39;w&#39;</span> <span class="ow">in</span> <span class="n">mode</span><span class="p">:</span>
+                    <span class="n">CREATECOPY</span> <span class="o">=</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">gdal</span><span class="o">.</span><span class="n">DCAP_CREATECOPY</span><span class="p">)</span>
+                    <span class="n">CREATE</span> <span class="o">=</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">gdal</span><span class="o">.</span><span class="n">DCAP_CREATE</span><span class="p">)</span>
+                    <span class="n">canwrite</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">((</span><span class="n">CREATECOPY</span> <span class="o">==</span> <span class="s">&#39;YES&#39;</span><span class="p">)</span> <span class="ow">or</span>
+                                    <span class="p">(</span><span class="n">CREATE</span> <span class="o">==</span> <span class="s">&#39;YES&#39;</span><span class="p">))</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">canwrite</span><span class="p">:</span>
+                        <span class="k">continue</span>
+
+                <span class="n">filters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%s</span><span class="s"> (*.</span><span class="si">%s</span><span class="s">)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">ext</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+    <span class="k">return</span> <span class="n">filters</span>
+
+</div>
+<div class="viewcode-block" id="ogrFilters"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.gdalsupport.html#gsdview.gdalbackend.gdalsupport.ogrFilters">[docs]</a><span class="k">def</span> <span class="nf">ogrFilters</span><span class="p">():</span>   <span class="c"># mode=&#39;r&#39;):</span>
+    <span class="sd">&#39;&#39;&#39;Returns the list of OGR file filters as expected by Qt&#39;&#39;&#39;</span>
+
+    <span class="c"># @TODO: move to an OGR specific module (??)</span>
+    <span class="n">filters</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s">&#39;All files (*)&#39;</span><span class="p">,</span>
+        <span class="s">&#39;ESRI Shapefiles (*.shp)&#39;</span><span class="p">,</span>
+        <span class="s">&#39;KML (*.kml, *.kmz)&#39;</span><span class="p">,</span>
+        <span class="s">&#39;Virtual Format (*.vrt)&#39;</span><span class="p">,</span>
+        <span class="s">&#39;Arc/Info Binary Coverage (*.???)&#39;</span><span class="p">,</span>
+        <span class="s">&#39;Arc/Info E00 (ASCII) Coverage (*.E00)&#39;</span><span class="p">,</span>
+        <span class="s">&#39;Atlas BNA (*.bna)&#39;</span><span class="p">,</span>
+        <span class="s">&#39;AutoCAD DXF (*.dfx)&#39;</span>
+        <span class="s">&#39;Comma Separated Value (*.csv)&#39;</span><span class="p">,</span>
+        <span class="s">&#39;DODS/OPeNDAP (*.???)&#39;</span><span class="p">,</span>
+        <span class="s">&#39;ESRI Personal GeoDatabase (*.???)&#39;</span><span class="p">,</span>
+        <span class="s">&#39;ESRI ArcSDE (*.???)&#39;</span><span class="p">,</span>
+        <span class="s">&#39;FMEObjects Gateway (*.NTF)&#39;</span><span class="p">,</span>
+        <span class="s">&#39;GeoJSON (*.???)&#39;</span><span class="p">,</span>
+        <span class="s">&#39;GeoConcept text export (*.gxt, *.txt)&#39;</span><span class="p">,</span>
+        <span class="s">&#39;GeoRSS: Geographically Encoded Objects for RSS feeds (*,xml)&#39;</span><span class="p">,</span>
+        <span class="s">&#39;GML - Geography Markup Language (*.gml)&#39;</span><span class="p">,</span>
+        <span class="s">&#39;GMT ASCII Vectors (*.gmt)&#39;</span><span class="p">,</span>
+        <span class="s">&#39;GPSBabel (*.???)&#39;</span><span class="p">,</span>
+        <span class="s">&#39;GPX - GPS Exchange Format (*.gpx)&#39;</span><span class="p">,</span>
+        <span class="s">&#39;GRASS (*.???)&#39;</span><span class="p">,</span>
+        <span class="s">&#39;GTM - GPS TrackMaker (*.gtm)&#39;</span><span class="p">,</span>
+        <span class="s">&#39;IDB (*.???)&#39;</span><span class="p">,</span>
+        <span class="s">&#39;INTERLIS (*.???)&#39;</span><span class="p">,</span>
+        <span class="s">&#39;INGRES (*.???)&#39;</span><span class="p">,</span>
+        <span class="s">&#39;MapInfo TAB and MIF/MID (*.MIF, *.MID)&#39;</span><span class="p">,</span>
+        <span class="s">&#39;Microstation DGN (*.???)&#39;</span><span class="p">,</span>
+        <span class="s">&#39;MySQL (*.???)&#39;</span><span class="p">,</span>
+        <span class="s">&#39;NAS - ALKIS (*.???)&#39;</span><span class="p">,</span>
+        <span class="s">&#39;Oracle Spatial (*.???)&#39;</span><span class="p">,</span>
+        <span class="s">&#39;ODBC RDBMS (*.???)&#39;</span><span class="p">,</span>
+        <span class="s">&#39;OGDI Vectors (*.???)&#39;</span><span class="p">,</span>
+        <span class="s">&#39;OpenAir Special Use Airspace Format (*.???)&#39;</span><span class="p">,</span>
+        <span class="s">&#39;PDS - Planetary Data Systems TABLE (*.???)&#39;</span><span class="p">,</span>
+        <span class="s">&#39;PostgreSQL SQL Dump (*.sql)&#39;</span><span class="p">,</span>
+        <span class="s">&#39;PostgreSQL (*.???)&#39;</span><span class="p">,</span>
+        <span class="s">&#39;IHO S-57 (ENC) (*.000)&#39;</span><span class="p">,</span>
+        <span class="s">&#39;SDTS (*.???)&#39;</span><span class="p">,</span>
+        <span class="s">&#39;SQLite RDBMS (*.???)&#39;</span><span class="p">,</span>
+        <span class="s">&quot;SUA - Tim Newport-Peace&#39;s Special Use Airspace Format (*.SUA)&quot;</span><span class="p">,</span>
+        <span class="s">&#39;UK .NTF (*.NTF)&#39;</span><span class="p">,</span>
+        <span class="s">&#39;U.S. Census TIGER/Line (*.RT?)&#39;</span><span class="p">,</span>
+        <span class="s">&#39;VFK - Czech cadastral exchange data format (*.???)&#39;</span><span class="p">,</span>
+        <span class="s">&#39;X-Plane/Flightgear aeronautical data (*.dat)&#39;</span><span class="p">,</span>
+    <span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">filters</span>
+
+</div>
+<div class="viewcode-block" id="isRGB"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.gdalsupport.html#gsdview.gdalbackend.gdalsupport.isRGB">[docs]</a><span class="k">def</span> <span class="nf">isRGB</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Return True if a dataset is compatible with RGB representaion.</span>
+
+<span class="sd">    Conditions tested are:</span>
+
+<span class="sd">      * 3 or 4 raster bands (3 in strict mode)</span>
+<span class="sd">      * raster band datatype is GDT_Byte</span>
+<span class="sd">      * color interpretation respect the expected order:</span>
+
+<span class="sd">          band1: GCI_RedBand</span>
+<span class="sd">          band2: GCI_GreenBand</span>
+<span class="sd">          band3: GCI_BlueBand</span>
+<span class="sd">          band4: GCI_AlphaBand (RGBA only allowed in non strict mode)</span>
+
+<span class="sd">        GCI_Undefined color interpretation is allowed in non strict mode.</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="s">&#39;RasterCount&#39;</span><span class="p">):</span>
+        <span class="c"># It is not a GDAL dataset</span>
+        <span class="k">return</span> <span class="bp">False</span>
+
+    <span class="k">if</span> <span class="n">dataset</span><span class="o">.</span><span class="n">RasterCount</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">False</span>
+
+    <span class="c"># @TODO: allow different color orders (??)</span>
+    <span class="n">bands</span> <span class="o">=</span> <span class="p">[</span><span class="n">dataset</span><span class="o">.</span><span class="n">GetRasterBand</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+                                <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">dataset</span><span class="o">.</span><span class="n">RasterCount</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span>
+    <span class="k">for</span> <span class="n">band</span><span class="p">,</span> <span class="n">colorint</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">bands</span><span class="p">,</span> <span class="p">(</span><span class="n">gdal</span><span class="o">.</span><span class="n">GCI_RedBand</span><span class="p">,</span>
+                                      <span class="n">gdal</span><span class="o">.</span><span class="n">GCI_GreenBand</span><span class="p">,</span>
+                                      <span class="n">gdal</span><span class="o">.</span><span class="n">GCI_BlueBand</span><span class="p">,</span>
+                                      <span class="n">gdal</span><span class="o">.</span><span class="n">GCI_AlphaBand</span><span class="p">)):</span>
+
+        <span class="k">if</span> <span class="n">strict</span><span class="p">:</span>
+            <span class="n">allowed_colorints</span> <span class="o">=</span> <span class="p">(</span><span class="n">colorint</span><span class="p">,</span> <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">allowed_colorints</span> <span class="o">=</span> <span class="p">(</span><span class="n">colorint</span><span class="p">,</span> <span class="n">gdal</span><span class="o">.</span><span class="n">GCI_Undefined</span><span class="p">)</span>
+        <span class="n">actual_colorint</span> <span class="o">=</span> <span class="n">band</span><span class="o">.</span><span class="n">GetRasterColorInterpretation</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">band</span> <span class="ow">and</span> <span class="n">actual_colorint</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">allowed_colorints</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">False</span>
+        <span class="k">if</span> <span class="n">band</span><span class="o">.</span><span class="n">DataType</span> <span class="o">!=</span> <span class="n">gdal</span><span class="o">.</span><span class="n">GDT_Byte</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">False</span>
+
+    <span class="k">if</span> <span class="n">strict</span> <span class="ow">and</span> <span class="n">dataset</span><span class="o">.</span><span class="n">dastetCount</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">False</span>
+
+    <span class="k">return</span> <span class="bp">True</span>
+
+
+<span class="c">### Statistics helpers ########################################################</span></div>
+<span class="n">SAFE_GDAL_STATS</span> <span class="o">=</span> <span class="p">((</span><span class="s">&#39;1640&#39;</span> <span class="o">&lt;=</span> <span class="n">gdal</span><span class="o">.</span><span class="n">VersionInfo</span><span class="p">()</span> <span class="o">&lt;</span> <span class="s">&#39;1700&#39;</span><span class="p">)</span> <span class="ow">or</span>
+                   <span class="p">(</span><span class="n">gdal</span><span class="o">.</span><span class="n">VersionInfo</span><span class="p">()</span> <span class="o">&gt;</span> <span class="s">&#39;1720&#39;</span><span class="p">))</span>
+
+<span class="n">GDAL_STATS_KEYS</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;STATISTICS_MINIMUM&#39;</span><span class="p">,</span> <span class="s">&#39;STATISTICS_MAXIMUM&#39;</span><span class="p">,</span>
+                   <span class="s">&#39;STATISTICS_MEAN&#39;</span><span class="p">,</span> <span class="s">&#39;STATISTICS_STDDEV&#39;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="GetCachedStatistics"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.gdalsupport.html#gsdview.gdalbackend.gdalsupport.GetCachedStatistics">[docs]</a><span class="k">def</span> <span class="nf">GetCachedStatistics</span><span class="p">(</span><span class="n">band</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Retrieve cached statistics from a raster band.</span>
+
+<span class="sd">    GDAL usually stores pre-computed statistics in the raster band</span>
+<span class="sd">    metadata: STATISTICS_MINIMUM, STATISTICS_MAXIMUM, STATISTICS_MEAN</span>
+<span class="sd">    and STATISTICS_STDDEV.</span>
+
+<span class="sd">    This function retrieves cached statistics and returns them as a</span>
+<span class="sd">    four items tuple: (MINIMUM, MAXIMUM, MEAN, STDDEV).</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">metadata</span> <span class="o">=</span> <span class="n">band</span><span class="o">.</span><span class="n">GetMetadata</span><span class="p">()</span>
+    <span class="n">stats</span> <span class="o">=</span> <span class="p">[</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">GDAL_STATS_KEYS</span><span class="p">]</span>
+
+    <span class="c"># @TODO: remove.</span>
+    <span class="c">#        It is no more needed if the numeric locale is correctly set.</span>
+    <span class="c">#if None not in stats:</span>
+    <span class="c">#    stats = [float(item.replace(&#39;,&#39;, &#39;.&#39;)) for item in stats]</span>
+
+    <span class="k">if</span> <span class="bp">None</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">stats</span><span class="p">:</span>
+        <span class="n">stats</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">stats</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">stats</span>
+
+</div>
+<div class="viewcode-block" id="SafeGetStatistics"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.gdalsupport.html#gsdview.gdalbackend.gdalsupport.SafeGetStatistics">[docs]</a><span class="k">def</span> <span class="nf">SafeGetStatistics</span><span class="p">(</span><span class="n">band</span><span class="p">,</span> <span class="n">approx_ok</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Safe replacement of gdal.Band.GetSrtatistics.</span>
+
+<span class="sd">    The standard version of GetSrtatistics not always allows to know</span>
+<span class="sd">    whenever statistics have beed actually computed or not (e.g. &quot;force&quot;</span>
+<span class="sd">    flag set to False and no statistics available).</span>
+
+<span class="sd">    This function gracefully handles this case an also cases in which</span>
+<span class="sd">    an error happend during statistics computation (e.g. to many nodata</span>
+<span class="sd">    values).</span>
+
+<span class="sd">    :param band:</span>
+<span class="sd">        GDAL raster band</span>
+<span class="sd">    :param approx_ok:</span>
+<span class="sd">        if approximate statistics are sufficient, the approx_ok flag</span>
+<span class="sd">        can be set to True in which case overviews, or a subset of</span>
+<span class="sd">        image tiles may be used in computing the statistics</span>
+<span class="sd">        (default: False)</span>
+<span class="sd">    :param force:</span>
+<span class="sd">        if force is False results will only be returned if it can be</span>
+<span class="sd">        done quickly (ie. without scanning the data).</span>
+<span class="sd">        If force is False and results cannot be returned efficiently,</span>
+<span class="sd">        the function will return four None instead of actual statistics</span>
+<span class="sd">        values.</span>
+<span class="sd">        Dafault: True.</span>
+<span class="sd">    :returns:</span>
+<span class="sd">        a tuple containing (min, max, mean, stddev) if statistics can</span>
+<span class="sd">        be retriewed according to the input flags.</span>
+<span class="sd">        A tuple of four None if statistics are not available or can&#39;t</span>
+<span class="sd">        be computer according to input flags or if some error occurs</span>
+<span class="sd">        during computation.</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="c"># @NOTE: the band.GetStatistics method called with the second argument</span>
+    <span class="c">#        set to False (no image rescanning) has been fixed in</span>
+    <span class="c">#        r19666_ (1.6 branch) and r19665_ (1.7 branch)</span>
+    <span class="c">#        see `ticket #3572` on `GDAL Trac`_.</span>
+    <span class="c">#</span>
+    <span class="c"># .. _r19666: http://trac.osgeo.org/gdal/changeset/19666</span>
+    <span class="c"># .. _r19665: http://trac.osgeo.org/gdal/changeset/19665</span>
+    <span class="c"># .. _`ticket #3572`: http://trac.osgeo.org/gdal/ticket/3572</span>
+    <span class="c"># .. _`GDAL Trac`: http://trac.osgeo.org/gdal</span>
+
+    <span class="n">stats</span> <span class="o">=</span> <span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">approx_ok</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">SAFE_GDAL_STATS</span><span class="p">:</span>
+        <span class="n">stats</span> <span class="o">=</span> <span class="n">GetCachedStatistics</span><span class="p">(</span><span class="n">band</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="bp">None</span> <span class="ow">in</span> <span class="n">stats</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">force</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">SAFE_GDAL_STATS</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;unable to retrieve statistics in a safe way.&#39;</span><span class="p">)</span>
+
+        <span class="n">gdal</span><span class="o">.</span><span class="n">ErrorReset</span><span class="p">()</span>
+        <span class="n">stats</span> <span class="o">=</span> <span class="n">band</span><span class="o">.</span><span class="n">GetStatistics</span><span class="p">(</span><span class="n">approx_ok</span><span class="p">,</span> <span class="n">force</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">gdal</span><span class="o">.</span><span class="n">GetLastErrorNo</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">gdal</span><span class="o">.</span><span class="n">GetLastErrorType</span><span class="p">()</span> <span class="o">==</span> <span class="mi">3</span><span class="p">):</span>
+            <span class="n">stats</span> <span class="o">=</span> <span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+            <span class="n">gdal</span><span class="o">.</span><span class="n">ErrorReset</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">SAFE_GDAL_STATS</span> <span class="ow">and</span> <span class="n">stats</span> <span class="o">==</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="n">stats</span> <span class="o">=</span> <span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">stats</span>
+
+</div>
+<div class="viewcode-block" id="hasFastStats"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.gdalsupport.html#gsdview.gdalbackend.gdalsupport.hasFastStats">[docs]</a><span class="k">def</span> <span class="nf">hasFastStats</span><span class="p">(</span><span class="n">band</span><span class="p">,</span> <span class="n">approx_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Return true if band statistics can be retrieved quickly.</span>
+
+<span class="sd">    If precomputed stistics are in band metadata or small enough band</span>
+<span class="sd">    overviews does exist then it is assumed that band statistics can</span>
+<span class="sd">    be retriewed in a very quick way.</span>
+
+<span class="sd">    if the *approx_ok* only precomputed statistics are taken into</span>
+<span class="sd">    account.</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">if</span> <span class="n">SAFE_GDAL_STATS</span><span class="p">:</span>
+        <span class="n">stats</span> <span class="o">=</span> <span class="n">band</span><span class="o">.</span><span class="n">GetStatistics</span><span class="p">(</span><span class="bp">True</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">stats</span> <span class="o">!=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">stats</span> <span class="o">=</span> <span class="n">GetCachedStatistics</span><span class="p">(</span><span class="n">band</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">None</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">stats</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span> <span class="ow">and</span> <span class="n">approx_ok</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">ovrBestIndex</span><span class="p">(</span><span class="n">band</span><span class="p">,</span> <span class="n">policy</span><span class="o">=</span><span class="s">&#39;GREATER&#39;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">MissingOvrError</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">True</span>
+
+    <span class="k">return</span> <span class="n">result</span>
+
+<span class="c">### Color table helpers #####################################################</span></div>
+<span class="n">colorinterpretations</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">gdal</span><span class="o">.</span><span class="n">GPI_Gray</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s">&#39;nchannels&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s">&#39;label&#39;</span><span class="p">:</span> <span class="s">&#39;Gray&#39;</span><span class="p">,</span>
+        <span class="s">&#39;direct&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s">&#39;Grayscale&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="s">&#39;inverse&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="mi">0</span><span class="p">:</span> <span class="s">&#39;Grayscale&#39;</span><span class="p">,</span>
+        <span class="p">},</span>
+    <span class="p">},</span>
+    <span class="n">gdal</span><span class="o">.</span><span class="n">GPI_RGB</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s">&#39;nchannels&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+        <span class="s">&#39;label&#39;</span><span class="p">:</span> <span class="s">&#39;RGB&#39;</span><span class="p">,</span>
+        <span class="s">&#39;direct&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s">&#39;Red&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s">&#39;Green&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s">&#39;Blue&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+            <span class="s">&#39;Alpha&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="s">&#39;inverse&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="mi">0</span><span class="p">:</span> <span class="s">&#39;Red&#39;</span><span class="p">,</span>
+            <span class="mi">1</span><span class="p">:</span> <span class="s">&#39;Green&#39;</span><span class="p">,</span>
+            <span class="mi">2</span><span class="p">:</span> <span class="s">&#39;Blue&#39;</span><span class="p">,</span>
+            <span class="mi">3</span><span class="p">:</span> <span class="s">&#39;Alpha&#39;</span><span class="p">,</span>
+        <span class="p">},</span>
+    <span class="p">},</span>
+    <span class="n">gdal</span><span class="o">.</span><span class="n">GPI_CMYK</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s">&#39;nchannels&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+        <span class="s">&#39;label&#39;</span><span class="p">:</span> <span class="s">&#39;CMYK&#39;</span><span class="p">,</span>
+        <span class="s">&#39;direct&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s">&#39;Cyan&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s">&#39;Magenta&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s">&#39;Yellow&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+            <span class="s">&#39;Black&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="s">&#39;inverse&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="mi">0</span><span class="p">:</span> <span class="s">&#39;Cyan&#39;</span><span class="p">,</span>
+            <span class="mi">1</span><span class="p">:</span> <span class="s">&#39;Magenta&#39;</span><span class="p">,</span>
+            <span class="mi">2</span><span class="p">:</span> <span class="s">&#39;Yellow&#39;</span><span class="p">,</span>
+            <span class="mi">3</span><span class="p">:</span> <span class="s">&#39;Black&#39;</span><span class="p">,</span>
+        <span class="p">},</span>
+    <span class="p">},</span>
+    <span class="n">gdal</span><span class="o">.</span><span class="n">GPI_HLS</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s">&#39;nchannels&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="s">&#39;label&#39;</span><span class="p">:</span> <span class="s">&#39;HLS&#39;</span><span class="p">,</span>
+        <span class="s">&#39;direct&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s">&#39;Hue&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s">&#39;Lightness&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s">&#39;Saturation&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="s">&#39;inverse&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="mi">0</span><span class="p">:</span> <span class="s">&#39;Hue&#39;</span><span class="p">,</span>
+            <span class="mi">1</span><span class="p">:</span> <span class="s">&#39;Lightness&#39;</span><span class="p">,</span>
+            <span class="mi">2</span><span class="p">:</span> <span class="s">&#39;Saturation&#39;</span><span class="p">,</span>
+        <span class="p">},</span>
+    <span class="p">},</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="colortable2numpy"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.gdalsupport.html#gsdview.gdalbackend.gdalsupport.colortable2numpy">[docs]</a><span class="k">def</span> <span class="nf">colortable2numpy</span><span class="p">(</span><span class="n">colortable</span><span class="p">):</span>
+    <span class="n">ncolors</span> <span class="o">=</span> <span class="n">colortable</span><span class="o">.</span><span class="n">GetCount</span><span class="p">()</span>
+    <span class="n">colors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">ncolors</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ncolors</span><span class="p">):</span>
+        <span class="n">colors</span><span class="p">[</span><span class="n">row</span><span class="p">]</span> <span class="o">=</span> <span class="n">colortable</span><span class="o">.</span><span class="n">GetColorEntry</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+
+    <span class="n">colorint</span> <span class="o">=</span> <span class="n">colortable</span><span class="o">.</span><span class="n">GetPaletteInterpretation</span><span class="p">()</span>
+    <span class="n">nchannels</span> <span class="o">=</span> <span class="n">colorinterpretations</span><span class="p">[</span><span class="n">colorint</span><span class="p">][</span><span class="s">&#39;nchannels&#39;</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">colors</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="n">nchannels</span><span class="p">]</span>
+
+
+<span class="c">### Coordinate conversion helpers ############################################</span>
+<span class="c"># @TODO: remove</span>
+<span class="c"># @NOTE: bugs #3160 and #3709 have been fixed upstream with commits r22289</span>
+<span class="c">#        and r22290 (1.8 branch). The fix should be included in GDAL v1.8.1.</span></div>
+<span class="k">def</span> <span class="nf">_fixedGCPs</span><span class="p">(</span><span class="n">gcps</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Fix Envisat GCPs</span>
+
+<span class="sd">    For products with multiple slices the GCPLine coordinate</span>
+<span class="sd">    refers to the one of the slice so we need to fix it in order</span>
+<span class="sd">    to have the image coordinate.</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">lines</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="n">gcp</span><span class="o">.</span><span class="n">GCPLine</span> <span class="k">for</span> <span class="n">gcp</span> <span class="ow">in</span> <span class="n">gcps</span><span class="p">])</span>
+
+    <span class="c"># @TODO: this is a weak check; improve it</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">alltrue</span><span class="p">(</span><span class="n">lines</span> <span class="o">!=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">lines</span><span class="p">)):</span>
+        <span class="c"># @WARNING: here we are assuming that the geolocation grid</span>
+        <span class="c">#           has at least 2 lines</span>
+        <span class="c"># @WARNING: here we are assuming a particular order of GCPs</span>
+        <span class="n">upstepslocation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">&gt;</span> <span class="n">lines</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">upsteps</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[</span><span class="n">upstepslocation</span><span class="p">]</span> <span class="o">-</span> <span class="n">lines</span><span class="p">[</span><span class="n">upstepslocation</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+
+        <span class="c"># @WARNING: here we are assuming that the distance between geolocation</span>
+        <span class="c">#           grid linse is constant</span>
+        <span class="k">assert</span> <span class="n">upsteps</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">==</span> <span class="n">upsteps</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="p">(</span><span class="s">&#39;max = </span><span class="si">%f</span><span class="s">, min = </span><span class="si">%f</span><span class="s">&#39;</span> <span class="o">%</span>
+                                                <span class="p">(</span><span class="n">upsteps</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">upsteps</span><span class="o">.</span><span class="n">min</span><span class="p">()))</span>
+        <span class="n">linespacing</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">upsteps</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="n">downstepslocation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">&lt;</span> <span class="n">lines</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">downstepslocation</span><span class="p">:</span>
+            <span class="n">jumpsize</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="n">index</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">lines</span><span class="p">[</span><span class="n">index</span><span class="p">])</span> <span class="o">+</span> <span class="n">linespacing</span>
+            <span class="n">lines</span><span class="p">[</span><span class="n">index</span><span class="p">:]</span> <span class="o">+=</span> <span class="n">jumpsize</span>
+
+        <span class="kn">import</span> <span class="nn">copy</span>
+        <span class="n">gcps</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">gcps</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">indx</span><span class="p">,</span> <span class="n">gcp</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">gcps</span><span class="p">):</span>
+            <span class="n">gcp</span><span class="o">.</span><span class="n">GCPLine</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[</span><span class="n">indx</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">gcps</span>
+
+
+<div class="viewcode-block" id="InvalidProjection"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.gdalsupport.html#gsdview.gdalbackend.gdalsupport.InvalidProjection">[docs]</a><span class="k">class</span> <span class="nc">InvalidProjection</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+</div>
+<div class="viewcode-block" id="CoordinateMapper"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.gdalsupport.html#gsdview.gdalbackend.gdalsupport.CoordinateMapper">[docs]</a><span class="k">class</span> <span class="nc">CoordinateMapper</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="n">geogCS</span> <span class="o">=</span> <span class="s">&#39;WGS84&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">CoordinateMapper</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">dataset</span><span class="o">.</span><span class="n">GetGCPCount</span><span class="p">():</span>
+            <span class="n">projection</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">GetGCPProjection</span><span class="p">()</span>
+            <span class="n">gcps</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">GetGCPs</span><span class="p">()</span>
+            <span class="n">gcps</span> <span class="o">=</span> <span class="n">_fixedGCPs</span><span class="p">(</span><span class="n">gcps</span><span class="p">)</span>      <span class="c"># @TODO: remove</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_geotransform</span> <span class="o">=</span> <span class="n">gdal</span><span class="o">.</span><span class="n">GCPsToGeoTransform</span><span class="p">(</span><span class="n">gcps</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">projection</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">GetProjection</span><span class="p">()</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">projection</span><span class="p">:</span>
+                <span class="n">projection</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">GetProjectionRef</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_geotransform</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">GetGeoTransform</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">projection</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidProjection</span><span class="p">(</span><span class="s">&#39;unable to get a valid projection&#39;</span><span class="p">)</span>
+
+        <span class="c">#sref = osr.SpatialReference(projection) # do not work for Pymod API</span>
+        <span class="n">sref</span> <span class="o">=</span> <span class="n">osr</span><span class="o">.</span><span class="n">SpatialReference</span><span class="p">()</span>
+        <span class="n">sref</span><span class="o">.</span><span class="n">ImportFromWkt</span><span class="p">(</span><span class="n">projection</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">sref</span><span class="o">.</span><span class="n">IsGeographic</span><span class="p">():</span>
+            <span class="n">sref_target</span> <span class="o">=</span> <span class="n">osr</span><span class="o">.</span><span class="n">SpatialReference</span><span class="p">()</span>
+            <span class="n">sref_target</span><span class="o">.</span><span class="n">SetWellKnownGeogCS</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geogCS</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_srTransform</span> <span class="o">=</span> <span class="n">osr</span><span class="o">.</span><span class="n">CoordinateTransformation</span><span class="p">(</span><span class="n">sref</span><span class="p">,</span> <span class="n">sref_target</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_srTransform</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="c"># Xgeo = GT(0) + Xpixel*GT(1) + Yline*GT(2)</span>
+        <span class="c"># Ygeo = GT(3) + Xpixel*GT(4) + Yline*GT(5)</span>
+        <span class="c">#</span>
+        <span class="c"># --    --   --       --   --      --   --       --</span>
+        <span class="c"># | Xgeo |   | m11 m12 |   | Xpixel |   | xoffset |</span>
+        <span class="c"># |      | = |         | * |        | + |         |</span>
+        <span class="c"># | Ygeo |   | m21 m22 |   | Yline  |   | yoffset |</span>
+        <span class="c"># --    --   --       --   --      --   --       --</span>
+        <span class="n">xoffset</span><span class="p">,</span> <span class="n">m11</span><span class="p">,</span> <span class="n">m12</span><span class="p">,</span> <span class="n">yoffset</span><span class="p">,</span> <span class="n">m21</span><span class="p">,</span> <span class="n">m22</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_geotransform</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;geotransform = </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_geotransform</span><span class="p">))</span>
+
+        <span class="c"># Direct transform</span>
+        <span class="n">M</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(((</span><span class="n">m11</span><span class="p">,</span> <span class="n">m12</span><span class="p">),</span> <span class="p">(</span><span class="n">m21</span><span class="p">,</span> <span class="n">m22</span><span class="p">)))</span>
+        <span class="n">C</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(([</span><span class="n">xoffset</span><span class="p">],</span> <span class="p">[</span><span class="n">yoffset</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_direct_transform</span> <span class="o">=</span> <span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">C</span><span class="p">)</span>
+
+        <span class="c"># Invrse transform</span>
+        <span class="n">M</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">M</span><span class="p">)</span>
+        <span class="n">C</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">C</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_inverse_transform</span> <span class="o">=</span> <span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">C</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">C</span><span class="p">):</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ravel</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>
+
+        <span class="n">Pin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">Pin</span><span class="p">)</span> <span class="o">+</span> <span class="n">C</span>
+
+<div class="viewcode-block" id="CoordinateMapper.imgToGeoPoints"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.gdalsupport.html#gsdview.gdalbackend.gdalsupport.CoordinateMapper.imgToGeoPoints">[docs]</a>    <span class="k">def</span> <span class="nf">imgToGeoPoints</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pixel</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Coordinate conversion: (pixel,line) --&gt; (lon,lat).&#39;&#39;&#39;</span>
+
+        <span class="n">M</span><span class="p">,</span> <span class="n">C</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_direct_transform</span>
+        <span class="n">xy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transform</span><span class="p">(</span><span class="n">pixel</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">C</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_srTransform</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">xy</span><span class="o">.</span><span class="n">transpose</span><span class="p">()):</span>
+                <span class="n">xy</span><span class="p">[:,</span> <span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_srTransform</span><span class="o">.</span><span class="n">TransformPoint</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)[:</span><span class="mi">2</span><span class="p">]</span>
+        <span class="c"># @TODO: check single point</span>
+        <span class="k">return</span> <span class="n">xy</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">xy</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>  <span class="c"># , 0    # @TODO: h</span>
+</div>
+<div class="viewcode-block" id="CoordinateMapper.geoToImgPoints"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.gdalsupport.html#gsdview.gdalbackend.gdalsupport.CoordinateMapper.geoToImgPoints">[docs]</a>    <span class="k">def</span> <span class="nf">geoToImgPoints</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lon</span><span class="p">,</span> <span class="n">lat</span><span class="p">,</span> <span class="n">h</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Coordinate conversion: (lon,lat) --&gt; (pixel,line).&#39;&#39;&#39;</span>
+
+        <span class="n">M</span><span class="p">,</span> <span class="n">C</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inverse_transform</span>
+        <span class="n">rc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transform</span><span class="p">(</span><span class="n">lon</span><span class="p">,</span> <span class="n">lat</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">C</span><span class="p">)</span>
+        <span class="c"># @TODO: check single point</span>
+        <span class="k">return</span> <span class="n">rc</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">rc</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+</div>
+<div class="viewcode-block" id="CoordinateMapper.imgToGeoGrid"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.gdalsupport.html#gsdview.gdalbackend.gdalsupport.CoordinateMapper.imgToGeoGrid">[docs]</a>    <span class="k">def</span> <span class="nf">imgToGeoGrid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pixel</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Coordinate conversion: (pixel,line) --&gt; (lon,lat) on regular grids.</span>
+
+<span class="sd">        Elements of the return (lon, lat) touple are 2D array with shape</span>
+<span class="sd">        (len(pixels), len(line)).</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="c"># @TODO: check single point</span>
+        <span class="n">px</span><span class="p">,</span> <span class="n">py</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">pixel</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
+        <span class="n">lon</span><span class="p">,</span> <span class="n">lat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">imgToGeoPoints</span><span class="p">(</span><span class="n">px</span><span class="p">,</span> <span class="n">py</span><span class="p">)</span>
+        <span class="n">lon</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="n">lat</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">pixel</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">))</span>  <span class="c"># @TODO: check</span>
+
+        <span class="k">return</span> <span class="n">lon</span><span class="p">,</span> <span class="n">lat</span>  <span class="c"># , 0    # @TODO: h</span>
+</div>
+<div class="viewcode-block" id="CoordinateMapper.geoToImgGrid"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.gdalsupport.html#gsdview.gdalbackend.gdalsupport.CoordinateMapper.geoToImgGrid">[docs]</a>    <span class="k">def</span> <span class="nf">geoToImgGrid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lon</span><span class="p">,</span> <span class="n">lat</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Coordinate conversion: (lon,lat) --&gt; (pixel,line) on regular grids.</span>
+
+<span class="sd">        Elements of the return (pixel,line) touple are 2D array with shape</span>
+<span class="sd">        (len(lon), len(lat)).</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="c"># @TODO: check single point</span>
+        <span class="n">px</span><span class="p">,</span> <span class="n">py</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">lon</span><span class="p">,</span> <span class="n">lat</span><span class="p">)</span>
+        <span class="n">pixel</span><span class="p">,</span> <span class="n">line</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">geoToImgPoints</span><span class="p">(</span><span class="n">px</span><span class="p">,</span> <span class="n">py</span><span class="p">)</span>
+        <span class="n">pixel</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">lon</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">lat</span><span class="p">))</span>  <span class="c"># @TODO: check</span>
+
+        <span class="k">return</span> <span class="n">line</span><span class="p">,</span> <span class="n">pixel</span>
+
+</div></div>
+<div class="viewcode-block" id="coordinate_mapper"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.gdalsupport.html#gsdview.gdalbackend.gdalsupport.coordinate_mapper">[docs]</a><span class="k">def</span> <span class="nf">coordinate_mapper</span><span class="p">(</span><span class="n">dataset</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">mapper</span> <span class="o">=</span> <span class="n">CoordinateMapper</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="n">mapper</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c"># @TODO: check</span>
+        <span class="k">if</span> <span class="n">mapper</span><span class="o">.</span><span class="n">_geotransform</span> <span class="o">==</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">):</span>
+            <span class="n">mapper</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="k">if</span> <span class="n">mapper</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;unable to setup the coordinate mapper&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">mapper</span>
+
+
+<span class="c">### Overviews handling helpers ###############################################</span></div>
+<span class="n">OVRMEMSIE</span> <span class="o">=</span> <span class="mi">400</span> <span class="o">*</span> <span class="mi">1024</span>  <span class="c"># 400 kbytes</span>
+
+
+<div class="viewcode-block" id="MissingOvrError"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.gdalsupport.html#gsdview.gdalbackend.gdalsupport.MissingOvrError">[docs]</a><span class="k">class</span> <span class="nc">MissingOvrError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ovrlevel</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">MissingOvrError</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">ovrlevel</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span><span class="s">&#39;Overview with level &quot;</span><span class="si">%s</span><span class="s">&quot; is not available in the &#39;</span>
+                <span class="s">&#39;product&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+</div>
+<div class="viewcode-block" id="ovrLevelAdjust"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.gdalsupport.html#gsdview.gdalbackend.gdalsupport.ovrLevelAdjust">[docs]</a><span class="k">def</span> <span class="nf">ovrLevelAdjust</span><span class="p">(</span><span class="n">ovrlevel</span><span class="p">,</span> <span class="n">xsize</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Adjust the overview level</span>
+
+<span class="sd">    Replicate the GDALOvLevelAdjust function from</span>
+<span class="sd">    gdal/gcore/gdaldefaultoverviews.cpp:</span>
+
+<span class="sd">    .. code-block:: c</span>
+
+<span class="sd">        int nOXSize = (nXSize + nOvLevel - 1) / nOvLevel;</span>
+<span class="sd">        return (int) (0.5 + nXSize / (double) nOXSize);</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">oxsize</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">xsize</span> <span class="o">+</span> <span class="n">ovrlevel</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="n">ovrlevel</span>
+    <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">xsize</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">oxsize</span><span class="p">)))</span>
+
+</div>
+<div class="viewcode-block" id="ovrLevelForSize"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.gdalsupport.html#gsdview.gdalbackend.gdalsupport.ovrLevelForSize">[docs]</a><span class="k">def</span> <span class="nf">ovrLevelForSize</span><span class="p">(</span><span class="n">gdalobj</span><span class="p">,</span> <span class="n">ovrsize</span><span class="o">=</span><span class="n">OVRMEMSIE</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Compute the overview factor that fits the ovrsize request.</span>
+
+<span class="sd">    Default ovrsize = 300 KBytes ==&gt; about 640x640 pixels paletted or</span>
+<span class="sd">    320x320 pixels RGB32.</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">gdalobj</span><span class="p">,</span> <span class="s">&#39;GetOverviewCount&#39;</span><span class="p">):</span>
+        <span class="c"># gdalobj is a raster band</span>
+
+        <span class="n">band</span> <span class="o">=</span> <span class="n">gdalobj</span>
+
+        <span class="c">#bytePerPixel = gdal.GetDataTypeSize(band.DataType) / 8</span>
+        <span class="n">bytesperpixel</span> <span class="o">=</span> <span class="mi">1</span>   <span class="c"># the quicklook image is always converted to byte</span>
+        <span class="n">datasize</span> <span class="o">=</span> <span class="n">band</span><span class="o">.</span><span class="n">XSize</span> <span class="o">*</span> <span class="n">band</span><span class="o">.</span><span class="n">YSize</span> <span class="o">*</span> <span class="n">bytesperpixel</span>
+        <span class="n">ovrlevel</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">datasize</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">ovrsize</span><span class="p">))</span>
+        <span class="n">ovrlevel</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">ovrlevel</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">ovrLevelAdjust</span><span class="p">(</span><span class="n">ovrlevel</span><span class="p">,</span> <span class="n">band</span><span class="o">.</span><span class="n">XSize</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c"># assume gdalobj is a dataset to be represented as an RGB32</span>
+        <span class="n">dataset</span> <span class="o">=</span> <span class="n">gdalobj</span>
+        <span class="n">band</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">GetRasterBand</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ovrLevelForSize</span><span class="p">(</span><span class="n">band</span><span class="p">,</span> <span class="n">ovrsize</span> <span class="o">/</span> <span class="mi">4</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="ovrLevels"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.gdalsupport.html#gsdview.gdalbackend.gdalsupport.ovrLevels">[docs]</a><span class="k">def</span> <span class="nf">ovrLevels</span><span class="p">(</span><span class="n">gdalobj</span><span class="p">,</span> <span class="n">raw</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Return availabe overview levels.&#39;&#39;&#39;</span>
+
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">gdalobj</span><span class="p">,</span> <span class="s">&#39;GetOverviewCount&#39;</span><span class="p">):</span>
+        <span class="c"># gdalobj is a raster band</span>
+        <span class="n">band</span> <span class="o">=</span> <span class="n">gdalobj</span>
+        <span class="n">levels</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">band</span><span class="o">.</span><span class="n">GetOverviewCount</span><span class="p">()):</span>
+            <span class="n">ovrXSize</span> <span class="o">=</span> <span class="n">band</span><span class="o">.</span><span class="n">GetOverview</span><span class="p">(</span><span class="n">index</span><span class="p">)</span><span class="o">.</span><span class="n">XSize</span>
+            <span class="n">ovrlevel</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">band</span><span class="o">.</span><span class="n">XSize</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">ovrXSize</span><span class="p">))</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">raw</span><span class="p">:</span>
+                <span class="n">ovrlevel</span> <span class="o">=</span> <span class="n">ovrLevelAdjust</span><span class="p">(</span><span class="n">ovrlevel</span><span class="p">,</span> <span class="n">band</span><span class="o">.</span><span class="n">XSize</span><span class="p">)</span>
+            <span class="n">levels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ovrlevel</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">levels</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c"># assume gdalobj is a dataset</span>
+        <span class="n">dataset</span> <span class="o">=</span> <span class="n">gdalobj</span>
+        <span class="n">band</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">GetRasterBand</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ovrLevels</span><span class="p">(</span><span class="n">band</span><span class="p">,</span> <span class="n">raw</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="ovrBestIndex"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.gdalsupport.html#gsdview.gdalbackend.gdalsupport.ovrBestIndex">[docs]</a><span class="k">def</span> <span class="nf">ovrBestIndex</span><span class="p">(</span><span class="n">gdalobj</span><span class="p">,</span> <span class="n">ovrlevel</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">policy</span><span class="o">=</span><span class="s">&#39;NEAREST&#39;</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Return the overview index that best fits *ovrlevel*.</span>
+
+<span class="sd">    If *ovrlevel* is `None` it is used the level returner by the</span>
+<span class="sd">    `ovrLevelForSize` function i.e. the lavel ensures that the data</span>
+<span class="sd">    size doesn&#39;t exceede a certain memory size (defaut 300K).</span>
+
+<span class="sd">    The *policy* parameter can be set to:</span>
+
+<span class="sd">    :NEAREST: between available ovr factors the one closest to the</span>
+<span class="sd">              requested one (*ovrlevel*) is returned</span>
+<span class="sd">    :GREATER: between available ovr factors it is returned the closest</span>
+<span class="sd">              one that is greater or equal to the requested *ovrlevel*</span>
+<span class="sd">    :SMALLER: between available ovr factors it is returned the closest</span>
+<span class="sd">              one that is smaller or equal to the requested *ovrlevel*</span>
+
+<span class="sd">    .. note:: plase note that *GREATER* for overview level implies a</span>
+<span class="sd">              larger reduction factor hence a smaller image (and vice</span>
+<span class="sd">              versa).</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">gdalobj</span><span class="p">,</span> <span class="s">&#39;GetOverviewCount&#39;</span><span class="p">):</span>
+        <span class="c"># gdalobj is a raster band</span>
+        <span class="n">band</span> <span class="o">=</span> <span class="n">gdalobj</span>
+        <span class="k">if</span> <span class="n">ovrlevel</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">ovrlevel</span> <span class="o">=</span> <span class="n">ovrLevelForSize</span><span class="p">(</span><span class="n">band</span><span class="p">)</span>  <span class="c"># 400K</span>
+        <span class="n">levels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">ovrLevels</span><span class="p">(</span><span class="n">band</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">levels</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MissingOvrError</span><span class="p">(</span><span class="n">ovrlevel</span><span class="p">)</span>
+
+        <span class="n">distances</span> <span class="o">=</span> <span class="n">levels</span> <span class="o">-</span> <span class="n">ovrlevel</span>
+        <span class="k">if</span> <span class="n">policy</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s">&#39;NEAREST&#39;</span><span class="p">:</span>
+            <span class="n">distances</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">distances</span><span class="p">)</span>
+            <span class="n">mindist</span> <span class="o">=</span> <span class="n">distances</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">policy</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s">&#39;GREATER&#39;</span><span class="p">:</span>
+            <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">distances</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">MissingOvrError</span><span class="p">(</span><span class="n">ovrlevel</span><span class="p">)</span>
+            <span class="n">mindist</span> <span class="o">=</span> <span class="n">distances</span><span class="p">[</span><span class="n">indices</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">policy</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s">&#39;SMALLER&#39;</span><span class="p">:</span>
+            <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">distances</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">MissingOvrError</span><span class="p">(</span><span class="n">ovrlevel</span><span class="p">)</span>
+            <span class="n">mindist</span> <span class="o">=</span> <span class="n">distances</span><span class="p">[</span><span class="n">indices</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;invalid policy: &quot;</span><span class="si">%s</span><span class="s">&quot;&#39;</span> <span class="o">%</span> <span class="n">policy</span><span class="p">)</span>
+
+        <span class="n">distances</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">distances</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">distances</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">mindist</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c"># assume gdalobj is a dataset</span>
+        <span class="n">dataset</span> <span class="o">=</span> <span class="n">gdalobj</span>
+        <span class="n">band</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">GetRasterBand</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ovrBestIndex</span><span class="p">(</span><span class="n">band</span><span class="p">,</span> <span class="n">ovrlevel</span><span class="p">,</span> <span class="n">policy</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="ovrComputeLevels"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.gdalsupport.html#gsdview.gdalbackend.gdalsupport.ovrComputeLevels">[docs]</a><span class="k">def</span> <span class="nf">ovrComputeLevels</span><span class="p">(</span><span class="n">gdalobj</span><span class="p">,</span> <span class="n">ovrsize</span><span class="o">=</span><span class="n">OVRMEMSIE</span><span class="p">,</span> <span class="n">estep</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.1</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Compute the overview levels to be generated.</span>
+
+<span class="sd">    GSDView relies on overviews to provide a confortable image</span>
+<span class="sd">    navigation experience (scroll, pan, zoom etc).</span>
+<span class="sd">    This function evaluated the number and overview factors to be</span>
+<span class="sd">    pre-calculated in order to provide such a confortable experience.</span>
+
+<span class="sd">    :param ovrsize:</span>
+<span class="sd">        memory size that the smallest overview should not exceede</span>
+<span class="sd">    :param estep:</span>
+<span class="sd">        step for overview levels computation::</span>
+
+<span class="sd">            estep = 3 ==&gt; 3, 9, 27, 81, ...</span>
+
+<span class="sd">    :param threshold:</span>
+<span class="sd">        if already exist overview levels close (with respect to</span>
+<span class="sd">        threshold) to requested ones then computation is skipped</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">maxfactor</span> <span class="o">=</span> <span class="n">ovrLevelForSize</span><span class="p">(</span><span class="n">gdalobj</span><span class="p">,</span> <span class="n">ovrsize</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">maxfactor</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[]</span>
+
+    <span class="n">metadata</span> <span class="o">=</span> <span class="n">gdalobj</span><span class="o">.</span><span class="n">GetMetadata</span><span class="p">(</span><span class="s">&#39;IMAGE_STRUCTURE&#39;</span><span class="p">)</span>
+    <span class="n">compressed</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;COMPRESSION&#39;</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">compressed</span><span class="p">:</span>
+        <span class="n">startexponent</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">startexponent</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="n">maxesponent</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">maxfactor</span> <span class="o">**</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">/</span> <span class="n">estep</span><span class="p">))</span>
+    <span class="n">exponents</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">startexponent</span><span class="p">,</span> <span class="n">maxesponent</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">missinglevels</span> <span class="o">=</span> <span class="n">estep</span> <span class="o">**</span> <span class="n">exponents</span>
+    <span class="n">missinglevels</span> <span class="o">=</span> <span class="n">missinglevels</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int</span><span class="p">)</span>
+
+    <span class="c"># Remove exixtng levels to avoid re-computation</span>
+    <span class="n">levels</span> <span class="o">=</span> <span class="n">ovrLevels</span><span class="p">(</span><span class="n">gdalobj</span><span class="p">)</span>
+    <span class="n">missinglevels</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">missinglevels</span><span class="p">)</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">levels</span><span class="p">))</span>
+
+    <span class="c"># remove levels close to target ones (threshold 10%)</span>
+    <span class="n">candidates</span> <span class="o">=</span> <span class="n">missinglevels</span>
+    <span class="n">missinglevels</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">level</span> <span class="ow">in</span> <span class="n">candidates</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="n">ovrBestIndex</span><span class="p">(</span><span class="n">gdalobj</span><span class="p">,</span> <span class="n">level</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">MissingOvrError</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">bestlevel</span> <span class="o">=</span> <span class="n">levels</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">bestlevel</span> <span class="ow">and</span> <span class="nb">abs</span><span class="p">(</span><span class="n">bestlevel</span> <span class="o">-</span> <span class="n">level</span><span class="p">)</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">level</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">threshold</span><span class="p">:</span>
+                <span class="k">continue</span>
+        <span class="n">missinglevels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">level</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">missinglevels</span>
+
+</div>
+<div class="viewcode-block" id="ovrRead"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.gdalsupport.html#gsdview.gdalbackend.gdalsupport.ovrRead">[docs]</a><span class="k">def</span> <span class="nf">ovrRead</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">h</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">ovrindex</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+            <span class="n">bstart</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">bcount</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Read an image block from overviews of all spacified bands.</span>
+
+<span class="sd">    This function read a data block from the overview corresponding to</span>
+<span class="sd">    *ovrindex* for all *bcount* raster bands starting drom the</span>
+<span class="sd">    *bstart*\ th one.</span>
+
+<span class="sd">    Parameters:</span>
+
+<span class="sd">    dataset: GDAL dataset object</span>
+<span class="sd">        the GDAL dataset to read from</span>
+<span class="sd">    x, y: int</span>
+<span class="sd">        origin of the box to read in overview coordinates</span>
+<span class="sd">    w, h: int</span>
+<span class="sd">        size of the box to read in overview coordinates</span>
+<span class="sd">    ovrindex: int</span>
+<span class="sd">        index of the overview to read from.</span>
+<span class="sd">        If the overview index is `None` data are retrieved directly</span>
+<span class="sd">        from the raster band instead of overviews.</span>
+<span class="sd">    bstart: int</span>
+<span class="sd">        raster band start index (default 1).</span>
+<span class="sd">    bcount: int or None</span>
+<span class="sd">        raster band count (defaut all starting from *bstart*)</span>
+
+<span class="sd">    Returns:</span>
+
+<span class="sd">    data: ndarray</span>
+<span class="sd">        the array of data read with shape (h, w, bcount)</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="c"># @TODO: check RasterColorInterpretation</span>
+
+    <span class="k">if</span> <span class="n">bcount</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">bcount</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">RasterCount</span>
+
+    <span class="k">assert</span> <span class="n">bstart</span> <span class="o">&gt;</span> <span class="mi">0</span>
+    <span class="k">assert</span> <span class="n">bstart</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">bcount</span> <span class="o">&lt;=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">RasterCount</span>
+
+    <span class="c">#data = np.zeros((h, w, dataset.RasterCount), np.ubyte)</span>
+    <span class="n">channels</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">bandindex</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">bstart</span><span class="p">,</span> <span class="n">bstart</span> <span class="o">+</span> <span class="n">bcount</span><span class="p">):</span>
+        <span class="n">band</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">GetRasterBand</span><span class="p">(</span><span class="n">bandindex</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ovrindex</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">band</span> <span class="o">=</span> <span class="n">band</span><span class="o">.</span><span class="n">GetOverview</span><span class="p">(</span><span class="n">ovrindex</span><span class="p">)</span>
+        <span class="n">channels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">band</span><span class="o">.</span><span class="n">ReadAsArray</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">))</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dstack</span><span class="p">(</span><span class="n">channels</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">dtype</span> <span class="ow">and</span> <span class="n">dtype</span> <span class="o">!=</span> <span class="n">data</span><span class="o">.</span><span class="n">dtype</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">data</span>
+
+
+<span class="c">### Misc helpers ##############################################################</span></div>
+<div class="viewcode-block" id="has_complex_bands"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.gdalsupport.html#gsdview.gdalbackend.gdalsupport.has_complex_bands">[docs]</a><span class="k">def</span> <span class="nf">has_complex_bands</span><span class="p">(</span><span class="n">dataset</span><span class="p">):</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="k">for</span> <span class="n">band_id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">dataset</span><span class="o">.</span><span class="n">RasterCount</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">band</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">GetRasterBand</span><span class="p">(</span><span class="n">band_id</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">gdal</span><span class="o">.</span><span class="n">DataTypeIsComplex</span><span class="p">(</span><span class="n">band</span><span class="o">.</span><span class="n">DataType</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
+            <span class="k">break</span>
+    <span class="k">return</span> <span class="n">result</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/logo.png" alt="Logo"/>
+            </a></p>
+    
+    
+    <p>
+        <a href="http://sourceforge.net/projects/gsdview">
+            <img src="http://sflogo.sourceforge.net/sflogo.php?group_id=226458&type=14" width="150" height="40" alt="Get GSDView at SourceForge.net. Fast, secure and Free Open Source software downloads" />
+        </a>
+    </p>
+    
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li><a href="../../../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../gsdview.html" >gsdview</a> &raquo;</li>
+          <li><a href="../gdalbackend.html" >gsdview.gdalbackend</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2008-2011, Antonio Valentino.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

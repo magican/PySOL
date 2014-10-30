@@ -1,0 +1,25 @@
+zoom
+====
+
+.. automodule:: zoom
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      close
+      init
+      loadSettings
+      saveSettings
+   
+   
+
+   
+   
+   
+
+   
+   
+   

@@ -1,0 +1,394 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>worldmap.core &mdash; GSDView Open Edition Home Page</title>
+    <link rel="stylesheet" href="../../_static/sourceforge.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.6.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/logo.ico"/>
+    <link rel="top" title="GSDView Open Edition Home Page" href="../../index.html" />
+    <link rel="up" title="worldmap" href="../worldmap.html" /> 
+  </head>
+  <body>
+    
+        
+    
+    
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li><a href="../../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../worldmap.html" accesskey="U">worldmap</a> &raquo;</li> 
+      </ul>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for worldmap.core</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="c">### Copyright (C) 2008-2011 Antonio Valentino &lt;a_valentino@users.sf.net&gt;</span>
+
+<span class="c">### This file is part of GSDView.</span>
+
+<span class="c">### GSDView is free software; you can redistribute it and/or modify</span>
+<span class="c">### it under the terms of the GNU General Public License as published by</span>
+<span class="c">### the Free Software Foundation; either version 2 of the License, or</span>
+<span class="c">### (at your option) any later version.</span>
+
+<span class="c">### GSDView is distributed in the hope that it will be useful,</span>
+<span class="c">### but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c">### MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c">### GNU General Public License for more details.</span>
+
+<span class="c">### You should have received a copy of the GNU General Public License</span>
+<span class="c">### along with GSDView; if not, write to the Free Software</span>
+<span class="c">### Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA.</span>
+
+
+<span class="sd">&#39;&#39;&#39;World map component for GSDView.&#39;&#39;&#39;</span>
+
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">qt</span> <span class="kn">import</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtGui</span>
+
+<span class="kn">from</span> <span class="nn">gsdview</span> <span class="kn">import</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">gsdview</span> <span class="kn">import</span> <span class="n">qt4support</span>
+
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s">&#39;Antonio Valentino &lt;a_valentino@users.sf.net&gt;&#39;</span>
+<span class="n">__date__</span> <span class="o">=</span> <span class="s">&#39;$Date: 2011-07-30 16:57:37 +0200 (sab, 30 lug 2011) $&#39;</span>
+<span class="n">__revision__</span> <span class="o">=</span> <span class="s">&#39;$Revision: 976 $&#39;</span>
+
+
+<div class="viewcode-block" id="WorldmapPanel"><a class="viewcode-back" href="../../api/worldmap.core.html#worldmap.core.WorldmapPanel">[docs]</a><span class="k">class</span> <span class="nc">WorldmapPanel</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QDockWidget</span><span class="p">):</span>
+    <span class="c"># @TODO: use zoom plugin</span>
+
+    <span class="n">bigBoxSize</span> <span class="o">=</span> <span class="mi">40</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">WindowFlags</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c">#title = self.tr(&#39;Worldmap Panel&#39;)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">WorldmapPanel</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="s">&#39;World Map Panel&#39;</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">flags</span><span class="p">,</span>
+                                            <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="c">#self.setObjectName(&#39;worldmapPanel&#39;) # @TODO: check</span>
+
+        <span class="n">scene</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QGraphicsScene</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">scene</span><span class="o">.</span><span class="n">setSceneRect</span><span class="p">(</span><span class="o">-</span><span class="mi">180</span><span class="p">,</span> <span class="o">-</span><span class="mi">90</span><span class="p">,</span> <span class="mi">360</span><span class="p">,</span> <span class="mi">180</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graphicsview</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QGraphicsView</span><span class="p">(</span><span class="n">scene</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graphicsview</span><span class="o">.</span><span class="n">scale</span><span class="p">(</span><span class="mf">2.</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">worldmapitem</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setWorldmapItem</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">actions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setupActions</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actionZoomIn</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">actionZoomOut</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">actions</span><span class="p">()</span>
+
+        <span class="n">toolbar</span> <span class="o">=</span> <span class="n">qt4support</span><span class="o">.</span><span class="n">actionGroupToToolbar</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">actions</span><span class="p">,</span>
+                                                  <span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Zoom toolbar&#39;</span><span class="p">))</span>
+        <span class="n">toolbar</span><span class="o">.</span><span class="n">setOrientation</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">Vertical</span><span class="p">)</span>
+
+        <span class="n">mainlayout</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QHBoxLayout</span><span class="p">()</span>
+        <span class="n">mainlayout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graphicsview</span><span class="p">)</span>
+        <span class="n">mainlayout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">toolbar</span><span class="p">)</span>
+
+        <span class="n">mainwidget</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QWidget</span><span class="p">()</span>
+        <span class="n">mainwidget</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">mainlayout</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setWidget</span><span class="p">(</span><span class="n">mainwidget</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">bigbox</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">box</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fitItem</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">worldmapitem</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">graphicsview</span><span class="o">.</span><span class="n">installEventFilter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_setupActions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">actions</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QActionGroup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="c"># Zoom in</span>
+        <span class="n">icon</span> <span class="o">=</span> <span class="n">qt4support</span><span class="o">.</span><span class="n">geticon</span><span class="p">(</span><span class="s">&#39;zoom-in.svg&#39;</span><span class="p">,</span> <span class="s">&#39;gsdview&#39;</span><span class="p">)</span>
+        <span class="n">QtGui</span><span class="o">.</span><span class="n">QAction</span><span class="p">(</span><span class="n">icon</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Zoom In&#39;</span><span class="p">),</span> <span class="n">actions</span><span class="p">,</span>
+                      <span class="n">objectName</span><span class="o">=</span><span class="s">&#39;zoomOutAction&#39;</span><span class="p">,</span>
+                      <span class="n">statusTip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Zoom In&#39;</span><span class="p">),</span>
+                      <span class="n">shortcut</span><span class="o">=</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QKeySequence</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Ctrl++&#39;</span><span class="p">)),</span>
+                      <span class="n">enabled</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+                      <span class="n">triggered</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_zoom</span><span class="p">(</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+
+        <span class="c"># Zoom out</span>
+        <span class="n">icon</span> <span class="o">=</span> <span class="n">qt4support</span><span class="o">.</span><span class="n">geticon</span><span class="p">(</span><span class="s">&#39;zoom-out.svg&#39;</span><span class="p">,</span> <span class="s">&#39;gsdview&#39;</span><span class="p">)</span>
+        <span class="n">QtGui</span><span class="o">.</span><span class="n">QAction</span><span class="p">(</span><span class="n">icon</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Zoom Out&#39;</span><span class="p">),</span> <span class="n">actions</span><span class="p">,</span>
+                      <span class="n">objectName</span><span class="o">=</span><span class="s">&#39;zoomOutAction&#39;</span><span class="p">,</span>
+                      <span class="n">statusTip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Zoom Out&#39;</span><span class="p">),</span>
+                      <span class="n">shortcut</span><span class="o">=</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QKeySequence</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Ctrl+-&#39;</span><span class="p">)),</span>
+                      <span class="n">enabled</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+                      <span class="n">triggered</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_zoom</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">actions</span>
+
+<div class="viewcode-block" id="WorldmapPanel.eventFilter"><a class="viewcode-back" href="../../api/worldmap.core.html#worldmap.core.WorldmapPanel.eventFilter">[docs]</a>    <span class="k">def</span> <span class="nf">eventFilter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QEvent</span><span class="o">.</span><span class="n">Resize</span><span class="p">,</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QEvent</span><span class="o">.</span><span class="n">Show</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fitInView</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">eventFilter</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="WorldmapPanel.setWorldmapItem"><a class="viewcode-back" href="../../api/worldmap.core.html#worldmap.core.WorldmapPanel.setWorldmapItem">[docs]</a>    <span class="k">def</span> <span class="nf">setWorldmapItem</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="s">&#39;low&#39;</span><span class="p">):</span>
+        <span class="n">scene</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graphicsview</span><span class="o">.</span><span class="n">scene</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">worldmapitem</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">scene</span><span class="o">.</span><span class="n">removeItem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">worldmapitem</span><span class="p">)</span>
+
+        <span class="c">#~ imgfile = qt4support.geticonfile(&#39;world_2160x1080.jpg&#39;, __name__)</span>
+        <span class="n">imgfile</span> <span class="o">=</span> <span class="n">qt4support</span><span class="o">.</span><span class="n">geticonfile</span><span class="p">(</span><span class="s">&#39;world_4320x2160.jpg&#39;</span><span class="p">,</span> <span class="n">__name__</span><span class="p">)</span>
+        <span class="c">#~ imgfile = qt4support.geticonfile(&#39;world_5400x2700.jpg&#39;, __name__)</span>
+        <span class="n">worldmap</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QPixmap</span><span class="p">(</span><span class="n">imgfile</span><span class="p">)</span>
+
+        <span class="n">worldmapitem</span> <span class="o">=</span> <span class="n">scene</span><span class="o">.</span><span class="n">addPixmap</span><span class="p">(</span><span class="n">worldmap</span><span class="p">)</span>
+        <span class="n">worldmapitem</span><span class="o">.</span><span class="n">setTransformationMode</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">SmoothTransformation</span><span class="p">)</span>
+        <span class="c"># @NOTE: reverse the y axis</span>
+        <span class="n">worldmapitem</span><span class="o">.</span><span class="n">scale</span><span class="p">(</span><span class="mf">360.</span> <span class="o">/</span> <span class="n">worldmap</span><span class="o">.</span><span class="n">width</span><span class="p">(),</span> <span class="o">-</span><span class="mf">180.</span> <span class="o">/</span> <span class="n">worldmap</span><span class="o">.</span><span class="n">height</span><span class="p">())</span>
+        <span class="n">worldmapitem</span><span class="o">.</span><span class="n">setOffset</span><span class="p">(</span><span class="o">-</span><span class="n">worldmap</span><span class="o">.</span><span class="n">width</span><span class="p">()</span> <span class="o">/</span> <span class="mf">2.</span> <span class="o">+</span> <span class="mf">0.5</span><span class="p">,</span>
+                               <span class="o">-</span><span class="n">worldmap</span><span class="o">.</span><span class="n">height</span><span class="p">()</span> <span class="o">/</span> <span class="mf">2.</span> <span class="o">+</span> <span class="mf">0.5</span><span class="p">)</span>
+        <span class="c">#~ transform = QtGui.QTransform(360./worldmap.width(),</span>
+                                     <span class="c">#~ 0,</span>
+                                     <span class="c">#~ 0,</span>
+                                     <span class="c">#~ 180./worldmap.height(),</span>
+                                     <span class="c">#~ -worldmap.width()/2.+0.5,</span>
+                                     <span class="c">#~ -worldmap.height()/2.+0.5)</span>
+        <span class="c">#~ worldmapitem.setTransform(transform)</span>
+        <span class="c">#~ worldmapitem.update()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">worldmapitem</span> <span class="o">=</span> <span class="n">worldmapitem</span>
+        <span class="c">#~ return worldmapitem</span>
+</div>
+    <span class="k">def</span> <span class="nf">_zoom</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">increment</span><span class="p">):</span>
+        <span class="n">items</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">worldmapitem</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bigbox</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">box</span><span class="p">)</span>
+        <span class="n">items</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span> <span class="k">if</span> <span class="n">item</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">]</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="n">items</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fitItem</span><span class="p">)</span>
+        <span class="n">newindex</span> <span class="o">=</span> <span class="n">index</span> <span class="o">+</span> <span class="n">increment</span>
+        <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">newindex</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">items</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fitItem</span> <span class="o">=</span> <span class="n">items</span><span class="p">[</span><span class="n">newindex</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">graphicsview</span><span class="o">.</span><span class="n">fitInView</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fitItem</span><span class="p">,</span>
+                                        <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">KeepAspectRatio</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">increment</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">actionZoomOut</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">actionZoomIn</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">increment</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fitItem</span> <span class="o">==</span> <span class="n">items</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">actionZoomIn</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="n">increment</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fitItem</span> <span class="o">==</span> <span class="n">items</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">actionZoomOut</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_fitInView</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graphicsview</span><span class="o">.</span><span class="n">fitInView</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fitItem</span><span class="p">,</span>
+                                    <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">KeepAspectRatio</span><span class="p">)</span>
+
+<div class="viewcode-block" id="WorldmapPanel.plot"><a class="viewcode-back" href="../../api/worldmap.core.html#worldmap.core.WorldmapPanel.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">polygon</span><span class="p">):</span>
+        <span class="c">#~ if points[0] != points[-1]:</span>
+            <span class="c">#~ poly.append(poly[0])</span>
+
+        <span class="c"># View box on the overview</span>
+        <span class="n">pen</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QPen</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">SolidLine</span><span class="p">)</span>
+        <span class="n">pen</span><span class="o">.</span><span class="n">setColor</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QColor</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">red</span><span class="p">))</span>
+
+        <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graphicsview</span><span class="o">.</span><span class="n">scene</span><span class="p">()</span><span class="o">.</span><span class="n">addPolygon</span><span class="p">(</span><span class="n">polygon</span><span class="p">,</span> <span class="n">pen</span><span class="p">)</span>
+        <span class="n">item</span><span class="o">.</span><span class="n">setZValue</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">item</span>
+</div>
+<div class="viewcode-block" id="WorldmapPanel.setFootprint"><a class="viewcode-back" href="../../api/worldmap.core.html#worldmap.core.WorldmapPanel.setFootprint">[docs]</a>    <span class="k">def</span> <span class="nf">setFootprint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">polygon</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">polygon</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">lon</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="n">p</span><span class="o">.</span><span class="n">x</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">polygon</span><span class="p">])</span>
+        <span class="n">lat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="n">p</span><span class="o">.</span><span class="n">y</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">polygon</span><span class="p">])</span>
+
+        <span class="n">mlon</span> <span class="o">=</span> <span class="n">lon</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+        <span class="n">mlat</span> <span class="o">=</span> <span class="n">lat</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+
+        <span class="n">delta</span> <span class="o">=</span> <span class="n">mlon</span> <span class="o">-</span> <span class="n">utils</span><span class="o">.</span><span class="n">geonormalize</span><span class="p">(</span><span class="n">mlon</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">delta</span><span class="p">:</span>
+            <span class="n">lon</span> <span class="o">-=</span> <span class="n">delta</span>
+            <span class="n">mlon</span> <span class="o">-=</span> <span class="n">delta</span>
+            <span class="n">polygon</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="o">-</span><span class="n">delta</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">box</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">polygon</span><span class="p">)</span>
+
+        <span class="n">points</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QPolygonF</span><span class="p">([</span>
+            <span class="n">QtCore</span><span class="o">.</span><span class="n">QPointF</span><span class="p">(</span><span class="n">mlon</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">bigBoxSize</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span>
+                           <span class="n">mlat</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">bigBoxSize</span> <span class="o">/</span> <span class="mi">2</span><span class="p">),</span>
+            <span class="n">QtCore</span><span class="o">.</span><span class="n">QPointF</span><span class="p">(</span><span class="n">mlon</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">bigBoxSize</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span>
+                           <span class="n">mlat</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">bigBoxSize</span> <span class="o">/</span> <span class="mi">2</span><span class="p">),</span>
+            <span class="n">QtCore</span><span class="o">.</span><span class="n">QPointF</span><span class="p">(</span><span class="n">mlon</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">bigBoxSize</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span>
+                           <span class="n">mlat</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">bigBoxSize</span> <span class="o">/</span> <span class="mi">2</span><span class="p">),</span>
+            <span class="n">QtCore</span><span class="o">.</span><span class="n">QPointF</span><span class="p">(</span><span class="n">mlon</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">bigBoxSize</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span>
+                           <span class="n">mlat</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">bigBoxSize</span> <span class="o">/</span> <span class="mi">2</span><span class="p">),</span>
+        <span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bigbox</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">actionZoomIn</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="WorldmapPanel.clear"><a class="viewcode-back" href="../../api/worldmap.core.html#worldmap.core.WorldmapPanel.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">scene</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graphicsview</span><span class="o">.</span><span class="n">scene</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">scene</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">item</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">worldmapitem</span><span class="p">:</span>
+                <span class="n">scene</span><span class="o">.</span><span class="n">removeItem</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actionZoomIn</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actionZoomOut</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fitItem</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">worldmapitem</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fitInView</span><span class="p">()</span>
+
+</div></div>
+<div class="viewcode-block" id="WorldmapController"><a class="viewcode-back" href="../../api/worldmap.core.html#worldmap.core.WorldmapController">[docs]</a><span class="k">class</span> <span class="nc">WorldmapController</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QObject</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">WorldmapController</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">app</span> <span class="o">=</span> <span class="n">app</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">panel</span> <span class="o">=</span> <span class="n">WorldmapPanel</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">panel</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="s">&#39;worldmapPanel&#39;</span><span class="p">)</span>   <span class="c"># @TODO: check</span>
+
+        <span class="n">app</span><span class="o">.</span><span class="n">mdiarea</span><span class="o">.</span><span class="n">subWindowActivated</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">onSubWindowChanged</span><span class="p">)</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">treeview</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">onItemClicked</span><span class="p">)</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">subWindowClosed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">onModelChanged</span><span class="p">)</span>
+
+        <span class="c"># @WARNING: rowsInserted/rowsRemoved don&#39;t work</span>
+        <span class="c"># @TODO: fix</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">rowsInserted</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">onModelChanged</span><span class="p">)</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">rowsRemoved</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">onModelChanged</span><span class="p">)</span>
+
+<div class="viewcode-block" id="WorldmapController.setItemFootprint"><a class="viewcode-back" href="../../api/worldmap.core.html#worldmap.core.WorldmapController.setItemFootprint">[docs]</a>    <span class="k">def</span> <span class="nf">setItemFootprint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">footprint</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">footprint</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="n">footprint</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">panel</span><span class="o">.</span><span class="n">setFootprint</span><span class="p">(</span><span class="n">footprint</span><span class="p">)</span>
+</div>
+    <span class="nd">@QtCore.Slot</span><span class="p">()</span>
+    <span class="nd">@QtCore.Slot</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QMdiSubWindow</span><span class="p">)</span>
+<div class="viewcode-block" id="WorldmapController.onSubWindowChanged"><a class="viewcode-back" href="../../api/worldmap.core.html#worldmap.core.WorldmapController.onSubWindowChanged">[docs]</a>    <span class="k">def</span> <span class="nf">onSubWindowChanged</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subwin</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">subwin</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">subwin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">mdiarea</span><span class="o">.</span><span class="n">activeSubWindow</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">subwin</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="n">subwin</span><span class="o">.</span><span class="n">item</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="c"># the window has not an associated item in the datamodel</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setItemFootprint</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+</div>
+    <span class="nd">@QtCore.Slot</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QModelIndex</span><span class="p">)</span>
+<div class="viewcode-block" id="WorldmapController.onItemClicked"><a class="viewcode-back" href="../../api/worldmap.core.html#worldmap.core.WorldmapController.onItemClicked">[docs]</a>    <span class="k">def</span> <span class="nf">onItemClicked</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">mdiarea</span><span class="o">.</span><span class="n">activeSubWindow</span><span class="p">():</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">itemFromIndex</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setItemFootprint</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+</div>
+    <span class="nd">@QtCore.Slot</span><span class="p">()</span>
+    <span class="nd">@QtCore.Slot</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QModelIndex</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+<div class="viewcode-block" id="WorldmapController.onModelChanged"><a class="viewcode-back" href="../../api/worldmap.core.html#worldmap.core.WorldmapController.onModelChanged">[docs]</a>    <span class="k">def</span> <span class="nf">onModelChanged</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">stop</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="n">subwin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">mdiarea</span><span class="o">.</span><span class="n">activeSubWindow</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">subwin</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">onSubWindowChanged</span><span class="p">(</span><span class="n">subwin</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">currentItem</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setItemFootprint</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+
+</div></div>
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">os</span>
+    <span class="kn">import</span> <span class="nn">sys</span>
+
+    <span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">gdal</span>
+
+    <span class="n">app</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QApplication</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span>
+    <span class="n">mainwin</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QMainWindow</span><span class="p">()</span>
+    <span class="n">mainwin</span><span class="o">.</span><span class="n">setCentralWidget</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QTextEdit</span><span class="p">())</span>
+
+    <span class="n">dataset</span> <span class="o">=</span> <span class="n">gdal</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s">&#39;~/projects/gsdview/data/ENVISAT/&#39;</span>
+        <span class="s">&#39;ASA_APM_1PNIPA20031105_172352_000000182021_00227_08798_0001.N1&#39;</span><span class="p">))</span>
+    <span class="n">panel</span> <span class="o">=</span> <span class="n">WorldmapPanel</span><span class="p">()</span>
+    <span class="n">panel</span><span class="o">.</span><span class="n">setDataset</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+
+    <span class="n">mainwin</span><span class="o">.</span><span class="n">addDockWidget</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">LeftDockWidgetArea</span><span class="p">,</span> <span class="n">panel</span><span class="p">)</span>
+    <span class="c">#~ mainWin.showMaximized()</span>
+    <span class="n">mainwin</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">exec_</span><span class="p">())</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+    
+    
+    <p>
+        <a href="http://sourceforge.net/projects/gsdview">
+            <img src="http://sflogo.sourceforge.net/sflogo.php?group_id=226458&type=14" width="150" height="40" alt="Get GSDView at SourceForge.net. Fast, secure and Free Open Source software downloads" />
+        </a>
+    </p>
+    
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li><a href="../../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../worldmap.html" >worldmap</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2008-2011, Antonio Valentino.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

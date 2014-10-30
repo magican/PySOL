@@ -1,0 +1,255 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>gsdview.graphicsview &mdash; GSDView Open Edition Home Page</title>
+    <link rel="stylesheet" href="../_static/sourceforge.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.6.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/logo.ico"/>
+    <link rel="top" title="GSDView Open Edition Home Page" href="../index.html" />
+    <link rel="up" title="API Reference" href="../reference.html" />
+    <link rel="next" title="gsdview.imgutils" href="gsdview.imgutils.html" />
+    <link rel="prev" title="gsdview.errors" href="gsdview.errors.html" /> 
+  </head>
+  <body>
+    
+        
+    
+    
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li class="right" >
+          <a href="gsdview.imgutils.html" title="gsdview.imgutils"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="gsdview.errors.html" title="gsdview.errors"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../reference.html" accesskey="U">API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-gsdview.graphicsview">
+<span id="gsdview-graphicsview"></span><h1>gsdview.graphicsview<a class="headerlink" href="#module-gsdview.graphicsview" title="Permalink to this headline">¶</a></h1>
+<p>Custom QtGui.QGraphicsView component.</p>
+<p class="rubric">Classes</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><a class="reference internal" href="#gsdview.graphicsview.GraphicsView" title="gsdview.graphicsview.GraphicsView"><tt class="xref py py-obj docutils literal"><span class="pre">GraphicsView</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.graphicsview.GraphicsViewMonitor" title="gsdview.graphicsview.GraphicsViewMonitor"><tt class="xref py py-obj docutils literal"><span class="pre">GraphicsViewMonitor</span></tt></a></td>
+<td>Emit signals when a registered graphics view changes status.</td>
+</tr>
+</tbody>
+</table>
+<dl class="class">
+<dt id="gsdview.graphicsview.GraphicsView">
+<em class="property">class </em><tt class="descclassname">gsdview.graphicsview.</tt><tt class="descname">GraphicsView</tt><a class="reference internal" href="../_modules/gsdview/graphicsview.html#GraphicsView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.graphicsview.GraphicsView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">PyQt4.QtGui.QGraphicsView</span></tt></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="gsdview.graphicsview.GraphicsViewMonitor">
+<em class="property">class </em><tt class="descclassname">gsdview.graphicsview.</tt><tt class="descname">GraphicsViewMonitor</tt><a class="reference internal" href="../_modules/gsdview/graphicsview.html#GraphicsViewMonitor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.graphicsview.GraphicsViewMonitor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">PyQt4.QtCore.QObject</span></tt></p>
+<p>Emit signals when a registered graphics view changes status.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Signals :</th><td class="field-body"><ul class="first last simple">
+<li><a class="reference internal" href="#gsdview.graphicsview.GraphicsViewMonitor.leave" title="gsdview.graphicsview.GraphicsViewMonitor.leave"><tt class="xref py py-attr docutils literal"><span class="pre">leave</span></tt></a></li>
+<li><a class="reference internal" href="#gsdview.graphicsview.GraphicsViewMonitor.scrolled" title="gsdview.graphicsview.GraphicsViewMonitor.scrolled"><tt class="xref py py-attr docutils literal"><span class="pre">scrolled</span></tt></a></li>
+<li><a class="reference internal" href="#gsdview.graphicsview.GraphicsViewMonitor.resized" title="gsdview.graphicsview.GraphicsViewMonitor.resized"><tt class="xref py py-attr docutils literal"><span class="pre">resized</span></tt></a></li>
+<li><a class="reference internal" href="#gsdview.graphicsview.GraphicsViewMonitor.viewportResized" title="gsdview.graphicsview.GraphicsViewMonitor.viewportResized"><tt class="xref py py-attr docutils literal"><span class="pre">viewportResized</span></tt></a></li>
+<li><a class="reference internal" href="#gsdview.graphicsview.GraphicsViewMonitor.mouseMoved" title="gsdview.graphicsview.GraphicsViewMonitor.mouseMoved"><tt class="xref py py-attr docutils literal"><span class="pre">mouseMoved</span></tt></a></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="gsdview.graphicsview.GraphicsViewMonitor.eventFilter">
+<tt class="descname">eventFilter</tt><big>(</big><em>obj</em>, <em>event</em><big>)</big><a class="reference internal" href="../_modules/gsdview/graphicsview.html#GraphicsViewMonitor.eventFilter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.graphicsview.GraphicsViewMonitor.eventFilter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.graphicsview.GraphicsViewMonitor.leave">
+<tt class="descname">leave</tt><a class="headerlink" href="#gsdview.graphicsview.GraphicsViewMonitor.leave" title="Permalink to this definition">¶</a></dt>
+<dd><p>SIGNAL: it is emitted when the mouse pointer leaves the scene</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">C++ signature:</th><td class="field-body"><cite>void leave(QGraphicsView*)</cite></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.graphicsview.GraphicsViewMonitor.mouseMoved">
+<tt class="descname">mouseMoved</tt><a class="headerlink" href="#gsdview.graphicsview.GraphicsViewMonitor.mouseMoved" title="Permalink to this definition">¶</a></dt>
+<dd><p>SIGNAL: it is emitted when the mouse pointer is moved on the scene</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">C++ signature:</th><td class="field-body"><cite>void mouseMoved(QtGui.QGraphicsScene, QtCore.QPointF,
+QtCore.Qt.MuseButtons)</cite></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="gsdview.graphicsview.GraphicsViewMonitor.register">
+<tt class="descname">register</tt><big>(</big><em>graphicsview</em><big>)</big><a class="reference internal" href="../_modules/gsdview/graphicsview.html#GraphicsViewMonitor.register"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.graphicsview.GraphicsViewMonitor.register" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.graphicsview.GraphicsViewMonitor.resized">
+<tt class="descname">resized</tt><a class="headerlink" href="#gsdview.graphicsview.GraphicsViewMonitor.resized" title="Permalink to this definition">¶</a></dt>
+<dd><p>SIGNAL: it is emitted when the graphicsview window is resized</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">C++ signature:</th><td class="field-body"><cite>void resized(QGraphicsView*, QSize)</cite></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.graphicsview.GraphicsViewMonitor.scrolled">
+<tt class="descname">scrolled</tt><a class="headerlink" href="#gsdview.graphicsview.GraphicsViewMonitor.scrolled" title="Permalink to this definition">¶</a></dt>
+<dd><p>SIGNAL: it is emitted when a graphics view is scrolled</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">C++ signature:</th><td class="field-body"><cite>void scrolled(QGraphicsView*)</cite></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.graphicsview.GraphicsViewMonitor.viewportResized">
+<tt class="descname">viewportResized</tt><a class="headerlink" href="#gsdview.graphicsview.GraphicsViewMonitor.viewportResized" title="Permalink to this definition">¶</a></dt>
+<dd><p>SIGNAL:</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">C++ signature:</th><td class="field-body"><cite>void viewportResized(QGraphicsView*)</cite></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo.png" alt="Logo"/>
+            </a></p>
+    
+    
+    <p>
+        <a href="http://sourceforge.net/projects/gsdview">
+            <img src="http://sflogo.sourceforge.net/sflogo.php?group_id=226458&type=14" width="150" height="40" alt="Get GSDView at SourceForge.net. Fast, secure and Free Open Source software downloads" />
+        </a>
+    </p>
+    
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="gsdview.errors.html"
+                        title="previous chapter">gsdview.errors</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="gsdview.imgutils.html"
+                        title="next chapter">gsdview.imgutils</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/api/gsdview.graphicsview.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li class="right" >
+          <a href="gsdview.imgutils.html" title="gsdview.imgutils"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="gsdview.errors.html" title="gsdview.errors"
+             >previous</a> |</li>
+        <li><a href="../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../reference.html" >API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2008-2011, Antonio Valentino.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

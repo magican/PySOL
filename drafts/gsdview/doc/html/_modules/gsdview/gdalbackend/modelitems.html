@@ -1,0 +1,814 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>gsdview.gdalbackend.modelitems &mdash; GSDView Open Edition Home Page</title>
+    <link rel="stylesheet" href="../../../_static/sourceforge.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.6.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../../_static/logo.ico"/>
+    <link rel="top" title="GSDView Open Edition Home Page" href="../../../index.html" />
+    <link rel="up" title="gsdview.gdalbackend" href="../gdalbackend.html" /> 
+  </head>
+  <body>
+    
+        
+    
+    
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li><a href="../../../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../gsdview.html" >gsdview</a> &raquo;</li>
+          <li><a href="../gdalbackend.html" accesskey="U">gsdview.gdalbackend</a> &raquo;</li> 
+      </ul>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for gsdview.gdalbackend.modelitems</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="c">### Copyright (C) 2008-2011 Antonio Valentino &lt;a_valentino@users.sf.net&gt;</span>
+
+<span class="c">### This file is part of GSDView.</span>
+
+<span class="c">### GSDView is free software; you can redistribute it and/or modify</span>
+<span class="c">### it under the terms of the GNU General Public License as published by</span>
+<span class="c">### the Free Software Foundation; either version 2 of the License, or</span>
+<span class="c">### (at your option) any later version.</span>
+
+<span class="c">### GSDView is distributed in the hope that it will be useful,</span>
+<span class="c">### but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c">### MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c">### GNU General Public License for more details.</span>
+
+<span class="c">### You should have received a copy of the GNU General Public License</span>
+<span class="c">### along with GSDView; if not, write to the Free Software</span>
+<span class="c">### Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA.</span>
+
+
+<span class="sd">&#39;&#39;&#39;GDAL items for Qt4 QStandardItemModel.&#39;&#39;&#39;</span>
+
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">gdal</span>
+
+<span class="kn">from</span> <span class="nn">qt</span> <span class="kn">import</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtGui</span>
+
+<span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">qt4support</span>
+<span class="kn">from</span> <span class="nn">..errors</span> <span class="kn">import</span> <span class="n">OpenError</span>
+<span class="kn">from</span> <span class="nn">..gdalbackend</span> <span class="kn">import</span> <span class="n">info</span>
+<span class="kn">from</span> <span class="nn">..gdalbackend</span> <span class="kn">import</span> <span class="n">gdalqt4</span>
+<span class="kn">from</span> <span class="nn">..gdalbackend</span> <span class="kn">import</span> <span class="n">gdalsupport</span>
+
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s">&#39;Antonio Valentino &lt;a_valentino@users.sf.net&gt;&#39;</span>
+<span class="n">__date__</span> <span class="o">=</span> <span class="s">&#39;$Date: 2011-08-04 18:54:23 +0200 (gio, 04 ago 2011) $&#39;</span>
+<span class="n">__revision__</span> <span class="o">=</span> <span class="s">&#39;$Revision: 1003 $&#39;</span>
+
+<span class="n">VISIBLE_OVERVIEW_ITEMS</span> <span class="o">=</span> <span class="bp">False</span>
+
+
+<div class="viewcode-block" id="MajorObjectItem"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.modelitems.html#gsdview.gdalbackend.modelitems.MajorObjectItem">[docs]</a><span class="k">class</span> <span class="nc">MajorObjectItem</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QStandardItem</span><span class="p">):</span>
+    <span class="n">iconfile</span> <span class="o">=</span> <span class="n">qt4support</span><span class="o">.</span><span class="n">geticon</span><span class="p">(</span><span class="s">&#39;metadata.svg&#39;</span><span class="p">,</span> <span class="n">__name__</span><span class="p">)</span>
+    <span class="n">_type</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QStandardItem</span><span class="o">.</span><span class="n">UserType</span> <span class="o">+</span> <span class="mi">100</span>
+    <span class="n">backend</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">name</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gdalobj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">gdalobj</span><span class="p">,</span> <span class="n">MajorObjectItem</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span> <span class="o">=</span> <span class="n">gdalobj</span><span class="o">.</span><span class="n">_obj</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span> <span class="o">=</span> <span class="n">gdalobj</span>
+
+        <span class="c"># @TODO: don&#39;t use self._obj if __getattr__ is set</span>
+        <span class="c">#description = os.path.basename(self._obj.GetDescription())</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="p">:</span>
+            <span class="n">description</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">GetDescription</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">description</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">MajorObjectItem</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QIcon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iconfile</span><span class="p">),</span>
+                                              <span class="n">description</span><span class="p">)</span>  <span class="c">#, **kwargs)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setToolTip</span><span class="p">(</span><span class="n">description</span><span class="p">)</span>
+
+    <span class="c"># Give items the same iterface of GDAL objects.</span>
+    <span class="c"># NOTE: the widgets module doesn&#39;t need to import modelitems</span>
+    <span class="k">def</span> <span class="nf">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+
+<div class="viewcode-block" id="MajorObjectItem.type"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.modelitems.html#gsdview.gdalbackend.modelitems.MajorObjectItem.type">[docs]</a>    <span class="k">def</span> <span class="nf">type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_type</span>
+</div>
+    <span class="k">def</span> <span class="nf">_closeChildren</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">hasChildren</span><span class="p">():</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">child</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;unexpected child item class: &quot;</span><span class="si">%s</span><span class="s">&quot;&#39;</span> <span class="o">%</span>
+                                                <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">child</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
+            <span class="c"># @NOTE: use takeRow instead of removeRow in order to avoid the</span>
+            <span class="c">#        underlying C/C++ object is deleted before all sub-windows</span>
+            <span class="c">#        that hold a reference to the stditem are destroyed</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">takeRow</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+<div class="viewcode-block" id="MajorObjectItem.close"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.modelitems.html#gsdview.gdalbackend.modelitems.MajorObjectItem.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_closeChildren</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span> <span class="o">=</span> <span class="bp">None</span>
+
+</div></div>
+<div class="viewcode-block" id="BandItem"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.modelitems.html#gsdview.gdalbackend.modelitems.BandItem">[docs]</a><span class="k">class</span> <span class="nc">BandItem</span><span class="p">(</span><span class="n">MajorObjectItem</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Raster band item.</span>
+
+<span class="sd">    This class implements both the QStandardItem and the</span>
+<span class="sd">    gdal.Band interface.</span>
+
+<span class="sd">    It also as attatched a graphics scene containing a GdalGraphicsItem</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">iconfile</span> <span class="o">=</span> <span class="n">qt4support</span><span class="o">.</span><span class="n">geticon</span><span class="p">(</span><span class="s">&#39;rasterband.svg&#39;</span><span class="p">,</span> <span class="n">__name__</span><span class="p">)</span>
+    <span class="n">_type</span> <span class="o">=</span> <span class="n">MajorObjectItem</span><span class="o">.</span><span class="n">_type</span> <span class="o">+</span> <span class="mi">10</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">band</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="n">band</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">BandItem</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">band</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setup_children</span><span class="p">()</span>
+
+        <span class="c">#: graphics scene associated to the raster band</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scene</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="c">#: graphics item representing the raster band</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graphicsitem</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="c"># @TODO: lazy behaviour: postpone the scene/view initialization when</span>
+        <span class="c">#        it is actualy needed</span>
+        <span class="n">scene</span><span class="p">,</span> <span class="n">graphicsitem</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setup_scene</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scene</span> <span class="o">=</span> <span class="n">scene</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graphicsitem</span> <span class="o">=</span> <span class="n">graphicsitem</span>
+
+    <span class="c"># @COMPATIBILITY: GetBand requires GDAL &gt;= 1.7</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">gdal</span><span class="o">.</span><span class="n">Band</span><span class="p">,</span> <span class="s">&#39;GetBand&#39;</span><span class="p">):</span>
+
+        <span class="k">def</span> <span class="nf">GetBand</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">row</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span>
+
+<div class="viewcode-block" id="BandItem.footprint"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.modelitems.html#gsdview.gdalbackend.modelitems.BandItem.footprint">[docs]</a>    <span class="k">def</span> <span class="nf">footprint</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">footprint</span><span class="p">()</span>
+
+    <span class="c"># readonly</span></div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="BandItem.cmapper"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.modelitems.html#gsdview.gdalbackend.modelitems.BandItem.cmapper">[docs]</a>    <span class="k">def</span> <span class="nf">cmapper</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Coordinate mapper object.&#39;&#39;&#39;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">cmapper</span>
+</div>
+<div class="viewcode-block" id="BandItem.GetOverview"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.modelitems.html#gsdview.gdalbackend.modelitems.BandItem.GetOverview">[docs]</a>    <span class="k">def</span> <span class="nf">GetOverview</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">VISIBLE_OVERVIEW_ITEMS</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">index</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">index</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">GetOverviewCount</span><span class="p">()):</span>
+                <span class="k">return</span> <span class="bp">None</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rowCount</span><span class="p">()</span> <span class="o">&lt;=</span> <span class="n">index</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_setup_children</span><span class="p">()</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">child</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">GetOverview</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="BandItem.GetOverviewCount"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.modelitems.html#gsdview.gdalbackend.modelitems.BandItem.GetOverviewCount">[docs]</a>    <span class="k">def</span> <span class="nf">GetOverviewCount</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">VISIBLE_OVERVIEW_ITEMS</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rowCount</span><span class="p">()</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">GetOverviewCount</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_setup_children</span><span class="p">()</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">rowCount</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">GetOverviewCount</span><span class="p">()</span>
+</div>
+    <span class="k">def</span> <span class="nf">_setup_children</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">VISIBLE_OVERVIEW_ITEMS</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rowCount</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">GetOverviewCount</span><span class="p">()):</span>
+            <span class="n">ovr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">GetOverview</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="n">OverviewItem</span><span class="p">(</span><span class="n">ovr</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">item</span><span class="o">.</span><span class="n">text</span><span class="p">():</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="s">&#39;Overview&#39;</span>
+                <span class="k">if</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">qApp</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="n">text</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">qApp</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+                <span class="n">description</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s"> n. </span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
+                <span class="n">item</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">description</span><span class="p">)</span>
+                <span class="n">item</span><span class="o">.</span><span class="n">setToolTip</span><span class="p">(</span><span class="n">description</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">appendRow</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_setup_scene</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c"># @TODO: check for scenes with no parent</span>
+            <span class="n">scene</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QGraphicsScene</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+            <span class="n">graphicsitem</span> <span class="o">=</span> <span class="n">gdalqt4</span><span class="o">.</span><span class="n">graphicsItemFactory</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="n">scene</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="n">graphicsitem</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">scene</span><span class="p">,</span> <span class="n">graphicsitem</span>
+        <span class="k">except</span> <span class="ne">NotImplementedError</span><span class="p">:</span>  <span class="c"># (NoImplementedError, TypeError):</span>
+            <span class="k">return</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span>
+
+<div class="viewcode-block" id="BandItem.close"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.modelitems.html#gsdview.gdalbackend.modelitems.BandItem.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graphicsitem</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="c">#self.scene = None    # @WARNINIG: causes problems in event filters</span>
+        <span class="c">#self._obj.FlushCache() # @TODO: check</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">BandItem</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</div>
+    <span class="k">def</span> <span class="nf">_reopen</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gdalobj</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">gdalobj</span><span class="p">:</span>
+            <span class="c"># assume self._obj has already been set from caller</span>
+            <span class="n">gdalobj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span> <span class="o">=</span> <span class="n">gdalobj</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rowCount</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">gdalobj</span><span class="o">.</span><span class="n">GetOverviewCount</span><span class="p">():</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&#39;unable to reopen raster band: &#39;</span>
+                            <span class="s">&#39;unexpected number of overviews&#39;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="n">VISIBLE_OVERVIEW_ITEMS</span><span class="p">:</span>
+            <span class="n">levelsmap</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">gdalsupport</span><span class="o">.</span><span class="n">ovrLevels</span><span class="p">(</span><span class="n">gdalobj</span><span class="p">),</span>
+                                 <span class="nb">range</span><span class="p">(</span><span class="n">gdalobj</span><span class="o">.</span><span class="n">GetOverviewCount</span><span class="p">())))</span>
+
+            <span class="n">oldlevelsmap</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">gdalsupport</span><span class="o">.</span><span class="n">ovrLevels</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="p">),</span>
+                                <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">GetOverviewCount</span><span class="p">())))</span>
+
+            <span class="n">toremove</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">level</span><span class="p">,</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">oldlevelsmap</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">level</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">levelsmap</span><span class="p">:</span>
+                    <span class="c">#self.removeRow(index)</span>
+                    <span class="n">toremove</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">GetOverview</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+                    <span class="n">newindex</span> <span class="o">=</span> <span class="n">levelsmap</span><span class="p">[</span><span class="n">level</span><span class="p">]</span>
+                    <span class="n">item</span><span class="o">.</span><span class="n">_reopen</span><span class="p">(</span><span class="n">gdalobj</span><span class="o">.</span><span class="n">GetOverview</span><span class="p">(</span><span class="n">newindex</span><span class="p">))</span>
+
+            <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">toremove</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">takeRow</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">level</span><span class="p">,</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">levelsmap</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">level</span> <span class="ow">in</span> <span class="n">oldlevelsmap</span><span class="p">:</span>
+                    <span class="k">continue</span>
+
+                <span class="n">ovr</span> <span class="o">=</span> <span class="n">gdalobj</span><span class="o">.</span><span class="n">GetOverview</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+                <span class="n">item</span> <span class="o">=</span> <span class="n">OverviewItem</span><span class="p">(</span><span class="n">ovr</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">item</span><span class="o">.</span><span class="n">text</span><span class="p">():</span>
+                    <span class="n">text</span> <span class="o">=</span> <span class="s">&#39;Overview&#39;</span>
+                    <span class="k">if</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">qApp</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                        <span class="n">text</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">qApp</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+                    <span class="n">description</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s"> n. </span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
+                    <span class="n">item</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">description</span><span class="p">)</span>
+                    <span class="n">item</span><span class="o">.</span><span class="n">setToolTip</span><span class="p">(</span><span class="n">description</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">insertRow</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
+
+            <span class="c"># @TODO: complete</span>
+            <span class="c">#self.sortChildren(0, QtCore.Qt.AscendngOrder)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span> <span class="o">=</span> <span class="n">gdalobj</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">()</span><span class="o">.</span><span class="n">itemChanged</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="OverviewItem"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.modelitems.html#gsdview.gdalbackend.modelitems.OverviewItem">[docs]</a><span class="k">class</span> <span class="nc">OverviewItem</span><span class="p">(</span><span class="n">BandItem</span><span class="p">):</span>
+    <span class="n">iconfile</span> <span class="o">=</span> <span class="n">qt4support</span><span class="o">.</span><span class="n">geticon</span><span class="p">(</span><span class="s">&#39;overview.svg&#39;</span><span class="p">,</span> <span class="n">__name__</span><span class="p">)</span>
+    <span class="n">_type</span> <span class="o">=</span> <span class="n">BandItem</span><span class="o">.</span><span class="n">_type</span> <span class="o">+</span> <span class="mi">1</span>
+
+
+<span class="c">#~ class VirtualBandItem(BandItem):</span>
+    <span class="c">#~ iconfile = qt4support.geticon(&#39;virtualband.svg&#39;, __name__)</span>
+    <span class="c">#~ _type = BandItem._type + 2</span>
+    <span class="c"># @TODO: remove</span>
+    <span class="c">#~ actions = BandItem.actions + (&#39;Delete&#39;,)</span>
+    <span class="c">#~ #defaultaction = &#39;Open&#39;</span>
+
+</div>
+<div class="viewcode-block" id="DatasetItem"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.modelitems.html#gsdview.gdalbackend.modelitems.DatasetItem">[docs]</a><span class="k">class</span> <span class="nc">DatasetItem</span><span class="p">(</span><span class="n">MajorObjectItem</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Dataset item</span>
+
+<span class="sd">    This class implements both the QStandardItem and the gdal.Dataset</span>
+<span class="sd">    interface.</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">iconfile</span> <span class="o">=</span> <span class="n">qt4support</span><span class="o">.</span><span class="n">geticon</span><span class="p">(</span><span class="s">&#39;dataset.svg&#39;</span><span class="p">,</span> <span class="n">__name__</span><span class="p">)</span>
+    <span class="n">_type</span> <span class="o">=</span> <span class="n">MajorObjectItem</span><span class="o">.</span><span class="n">_type</span> <span class="o">+</span> <span class="mi">100</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">gdal</span><span class="o">.</span><span class="n">GA_ReadOnly</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="n">gdalobj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_checkedopen</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">DatasetItem</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">gdalobj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
+
+        <span class="c">#: dataset filename</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span> <span class="o">=</span> <span class="n">mode</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setup_children</span><span class="p">()</span>
+
+        <span class="c">#: coordiante mapper</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmapper</span> <span class="o">=</span> <span class="n">gdalsupport</span><span class="o">.</span><span class="n">coordinate_mapper</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="p">)</span>
+
+        <span class="c"># @TODO: lazy behaviour: postpone the scene/view initialization when</span>
+        <span class="c">#        it is actualy needed</span>
+        <span class="n">scene</span><span class="p">,</span> <span class="n">graphicsitem</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setup_scene</span><span class="p">()</span>
+
+        <span class="c">#: graphics scene associated to the item</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scene</span> <span class="o">=</span> <span class="n">scene</span>
+
+        <span class="c">#: graphics item representing the dataset</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graphicsitem</span> <span class="o">=</span> <span class="n">graphicsitem</span>
+
+    <span class="k">def</span> <span class="nf">_checkedopen</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">gdal</span><span class="o">.</span><span class="n">GA_ReadOnly</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">gdalobj</span> <span class="o">=</span> <span class="n">gdal</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">RuntimeError</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+            <span class="c"># @TODO: fix</span>
+            <span class="c"># @NOTE: explicitly reset the GDAL error status to workaround</span>
+            <span class="c">#        bug #3077 (http://trac.osgeo.org/gdal/ticket/3077)</span>
+            <span class="n">gdal</span><span class="o">.</span><span class="n">ErrorReset</span><span class="p">()</span>
+
+            <span class="c"># NOTE: this is needed when GDAL exceptions are enabled</span>
+            <span class="k">raise</span> <span class="n">OpenError</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">gdalobj</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">OpenError</span><span class="p">(</span><span class="s">&#39;&quot;</span><span class="si">%s</span><span class="s">&quot; is not a valid GDAL dataset&#39;</span> <span class="o">%</span>
+                                                    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">gdalobj</span>
+
+    <span class="k">def</span> <span class="nf">_setup_scene</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c"># @TODO: check</span>
+            <span class="c">#graphicsitem = gdalqt4.graphicsItemFactory(self)</span>
+            <span class="n">graphicsitem</span> <span class="o">=</span> <span class="n">gdalqt4</span><span class="o">.</span><span class="n">GdalRgbGraphicsItem</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="c"># dataset is not an RGB image</span>
+            <span class="k">return</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">scene</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QGraphicsScene</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+            <span class="n">scene</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="n">graphicsitem</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">scene</span><span class="p">,</span> <span class="n">graphicsitem</span>
+
+<div class="viewcode-block" id="DatasetItem.footprint"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.modelitems.html#gsdview.gdalbackend.modelitems.DatasetItem.footprint">[docs]</a>    <span class="k">def</span> <span class="nf">footprint</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Return the dataset geographic footprint as a QPolygonF.</span>
+
+<span class="sd">        The geographic footprint is a QPolygonF containing the four</span>
+<span class="sd">        vertices of the image in geographic coordinates.</span>
+<span class="sd">        If no geographic info is available in the dataset None is</span>
+<span class="sd">        returned.</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmapper</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">lon</span><span class="p">,</span> <span class="n">lat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmapper</span><span class="o">.</span><span class="n">imgToGeoGrid</span><span class="p">([</span><span class="mf">0.5</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">RasterXSize</span> <span class="o">-</span> <span class="mf">0.5</span><span class="p">],</span>
+                                             <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">RasterYSize</span> <span class="o">-</span> <span class="mf">0.5</span><span class="p">])</span>
+        <span class="n">polygon</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QPolygonF</span><span class="p">([</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QPointF</span><span class="p">(</span><span class="n">lon</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">lat</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]),</span>
+                                   <span class="n">QtCore</span><span class="o">.</span><span class="n">QPointF</span><span class="p">(</span><span class="n">lon</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">lat</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span>
+                                   <span class="n">QtCore</span><span class="o">.</span><span class="n">QPointF</span><span class="p">(</span><span class="n">lon</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">lat</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span>
+                                   <span class="n">QtCore</span><span class="o">.</span><span class="n">QPointF</span><span class="p">(</span><span class="n">lon</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">lat</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">])])</span>
+
+        <span class="k">return</span> <span class="n">polygon</span>
+</div>
+<div class="viewcode-block" id="DatasetItem.GetRasterBand"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.modelitems.html#gsdview.gdalbackend.modelitems.DatasetItem.GetRasterBand">[docs]</a>    <span class="k">def</span> <span class="nf">GetRasterBand</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="c"># @NOTE: raster bands numbering starts from 1</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">index</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">index</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">RasterCount</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">None</span>
+        <span class="c"># @NOTE: raster bands are always inserted before subdatasets</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">child</span><span class="p">(</span><span class="n">index</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="DatasetItem.GetSubDatasets"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.modelitems.html#gsdview.gdalbackend.modelitems.DatasetItem.GetSubDatasets">[docs]</a>    <span class="k">def</span> <span class="nf">GetSubDatasets</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c"># @NOTE: raster bands are always inserted before subdatasets</span>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">child</span><span class="p">(</span><span class="n">index</span><span class="p">)</span> <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RasterCount</span><span class="p">,</span>
+                                                     <span class="bp">self</span><span class="o">.</span><span class="n">rowCount</span><span class="p">())]</span>
+</div>
+    <span class="k">def</span> <span class="nf">_setup_child_bands</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gdalobj</span><span class="p">):</span>
+        <span class="c"># @NOTE: raster bands are always inserted before subdatasets</span>
+        <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rowCount</span><span class="p">(),</span> <span class="n">gdalobj</span><span class="o">.</span><span class="n">RasterCount</span><span class="p">):</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="n">BandItem</span><span class="p">(</span><span class="n">gdalobj</span><span class="o">.</span><span class="n">GetRasterBand</span><span class="p">(</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">item</span><span class="o">.</span><span class="n">text</span><span class="p">():</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="s">&#39;Raster Band&#39;</span>
+                <span class="k">if</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">qApp</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="n">text</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">qApp</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+                <span class="n">description</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s"> n. </span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="n">item</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">description</span><span class="p">)</span>
+                <span class="n">item</span><span class="o">.</span><span class="n">setToolTip</span><span class="p">(</span><span class="n">description</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">appendRow</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_setup_child_subdatasets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gdalobj</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">path</span><span class="p">,</span> <span class="n">extrainfo</span> <span class="ow">in</span> <span class="n">gdalobj</span><span class="o">.</span><span class="n">GetSubDatasets</span><span class="p">():</span>
+            <span class="c"># @TODO: pass full path for the sub-dataset filename (??)</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="n">SubDatasetItem</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">extrainfo</span><span class="p">)</span>
+
+            <span class="c"># @NOTE: raster bands are always inserted before subdatasets</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">appendRow</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_setup_children</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setup_child_bands</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setup_child_subdatasets</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="p">)</span>
+
+<div class="viewcode-block" id="DatasetItem.close"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.modelitems.html#gsdview.gdalbackend.modelitems.DatasetItem.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c">#self._obj.FlushCache() # @TODO: check</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmapper</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graphicsitem</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="c">#self.scene = None    # @WARNINIG: causes problems in event filters</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">DatasetItem</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="n">parent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">parent</span><span class="p">:</span>
+            <span class="c"># only remone itself if it is a toplevel item</span>
+            <span class="n">parent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">()</span><span class="o">.</span><span class="n">invisibleRootItem</span><span class="p">()</span>
+            <span class="c"># @NOTE: use takeRow instead of removeRow in order to avoid the</span>
+            <span class="c">#        underlying C/C++ object is deleted before all sub-windows</span>
+            <span class="c">#        that hold a reference to the stditem are destroyed</span>
+            <span class="n">parent</span><span class="o">.</span><span class="n">takeRow</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">row</span><span class="p">())</span>
+
+</div></div>
+<div class="viewcode-block" id="CachedDatasetItem"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.modelitems.html#gsdview.gdalbackend.modelitems.CachedDatasetItem">[docs]</a><span class="k">class</span> <span class="nc">CachedDatasetItem</span><span class="p">(</span><span class="n">DatasetItem</span><span class="p">):</span>
+    <span class="n">_type</span> <span class="o">=</span> <span class="n">DatasetItem</span><span class="o">.</span><span class="n">_type</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="n">CACHEDIR</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s">&#39;~&#39;</span><span class="p">,</span> <span class="s">&#39;.gsdview&#39;</span><span class="p">,</span> <span class="s">&#39;cache&#39;</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">gdal</span><span class="o">.</span><span class="n">GA_Update</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c"># @TODO: check</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="n">gdal</span><span class="o">.</span><span class="n">GA_ReadOnly</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&#39;GDAL open mode ignored in cached datasets.&#39;</span><span class="p">)</span>
+            <span class="n">mode</span> <span class="o">=</span> <span class="n">gdal</span><span class="o">.</span><span class="n">GA_Update</span>
+
+        <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="n">gdalobj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_checkedopen</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">gdal</span><span class="o">.</span><span class="n">GA_ReadOnly</span><span class="p">)</span>
+        <span class="c"># @NOTE: drop DataSetItem initializer</span>
+        <span class="n">MajorObjectItem</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gdalobj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
+
+        <span class="c">#: dataset filename</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span> <span class="o">=</span> <span class="n">mode</span>
+
+        <span class="n">vrtfilename</span><span class="p">,</span> <span class="n">vrtobj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vrtinit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="p">)</span>
+
+        <span class="c">#: filename of the cached virtual dataset</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vrtfilename</span> <span class="o">=</span> <span class="n">vrtfilename</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vrtobj</span> <span class="o">=</span> <span class="n">vrtobj</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setup_children</span><span class="p">()</span>
+
+        <span class="c">#: coordinate mapper</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmapper</span> <span class="o">=</span> <span class="n">gdalsupport</span><span class="o">.</span><span class="n">coordinate_mapper</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="p">)</span>
+
+        <span class="c"># @TODO: lazy behaviour: postpone the scene/view initialization when</span>
+        <span class="c">#        it is actualy needed</span>
+        <span class="n">scene</span><span class="p">,</span> <span class="n">graphicsitem</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setup_scene</span><span class="p">()</span>
+
+        <span class="c">#: graphics scene associated to the item</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scene</span> <span class="o">=</span> <span class="n">scene</span>
+
+        <span class="c">#: graphics item representing the dataset</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graphicsitem</span> <span class="o">=</span> <span class="n">graphicsitem</span>
+
+    <span class="k">def</span> <span class="nf">_vrtinit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gdalobj</span><span class="p">,</span> <span class="n">cachedir</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="c"># Build the virtual dataset filename</span>
+        <span class="k">if</span> <span class="n">cachedir</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">id_</span> <span class="o">=</span> <span class="n">gdalsupport</span><span class="o">.</span><span class="n">uniqueDatasetID</span><span class="p">(</span><span class="n">gdalobj</span><span class="p">)</span>
+            <span class="n">cachedir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">CACHEDIR</span>
+            <span class="n">cachedir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cachedir</span><span class="p">,</span> <span class="n">id_</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">cachedir</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">cachedir</span><span class="p">)</span>
+        <span class="n">vrtfilename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cachedir</span><span class="p">,</span> <span class="s">&#39;virtual-dataset.vrt&#39;</span><span class="p">)</span>
+
+        <span class="c"># Create the virtual dataset</span>
+        <span class="c"># @TODO: check &#39;openshared&#39;</span>
+        <span class="n">vrtdataset</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">vrtfilename</span><span class="p">):</span>
+            <span class="c"># @TODO: check if opening the dataset in update mode</span>
+            <span class="c">#        (gdal.GA_Update) is a better solution</span>
+            <span class="n">vrtdataset</span> <span class="o">=</span> <span class="n">gdal</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">vrtfilename</span><span class="p">,</span> <span class="n">gdal</span><span class="o">.</span><span class="n">GA_Update</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">vrtdataset</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="c"># Hendle both non existing self.vrtfilename and errors in opening</span>
+            <span class="c"># existing self.vrtfilename</span>
+            <span class="n">driver</span> <span class="o">=</span> <span class="n">gdal</span><span class="o">.</span><span class="n">GetDriverByName</span><span class="p">(</span><span class="s">&#39;VRT&#39;</span><span class="p">)</span>
+            <span class="n">vrtdataset</span> <span class="o">=</span> <span class="n">driver</span><span class="o">.</span><span class="n">CreateCopy</span><span class="p">(</span><span class="n">vrtfilename</span><span class="p">,</span> <span class="n">gdalobj</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">vrtdataset</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;unable to open the GDAL virtual dataset: &quot;</span><span class="si">%s</span><span class="s">&quot;&#39;</span> <span class="o">%</span>
+                                            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">vrtfilename</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">vrtfilename</span><span class="p">,</span> <span class="n">vrtdataset</span>
+
+    <span class="c"># Give items the same iterface of GDAL objects.</span>
+    <span class="c"># NOTE: the widgets module doesn&#39;t need to import modelitems</span>
+    <span class="k">def</span> <span class="nf">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39;GetDescription&#39;</span><span class="p">,</span> <span class="s">&#39;GetDriver&#39;</span><span class="p">,</span> <span class="s">&#39;GetSubDatasets&#39;</span><span class="p">,</span>
+                    <span class="s">&#39;GetFileList&#39;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_vrtobj</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+
+<div class="viewcode-block" id="CachedDatasetItem.GetMetadata"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.modelitems.html#gsdview.gdalbackend.modelitems.CachedDatasetItem.GetMetadata">[docs]</a>    <span class="k">def</span> <span class="nf">GetMetadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">):</span>
+        <span class="c"># @TODO: handle domain.startswith(&#39;xml:&#39;) and domain == &#39;OVERVIEW&#39;</span>
+        <span class="k">if</span> <span class="n">domain</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39;IMAGE_STRUCTURE&#39;</span><span class="p">,</span> <span class="s">&#39;SUBDATASETS&#39;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">GetMetadata</span><span class="p">(</span><span class="n">domain</span><span class="p">)</span>
+
+        <span class="n">md</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vrtobj</span><span class="o">.</span><span class="n">GetMetadata</span><span class="p">(</span><span class="n">domain</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">domain</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">md</span><span class="p">:</span>
+            <span class="c"># @NOTE: look into the original GDAL obj for metadata</span>
+            <span class="c">#        associated to non standard domains</span>
+            <span class="n">md</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">GetMetadata</span><span class="p">(</span><span class="n">domain</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">md</span>
+</div>
+<div class="viewcode-block" id="CachedDatasetItem.GetMetadata_Dict"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.modelitems.html#gsdview.gdalbackend.modelitems.CachedDatasetItem.GetMetadata_Dict">[docs]</a>    <span class="k">def</span> <span class="nf">GetMetadata_Dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">):</span>
+        <span class="c"># @TODO: handle domain.startswith(&#39;xml:&#39;) and domain == &#39;OVERVIEW&#39;</span>
+        <span class="k">if</span> <span class="n">domain</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39;IMAGE_STRUCTURE&#39;</span><span class="p">,</span> <span class="s">&#39;SUBDATASETS&#39;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">GetMetadata_Dict</span><span class="p">(</span><span class="n">domain</span><span class="p">)</span>
+
+        <span class="n">md</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vrtobj</span><span class="o">.</span><span class="n">GetMetadata_Dict</span><span class="p">(</span><span class="n">domain</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">domain</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">md</span><span class="p">:</span>
+            <span class="c"># @NOTE: look into the original GDAL obj for metadata</span>
+            <span class="c">#        associated to non standard domains</span>
+            <span class="n">md</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">GetMetadata_Dict</span><span class="p">(</span><span class="n">domain</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">md</span>
+</div>
+<div class="viewcode-block" id="CachedDatasetItem.GetMetadata_List"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.modelitems.html#gsdview.gdalbackend.modelitems.CachedDatasetItem.GetMetadata_List">[docs]</a>    <span class="k">def</span> <span class="nf">GetMetadata_List</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">):</span>
+        <span class="c"># @TODO: handle domain.startswith(&#39;xml:&#39;) and domain == &#39;OVERVIEW&#39;</span>
+        <span class="k">if</span> <span class="n">domain</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39;IMAGE_STRUCTURE&#39;</span><span class="p">,</span> <span class="s">&#39;SUBDATASETS&#39;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">GetMetadata_List</span><span class="p">(</span><span class="n">domain</span><span class="p">)</span>
+
+        <span class="n">md</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vrtobj</span><span class="o">.</span><span class="n">GetMetadata_List</span><span class="p">(</span><span class="n">domain</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">domain</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">md</span><span class="p">:</span>
+            <span class="c"># @NOTE: look into the original GDAL obj for metadata</span>
+            <span class="c">#        associated to non standard domains</span>
+            <span class="n">md</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">GetMetadata_List</span><span class="p">(</span><span class="n">domain</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">md</span>
+</div>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">gdal</span><span class="o">.</span><span class="n">Dataset</span><span class="p">,</span> <span class="s">&#39;GetMetadataItem&#39;</span><span class="p">):</span>
+
+<div class="viewcode-block" id="CachedDatasetItem.GetMetadataItem"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.modelitems.html#gsdview.gdalbackend.modelitems.CachedDatasetItem.GetMetadataItem">[docs]</a>        <span class="k">def</span> <span class="nf">GetMetadataItem</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">):</span>
+            <span class="c"># @TODO: handle domain.startswith(&#39;xml:&#39;) and domain == &#39;OVERVIEW&#39;</span>
+            <span class="k">if</span> <span class="n">domain</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39;IMAGE_STRUCTURE&#39;</span><span class="p">,</span> <span class="s">&#39;SUBDATASETS&#39;</span><span class="p">):</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">GetMetadataItem</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">domain</span><span class="p">)</span>
+
+            <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vrtobj</span><span class="o">.</span><span class="n">GetMetadataItem</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">domain</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">domain</span> <span class="ow">and</span> <span class="n">value</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="c"># @NOTE: look into the original GDAL obj for metadata</span>
+                <span class="c">#        associated to non standard domains</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">GetMetadataItem</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">domain</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">value</span>
+</div>
+    <span class="k">def</span> <span class="nf">_setup_children</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setup_child_bands</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_vrtobj</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setup_child_subdatasets</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="p">)</span>
+
+<div class="viewcode-block" id="CachedDatasetItem.close"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.modelitems.html#gsdview.gdalbackend.modelitems.CachedDatasetItem.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">CachedDatasetItem</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="c"># @NOTE: close virtual object after closing all children</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vrtobj</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vrtfilename</span> <span class="o">=</span> <span class="bp">None</span>
+</div>
+<div class="viewcode-block" id="CachedDatasetItem.reopen"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.modelitems.html#gsdview.gdalbackend.modelitems.CachedDatasetItem.reopen">[docs]</a>    <span class="k">def</span> <span class="nf">reopen</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">gdalobj</span> <span class="o">=</span> <span class="n">gdal</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vrtfilename</span><span class="p">,</span> <span class="n">gdal</span><span class="o">.</span><span class="n">GA_Update</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">gdalobj</span><span class="o">.</span><span class="n">RasterCount</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">RasterCount</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&#39;unable to reopen dataset: &#39;</span>
+                            <span class="s">&#39;unexpected number of raster bands&#39;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="c"># @WARNING: an error here would require node removal</span>
+        <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">RasterCount</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">GetRasterBand</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+            <span class="n">item</span><span class="o">.</span><span class="n">_reopen</span><span class="p">(</span><span class="n">gdalobj</span><span class="o">.</span><span class="n">GetRasterBand</span><span class="p">(</span><span class="n">index</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vrtobj</span> <span class="o">=</span> <span class="n">gdalobj</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">()</span><span class="o">.</span><span class="n">itemChanged</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+</div></div>
+<div class="viewcode-block" id="datasetitem"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.modelitems.html#gsdview.gdalbackend.modelitems.datasetitem">[docs]</a><span class="k">def</span> <span class="nf">datasetitem</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Factory for dataset items.&#39;&#39;&#39;</span>
+
+    <span class="c"># Some dataset has only sub-datasets (no raster band).</span>
+    <span class="c"># In this case it is not possible to use a virtual datasets like</span>
+    <span class="c"># CachedDatasetItem does</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">CachedDatasetItem</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">OpenError</span><span class="p">:</span>
+        <span class="c"># @TODO: remove virtualfile created by CachedDatasetItem</span>
+        <span class="k">return</span> <span class="n">DatasetItem</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="SubDatasetItem"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.modelitems.html#gsdview.gdalbackend.modelitems.SubDatasetItem">[docs]</a><span class="k">class</span> <span class="nc">SubDatasetItem</span><span class="p">(</span><span class="n">CachedDatasetItem</span><span class="p">):</span>
+    <span class="n">iconfile</span> <span class="o">=</span> <span class="n">qt4support</span><span class="o">.</span><span class="n">geticon</span><span class="p">(</span><span class="s">&#39;subdataset.svg&#39;</span><span class="p">,</span> <span class="n">__name__</span><span class="p">)</span>
+    <span class="n">_type</span> <span class="o">=</span> <span class="n">DatasetItem</span><span class="o">.</span><span class="n">_type</span> <span class="o">+</span> <span class="mi">10</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gdalfilename</span><span class="p">,</span> <span class="n">extrainfo</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c"># @NOTE: never call DatasetItem.__init__</span>
+        <span class="n">MajorObjectItem</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">extrainfo</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setToolTip</span><span class="p">(</span><span class="n">extrainfo</span><span class="p">)</span>
+
+        <span class="c">#: dataset filename</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">gdalfilename</span>
+
+        <span class="c">#: GDAL sub-dataset info</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">extrainfo</span> <span class="o">=</span> <span class="n">extrainfo</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="c">#: coordinate mapper</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmapper</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="c">#: graphics scene associated to the item</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scene</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="c">#: graphics item representing the dataset</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graphicsitem</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="c">#: filename of the cached virtual dataset</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vrtfilename</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vrtobj</span> <span class="o">=</span> <span class="bp">None</span>
+
+<div class="viewcode-block" id="SubDatasetItem.isopen"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.modelitems.html#gsdview.gdalbackend.modelitems.SubDatasetItem.isopen">[docs]</a>    <span class="k">def</span> <span class="nf">isopen</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vrtobj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span>
+
+    <span class="c"># @staticmethod</span></div>
+    <span class="k">def</span> <span class="nf">_normalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;:&#39;</span><span class="p">,</span> <span class="s">&#39;_&#39;</span><span class="p">)</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">,</span> <span class="s">&#39;_&#39;</span><span class="p">)</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\\</span><span class="s">&#39;</span><span class="p">,</span> <span class="s">&#39;_&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">filename</span>
+
+<div class="viewcode-block" id="SubDatasetItem.open"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.modelitems.html#gsdview.gdalbackend.modelitems.SubDatasetItem.open">[docs]</a>    <span class="k">def</span> <span class="nf">open</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cachedir</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">isopen</span><span class="p">():</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">cachedir</span><span class="p">:</span>
+            <span class="n">cachedir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">CACHEDIR</span><span class="p">,</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">_normalize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span> <span class="o">==</span> <span class="n">gdal</span><span class="o">.</span><span class="n">GA_ReadOnly</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&#39;GDAL open mode ignored in cached datasets.&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span> <span class="o">=</span> <span class="n">gdal</span><span class="o">.</span><span class="n">GA_Update</span>
+
+        <span class="c"># @TODO: don&#39;t use &quot;os.path.abspath&quot; because the filename id to be</span>
+        <span class="c">#        intended includes as a gdal-filename using sub-dataset</span>
+        <span class="c">#        syntax</span>
+        <span class="n">gdalobj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_checkedopen</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span>
+        <span class="n">vrtfilename</span><span class="p">,</span> <span class="n">vrtobj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vrtinit</span><span class="p">(</span><span class="n">gdalobj</span><span class="p">,</span> <span class="n">cachedir</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">vrtfilename</span> <span class="o">=</span> <span class="n">vrtfilename</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span> <span class="o">=</span> <span class="n">gdalobj</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vrtobj</span> <span class="o">=</span> <span class="n">vrtobj</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setup_children</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmapper</span> <span class="o">=</span> <span class="n">gdalsupport</span><span class="o">.</span><span class="n">coordinate_mapper</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_vrtobj</span><span class="p">)</span>
+
+        <span class="c"># @TODO: lazy behaviour: postpone the scene/view initialization when</span>
+        <span class="c">#        it is actualy needed</span>
+        <span class="n">scene</span><span class="p">,</span> <span class="n">graphicsitem</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setup_scene</span><span class="p">()</span>
+
+        <span class="c">#: graphics scene associated to the item</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scene</span> <span class="o">=</span> <span class="n">scene</span>
+
+        <span class="c">#: graphics item representing the dataset</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graphicsitem</span> <span class="o">=</span> <span class="n">graphicsitem</span>
+</div>
+<div class="viewcode-block" id="SubDatasetItem.close"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.modelitems.html#gsdview.gdalbackend.modelitems.SubDatasetItem.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c"># @NOTE: preserve the filename, extrainfo and mode</span>
+        <span class="n">gdalfilename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span>
+        <span class="n">mode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span>
+        <span class="c">#self.extrainfo = &#39;&#39;</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">SubDatasetItem</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">gdalfilename</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span> <span class="o">=</span> <span class="n">mode</span>
+</div>
+<div class="viewcode-block" id="SubDatasetItem.reopen"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.modelitems.html#gsdview.gdalbackend.modelitems.SubDatasetItem.reopen">[docs]</a>    <span class="k">def</span> <span class="nf">reopen</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">isopen</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">open</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">super</span><span class="p">(</span><span class="n">SubDatasetItem</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">reopen</span><span class="p">()</span>
+</div>
+    <span class="k">def</span> <span class="nf">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">SubDatasetItem</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__getattr__</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">gdal</span><span class="o">.</span><span class="n">Dataset</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&#39;unable to access &quot;</span><span class="si">%s</span><span class="s">&quot; on a non open &#39;</span>
+                               <span class="s">&#39;object&#39;</span> <span class="o">%</span> <span class="n">name</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+
+<div class="viewcode-block" id="SubDatasetItem.GetRasterBand"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.modelitems.html#gsdview.gdalbackend.modelitems.SubDatasetItem.GetRasterBand">[docs]</a>    <span class="k">def</span> <span class="nf">GetRasterBand</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">isopen</span><span class="p">():</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">CachedDatasetItem</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">GetRasterBand</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">None</span>
+</div>
+<div class="viewcode-block" id="SubDatasetItem.GetMetadata"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.modelitems.html#gsdview.gdalbackend.modelitems.SubDatasetItem.GetMetadata">[docs]</a>    <span class="k">def</span> <span class="nf">GetMetadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">isopen</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&#39;unable to access &quot;</span><span class="si">%s</span><span class="s">&quot; on a non open &#39;</span>
+                               <span class="s">&#39;object&#39;</span> <span class="o">%</span> <span class="s">&#39;GetMetadata&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">SubDatasetItem</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">GetMetadata</span><span class="p">(</span><span class="n">domain</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="SubDatasetItem.GetMetadata_Dict"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.modelitems.html#gsdview.gdalbackend.modelitems.SubDatasetItem.GetMetadata_Dict">[docs]</a>    <span class="k">def</span> <span class="nf">GetMetadata_Dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">isopen</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&#39;unable to access &quot;</span><span class="si">%s</span><span class="s">&quot; on a non open &#39;</span>
+                               <span class="s">&#39;object&#39;</span> <span class="o">%</span> <span class="s">&#39;GetMetadata_Dict&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">SubDatasetItem</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">GetMetadata_Dict</span><span class="p">(</span><span class="n">domain</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="SubDatasetItem.GetMetadata_List"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.modelitems.html#gsdview.gdalbackend.modelitems.SubDatasetItem.GetMetadata_List">[docs]</a>    <span class="k">def</span> <span class="nf">GetMetadata_List</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">isopen</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&#39;unable to access &quot;</span><span class="si">%s</span><span class="s">&quot; on a non open &#39;</span>
+                               <span class="s">&#39;object&#39;</span> <span class="o">%</span> <span class="s">&#39;GetMetadata_List&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">SubDatasetItem</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">GetMetadata_List</span><span class="p">(</span><span class="n">domain</span><span class="p">)</span>
+</div>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">gdal</span><span class="o">.</span><span class="n">Dataset</span><span class="p">,</span> <span class="s">&#39;GetMetadataItem&#39;</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SubDatasetItem.GetMetadataItem"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.modelitems.html#gsdview.gdalbackend.modelitems.SubDatasetItem.GetMetadataItem">[docs]</a>        <span class="k">def</span> <span class="nf">GetMetadataItem</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">isopen</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&#39;unable to access &quot;</span><span class="si">%s</span><span class="s">&quot; on a non open &#39;</span>
+                                   <span class="s">&#39;object&#39;</span> <span class="o">%</span> <span class="s">&#39;GetMetadataItem&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">SubDatasetItem</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">GetMetadataItem</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">domain</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/logo.png" alt="Logo"/>
+            </a></p>
+    
+    
+    <p>
+        <a href="http://sourceforge.net/projects/gsdview">
+            <img src="http://sflogo.sourceforge.net/sflogo.php?group_id=226458&type=14" width="150" height="40" alt="Get GSDView at SourceForge.net. Fast, secure and Free Open Source software downloads" />
+        </a>
+    </p>
+    
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li><a href="../../../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../gsdview.html" >gsdview</a> &raquo;</li>
+          <li><a href="../gdalbackend.html" >gsdview.gdalbackend</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2008-2011, Antonio Valentino.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

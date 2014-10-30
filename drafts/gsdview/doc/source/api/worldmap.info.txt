@@ -1,0 +1,16 @@
+worldmap.info
+=============
+
+.. automodule:: worldmap.info
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   

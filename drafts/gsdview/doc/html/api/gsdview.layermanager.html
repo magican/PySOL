@@ -1,0 +1,273 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>gsdview.layermanager &mdash; GSDView Open Edition Home Page</title>
+    <link rel="stylesheet" href="../_static/sourceforge.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.6.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/logo.ico"/>
+    <link rel="top" title="GSDView Open Edition Home Page" href="../index.html" />
+    <link rel="up" title="API Reference" href="../reference.html" />
+    <link rel="next" title="gsdview.mdi" href="gsdview.mdi.html" />
+    <link rel="prev" title="gsdview.launch" href="gsdview.launch.html" /> 
+  </head>
+  <body>
+    
+        
+    
+    
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li class="right" >
+          <a href="gsdview.mdi.html" title="gsdview.mdi"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="gsdview.launch.html" title="gsdview.launch"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../reference.html" accesskey="U">API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-gsdview.layermanager">
+<span id="gsdview-layermanager"></span><h1>gsdview.layermanager<a class="headerlink" href="#module-gsdview.layermanager" title="Permalink to this headline">¶</a></h1>
+<p>Components for layers management.</p>
+<p class="rubric">Classes</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><a class="reference internal" href="#gsdview.layermanager.BaseLayerManager" title="gsdview.layermanager.BaseLayerManager"><tt class="xref py py-obj docutils literal"><span class="pre">BaseLayerManager</span></tt></a>(**kargs[,&nbsp;parent])</td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.layermanager.LayerManager" title="gsdview.layermanager.LayerManager"><tt class="xref py py-obj docutils literal"><span class="pre">LayerManager</span></tt></a>(view,&nbsp;**kargs[,&nbsp;parent])</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="class">
+<dt id="gsdview.layermanager.BaseLayerManager">
+<em class="property">class </em><tt class="descclassname">gsdview.layermanager.</tt><tt class="descname">BaseLayerManager</tt><big>(</big><em>parent=None</em>, <em>**kargs</em><big>)</big><a class="reference internal" href="../_modules/gsdview/layermanager.html#BaseLayerManager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.layermanager.BaseLayerManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">PyQt4.QtCore.QObject</span></tt></p>
+<dl class="method">
+<dt id="gsdview.layermanager.BaseLayerManager.action">
+<tt class="descname">action</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="../_modules/gsdview/layermanager.html#BaseLayerManager.action"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.layermanager.BaseLayerManager.action" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.layermanager.BaseLayerManager.checkSelectedItems">
+<tt class="descname">checkSelectedItems</tt><big>(</big><em>selectionmodel</em>, <em>checked=True</em><big>)</big><a class="reference internal" href="../_modules/gsdview/layermanager.html#BaseLayerManager.checkSelectedItems"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.layermanager.BaseLayerManager.checkSelectedItems" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.layermanager.BaseLayerManager.isLayer">
+<tt class="descname">isLayer</tt><big>(</big><em>item</em><big>)</big><a class="reference internal" href="../_modules/gsdview/layermanager.html#BaseLayerManager.isLayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.layermanager.BaseLayerManager.isLayer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.layermanager.BaseLayerManager.moveSelectionDown">
+<tt class="descname">moveSelectionDown</tt><big>(</big><em>selectionmodel</em><big>)</big><a class="reference internal" href="../_modules/gsdview/layermanager.html#BaseLayerManager.moveSelectionDown"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.layermanager.BaseLayerManager.moveSelectionDown" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.layermanager.BaseLayerManager.moveSelectionToBottom">
+<tt class="descname">moveSelectionToBottom</tt><big>(</big><em>selectionmodel</em><big>)</big><a class="reference internal" href="../_modules/gsdview/layermanager.html#BaseLayerManager.moveSelectionToBottom"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.layermanager.BaseLayerManager.moveSelectionToBottom" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.layermanager.BaseLayerManager.moveSelectionToTop">
+<tt class="descname">moveSelectionToTop</tt><big>(</big><em>selectionmodel</em><big>)</big><a class="reference internal" href="../_modules/gsdview/layermanager.html#BaseLayerManager.moveSelectionToTop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.layermanager.BaseLayerManager.moveSelectionToTop" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.layermanager.BaseLayerManager.moveSelectionUp">
+<tt class="descname">moveSelectionUp</tt><big>(</big><em>selectionmodel</em><big>)</big><a class="reference internal" href="../_modules/gsdview/layermanager.html#BaseLayerManager.moveSelectionUp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.layermanager.BaseLayerManager.moveSelectionUp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.layermanager.BaseLayerManager.removeSelectedLayers">
+<tt class="descname">removeSelectedLayers</tt><big>(</big><em>selectionmodel</em><big>)</big><a class="reference internal" href="../_modules/gsdview/layermanager.html#BaseLayerManager.removeSelectedLayers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.layermanager.BaseLayerManager.removeSelectedLayers" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.layermanager.BaseLayerManager.toggleSelectedItems">
+<tt class="descname">toggleSelectedItems</tt><big>(</big><em>selectionmodel</em><big>)</big><a class="reference internal" href="../_modules/gsdview/layermanager.html#BaseLayerManager.toggleSelectedItems"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.layermanager.BaseLayerManager.toggleSelectedItems" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="gsdview.layermanager.BaseLayerManager.updateStackOrder">
+<em class="property">static </em><tt class="descname">updateStackOrder</tt><big>(</big><em>rootitem</em>, <em>offset=0</em><big>)</big><a class="reference internal" href="../_modules/gsdview/layermanager.html#BaseLayerManager.updateStackOrder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.layermanager.BaseLayerManager.updateStackOrder" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.layermanager.BaseLayerManager.updateVisibility">
+<tt class="descname">updateVisibility</tt><big>(</big><em>index</em><big>)</big><a class="reference internal" href="../_modules/gsdview/layermanager.html#BaseLayerManager.updateVisibility"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.layermanager.BaseLayerManager.updateVisibility" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gsdview.layermanager.LayerManager">
+<em class="property">class </em><tt class="descclassname">gsdview.layermanager.</tt><tt class="descname">LayerManager</tt><big>(</big><em>view</em>, <em>parent=None</em>, <em>**kargs</em><big>)</big><a class="reference internal" href="../_modules/gsdview/layermanager.html#LayerManager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.layermanager.LayerManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gsdview.layermanager.BaseLayerManager" title="gsdview.layermanager.BaseLayerManager"><tt class="xref py py-class docutils literal"><span class="pre">gsdview.layermanager.BaseLayerManager</span></tt></a></p>
+<dl class="method">
+<dt id="gsdview.layermanager.LayerManager.checkSelectedItems">
+<tt class="descname">checkSelectedItems</tt><big>(</big><em>selectionmodel=None</em>, <em>checked=True</em><big>)</big><a class="reference internal" href="../_modules/gsdview/layermanager.html#LayerManager.checkSelectedItems"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.layermanager.LayerManager.checkSelectedItems" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.layermanager.LayerManager.eventFilter">
+<tt class="descname">eventFilter</tt><big>(</big><em>obj</em>, <em>event</em><big>)</big><a class="reference internal" href="../_modules/gsdview/layermanager.html#LayerManager.eventFilter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.layermanager.LayerManager.eventFilter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.layermanager.LayerManager.model">
+<tt class="descname">model</tt><a class="reference internal" href="../_modules/gsdview/layermanager.html#LayerManager.model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.layermanager.LayerManager.model" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.layermanager.LayerManager.moveSelectionDown">
+<tt class="descname">moveSelectionDown</tt><big>(</big><em>selectionmodel=None</em><big>)</big><a class="reference internal" href="../_modules/gsdview/layermanager.html#LayerManager.moveSelectionDown"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.layermanager.LayerManager.moveSelectionDown" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.layermanager.LayerManager.moveSelectionToBottom">
+<tt class="descname">moveSelectionToBottom</tt><big>(</big><em>selectionmodel=None</em><big>)</big><a class="reference internal" href="../_modules/gsdview/layermanager.html#LayerManager.moveSelectionToBottom"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.layermanager.LayerManager.moveSelectionToBottom" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.layermanager.LayerManager.moveSelectionToTop">
+<tt class="descname">moveSelectionToTop</tt><big>(</big><em>selectionmodel=None</em><big>)</big><a class="reference internal" href="../_modules/gsdview/layermanager.html#LayerManager.moveSelectionToTop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.layermanager.LayerManager.moveSelectionToTop" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.layermanager.LayerManager.moveSelectionUp">
+<tt class="descname">moveSelectionUp</tt><big>(</big><em>selectionmodel=None</em><big>)</big><a class="reference internal" href="../_modules/gsdview/layermanager.html#LayerManager.moveSelectionUp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.layermanager.LayerManager.moveSelectionUp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.layermanager.LayerManager.removeSelectedLayers">
+<tt class="descname">removeSelectedLayers</tt><big>(</big><em>selectionmodel=None</em><big>)</big><a class="reference internal" href="../_modules/gsdview/layermanager.html#LayerManager.removeSelectedLayers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.layermanager.LayerManager.removeSelectedLayers" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.layermanager.LayerManager.selectionmodel">
+<tt class="descname">selectionmodel</tt><a class="reference internal" href="../_modules/gsdview/layermanager.html#LayerManager.selectionmodel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.layermanager.LayerManager.selectionmodel" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.layermanager.LayerManager.toggleSelectedItems">
+<tt class="descname">toggleSelectedItems</tt><big>(</big><em>selectionmodel=None</em><big>)</big><a class="reference internal" href="../_modules/gsdview/layermanager.html#LayerManager.toggleSelectedItems"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.layermanager.LayerManager.toggleSelectedItems" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.layermanager.LayerManager.uncheckSelectedItems">
+<tt class="descname">uncheckSelectedItems</tt><big>(</big><em>selectionmodel=None</em><big>)</big><a class="reference internal" href="../_modules/gsdview/layermanager.html#LayerManager.uncheckSelectedItems"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.layermanager.LayerManager.uncheckSelectedItems" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.layermanager.LayerManager.updateStackOrder">
+<tt class="descname">updateStackOrder</tt><big>(</big><em>rootitem=None</em><big>)</big><a class="reference internal" href="../_modules/gsdview/layermanager.html#LayerManager.updateStackOrder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.layermanager.LayerManager.updateStackOrder" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo.png" alt="Logo"/>
+            </a></p>
+    
+    
+    <p>
+        <a href="http://sourceforge.net/projects/gsdview">
+            <img src="http://sflogo.sourceforge.net/sflogo.php?group_id=226458&type=14" width="150" height="40" alt="Get GSDView at SourceForge.net. Fast, secure and Free Open Source software downloads" />
+        </a>
+    </p>
+    
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="gsdview.launch.html"
+                        title="previous chapter">gsdview.launch</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="gsdview.mdi.html"
+                        title="next chapter">gsdview.mdi</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/api/gsdview.layermanager.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li class="right" >
+          <a href="gsdview.mdi.html" title="gsdview.mdi"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="gsdview.launch.html" title="gsdview.launch"
+             >previous</a> |</li>
+        <li><a href="../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../reference.html" >API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2008-2011, Antonio Valentino.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

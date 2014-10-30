@@ -1,0 +1,408 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>gsdview.gdalbackend.helpers &mdash; GSDView Open Edition Home Page</title>
+    <link rel="stylesheet" href="../_static/sourceforge.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.6.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/logo.ico"/>
+    <link rel="top" title="GSDView Open Edition Home Page" href="../index.html" />
+    <link rel="up" title="API Reference" href="../reference.html" />
+    <link rel="next" title="gsdview.gdalbackend.info" href="gsdview.gdalbackend.info.html" />
+    <link rel="prev" title="gsdview.gdalbackend.gdalsupport" href="gsdview.gdalbackend.gdalsupport.html" /> 
+  </head>
+  <body>
+    
+        
+    
+    
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li class="right" >
+          <a href="gsdview.gdalbackend.info.html" title="gsdview.gdalbackend.info"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="gsdview.gdalbackend.gdalsupport.html" title="gsdview.gdalbackend.gdalsupport"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../reference.html" accesskey="U">API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-gsdview.gdalbackend.helpers">
+<span id="gsdview-gdalbackend-helpers"></span><h1>gsdview.gdalbackend.helpers<a class="headerlink" href="#module-gsdview.gdalbackend.helpers" title="Permalink to this headline">¶</a></h1>
+<p>Core GDAL backend functions and classes.</p>
+<p class="rubric">Classes</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><a class="reference internal" href="#gsdview.gdalbackend.helpers.AddoDialogHelper" title="gsdview.gdalbackend.helpers.AddoDialogHelper"><tt class="xref py py-obj docutils literal"><span class="pre">AddoDialogHelper</span></tt></a>(app,&nbsp;tool)</td>
+<td>Helper class for overviews computation.</td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.gdalbackend.helpers.AddoHelper" title="gsdview.gdalbackend.helpers.AddoHelper"><tt class="xref py py-obj docutils literal"><span class="pre">AddoHelper</span></tt></a>(app,&nbsp;tool)</td>
+<td>Helper class for gdaladdo execution on live datasets.</td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.gdalbackend.helpers.GdalHelper" title="gsdview.gdalbackend.helpers.GdalHelper"><tt class="xref py py-obj docutils literal"><span class="pre">GdalHelper</span></tt></a>(app,&nbsp;tool)</td>
+<td>Basee helper class for running external GDAL tools.</td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.gdalbackend.helpers.HistDialogHelper" title="gsdview.gdalbackend.helpers.HistDialogHelper"><tt class="xref py py-obj docutils literal"><span class="pre">HistDialogHelper</span></tt></a>(app,&nbsp;tool)</td>
+<td>Helper class for histogram computation on live raster bands.</td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.gdalbackend.helpers.StatsDialogHelper" title="gsdview.gdalbackend.helpers.StatsDialogHelper"><tt class="xref py py-obj docutils literal"><span class="pre">StatsDialogHelper</span></tt></a>(app,&nbsp;tool)</td>
+<td>Helper class for statistics computation on live raster bands.</td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.gdalbackend.helpers.StatsHelper" title="gsdview.gdalbackend.helpers.StatsHelper"><tt class="xref py py-obj docutils literal"><span class="pre">StatsHelper</span></tt></a>(app,&nbsp;tool)</td>
+<td>Helper class for statistics pre-computation on live raster bands.</td>
+</tr>
+</tbody>
+</table>
+<dl class="class">
+<dt id="gsdview.gdalbackend.helpers.AddoDialogHelper">
+<em class="property">class </em><tt class="descclassname">gsdview.gdalbackend.helpers.</tt><tt class="descname">AddoDialogHelper</tt><big>(</big><em>app</em>, <em>tool</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/helpers.html#AddoDialogHelper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.helpers.AddoDialogHelper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gsdview.gdalbackend.helpers.AddoHelper" title="gsdview.gdalbackend.helpers.AddoHelper"><tt class="xref py py-class docutils literal"><span class="pre">gsdview.gdalbackend.helpers.AddoHelper</span></tt></a></p>
+<p>Helper class for overviews computation.</p>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#gsdview.gdalbackend.helpers.AddoHelper" title="gsdview.gdalbackend.helpers.AddoHelper"><tt class="xref py py-class docutils literal"><span class="pre">AddoHelper</span></tt></a></p>
+</div>
+<dl class="method">
+<dt id="gsdview.gdalbackend.helpers.AddoDialogHelper.do_finalize">
+<tt class="descname">do_finalize</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/helpers.html#AddoDialogHelper.do_finalize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.helpers.AddoDialogHelper.do_finalize" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.helpers.AddoDialogHelper.reset">
+<tt class="descname">reset</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/helpers.html#AddoDialogHelper.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.helpers.AddoDialogHelper.reset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.helpers.AddoDialogHelper.start">
+<tt class="descname">start</tt><big>(</big><em>item</em>, <em>dialog=None</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/helpers.html#AddoDialogHelper.start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.helpers.AddoDialogHelper.start" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.helpers.AddoDialogHelper.target_levels">
+<tt class="descname">target_levels</tt><big>(</big><em>dataset</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/helpers.html#AddoDialogHelper.target_levels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.helpers.AddoDialogHelper.target_levels" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gsdview.gdalbackend.helpers.AddoHelper">
+<em class="property">class </em><tt class="descclassname">gsdview.gdalbackend.helpers.</tt><tt class="descname">AddoHelper</tt><big>(</big><em>app</em>, <em>tool</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/helpers.html#AddoHelper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.helpers.AddoHelper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gsdview.gdalbackend.helpers.GdalHelper" title="gsdview.gdalbackend.helpers.GdalHelper"><tt class="xref py py-class docutils literal"><span class="pre">gsdview.gdalbackend.helpers.GdalHelper</span></tt></a></p>
+<p>Helper class for gdaladdo execution on live datasets.</p>
+<p>In GSDView an external process running the gdaladdo is used to add
+oveviews to (virtual) dataset that are already open in GSDView
+itself.</p>
+<p>Unfortunately, as far as I know, there is no way to safely handle
+two dataset objects (pointing at the same vrt file) in two different
+processes.</p>
+<p>This helper class provides functions to perform overview
+computation on a private environment and then move the ovr/aux
+file back to the main cache folder of the dataset.
+After that the dataset is re-opened an all changes are safely
+reflected to the GUI.</p>
+<p>In case the overview computation is stopped before completion then
+the private gdaladdo environment is simply cleaned and no side
+effect arises.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>if one wants to add overviews to a vrt dataset that
+already has overviews (i.e. the ovr/aux file already
+exists) then the ovr/aux file should be copyed in the
+private gdaladdo environment before starting computation.</p>
+<p>In this way the pre-existing overview are preserved but
+the copy operation could be heavy weight.</p>
+<p>Maybe some suggestion can be asked on the GDAL
+mailing-list.</p>
+<p>An alternative solution, the one currently implemented,
+is to force recomputation of all overview levels (exixting
+ones and newly selected) and then replace the ol overview
+file.</p>
+<p class="last">This solution is not efficient since it doesn&#8217;t re-use
+existing overviews but ensure no data loss in case the
+operation is stopped by the user.</p>
+</div>
+<dl class="method">
+<dt id="gsdview.gdalbackend.helpers.AddoHelper.do_finalize">
+<tt class="descname">do_finalize</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/helpers.html#AddoHelper.do_finalize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.helpers.AddoHelper.do_finalize" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.helpers.AddoHelper.do_start">
+<tt class="descname">do_start</tt><big>(</big><em>item</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/helpers.html#AddoHelper.do_start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.helpers.AddoHelper.do_start" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.helpers.AddoHelper.reset">
+<tt class="descname">reset</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/helpers.html#AddoHelper.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.helpers.AddoHelper.reset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.helpers.AddoHelper.target_levels">
+<tt class="descname">target_levels</tt><big>(</big><em>dataset</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/helpers.html#AddoHelper.target_levels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.helpers.AddoHelper.target_levels" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gsdview.gdalbackend.helpers.GdalHelper">
+<em class="property">class </em><tt class="descclassname">gsdview.gdalbackend.helpers.</tt><tt class="descname">GdalHelper</tt><big>(</big><em>app</em>, <em>tool</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/helpers.html#GdalHelper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.helpers.GdalHelper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>Basee helper class for running external GDAL tools.</p>
+<p>Helper classes provide a common set of functionality for running
+GDAL tools in separate processes.
+Task performed are:</p>
+<blockquote>
+<div><ul class="simple">
+<li>tool setup</li>
+<li>temporay files and diractories creation</li>
+<li>temporay files and diractories cleanup</li>
+<li>finalization actions</li>
+</ul>
+</div></blockquote>
+<dl class="method">
+<dt id="gsdview.gdalbackend.helpers.GdalHelper.cleanup">
+<tt class="descname">cleanup</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/helpers.html#GdalHelper.cleanup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.helpers.GdalHelper.cleanup" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.gdalbackend.helpers.GdalHelper.controller">
+<tt class="descname">controller</tt><a class="reference internal" href="../_modules/gsdview/gdalbackend/helpers.html#GdalHelper.controller"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.helpers.GdalHelper.controller" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.helpers.GdalHelper.do_finalize">
+<tt class="descname">do_finalize</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/helpers.html#GdalHelper.do_finalize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.helpers.GdalHelper.do_finalize" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.helpers.GdalHelper.do_finalize_on_error">
+<tt class="descname">do_finalize_on_error</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/helpers.html#GdalHelper.do_finalize_on_error"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.helpers.GdalHelper.do_finalize_on_error" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.helpers.GdalHelper.do_start">
+<tt class="descname">do_start</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/helpers.html#GdalHelper.do_start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.helpers.GdalHelper.do_start" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.helpers.GdalHelper.finalize">
+<tt class="descname">finalize</tt><big>(</big><em>returncode=0</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/helpers.html#GdalHelper.finalize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.helpers.GdalHelper.finalize" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.gdalbackend.helpers.GdalHelper.gdalbackend">
+<tt class="descname">gdalbackend</tt><a class="reference internal" href="../_modules/gsdview/gdalbackend/helpers.html#GdalHelper.gdalbackend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.helpers.GdalHelper.gdalbackend" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.gdalbackend.helpers.GdalHelper.logger">
+<tt class="descname">logger</tt><a class="reference internal" href="../_modules/gsdview/gdalbackend/helpers.html#GdalHelper.logger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.helpers.GdalHelper.logger" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="gsdview.gdalbackend.helpers.GdalHelper.ovrfiles">
+<em class="property">static </em><tt class="descname">ovrfiles</tt><big>(</big><em>dirname</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/helpers.html#GdalHelper.ovrfiles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.helpers.GdalHelper.ovrfiles" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.helpers.GdalHelper.reset">
+<tt class="descname">reset</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/helpers.html#GdalHelper.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.helpers.GdalHelper.reset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.helpers.GdalHelper.setProgressRange">
+<tt class="descname">setProgressRange</tt><big>(</big><em>minimum</em>, <em>maximum</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/helpers.html#GdalHelper.setProgressRange"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.helpers.GdalHelper.setProgressRange" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.helpers.GdalHelper.setup_progress_dialog">
+<tt class="descname">setup_progress_dialog</tt><big>(</big><em>title=''</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/helpers.html#GdalHelper.setup_progress_dialog"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.helpers.GdalHelper.setup_progress_dialog" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.helpers.GdalHelper.setup_tmpdir">
+<tt class="descname">setup_tmpdir</tt><big>(</big><em>dataset</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/helpers.html#GdalHelper.setup_tmpdir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.helpers.GdalHelper.setup_tmpdir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a temporary diran copy the virtual file into it.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.helpers.GdalHelper.start">
+<tt class="descname">start</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/helpers.html#GdalHelper.start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.helpers.GdalHelper.start" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gsdview.gdalbackend.helpers.HistDialogHelper">
+<em class="property">class </em><tt class="descclassname">gsdview.gdalbackend.helpers.</tt><tt class="descname">HistDialogHelper</tt><big>(</big><em>app</em>, <em>tool</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/helpers.html#HistDialogHelper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.helpers.HistDialogHelper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gsdview.gdalbackend.helpers.StatsDialogHelper" title="gsdview.gdalbackend.helpers.StatsDialogHelper"><tt class="xref py py-class docutils literal"><span class="pre">gsdview.gdalbackend.helpers.StatsDialogHelper</span></tt></a></p>
+<p>Helper class for histogram computation on live raster bands.</p>
+<dl class="method">
+<dt id="gsdview.gdalbackend.helpers.HistDialogHelper.apply">
+<tt class="descname">apply</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/helpers.html#HistDialogHelper.apply"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.helpers.HistDialogHelper.apply" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.helpers.HistDialogHelper.copy_data">
+<tt class="descname">copy_data</tt><big>(</big><em>vrtband</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/helpers.html#HistDialogHelper.copy_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.helpers.HistDialogHelper.copy_data" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gsdview.gdalbackend.helpers.StatsDialogHelper">
+<em class="property">class </em><tt class="descclassname">gsdview.gdalbackend.helpers.</tt><tt class="descname">StatsDialogHelper</tt><big>(</big><em>app</em>, <em>tool</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/helpers.html#StatsDialogHelper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.helpers.StatsDialogHelper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gsdview.gdalbackend.helpers.StatsHelper" title="gsdview.gdalbackend.helpers.StatsHelper"><tt class="xref py py-class docutils literal"><span class="pre">gsdview.gdalbackend.helpers.StatsHelper</span></tt></a></p>
+<p>Helper class for statistics computation on live raster bands.</p>
+<dl class="method">
+<dt id="gsdview.gdalbackend.helpers.StatsDialogHelper.apply">
+<tt class="descname">apply</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/helpers.html#StatsDialogHelper.apply"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.helpers.StatsDialogHelper.apply" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.helpers.StatsDialogHelper.reset">
+<tt class="descname">reset</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/helpers.html#StatsDialogHelper.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.helpers.StatsDialogHelper.reset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.helpers.StatsDialogHelper.start">
+<tt class="descname">start</tt><big>(</big><em>item</em>, <em>dialog=None</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/helpers.html#StatsDialogHelper.start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.helpers.StatsDialogHelper.start" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gsdview.gdalbackend.helpers.StatsHelper">
+<em class="property">class </em><tt class="descclassname">gsdview.gdalbackend.helpers.</tt><tt class="descname">StatsHelper</tt><big>(</big><em>app</em>, <em>tool</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/helpers.html#StatsHelper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.helpers.StatsHelper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gsdview.gdalbackend.helpers.GdalHelper" title="gsdview.gdalbackend.helpers.GdalHelper"><tt class="xref py py-class docutils literal"><span class="pre">gsdview.gdalbackend.helpers.GdalHelper</span></tt></a></p>
+<p>Helper class for statistics pre-computation on live raster bands.</p>
+<dl class="method">
+<dt id="gsdview.gdalbackend.helpers.StatsHelper.apply">
+<tt class="descname">apply</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/helpers.html#StatsHelper.apply"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.helpers.StatsHelper.apply" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.helpers.StatsHelper.copy_data">
+<tt class="descname">copy_data</tt><big>(</big><em>vrtband</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/helpers.html#StatsHelper.copy_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.helpers.StatsHelper.copy_data" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.helpers.StatsHelper.do_finalize">
+<tt class="descname">do_finalize</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/helpers.html#StatsHelper.do_finalize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.helpers.StatsHelper.do_finalize" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.helpers.StatsHelper.do_start">
+<tt class="descname">do_start</tt><big>(</big><em>item</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/helpers.html#StatsHelper.do_start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.helpers.StatsHelper.do_start" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.helpers.StatsHelper.reset">
+<tt class="descname">reset</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/helpers.html#StatsHelper.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.helpers.StatsHelper.reset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo.png" alt="Logo"/>
+            </a></p>
+    
+    
+    <p>
+        <a href="http://sourceforge.net/projects/gsdview">
+            <img src="http://sflogo.sourceforge.net/sflogo.php?group_id=226458&type=14" width="150" height="40" alt="Get GSDView at SourceForge.net. Fast, secure and Free Open Source software downloads" />
+        </a>
+    </p>
+    
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="gsdview.gdalbackend.gdalsupport.html"
+                        title="previous chapter">gsdview.gdalbackend.gdalsupport</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="gsdview.gdalbackend.info.html"
+                        title="next chapter">gsdview.gdalbackend.info</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/api/gsdview.gdalbackend.helpers.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li class="right" >
+          <a href="gsdview.gdalbackend.info.html" title="gsdview.gdalbackend.info"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="gsdview.gdalbackend.gdalsupport.html" title="gsdview.gdalbackend.gdalsupport"
+             >previous</a> |</li>
+        <li><a href="../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../reference.html" >API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2008-2011, Antonio Valentino.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

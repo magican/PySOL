@@ -1,0 +1,25 @@
+gsdview.mdi
+===========
+
+.. automodule:: gsdview.mdi
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      ItemModelMainWindow
+      ItemSubWindow
+      MdiMainWindow
+      QtWindowListMenu
+   
+   
+
+   
+   
+   

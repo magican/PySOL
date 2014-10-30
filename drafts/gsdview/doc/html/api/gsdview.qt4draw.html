@@ -1,0 +1,292 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>gsdview.qt4draw &mdash; GSDView Open Edition Home Page</title>
+    <link rel="stylesheet" href="../_static/sourceforge.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.6.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/logo.ico"/>
+    <link rel="top" title="GSDView Open Edition Home Page" href="../index.html" />
+    <link rel="up" title="API Reference" href="../reference.html" />
+    <link rel="next" title="gsdview.qt4support" href="gsdview.qt4support.html" />
+    <link rel="prev" title="gsdview.pluginmanager" href="gsdview.pluginmanager.html" /> 
+  </head>
+  <body>
+    
+        
+    
+    
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li class="right" >
+          <a href="gsdview.qt4support.html" title="gsdview.qt4support"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="gsdview.pluginmanager.html" title="gsdview.pluginmanager"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../reference.html" accesskey="U">API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-gsdview.qt4draw">
+<span id="gsdview-qt4draw"></span><h1>gsdview.qt4draw<a class="headerlink" href="#module-gsdview.qt4draw" title="Permalink to this headline">¶</a></h1>
+<p>Drawing components for Qt4.</p>
+<p class="rubric">Classes</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><a class="reference internal" href="#gsdview.qt4draw.DrawEllipseMode" title="gsdview.qt4draw.DrawEllipseMode"><tt class="xref py py-obj docutils literal"><span class="pre">DrawEllipseMode</span></tt></a>([parent])</td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.qt4draw.DrawLineMode" title="gsdview.qt4draw.DrawLineMode"><tt class="xref py py-obj docutils literal"><span class="pre">DrawLineMode</span></tt></a>([parent])</td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.qt4draw.DrawPointMode" title="gsdview.qt4draw.DrawPointMode"><tt class="xref py py-obj docutils literal"><span class="pre">DrawPointMode</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.qt4draw.DrawRectMode" title="gsdview.qt4draw.DrawRectMode"><tt class="xref py py-obj docutils literal"><span class="pre">DrawRectMode</span></tt></a>([parent])</td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.qt4draw.GraphicsItemGroup" title="gsdview.qt4draw.GraphicsItemGroup"><tt class="xref py py-obj docutils literal"><span class="pre">GraphicsItemGroup</span></tt></a>(**kargs[,&nbsp;parent,&nbsp;scene])</td>
+<td>Qt graphics item group with common style.</td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.qt4draw.GraphicsPointItem" title="gsdview.qt4draw.GraphicsPointItem"><tt class="xref py py-obj docutils literal"><span class="pre">GraphicsPointItem</span></tt></a>(**kargs[,&nbsp;x,&nbsp;y,&nbsp;radius,&nbsp;...])</td>
+<td>Qt graphics item for point merkers.</td>
+</tr>
+<tr><td><tt class="xref py py-obj docutils literal"><span class="pre">MouseMode</span></tt></td>
+<td>Base class for mouse mode desctiptors.</td>
+</tr>
+</tbody>
+</table>
+<dl class="class">
+<dt id="gsdview.qt4draw.DrawEllipseMode">
+<em class="property">class </em><tt class="descclassname">gsdview.qt4draw.</tt><tt class="descname">DrawEllipseMode</tt><big>(</big><em>parent=None</em><big>)</big><a class="reference internal" href="../_modules/gsdview/qt4draw.html#DrawEllipseMode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.qt4draw.DrawEllipseMode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="gsdview.mousemanager.html#gsdview.mousemanager.MouseMode" title="gsdview.mousemanager.MouseMode"><tt class="xref py py-class docutils literal"><span class="pre">gsdview.mousemanager.MouseMode</span></tt></a></p>
+<dl class="method">
+<dt id="gsdview.qt4draw.DrawEllipseMode.sceneEventFilter">
+<tt class="descname">sceneEventFilter</tt><big>(</big><em>obj</em>, <em>event</em><big>)</big><a class="reference internal" href="../_modules/gsdview/qt4draw.html#DrawEllipseMode.sceneEventFilter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.qt4draw.DrawEllipseMode.sceneEventFilter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gsdview.qt4draw.DrawLineMode">
+<em class="property">class </em><tt class="descclassname">gsdview.qt4draw.</tt><tt class="descname">DrawLineMode</tt><big>(</big><em>parent=None</em><big>)</big><a class="reference internal" href="../_modules/gsdview/qt4draw.html#DrawLineMode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.qt4draw.DrawLineMode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="gsdview.mousemanager.html#gsdview.mousemanager.MouseMode" title="gsdview.mousemanager.MouseMode"><tt class="xref py py-class docutils literal"><span class="pre">gsdview.mousemanager.MouseMode</span></tt></a></p>
+<dl class="method">
+<dt id="gsdview.qt4draw.DrawLineMode.sceneEventFilter">
+<tt class="descname">sceneEventFilter</tt><big>(</big><em>obj</em>, <em>event</em><big>)</big><a class="reference internal" href="../_modules/gsdview/qt4draw.html#DrawLineMode.sceneEventFilter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.qt4draw.DrawLineMode.sceneEventFilter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gsdview.qt4draw.DrawPointMode">
+<em class="property">class </em><tt class="descclassname">gsdview.qt4draw.</tt><tt class="descname">DrawPointMode</tt><a class="reference internal" href="../_modules/gsdview/qt4draw.html#DrawPointMode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.qt4draw.DrawPointMode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="gsdview.mousemanager.html#gsdview.mousemanager.MouseMode" title="gsdview.mousemanager.MouseMode"><tt class="xref py py-class docutils literal"><span class="pre">gsdview.mousemanager.MouseMode</span></tt></a></p>
+<dl class="method">
+<dt id="gsdview.qt4draw.DrawPointMode.sceneEventFilter">
+<tt class="descname">sceneEventFilter</tt><big>(</big><em>obj</em>, <em>event</em><big>)</big><a class="reference internal" href="../_modules/gsdview/qt4draw.html#DrawPointMode.sceneEventFilter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.qt4draw.DrawPointMode.sceneEventFilter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gsdview.qt4draw.DrawRectMode">
+<em class="property">class </em><tt class="descclassname">gsdview.qt4draw.</tt><tt class="descname">DrawRectMode</tt><big>(</big><em>parent=None</em><big>)</big><a class="reference internal" href="../_modules/gsdview/qt4draw.html#DrawRectMode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.qt4draw.DrawRectMode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="gsdview.mousemanager.html#gsdview.mousemanager.MouseMode" title="gsdview.mousemanager.MouseMode"><tt class="xref py py-class docutils literal"><span class="pre">gsdview.mousemanager.MouseMode</span></tt></a></p>
+<dl class="method">
+<dt id="gsdview.qt4draw.DrawRectMode.sceneEventFilter">
+<tt class="descname">sceneEventFilter</tt><big>(</big><em>obj</em>, <em>event</em><big>)</big><a class="reference internal" href="../_modules/gsdview/qt4draw.html#DrawRectMode.sceneEventFilter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.qt4draw.DrawRectMode.sceneEventFilter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gsdview.qt4draw.GraphicsItemGroup">
+<em class="property">class </em><tt class="descclassname">gsdview.qt4draw.</tt><tt class="descname">GraphicsItemGroup</tt><big>(</big><em>parent=None</em>, <em>scene=None</em>, <em>**kargs</em><big>)</big><a class="reference internal" href="../_modules/gsdview/qt4draw.html#GraphicsItemGroup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.qt4draw.GraphicsItemGroup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">PyQt4.QtGui.QGraphicsItemGroup</span></tt></p>
+<p>Qt graphics item group with common style.</p>
+<dl class="method">
+<dt id="gsdview.qt4draw.GraphicsItemGroup.addToGroup">
+<tt class="descname">addToGroup</tt><big>(</big><em>item</em><big>)</big><a class="reference internal" href="../_modules/gsdview/qt4draw.html#GraphicsItemGroup.addToGroup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.qt4draw.GraphicsItemGroup.addToGroup" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.qt4draw.GraphicsItemGroup.brush">
+<tt class="descname">brush</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/qt4draw.html#GraphicsItemGroup.brush"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.qt4draw.GraphicsItemGroup.brush" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.qt4draw.GraphicsItemGroup.pen">
+<tt class="descname">pen</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/qt4draw.html#GraphicsItemGroup.pen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.qt4draw.GraphicsItemGroup.pen" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.qt4draw.GraphicsItemGroup.setBrush">
+<tt class="descname">setBrush</tt><big>(</big><em>brush</em><big>)</big><a class="reference internal" href="../_modules/gsdview/qt4draw.html#GraphicsItemGroup.setBrush"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.qt4draw.GraphicsItemGroup.setBrush" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.qt4draw.GraphicsItemGroup.setPen">
+<tt class="descname">setPen</tt><big>(</big><em>pen</em><big>)</big><a class="reference internal" href="../_modules/gsdview/qt4draw.html#GraphicsItemGroup.setPen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.qt4draw.GraphicsItemGroup.setPen" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gsdview.qt4draw.GraphicsPointItem">
+<em class="property">class </em><tt class="descclassname">gsdview.qt4draw.</tt><tt class="descname">GraphicsPointItem</tt><big>(</big><em>x=None</em>, <em>y=None</em>, <em>radius=None</em>, <em>parent=None</em>, <em>scene=None</em>, <em>**kargs</em><big>)</big><a class="reference internal" href="../_modules/gsdview/qt4draw.html#GraphicsPointItem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.qt4draw.GraphicsPointItem" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">PyQt4.QtGui.QAbstractGraphicsShapeItem</span></tt></p>
+<p>Qt graphics item for point merkers.</p>
+<p>Draw a symbol that scales its size according to the zoom level in
+order to keep approximatively constant size.
+Original size and maximum scaling factor are configurable.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">currently the only symbol supported is a filled circle
+(pen and brush are configurable).</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">this class don&#8217;t depends on OGR so it can be moved in a
+module out of the gdalbackend.</p>
+</div>
+<dl class="method">
+<dt id="gsdview.qt4draw.GraphicsPointItem.boundingRect">
+<tt class="descname">boundingRect</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/qt4draw.html#GraphicsPointItem.boundingRect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.qt4draw.GraphicsPointItem.boundingRect" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.qt4draw.GraphicsPointItem.maxFactor">
+<tt class="descname">maxFactor</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/qt4draw.html#GraphicsPointItem.maxFactor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.qt4draw.GraphicsPointItem.maxFactor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.qt4draw.GraphicsPointItem.paint">
+<tt class="descname">paint</tt><big>(</big><em>painter</em>, <em>option</em>, <em>widget</em><big>)</big><a class="reference internal" href="../_modules/gsdview/qt4draw.html#GraphicsPointItem.paint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.qt4draw.GraphicsPointItem.paint" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.qt4draw.GraphicsPointItem.radius">
+<tt class="descname">radius</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/qt4draw.html#GraphicsPointItem.radius"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.qt4draw.GraphicsPointItem.radius" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.qt4draw.GraphicsPointItem.setMaxFactor">
+<tt class="descname">setMaxFactor</tt><big>(</big><em>maxfact</em><big>)</big><a class="reference internal" href="../_modules/gsdview/qt4draw.html#GraphicsPointItem.setMaxFactor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.qt4draw.GraphicsPointItem.setMaxFactor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.qt4draw.GraphicsPointItem.setRadius">
+<tt class="descname">setRadius</tt><big>(</big><em>radius</em><big>)</big><a class="reference internal" href="../_modules/gsdview/qt4draw.html#GraphicsPointItem.setRadius"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.qt4draw.GraphicsPointItem.setRadius" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.qt4draw.GraphicsPointItem.type">
+<tt class="descname">type</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/qt4draw.html#GraphicsPointItem.type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.qt4draw.GraphicsPointItem.type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo.png" alt="Logo"/>
+            </a></p>
+    
+    
+    <p>
+        <a href="http://sourceforge.net/projects/gsdview">
+            <img src="http://sflogo.sourceforge.net/sflogo.php?group_id=226458&type=14" width="150" height="40" alt="Get GSDView at SourceForge.net. Fast, secure and Free Open Source software downloads" />
+        </a>
+    </p>
+    
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="gsdview.pluginmanager.html"
+                        title="previous chapter">gsdview.pluginmanager</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="gsdview.qt4support.html"
+                        title="next chapter">gsdview.qt4support</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/api/gsdview.qt4draw.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li class="right" >
+          <a href="gsdview.qt4support.html" title="gsdview.qt4support"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="gsdview.pluginmanager.html" title="gsdview.pluginmanager"
+             >previous</a> |</li>
+        <li><a href="../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../reference.html" >API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2008-2011, Antonio Valentino.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,532 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>gsdview.imgutils &mdash; GSDView Open Edition Home Page</title>
+    <link rel="stylesheet" href="../../_static/sourceforge.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.6.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/logo.ico"/>
+    <link rel="top" title="GSDView Open Edition Home Page" href="../../index.html" />
+    <link rel="up" title="gsdview" href="../gsdview.html" /> 
+  </head>
+  <body>
+    
+        
+    
+    
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li><a href="../../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../gsdview.html" accesskey="U">gsdview</a> &raquo;</li> 
+      </ul>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for gsdview.imgutils</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="c">### Copyright (C) 2008-2011 Antonio Valentino &lt;a_valentino@users.sf.net&gt;</span>
+
+<span class="c">### This file is part of GSDView.</span>
+
+<span class="c">### GSDView is free software; you can redistribute it and/or modify</span>
+<span class="c">### it under the terms of the GNU General Public License as published by</span>
+<span class="c">### the Free Software Foundation; either version 2 of the License, or</span>
+<span class="c">### (at your option) any later version.</span>
+
+<span class="c">### GSDView is distributed in the hope that it will be useful,</span>
+<span class="c">### but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c">### MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c">### GNU General Public License for more details.</span>
+
+<span class="c">### You should have received a copy of the GNU General Public License</span>
+<span class="c">### along with GSDView; if not, write to the Free Software</span>
+<span class="c">### Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA.</span>
+
+
+<span class="sd">&#39;&#39;&#39;Tools for geo-spatial images handling and visualization.&#39;&#39;&#39;</span>
+
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s">&#39;Antonio Valentino &lt;a_valentino@users.sf.net&gt;&#39;</span>
+<span class="n">__date__</span> <span class="o">=</span> <span class="s">&#39;$Date: 2011-07-30 11:07:42 +0200 (sab, 30 lug 2011) $&#39;</span>
+<span class="n">__revision__</span> <span class="o">=</span> <span class="s">&#39;$Revision: 971 $&#39;</span>
+
+
+<span class="c">### LUT utils ################################################################</span>
+<div class="viewcode-block" id="linear_lut"><a class="viewcode-back" href="../../api/gsdview.imgutils.html#gsdview.imgutils.linear_lut">[docs]</a><span class="k">def</span> <span class="nf">linear_lut</span><span class="p">(</span><span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s">&#39;uint8&#39;</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">omin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+               <span class="n">omax</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Compute a linear LUT.</span>
+
+<span class="sd">    The returned LUT maps the imput domain (vmin, vmax) onto the output</span>
+<span class="sd">    one (0, vout) using a linear low. The value of vout depends on</span>
+<span class="sd">    dtype: 2**8-1 if dtype=&#39;uint8&#39;, 2**16-1 dtype=&#39;uint16&#39;</span>
+
+<span class="sd">    The *fill* parameter can be used to controll the length of returned</span>
+<span class="sd">    LUT (see below).</span>
+
+<span class="sd">    :param vmin:</span>
+<span class="sd">        minimum value (positive or null). Default 0</span>
+<span class="sd">    :type vmin:</span>
+<span class="sd">        int or float</span>
+<span class="sd">    :param vmax:</span>
+<span class="sd">        maximum value (positive) Default 2**nbits depending on dtype</span>
+<span class="sd">    :type vmax:</span>
+<span class="sd">        int or float</span>
+<span class="sd">    :param dtype:</span>
+<span class="sd">        numpy data type of the output LUT (default uint8)</span>
+<span class="sd">    :type dtype:</span>
+<span class="sd">        np.dtype (uint8 or uint16)</span>
+<span class="sd">    :param fill:</span>
+<span class="sd">        the length of the returned lut is:</span>
+
+<span class="sd">            * vmax + 1 if bool(fill) == False</span>
+<span class="sd">            * max(vmax + 1, 2**nbits) if fill == True</span>
+<span class="sd">            * max(vmax + 1, fill) id fille is an number</span>
+
+<span class="sd">    :type fill:</span>
+<span class="sd">        bool or int</span>
+<span class="sd">    :param omin:</span>
+<span class="sd">        @TBW</span>
+<span class="sd">    :param omax:</span>
+<span class="sd">        @TBW</span>
+<span class="sd">    :returns:     the look up tabe (LUT)</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint16</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;invalid dtype &quot;</span><span class="si">%s</span><span class="s">&quot; (uint8 or uint16 expected)&#39;</span> <span class="o">%</span>
+                                                                        <span class="n">dtype</span><span class="p">)</span>
+    <span class="n">nmax</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">**</span> <span class="p">(</span><span class="mi">8</span> <span class="o">*</span> <span class="n">dtype</span><span class="o">.</span><span class="n">itemsize</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">omax</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">omax</span> <span class="o">=</span> <span class="n">nmax</span> <span class="o">-</span> <span class="mi">1</span>
+
+    <span class="k">if</span> <span class="n">vmax</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">vmax</span> <span class="o">=</span> <span class="n">nmax</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="n">nout</span> <span class="o">=</span> <span class="n">nmax</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">nout</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">vmax</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">vmin</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">vmin</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">if</span> <span class="n">fill</span> <span class="ow">is</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="n">nout</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">nout</span><span class="p">,</span> <span class="n">nmax</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">fill</span><span class="p">:</span>
+        <span class="n">nout</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">nout</span><span class="p">,</span> <span class="n">fill</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">nout</span> <span class="o">&gt;</span> <span class="mi">2</span> <span class="o">**</span> <span class="mi">32</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;requested LUT is too large: </span><span class="si">%d</span><span class="s">.&#39;</span> <span class="o">%</span> <span class="n">nout</span><span class="p">)</span>
+
+    <span class="n">lut</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">nout</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">vmin</span><span class="p">:</span>
+        <span class="n">lut</span> <span class="o">=</span> <span class="n">lut</span> <span class="o">-</span> <span class="nb">float</span><span class="p">(</span><span class="n">vmin</span><span class="p">)</span>
+
+    <span class="n">scale</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">omax</span> <span class="o">-</span> <span class="n">omin</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">vmax</span> <span class="o">-</span> <span class="n">vmin</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">scale</span> <span class="o">!=</span> <span class="mf">1.0</span><span class="p">:</span>
+        <span class="n">lut</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">scale</span> <span class="o">*</span> <span class="n">lut</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">omin</span><span class="p">:</span>
+        <span class="n">lut</span> <span class="o">+=</span> <span class="n">omin</span>
+
+    <span class="k">return</span> <span class="n">lut</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">omin</span><span class="p">,</span> <span class="n">omax</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="histogram_equalized_lut"><a class="viewcode-back" href="../../api/gsdview.imgutils.html#gsdview.imgutils.histogram_equalized_lut">[docs]</a><span class="k">def</span> <span class="nf">histogram_equalized_lut</span><span class="p">(</span><span class="n">hist</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s">&#39;uint8&#39;</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Compute a histogram equalized LUT.</span>
+
+<span class="sd">    :param hist:</span>
+<span class="sd">        histogram to be equalized</span>
+<span class="sd">    :type hist:</span>
+<span class="sd">        ndarray</span>
+<span class="sd">    :param dtype:</span>
+<span class="sd">        numpy data type of the output LUT (default uint8)</span>
+<span class="sd">    :type dtype:</span>
+<span class="sd">        np.dtype (uint8 or uint16)</span>
+<span class="sd">    :param fill:</span>
+<span class="sd">        if False (default) the returned LUT has</span>
+<span class="sd">        :math:`length = len(hist)`.</span>
+<span class="sd">        Otherwise the LUT length has a lenght of 2**nbits with nbits</span>
+<span class="sd">        bein 8 or 16 depending on dtype and  LUT indices greater than</span>
+<span class="sd">        the last histogram max value are filled with the maximum value</span>
+<span class="sd">        itself.</span>
+<span class="sd">    :type fill:</span>
+<span class="sd">        bool</span>
+<span class="sd">    :returns: the llok up table (LUT)</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint16</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;invalid dtype &quot;</span><span class="si">%s</span><span class="s">&quot; (uint8 or uint16 expected)&#39;</span> <span class="o">%</span>
+                                                                        <span class="n">dtype</span><span class="p">)</span>
+    <span class="n">nmax</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">**</span> <span class="p">(</span><span class="mi">8</span> <span class="o">*</span> <span class="n">dtype</span><span class="o">.</span><span class="n">itemsize</span><span class="p">)</span>
+
+    <span class="n">hist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">hist</span><span class="p">)</span>
+
+    <span class="n">nbins</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">hist</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">nbins</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;empty histgram&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">nbins</span> <span class="o">&gt;</span> <span class="n">nmax</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;number of bins (</span><span class="si">%s</span><span class="s">) is too large to fit in &#39;</span>
+                         <span class="s">&#39;selected data type (</span><span class="si">%s</span><span class="s">)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">nbins</span><span class="p">,</span> <span class="n">dtype</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">fill</span><span class="p">:</span>
+        <span class="n">nout</span> <span class="o">=</span> <span class="n">nbins</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">nout</span> <span class="o">=</span> <span class="n">nmax</span>
+
+    <span class="n">lut</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">hist</span><span class="p">)</span> <span class="o">-</span> <span class="n">hist</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">total</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">lut</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">total</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nout</span><span class="p">)</span>
+
+    <span class="n">lut</span> <span class="o">=</span> <span class="n">nmax</span> <span class="o">/</span> <span class="n">total</span> <span class="o">*</span> <span class="p">(</span><span class="n">lut</span> <span class="o">+</span> <span class="n">hist</span> <span class="o">/</span> <span class="mf">2.</span><span class="p">)</span>
+    <span class="n">lut</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">nout</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">lut</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">nout</span><span class="p">)</span>
+    <span class="n">lut</span><span class="p">[</span><span class="n">nbins</span><span class="p">:]</span> <span class="o">=</span> <span class="n">lut</span><span class="p">[</span><span class="n">nbins</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">lut</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="log_lut"><a class="viewcode-back" href="../../api/gsdview.imgutils.html#gsdview.imgutils.log_lut">[docs]</a><span class="k">def</span> <span class="nf">log_lut</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="s">&#39;uint8&#39;</span><span class="p">):</span>
+    <span class="c"># @TODO: complete</span>
+
+    <span class="n">dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint16</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;invalid dtype &quot;</span><span class="si">%s</span><span class="s">&quot; (uint8 or uint16 expected)&#39;</span> <span class="o">%</span>
+                                                                        <span class="n">dtype</span><span class="p">)</span>
+    <span class="n">nmax</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">**</span> <span class="p">(</span><span class="mi">8</span> <span class="o">*</span> <span class="n">dtype</span><span class="o">.</span><span class="n">itemsize</span><span class="p">)</span>
+    <span class="n">vmax</span> <span class="o">=</span> <span class="n">nmax</span> <span class="o">-</span> <span class="mi">1</span>
+
+    <span class="n">lut</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">nmax</span><span class="p">,</span> <span class="s">&#39;float64&#39;</span><span class="p">)</span>
+    <span class="n">lut</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">vmax</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">lut</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">nmax</span><span class="p">))</span>
+    <span class="n">lut</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">lut</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="root"><a class="viewcode-back" href="../../api/gsdview.imgutils.html#gsdview.imgutils.root">[docs]</a><span class="k">def</span> <span class="nf">root</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="s">&#39;uint8&#39;</span><span class="p">):</span>
+    <span class="c"># @TODO: complete</span>
+
+    <span class="n">dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint16</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;invalid dtype &quot;</span><span class="si">%s</span><span class="s">&quot; (uint8 or uint16 expected)&#39;</span> <span class="o">%</span>
+                                                                        <span class="n">dtype</span><span class="p">)</span>
+    <span class="n">nmax</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">**</span> <span class="p">(</span><span class="mi">8</span> <span class="o">*</span> <span class="n">dtype</span><span class="o">.</span><span class="n">itemsize</span><span class="p">)</span>
+    <span class="n">vmax</span> <span class="o">=</span> <span class="n">nmax</span> <span class="o">-</span> <span class="mi">1</span>
+
+    <span class="n">lut</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">nmax</span><span class="p">,</span> <span class="s">&#39;float64&#39;</span><span class="p">)</span>
+    <span class="n">lut</span> <span class="o">=</span> <span class="n">vmax</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">root</span><span class="p">(</span><span class="n">lut</span> <span class="o">/</span> <span class="n">vmax</span><span class="p">)</span>
+    <span class="n">lut</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">lut</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="square"><a class="viewcode-back" href="../../api/gsdview.imgutils.html#gsdview.imgutils.square">[docs]</a><span class="k">def</span> <span class="nf">square</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="s">&#39;uint8&#39;</span><span class="p">):</span>
+    <span class="c"># @TODO: complete</span>
+
+    <span class="n">dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint16</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;invalid dtype &quot;</span><span class="si">%s</span><span class="s">&quot; (uint8 or uint16 expected)&#39;</span> <span class="o">%</span>
+                                                                        <span class="n">dtype</span><span class="p">)</span>
+    <span class="n">nmax</span> <span class="o">=</span> <span class="mi">8</span> <span class="o">**</span> <span class="n">dtype</span><span class="o">.</span><span class="n">itemsize</span>
+    <span class="n">vmax</span> <span class="o">=</span> <span class="n">nmax</span> <span class="o">-</span> <span class="mi">1</span>
+
+    <span class="n">lut</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">nmax</span><span class="p">,</span> <span class="s">&#39;float64&#39;</span><span class="p">)</span>
+    <span class="n">lut</span> <span class="o">=</span> <span class="n">vmax</span> <span class="o">*</span> <span class="p">(</span><span class="n">lut</span> <span class="o">/</span> <span class="n">vmax</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+    <span class="n">lut</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">lut</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+
+
+<span class="c">### Stretching utils #########################################################</span></div>
+<div class="viewcode-block" id="BaseStretcher"><a class="viewcode-back" href="../../api/gsdview.imgutils.html#gsdview.imgutils.BaseStretcher">[docs]</a><span class="k">class</span> <span class="nc">BaseStretcher</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Base class for stretcher objects.</span>
+
+<span class="sd">    The base implementation of the *__call__* method just performs</span>
+<span class="sd">    clipping and type conversion (both are optional).</span>
+
+<span class="sd">    .. note:: outout extrema (*min* and *max*) have to be compatible</span>
+<span class="sd">              with the data type (*dtype*) set.</span>
+
+<span class="sd">    Example::</span>
+
+<span class="sd">        data = np.arange(.10, 300.)</span>
+<span class="sd">        stretch = BaseStretch(0, 255, &#39;uint8&#39;)</span>
+<span class="sd">        data = stretch(data)</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">stretchtype</span> <span class="o">=</span> <span class="s">&#39;clip&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s">&#39;uint8&#39;</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="nb">min</span> <span class="o">!=</span> <span class="nb">max</span>
+
+        <span class="c">#: the minimum value for output data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">min</span> <span class="o">=</span> <span class="n">vmin</span>
+
+        <span class="c">#: the maximum value for output data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max</span> <span class="o">=</span> <span class="n">vmax</span>
+
+        <span class="c">#: data type for output data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="o">=</span> <span class="n">dtype</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">min</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">max</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">min</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">data</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">):</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">data</span>
+
+</div>
+<div class="viewcode-block" id="LinearStretcher"><a class="viewcode-back" href="../../api/gsdview.imgutils.html#gsdview.imgutils.LinearStretcher">[docs]</a><span class="k">class</span> <span class="nc">LinearStretcher</span><span class="p">(</span><span class="n">BaseStretcher</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Linear stretch.</span>
+
+<span class="sd">    Perform linear scaling (including offest application) and clipping.</span>
+
+<span class="sd">    .. note:: offset is applyed before scaling:</span>
+
+
+<span class="sd">        .. math:: output = scale \cdot (data - offset)</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">stretchtype</span> <span class="o">=</span> <span class="s">&#39;linear&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s">&#39;uint8&#39;</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">LinearStretcher</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="p">,</span> <span class="n">dtype</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scale</span> <span class="o">=</span> <span class="n">scale</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">offset</span> <span class="o">=</span> <span class="n">offset</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">offset</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">data</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">offset</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span> <span class="o">!=</span> <span class="mf">1.0</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span> <span class="o">*</span> <span class="n">data</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">LinearStretcher</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__call__</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="c"># @TODO: if the API is compatible use</span>
+    <span class="c">#           range = property(get_range, set_range)</span>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="LinearStretcher.range"><a class="viewcode-back" href="../../api/gsdview.imgutils.html#gsdview.imgutils.LinearStretcher.range">[docs]</a>    <span class="k">def</span> <span class="nf">range</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">imin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">min</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">offset</span>
+        <span class="n">imax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">offset</span>
+        <span class="k">return</span> <span class="n">imin</span><span class="p">,</span> <span class="n">imax</span>
+</div>
+<div class="viewcode-block" id="LinearStretcher.set_range"><a class="viewcode-back" href="../../api/gsdview.imgutils.html#gsdview.imgutils.LinearStretcher.set_range">[docs]</a>    <span class="k">def</span> <span class="nf">set_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">imin</span><span class="p">,</span> <span class="n">imax</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">imin</span><span class="p">,</span> <span class="n">imax</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">range</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">assert</span> <span class="n">imin</span> <span class="o">!=</span> <span class="n">imax</span>
+        <span class="n">omax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max</span>
+        <span class="n">omin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">min</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">scale</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">omax</span> <span class="o">-</span> <span class="n">omin</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">imax</span> <span class="o">-</span> <span class="n">imin</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">offset</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">((</span><span class="n">imax</span> <span class="o">+</span> <span class="n">imin</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">omax</span> <span class="o">+</span> <span class="n">omin</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">offset</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span>
+
+    <span class="c"># @TODO:</span>
+    <span class="c">#@property</span>
+    <span class="c">#def outmax(self):</span>
+    <span class="c">#    return self.__call__(self.max)</span>
+
+</div></div>
+<div class="viewcode-block" id="LUTStretcher"><a class="viewcode-back" href="../../api/gsdview.imgutils.html#gsdview.imgutils.LUTStretcher">[docs]</a><span class="k">class</span> <span class="nc">LUTStretcher</span><span class="p">(</span><span class="n">BaseStretcher</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Stretch using LUT.</span>
+
+<span class="sd">    Perform an arbitrary scaling on unsigned data using a look-up table</span>
+<span class="sd">    (LUT).</span>
+
+<span class="sd">    An optional offset is applied before LUT application.</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">stretchtype</span> <span class="o">=</span> <span class="s">&#39;lut&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s">&#39;uint8&#39;</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint16</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;only &quot;uint8&quot; and &quot;uint16&quot; are allowed.&#39;</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">LUTStretcher</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="p">,</span> <span class="n">dtype</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fill</span> <span class="o">=</span> <span class="n">fill</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">offset</span> <span class="o">=</span> <span class="n">offset</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lut</span> <span class="o">=</span> <span class="n">linear_lut</span><span class="p">(</span><span class="n">offset</span><span class="p">,</span> <span class="n">vmax</span><span class="p">,</span> <span class="s">&#39;uint8&#39;</span><span class="p">,</span> <span class="n">fill</span><span class="p">,</span> <span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">offset</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">data</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">offset</span>
+        <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lut</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s">&#39;uint32&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">lut</span><span class="p">[</span><span class="n">data</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="LUTStretcher.range"><a class="viewcode-back" href="../../api/gsdview.imgutils.html#gsdview.imgutils.LUTStretcher.range">[docs]</a>    <span class="k">def</span> <span class="nf">range</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lut</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lut</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">imax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">offset</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">offset</span><span class="p">,</span> <span class="n">imax</span>
+</div>
+<div class="viewcode-block" id="LUTStretcher.set_range"><a class="viewcode-back" href="../../api/gsdview.imgutils.html#gsdview.imgutils.LUTStretcher.set_range">[docs]</a>    <span class="k">def</span> <span class="nf">set_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">imin</span><span class="p">,</span> <span class="n">imax</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">imin</span><span class="p">,</span> <span class="n">imax</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">range</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="n">imin</span> <span class="o">==</span> <span class="n">imax</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lut</span><span class="p">[</span><span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">imin</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">lut</span>
+
+        <span class="n">omax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max</span>
+        <span class="n">omin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">min</span>
+        <span class="c">#assert omin != omax</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">offset</span> <span class="o">=</span> <span class="n">imin</span>
+        <span class="k">if</span> <span class="n">imin</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">imin</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">imax</span> <span class="o">-=</span> <span class="bp">self</span><span class="o">.</span><span class="n">offset</span>
+        <span class="k">if</span> <span class="n">fill</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">fill</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fill</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lut</span> <span class="o">=</span> <span class="n">linear_lut</span><span class="p">(</span><span class="n">imin</span><span class="p">,</span> <span class="n">imax</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">fill</span><span class="p">,</span> <span class="n">omin</span><span class="p">,</span> <span class="n">omax</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">lut</span>
+
+</div></div>
+<div class="viewcode-block" id="LogarithmicStretcher"><a class="viewcode-back" href="../../api/gsdview.imgutils.html#gsdview.imgutils.LogarithmicStretcher">[docs]</a><span class="k">class</span> <span class="nc">LogarithmicStretcher</span><span class="p">(</span><span class="n">BaseStretcher</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Linear stretch.</span>
+
+<span class="sd">    Perform logarithmic stretching and clipping:</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        output = scale \cdot log_{base}(data - offset)</span>
+
+<span class="sd">    .. note:: both *base* and *scale* default to 10 while the default</span>
+<span class="sd">              value for *offset* is 0 so the strecher returns values</span>
+<span class="sd">              expressed in *dB*: :math:`output = 10 \cdot log_{10}(data)`</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">stretchtype</span> <span class="o">=</span> <span class="s">&#39;logarithmic&#39;</span>
+    <span class="n">_logfunctions</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="bp">None</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">,</span>
+        <span class="s">&#39;e&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">,</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">e</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">,</span>
+        <span class="mi">2</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">log2</span><span class="p">,</span>
+        <span class="mi">10</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="n">_bases</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">&#39;e&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">e</span><span class="p">,</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">e</span><span class="p">,</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">log2</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+                 <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s">&#39;uint8&#39;</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">LogarithmicStretcher</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="p">,</span> <span class="n">dtype</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">offset</span> <span class="o">=</span> <span class="n">offset</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scale</span> <span class="o">=</span> <span class="n">scale</span>
+        <span class="k">assert</span> <span class="n">base</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">logfunctions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">base</span> <span class="o">=</span> <span class="n">base</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">offset</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">data</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">offset</span>
+
+        <span class="n">base</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bases</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">base</span><span class="p">]</span>
+        <span class="n">clipmin</span> <span class="o">=</span> <span class="n">base</span> <span class="o">**</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">min</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">)</span>
+        <span class="n">clipmax</span> <span class="o">=</span> <span class="n">base</span> <span class="o">**</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">clipmin</span> <span class="o">&gt;</span> <span class="mi">0</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">clipmin</span><span class="p">,</span> <span class="n">clipmax</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="n">logfunc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_logfunctions</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">base</span><span class="p">]</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">logfunc</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span> <span class="o">!=</span> <span class="mf">1.0</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span> <span class="o">*</span> <span class="n">data</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">LogarithmicStretcher</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__call__</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+    
+    
+    <p>
+        <a href="http://sourceforge.net/projects/gsdview">
+            <img src="http://sflogo.sourceforge.net/sflogo.php?group_id=226458&type=14" width="150" height="40" alt="Get GSDView at SourceForge.net. Fast, secure and Free Open Source software downloads" />
+        </a>
+    </p>
+    
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li><a href="../../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../gsdview.html" >gsdview</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2008-2011, Antonio Valentino.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

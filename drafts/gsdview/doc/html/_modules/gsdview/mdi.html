@@ -1,0 +1,310 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>gsdview.mdi &mdash; GSDView Open Edition Home Page</title>
+    <link rel="stylesheet" href="../../_static/sourceforge.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.6.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/logo.ico"/>
+    <link rel="top" title="GSDView Open Edition Home Page" href="../../index.html" />
+    <link rel="up" title="gsdview" href="../gsdview.html" /> 
+  </head>
+  <body>
+    
+        
+    
+    
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li><a href="../../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../gsdview.html" accesskey="U">gsdview</a> &raquo;</li> 
+      </ul>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for gsdview.mdi</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="c">### Copyright (C) 2008-2011 Antonio Valentino &lt;a_valentino@users.sf.net&gt;</span>
+
+<span class="c">### This file is part of GSDView.</span>
+
+<span class="c">### GSDView is free software; you can redistribute it and/or modify</span>
+<span class="c">### it under the terms of the GNU General Public License as published by</span>
+<span class="c">### the Free Software Foundation; either version 2 of the License, or</span>
+<span class="c">### (at your option) any later version.</span>
+
+<span class="c">### GSDView is distributed in the hope that it will be useful,</span>
+<span class="c">### but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c">### MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c">### GNU General Public License for more details.</span>
+
+<span class="c">### You should have received a copy of the GNU General Public License</span>
+<span class="c">### along with GSDView; if not, write to the Free Software</span>
+<span class="c">### Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA.</span>
+
+
+<span class="sd">&#39;&#39;&#39;Specialized MainWindow classes and mixins.&#39;&#39;&#39;</span>
+
+<span class="c"># @TODO: move this to widgets sub-package or qt4freesolutions subpackage</span>
+
+
+<span class="kn">from</span> <span class="nn">qt</span> <span class="kn">import</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtGui</span>
+
+<span class="kn">from</span> <span class="nn">.qtwindowlistmenu</span> <span class="kn">import</span> <span class="n">QtWindowListMenu</span>
+
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s">&#39;Antonio Valentino &lt;a_valentino@users.sf.net&gt;&#39;</span>
+<span class="n">__date__</span> <span class="o">=</span> <span class="s">&#39;$Date: 2011-08-01 19:26:21 +0200 (lun, 01 ago 2011) $&#39;</span>
+<span class="n">__revision__</span> <span class="o">=</span> <span class="s">&#39;$Revision: 997 $&#39;</span>
+
+
+<div class="viewcode-block" id="MdiMainWindow"><a class="viewcode-back" href="../../api/gsdview.mdi.html#gsdview.mdi.MdiMainWindow">[docs]</a><span class="k">class</span> <span class="nc">MdiMainWindow</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QMainWindow</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Base class for MDI applications.</span>
+
+<span class="sd">    :SIGNALS:</span>
+
+<span class="sd">        * :attr:`subWindowClosed`</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="c"># @TODO: should the subWindowClosed signal be emitted by mdiarea?</span>
+    <span class="c">#: SIGNAL: it is emitted when an MDI subwindow is closed</span>
+    <span class="c">#:</span>
+    <span class="c">#: :C++ signature: `void subWindowClosed()`</span>
+    <span class="n">subWindowClosed</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">WindowFlags</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">MdiMainWindow</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">flags</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c">#: MDI area instance (QMdiArea)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mdiarea</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QMdiArea</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setCentralWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mdiarea</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mdiarea</span><span class="o">.</span><span class="n">setVerticalScrollBarPolicy</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">ScrollBarAsNeeded</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mdiarea</span><span class="o">.</span><span class="n">setHorizontalScrollBarPolicy</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">ScrollBarAsNeeded</span><span class="p">)</span>
+
+        <span class="c">#: sub-windows menu</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">windowmenu</span> <span class="o">=</span> <span class="n">QtWindowListMenu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">menuBar</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">windowmenu</span><span class="o">.</span><span class="n">attachToMdiArea</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mdiarea</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="ItemSubWindow"><a class="viewcode-back" href="../../api/gsdview.mdi.html#gsdview.mdi.ItemSubWindow">[docs]</a><span class="k">class</span> <span class="nc">ItemSubWindow</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QMdiSubWindow</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">WindowFlags</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span>
+                 <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ItemSubWindow</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">flags</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">WA_DeleteOnClose</span><span class="p">)</span>
+
+        <span class="c">#: datamodel item associated to the MDI sub-window</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">item</span> <span class="o">=</span> <span class="n">item</span>
+
+</div>
+<div class="viewcode-block" id="ItemModelMainWindow"><a class="viewcode-back" href="../../api/gsdview.mdi.html#gsdview.mdi.ItemModelMainWindow">[docs]</a><span class="k">class</span> <span class="nc">ItemModelMainWindow</span><span class="p">(</span><span class="n">MdiMainWindow</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">WindowFlags</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ItemModelMainWindow</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">flags</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c">#: main application datamodel (QStandardItemModel)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QStandardItemModel</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="c"># @TODO: custom treeview with &quot;currentChanged&quot; slot re-implemented</span>
+        <span class="c">#: tree view for the main application data model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">treeview</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QTreeView</span><span class="p">()</span>
+        <span class="c"># @TODO self.treeview.setSelectionMode(QtGui.QTreeView.SingleSelection)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">treeview</span><span class="o">.</span><span class="n">setModel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">treeview</span><span class="o">.</span><span class="n">setEditTriggers</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QAbstractItemView</span><span class="o">.</span><span class="n">NoEditTriggers</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">treeview</span><span class="o">.</span><span class="n">header</span><span class="p">()</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">treeview</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">setActiveWinFromIndex</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mdiarea</span><span class="o">.</span><span class="n">subWindowActivated</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">setActiveIndexFromWin</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">rowsAboutToBeRemoved</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">onItemsClosed</span><span class="p">)</span>
+
+        <span class="c"># setup the treeview dock</span>
+        <span class="n">treeviewdock</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QDockWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Data Browser&#39;</span><span class="p">),</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">treeviewdock</span><span class="o">.</span><span class="n">setWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">treeview</span><span class="p">)</span>
+        <span class="n">treeviewdock</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="s">&#39;TreeViewPanel&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">addDockWidget</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">LeftDockWidgetArea</span><span class="p">,</span> <span class="n">treeviewdock</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ItemModelMainWindow.currentItem"><a class="viewcode-back" href="../../api/gsdview.mdi.html#gsdview.mdi.ItemModelMainWindow.currentItem">[docs]</a>    <span class="k">def</span> <span class="nf">currentItem</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">modelindex</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">treeview</span><span class="o">.</span><span class="n">currentIndex</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">modelindex</span><span class="o">.</span><span class="n">isValid</span><span class="p">():</span>
+            <span class="k">return</span> <span class="bp">None</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">itemFromIndex</span><span class="p">(</span><span class="n">modelindex</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="ItemModelMainWindow.currentToplevelItem"><a class="viewcode-back" href="../../api/gsdview.mdi.html#gsdview.mdi.ItemModelMainWindow.currentToplevelItem">[docs]</a>    <span class="k">def</span> <span class="nf">currentToplevelItem</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">currentItem</span><span class="p">()</span>
+        <span class="k">while</span> <span class="n">item</span><span class="o">.</span><span class="n">parent</span><span class="p">():</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">item</span>
+
+    <span class="c">#@QtCore.Slot(QtCore.QModelIndex) # @TODO: check</span></div>
+<div class="viewcode-block" id="ItemModelMainWindow.setActiveWinFromIndex"><a class="viewcode-back" href="../../api/gsdview.mdi.html#gsdview.mdi.ItemModelMainWindow.setActiveWinFromIndex">[docs]</a>    <span class="k">def</span> <span class="nf">setActiveWinFromIndex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Set the active sub-window from index.</span>
+
+<span class="sd">        :C++ signature: `void setActiveWinFromIndex(const QModelIndex&amp;)`</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="c"># @TODO: find a better name</span>
+        <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">itemFromIndex</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+        <span class="n">windowlist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdiarea</span><span class="o">.</span><span class="n">subWindowList</span><span class="p">()</span>
+        <span class="n">window</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdiarea</span><span class="o">.</span><span class="n">activeSubWindow</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">window</span><span class="p">:</span>
+            <span class="n">windowlist</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">window</span><span class="p">)</span>
+            <span class="n">windowlist</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">window</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">window</span> <span class="ow">in</span> <span class="n">windowlist</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">window</span><span class="o">.</span><span class="n">item</span> <span class="o">==</span> <span class="n">item</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">mdiarea</span><span class="o">.</span><span class="n">setActiveSubWindow</span><span class="p">(</span><span class="n">window</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                <span class="c"># the window has not an associated item in the datamodel</span>
+                <span class="k">pass</span>
+            <span class="c"># @COMPATIBILITY: pyside 1.0.1</span>
+            <span class="k">except</span> <span class="ne">NotImplementedError</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">id</span><span class="p">(</span><span class="n">window</span><span class="o">.</span><span class="n">item</span><span class="p">)</span> <span class="o">==</span> <span class="nb">id</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">mdiarea</span><span class="o">.</span><span class="n">setActiveSubWindow</span><span class="p">(</span><span class="n">window</span><span class="p">)</span>
+</div>
+    <span class="nd">@QtCore.Slot</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QMdiSubWindow</span><span class="p">)</span>
+<div class="viewcode-block" id="ItemModelMainWindow.setActiveIndexFromWin"><a class="viewcode-back" href="../../api/gsdview.mdi.html#gsdview.mdi.ItemModelMainWindow.setActiveIndexFromWin">[docs]</a>    <span class="k">def</span> <span class="nf">setActiveIndexFromWin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">window</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Set the active sub-window.</span>
+
+<span class="sd">        :C++ signature: `void setActiveIndexFromWin(QMdiSubWindow*)`</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="c"># @TODO: find a better name</span>
+        <span class="c"># @TODO: check and, if the case, remove</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">window</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="n">window</span><span class="o">.</span><span class="n">item</span><span class="o">.</span><span class="n">index</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="c"># the window has not an associated item in the datamodel</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">treeview</span><span class="o">.</span><span class="n">setCurrentIndex</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+
+    <span class="c">#@QtCore.Slot(QtCore.QModelIndex, int, int) # @TODO: check</span></div>
+<div class="viewcode-block" id="ItemModelMainWindow.onItemsClosed"><a class="viewcode-back" href="../../api/gsdview.mdi.html#gsdview.mdi.ItemModelMainWindow.onItemsClosed">[docs]</a>    <span class="k">def</span> <span class="nf">onItemsClosed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">modelindex</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Closes sub-windows associated to the closed model items.</span>
+
+<span class="sd">        :C++ signature: `void onItemsClosed(const QModelIndex&amp;, int, int)`</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">modelindex</span><span class="o">.</span><span class="n">isValid</span><span class="p">():</span>
+            <span class="k">return</span>
+        <span class="n">parentitem</span> <span class="o">=</span> <span class="n">modelindex</span><span class="o">.</span><span class="n">model</span><span class="p">()</span><span class="o">.</span><span class="n">itemFromIndex</span><span class="p">(</span><span class="n">modelindex</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="n">parentitem</span><span class="o">.</span><span class="n">child</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">subwin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdiarea</span><span class="o">.</span><span class="n">subWindowList</span><span class="p">():</span>
+                <span class="c">#if subwin.item == item:</span>
+                <span class="c">#    subwin.close()</span>
+                <span class="c">#    # just une window per run (??)</span>
+                <span class="c">#    break</span>
+
+                <span class="c"># @COMPATIBILITY: pyside 1.0.1</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">subwin</span><span class="o">.</span><span class="n">item</span> <span class="o">==</span> <span class="n">item</span><span class="p">:</span>
+                        <span class="n">subwin</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                        <span class="k">break</span>
+                <span class="k">except</span> <span class="ne">NotImplementedError</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">id</span><span class="p">(</span><span class="n">subwin</span><span class="o">.</span><span class="n">item</span><span class="p">)</span> <span class="o">==</span> <span class="nb">id</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
+                        <span class="n">subwin</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                        <span class="k">break</span>
+
+        <span class="k">for</span> <span class="n">subwin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdiarea</span><span class="o">.</span><span class="n">subWindowList</span><span class="p">():</span>
+            <span class="c">#if subwin.item == parentitem:</span>
+            <span class="c">#    subwin.close()</span>
+            <span class="c">#    # just une window per run (??)</span>
+            <span class="c">#    break</span>
+
+            <span class="c"># @COMPATIBILITY: pyside 1.0.1</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">subwin</span><span class="o">.</span><span class="n">item</span> <span class="o">==</span> <span class="n">parentitem</span><span class="p">:</span>
+                    <span class="n">subwin</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                    <span class="k">break</span>
+            <span class="k">except</span> <span class="ne">NotImplementedError</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">id</span><span class="p">(</span><span class="n">subwin</span><span class="o">.</span><span class="n">item</span><span class="p">)</span> <span class="o">==</span> <span class="nb">id</span><span class="p">(</span><span class="n">parentitem</span><span class="p">):</span>
+                    <span class="n">subwin</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                    <span class="k">break</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+    
+    
+    <p>
+        <a href="http://sourceforge.net/projects/gsdview">
+            <img src="http://sflogo.sourceforge.net/sflogo.php?group_id=226458&type=14" width="150" height="40" alt="Get GSDView at SourceForge.net. Fast, secure and Free Open Source software downloads" />
+        </a>
+    </p>
+    
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li><a href="../../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../gsdview.html" >gsdview</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2008-2011, Antonio Valentino.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

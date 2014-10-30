@@ -1,0 +1,363 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>gsdview.utils &mdash; GSDView Open Edition Home Page</title>
+    <link rel="stylesheet" href="../../_static/sourceforge.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.6.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/logo.ico"/>
+    <link rel="top" title="GSDView Open Edition Home Page" href="../../index.html" />
+    <link rel="up" title="gsdview" href="../gsdview.html" /> 
+  </head>
+  <body>
+    
+        
+    
+    
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li><a href="../../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../gsdview.html" accesskey="U">gsdview</a> &raquo;</li> 
+      </ul>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for gsdview.utils</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="c">### Copyright (C) 2008-2011 Antonio Valentino &lt;a_valentino@users.sf.net&gt;</span>
+
+<span class="c">### This file is part of GSDView.</span>
+
+<span class="c">### GSDView is free software; you can redistribute it and/or modify</span>
+<span class="c">### it under the terms of the GNU General Public License as published by</span>
+<span class="c">### the Free Software Foundation; either version 2 of the License, or</span>
+<span class="c">### (at your option) any later version.</span>
+
+<span class="c">### GSDView is distributed in the hope that it will be useful,</span>
+<span class="c">### but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c">### MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c">### GNU General Public License for more details.</span>
+
+<span class="c">### You should have received a copy of the GNU General Public License</span>
+<span class="c">### along with GSDView; if not, write to the Free Software</span>
+<span class="c">### Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA.</span>
+
+
+<span class="sd">&#39;&#39;&#39;Utility functions and classes for GSDView.&#39;&#39;&#39;</span>
+
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">stat</span>
+<span class="kn">import</span> <span class="nn">platform</span>
+<span class="kn">import</span> <span class="nn">traceback</span>
+<span class="kn">import</span> <span class="nn">email.utils</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">pkg_resources</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">logging</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s">&#39;gsdview&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;&quot;pkg_resources&quot; not found.&#39;</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">info</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">appsite</span>
+
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s">&#39;$Author: a_valentino $&#39;</span>
+<span class="n">__date__</span> <span class="o">=</span> <span class="s">&#39;$Date: 2011-08-01 19:26:21 +0200 (lun, 01 ago 2011) $&#39;</span>
+<span class="n">__revision__</span> <span class="o">=</span> <span class="s">&#39;$Revision: 997 $&#39;</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;which&#39;</span><span class="p">,</span> <span class="s">&#39;isexecutable&#39;</span><span class="p">,</span> <span class="s">&#39;isscript&#39;</span><span class="p">,</span> <span class="s">&#39;scriptcmd&#39;</span><span class="p">,</span> <span class="s">&#39;default_workdir&#39;</span><span class="p">,</span>
+           <span class="s">&#39;getresource&#39;</span><span class="p">,</span> <span class="s">&#39;format_platform_info&#39;</span><span class="p">,</span> <span class="s">&#39;foramt_bugreport&#39;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="default_workdir"><a class="viewcode-back" href="../../api/gsdview.utils.html#gsdview.utils.default_workdir">[docs]</a><span class="k">def</span> <span class="nf">default_workdir</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;Return the defaut workinhg directory.&#39;&#39;&#39;</span>
+
+    <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;win&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s">&#39;C:</span><span class="se">\\</span><span class="s">&#39;</span>
+        <span class="c">#return QtGui.QDesktopServices.storageLocation(</span>
+        <span class="c">#                           QtGui.QDesktopServices.DocumentsLocation)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s">&#39;~&#39;</span><span class="p">)</span>
+
+</div>
+<span class="k">def</span> <span class="nf">_getresource</span><span class="p">(</span><span class="n">resource</span><span class="p">,</span> <span class="n">package</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">resource_filename</span><span class="p">(</span><span class="n">package</span><span class="p">,</span> <span class="n">resource</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">NameError</span><span class="p">:</span>
+        <span class="c"># pkg_resources not available</span>
+        <span class="k">if</span> <span class="s">&#39;.&#39;</span> <span class="ow">in</span> <span class="n">package</span><span class="p">:</span>
+            <span class="n">fromlist</span> <span class="o">=</span> <span class="n">package</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;.&#39;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="c"># @WARNING: (pychecker) Function (__import__) doesn&#39;t</span>
+            <span class="c">#           support **kwArgs</span>
+            <span class="n">m</span> <span class="o">=</span> <span class="nb">__import__</span><span class="p">(</span><span class="n">package</span><span class="p">,</span> <span class="n">fromlist</span><span class="o">=</span><span class="n">fromlist</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">m</span> <span class="o">=</span> <span class="nb">__import__</span><span class="p">(</span><span class="n">package</span><span class="p">)</span>
+        <span class="n">datadir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">__file__</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">datadir</span><span class="p">,</span> <span class="n">resource</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="getresource"><a class="viewcode-back" href="../../api/gsdview.utils.html#gsdview.utils.getresource">[docs]</a><span class="k">def</span> <span class="nf">getresource</span><span class="p">(</span><span class="n">resource</span><span class="p">,</span> <span class="n">package</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Return the resurce path.</span>
+
+<span class="sd">    If `package` is specified (usually passing `__name__` of the called</span>
+<span class="sd">    modile) the package resource name is returned.</span>
+
+<span class="sd">    If no `package` is specified then it is assumed that resource is</span>
+<span class="sd">    located in the common resource directory (e.g.</span>
+<span class="sd">    `/usr/share/&lt;PROJECTNAME&gt;` on UNIX-like systems.</span>
+
+<span class="sd">    .. note:: it is safe to use this function also if the package is</span>
+<span class="sd">              distributed as a compressed *egg* or as standalon package</span>
+<span class="sd">              generated using `pyinstaller &lt;http://www.pyinstaller.org&gt;`_.</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">if</span> <span class="n">package</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">sys</span><span class="p">,</span> <span class="s">&#39;frozen&#39;</span><span class="p">):</span>   <span class="c"># not packed</span>
+            <span class="k">return</span> <span class="n">_getresource</span><span class="p">(</span><span class="n">resource</span><span class="p">,</span> <span class="n">package</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">m</span> <span class="o">=</span> <span class="nb">__import__</span><span class="p">(</span><span class="n">package</span><span class="p">)</span>
+            <span class="c">#if &#39;.pyz&#39; not in m.__file__:</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">__file__</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">_getresource</span><span class="p">(</span><span class="n">resource</span><span class="p">,</span> <span class="n">package</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">datadir</span> <span class="o">=</span> <span class="n">appsite</span><span class="o">.</span><span class="n">DATADIR</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">datadir</span> <span class="o">=</span> <span class="n">appsite</span><span class="o">.</span><span class="n">DATADIR</span>
+
+    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">datadir</span><span class="p">,</span> <span class="n">resource</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="format_platform_info"><a class="viewcode-back" href="../../api/gsdview.utils.html#gsdview.utils.format_platform_info">[docs]</a><span class="k">def</span> <span class="nf">format_platform_info</span><span class="p">():</span>
+    <span class="n">platform_info</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;architecture: </span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="se">\n</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">platform</span><span class="o">.</span><span class="n">architecture</span><span class="p">()]</span>
+    <span class="n">platform_info</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;platform: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">platform</span><span class="o">.</span><span class="n">platform</span><span class="p">())</span>
+    <span class="n">libc_ver</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="se">\n</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">platform</span><span class="o">.</span><span class="n">libc_ver</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">libc_ver</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+        <span class="n">platform_info</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">libc_ver</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">platform</span><span class="o">.</span><span class="n">dist</span><span class="p">()</span> <span class="o">!=</span> <span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">):</span>
+        <span class="n">platform_info</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;GNU/Linux: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="s">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">platform</span><span class="o">.</span><span class="n">dist</span><span class="p">()))</span>
+    <span class="k">elif</span> <span class="n">platform</span><span class="o">.</span><span class="n">mac_ver</span><span class="p">()</span> <span class="o">!=</span> <span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">),</span> <span class="s">&#39;&#39;</span><span class="p">):</span>
+        <span class="n">platform_info</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;Mac OS X: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">platform</span><span class="o">.</span><span class="n">mac_ver</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">platform</span><span class="o">.</span><span class="n">win32_ver</span><span class="p">()</span> <span class="o">!=</span> <span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">):</span>
+        <span class="n">platform_info</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;Windows: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">platform</span><span class="o">.</span><span class="n">win32_ver</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="n">platform_info</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;python_compiler: </span><span class="si">%s</span><span class="se">\n</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">platform</span><span class="o">.</span><span class="n">python_compiler</span><span class="p">())</span>
+    <span class="n">platform_info</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;python_implementation: </span><span class="si">%s</span><span class="se">\n</span><span class="s">&#39;</span> <span class="o">%</span>
+                                            <span class="n">platform</span><span class="o">.</span><span class="n">python_implementation</span><span class="p">())</span>
+
+    <span class="k">return</span> <span class="n">platform_info</span>
+
+</div>
+<div class="viewcode-block" id="foramt_bugreport"><a class="viewcode-back" href="../../api/gsdview.utils.html#gsdview.utils.foramt_bugreport">[docs]</a><span class="k">def</span> <span class="nf">foramt_bugreport</span><span class="p">(</span><span class="n">exctype</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">excvalue</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">tracebackobj</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">exctype</span><span class="p">,</span> <span class="n">excvalue</span><span class="p">,</span> <span class="n">tracebackobj</span><span class="p">)</span> <span class="o">==</span> <span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">):</span>
+        <span class="n">exctype</span><span class="p">,</span> <span class="n">excvalue</span><span class="p">,</span> <span class="n">tracebackobj</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">()</span>
+
+    <span class="n">separator</span> <span class="o">=</span> <span class="s">&#39;-&#39;</span> <span class="o">*</span> <span class="mi">80</span> <span class="o">+</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span>
+    <span class="n">timestamp</span> <span class="o">=</span> <span class="n">email</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">formatdate</span><span class="p">(</span><span class="n">localtime</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span>
+
+    <span class="n">msg</span> <span class="o">=</span> <span class="p">[</span><span class="n">timestamp</span><span class="p">,</span> <span class="n">separator</span><span class="p">]</span>
+    <span class="n">msg</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">traceback</span><span class="o">.</span><span class="n">format_exception_only</span><span class="p">(</span><span class="n">exctype</span><span class="p">,</span> <span class="n">excvalue</span><span class="p">))</span>
+    <span class="n">msg</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">separator</span><span class="p">)</span>
+    <span class="n">msg</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;Traceback:</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+    <span class="n">msg</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">traceback</span><span class="o">.</span><span class="n">format_tb</span><span class="p">(</span><span class="n">tracebackobj</span><span class="p">))</span>
+    <span class="n">msg</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">separator</span><span class="p">)</span>
+    <span class="n">msg</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">all_versions_str</span><span class="p">()</span><span class="o">.</span><span class="n">splitlines</span><span class="p">(</span><span class="bp">True</span><span class="p">))</span>
+    <span class="n">msg</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">msg</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span>
+    <span class="n">msg</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">format_platform_info</span><span class="p">())</span>
+
+    <span class="k">return</span> <span class="n">msg</span>
+
+</div>
+<span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;win&#39;</span><span class="p">:</span>
+
+    <span class="k">def</span> <span class="nf">isexecutable</span><span class="p">(</span><span class="n">cmd</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Check if &quot;cmd&quot; actually is an executable program.&#39;&#39;&#39;</span>
+
+        <span class="n">cmd</span> <span class="o">=</span> <span class="n">cmd</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span> <span class="ow">and</span> <span class="n">cmd</span><span class="o">.</span><span class="n">endswith</span><span class="p">((</span><span class="s">&#39;.exe&#39;</span><span class="p">,</span> <span class="s">&#39;.bat&#39;</span><span class="p">)):</span>
+            <span class="k">return</span> <span class="bp">True</span>
+        <span class="k">for</span> <span class="n">ext</span> <span class="ow">in</span> <span class="s">&#39;.exe&#39;</span><span class="p">,</span> <span class="s">&#39;.bat&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">cmd</span> <span class="o">+</span> <span class="n">ext</span><span class="p">):</span>
+                <span class="k">return</span> <span class="bp">True</span>
+        <span class="k">return</span> <span class="bp">False</span>
+<span class="k">else</span><span class="p">:</span>
+
+<div class="viewcode-block" id="isexecutable"><a class="viewcode-back" href="../../api/gsdview.utils.html#gsdview.utils.isexecutable">[docs]</a>    <span class="k">def</span> <span class="nf">isexecutable</span><span class="p">(</span><span class="n">cmd</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Check if &quot;cmd&quot; actually is an executable program.&#39;&#39;&#39;</span>
+
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">cmd</span><span class="p">):</span>
+            <span class="n">mode</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">cmd</span><span class="p">)[</span><span class="n">stat</span><span class="o">.</span><span class="n">ST_MODE</span><span class="p">]</span>
+            <span class="k">if</span> <span class="p">((</span><span class="n">mode</span> <span class="o">&amp;</span> <span class="n">stat</span><span class="o">.</span><span class="n">S_IXUSR</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">mode</span> <span class="o">&amp;</span> <span class="n">stat</span><span class="o">.</span><span class="n">S_IXGRP</span><span class="p">)</span> <span class="ow">or</span>
+                                                    <span class="p">(</span><span class="n">mode</span> <span class="o">&amp;</span> <span class="n">stat</span><span class="o">.</span><span class="n">S_IXOTH</span><span class="p">)):</span>
+                <span class="k">return</span> <span class="bp">True</span>
+        <span class="k">return</span> <span class="bp">False</span>
+
+</div>
+<div class="viewcode-block" id="which"><a class="viewcode-back" href="../../api/gsdview.utils.html#gsdview.utils.which">[docs]</a><span class="k">def</span> <span class="nf">which</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">env</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Return the full path of the program (*cmd*) or None.</span>
+
+<span class="sd">    &gt;&gt;&gt; which(&#39;ls&#39;)</span>
+<span class="sd">    &#39;/bin/ls&#39;</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">env</span><span class="p">:</span>
+        <span class="n">env</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span>
+
+    <span class="k">for</span> <span class="n">dir_</span> <span class="ow">in</span> <span class="n">env</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;PATH&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">pathsep</span><span class="p">):</span>
+        <span class="n">exe</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dir_</span><span class="p">,</span> <span class="n">cmd</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">isexecutable</span><span class="p">(</span><span class="n">exe</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">exe</span>
+
+</div>
+<div class="viewcode-block" id="isscript"><a class="viewcode-back" href="../../api/gsdview.utils.html#gsdview.utils.isscript">[docs]</a><span class="k">def</span> <span class="nf">isscript</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Check if a file is a script.&#39;&#39;&#39;</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s">&#39;rb&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">==</span> <span class="s">&#39;#!&#39;</span>
+    <span class="k">except</span> <span class="ne">IOError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">False</span>
+
+</div>
+<div class="viewcode-block" id="scriptcmd"><a class="viewcode-back" href="../../api/gsdview.utils.html#gsdview.utils.scriptcmd">[docs]</a><span class="k">def</span> <span class="nf">scriptcmd</span><span class="p">(</span><span class="n">scriptname</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Return the list of args for starting the script via subprocess.</span>
+
+<span class="sd">    On unix platforms the shebang string is used so almost all</span>
+<span class="sd">    scripting languages are recognized.</span>
+
+<span class="sd">    On windows platforms this function only works with batch files and</span>
+<span class="sd">    python scripts.</span>
+
+<span class="sd">    .. note:: if the *scriptname* is not recognized to be a script</span>
+<span class="sd">              it is assumed it is a binary executable so the only</span>
+<span class="sd">              argument in the returned list will be *scriptname*</span>
+<span class="sd">              itself.</span>
+
+<span class="sd">    :param scriptname:</span>
+<span class="sd">        the filename of the script</span>
+<span class="sd">    :returns:</span>
+<span class="sd">        a list of strings containing the command line arguments for</span>
+<span class="sd">        startting the program via subprocess</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">cmd</span> <span class="o">=</span> <span class="p">[</span><span class="n">scriptname</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&#39;win&#39;</span><span class="p">):</span>
+        <span class="n">ext</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">scriptname</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">ext</span> <span class="o">=</span> <span class="n">ext</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">ext</span> <span class="o">==</span> <span class="s">&#39;.bat&#39;</span><span class="p">:</span>
+            <span class="n">comspec</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;COMSPEC&#39;</span><span class="p">,</span> <span class="s">&#39;cmd.exe&#39;</span><span class="p">)</span>
+            <span class="n">cmd</span> <span class="o">=</span> <span class="p">[</span><span class="n">comspec</span><span class="p">,</span> <span class="s">&#39;/c&#39;</span><span class="p">,</span> <span class="n">scriptname</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">ext</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39;.py&#39;</span><span class="p">,</span> <span class="s">&#39;.pyc&#39;</span><span class="p">,</span> <span class="s">&#39;.pyo&#39;</span><span class="p">,</span> <span class="s">&#39;.pyw&#39;</span><span class="p">):</span>
+            <span class="c"># @WARNING: this doesn&#39;t work in case of frozen executables</span>
+            <span class="c">#cmd = [sys.executable, &#39;-u&#39;, scriptname] # no buffering</span>
+            <span class="n">cmd</span> <span class="o">=</span> <span class="p">[</span><span class="n">sys</span><span class="o">.</span><span class="n">executable</span><span class="p">,</span> <span class="n">scriptname</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">file</span><span class="p">(</span><span class="n">scriptname</span><span class="p">,</span> <span class="s">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
+            <span class="n">shebang</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">shebang</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&#39;#!&#39;</span><span class="p">):</span>
+                <span class="n">cmd</span> <span class="o">=</span> <span class="n">shebang</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span><span class="o">.</span><span class="n">split</span><span class="p">()</span> <span class="o">+</span> <span class="n">scriptname</span>
+
+    <span class="k">return</span> <span class="n">cmd</span>
+
+
+<span class="c">### Geographic tools ##########################################################</span>
+<span class="c"># @TODO: support vectors</span></div>
+<span class="k">def</span> <span class="nf">geonormalize</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">angle_range</span><span class="o">=</span><span class="mf">360.</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Normalize angles to fit expected range</span>
+
+<span class="sd">    Example: (-180, 180) --&gt; (0, 360)</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">halfrange</span> <span class="o">=</span> <span class="n">angle_range</span> <span class="o">/</span> <span class="mf">2.</span>
+    <span class="k">if</span> <span class="o">-</span><span class="n">halfrange</span> <span class="o">&lt;=</span> <span class="n">x</span> <span class="o">&lt;=</span> <span class="n">halfrange</span><span class="p">:</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">%</span> <span class="n">angle_range</span>
+    <span class="k">if</span> <span class="n">x</span> <span class="o">&gt;</span> <span class="n">halfrange</span><span class="p">:</span>
+        <span class="n">x</span> <span class="o">-=</span> <span class="n">angle_range</span>
+
+    <span class="k">return</span> <span class="n">x</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+    
+    
+    <p>
+        <a href="http://sourceforge.net/projects/gsdview">
+            <img src="http://sflogo.sourceforge.net/sflogo.php?group_id=226458&type=14" width="150" height="40" alt="Get GSDView at SourceForge.net. Fast, secure and Free Open Source software downloads" />
+        </a>
+    </p>
+    
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li><a href="../../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../gsdview.html" >gsdview</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2008-2011, Antonio Valentino.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

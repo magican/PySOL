@@ -1,0 +1,387 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>exectools.std &mdash; GSDView Open Edition Home Page</title>
+    <link rel="stylesheet" href="../../_static/sourceforge.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.6.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/logo.ico"/>
+    <link rel="top" title="GSDView Open Edition Home Page" href="../../index.html" />
+    <link rel="up" title="exectools" href="../exectools.html" /> 
+  </head>
+  <body>
+    
+        
+    
+    
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li><a href="../../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../exectools.html" accesskey="U">exectools</a> &raquo;</li> 
+      </ul>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for exectools.std</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="c">### Copyright (C) 2006-2011 Antonio Valentino &lt;a_valentino@users.sf.net&gt;</span>
+
+<span class="c">### This file is part of exectools.</span>
+
+<span class="c">### This module is free software; you can redistribute it and/or modify</span>
+<span class="c">### it under the terms of the GNU General Public License as published by</span>
+<span class="c">### the Free Software Foundation; either version 2 of the License, or</span>
+<span class="c">### (at your option) any later version.</span>
+
+<span class="c">### This module is distributed in the hope that it will be useful,</span>
+<span class="c">### but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c">### MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c">### GNU General Public License for more details.</span>
+
+<span class="c">### You should have received a copy of the GNU General Public License</span>
+<span class="c">### along with this module; if not, write to the Free Software</span>
+<span class="c">### Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA.</span>
+
+<span class="sd">&#39;&#39;&#39;Tools for running external processes using the subprocess module.&#39;&#39;&#39;</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="kn">from</span> <span class="nn">exectools</span> <span class="kn">import</span> <span class="n">BaseToolController</span><span class="p">,</span> <span class="n">EX_OK</span>
+<span class="kn">import</span> <span class="nn">subprocess2</span>
+
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s">&#39;Antonio Valentino &lt;a_valentino@users.sf.net&gt;&#39;</span>
+<span class="n">__revision__</span> <span class="o">=</span> <span class="s">&#39;$Revision: $&#39;</span>
+<span class="n">__date__</span> <span class="o">=</span> <span class="s">&#39;$Date: $&#39;</span>
+
+
+<div class="viewcode-block" id="StdToolController"><a class="viewcode-back" href="../../api/exectools.std.html#exectools.std.StdToolController">[docs]</a><span class="k">class</span> <span class="nc">StdToolController</span><span class="p">(</span><span class="n">BaseToolController</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Class for controlling command line tools.</span>
+
+<span class="sd">    A tool controller runs an external tool in controlled way.</span>
+<span class="sd">    The output of the child process is handled by the controller and,</span>
+<span class="sd">    optionally, notifications can be achieved at sub-process</span>
+<span class="sd">    termination.</span>
+
+<span class="sd">    A tool controller also allow to stop the controlled process.</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="StdToolController.isbusy"><a class="viewcode-back" href="../../api/exectools.std.html#exectools.std.StdToolController.isbusy">[docs]</a>    <span class="k">def</span> <span class="nf">isbusy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;If True then the controller is already running a subprocess.&#39;&#39;&#39;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">subclasses</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span>
+</div>
+<div class="viewcode-block" id="StdToolController.run_tool"><a class="viewcode-back" href="../../api/exectools.std.html#exectools.std.StdToolController.run_tool">[docs]</a>    <span class="k">def</span> <span class="nf">run_tool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tool</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Run an external tool in controlled way.</span>
+
+<span class="sd">        The output of the child process is handled by the controller</span>
+<span class="sd">        and, optionally, notifications can be achieved at sub-process</span>
+<span class="sd">        termination.</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tool</span> <span class="o">=</span> <span class="n">tool</span>
+
+        <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;win&#39;</span><span class="p">:</span>
+            <span class="n">closefds</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="n">startupinfo</span> <span class="o">=</span> <span class="n">subprocess2</span><span class="o">.</span><span class="n">STARTUPINFO</span><span class="p">()</span>
+            <span class="n">startupinfo</span><span class="o">.</span><span class="n">dwFlags</span> <span class="o">|=</span> <span class="n">subprocess2</span><span class="o">.</span><span class="n">STARTF_USESHOWWINDOW</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">closefds</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="n">startupinfo</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tool</span><span class="o">.</span><span class="n">stdout_handler</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tool</span><span class="o">.</span><span class="n">stdout_handler</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tool</span><span class="o">.</span><span class="n">stderr_handler</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tool</span><span class="o">.</span><span class="n">stderr_handler</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="n">cmd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tool</span><span class="o">.</span><span class="n">cmdline</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prerun_hook</span><span class="p">(</span><span class="o">*</span><span class="n">cmd</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span> <span class="o">=</span> <span class="n">subprocess2</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span>
+                                                <span class="n">stdin</span><span class="o">=</span><span class="n">subprocess2</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span>
+                                                <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess2</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span>
+                                                <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess2</span><span class="o">.</span><span class="n">STDOUT</span><span class="p">,</span>
+                                                <span class="n">cwd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_tool</span><span class="o">.</span><span class="n">cwd</span><span class="p">,</span>
+                                                <span class="n">env</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_tool</span><span class="o">.</span><span class="n">env</span><span class="p">,</span>
+                                                <span class="n">close_fds</span><span class="o">=</span><span class="n">closefds</span><span class="p">,</span>
+                                                <span class="n">shell</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_tool</span><span class="o">.</span><span class="n">shell</span><span class="p">,</span>
+                                                <span class="n">startupinfo</span><span class="o">=</span><span class="n">startupinfo</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">stdin</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">connect_output_handlers</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="nb">basestring</span><span class="p">):</span>
+                <span class="n">args</span> <span class="o">=</span> <span class="s">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s">&#39;Unable to execute: &quot;</span><span class="si">%s</span><span class="s">&quot;&#39;</span> <span class="o">%</span> <span class="n">args</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_reset</span><span class="p">()</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_reset</span><span class="p">()</span>
+            <span class="k">raise</span>
+</div>
+<div class="viewcode-block" id="StdToolController.finalize_run"><a class="viewcode-back" href="../../api/exectools.std.html#exectools.std.StdToolController.finalize_run">[docs]</a>    <span class="k">def</span> <span class="nf">finalize_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Perform finalization actions.</span>
+
+<span class="sd">        This method is called when the controlled process terminates</span>
+<span class="sd">        to perform finalization actions like:</span>
+
+<span class="sd">        * read and handle residual data in buffers,</span>
+<span class="sd">        * flush and close output handlers,</span>
+<span class="sd">        * close subprocess file descriptors</span>
+<span class="sd">        * run the &quot;finalize_run_hook&quot; method</span>
+<span class="sd">        * reset the controller instance</span>
+
+<span class="sd">        This method is not meant to be called by the user but the user</span>
+<span class="sd">        can provide custom implementations in subclasses.</span>
+
+<span class="sd">        If one just needs to perfor some additional finalization action</span>
+<span class="sd">        it should be better to use a custom &quot;finalize_run_hook&quot; instead</span>
+<span class="sd">        of overriging &quot;finalize_run&quot;.</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="p">:</span>
+                <span class="c"># retrieve residual data</span>
+                <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;win&#39;</span><span class="p">:</span>
+                    <span class="c"># using read() here hangs on win32</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tool</span><span class="o">.</span><span class="n">stdout_handler</span><span class="p">:</span>
+                        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">recv</span><span class="p">()</span>
+                        <span class="k">while</span> <span class="n">data</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">_tool</span><span class="o">.</span><span class="n">stdout_handler</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+                            <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">recv</span><span class="p">()</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tool</span><span class="o">.</span><span class="n">stderr_handler</span><span class="p">:</span>
+                        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">recv_err</span><span class="p">()</span>
+                        <span class="k">while</span> <span class="n">data</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">_tool</span><span class="o">.</span><span class="n">stderr_handler</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+                            <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">recv_err</span><span class="p">()</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tool</span><span class="o">.</span><span class="n">stdout_handler</span><span class="p">:</span>
+                            <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">_tool</span><span class="o">.</span><span class="n">stdout_handler</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                        <span class="c"># I/O operation on closed file.</span>
+                        <span class="k">pass</span>
+
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tool</span><span class="o">.</span><span class="n">stderr_handler</span><span class="p">:</span>
+                            <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">_tool</span><span class="o">.</span><span class="n">stderr_handler</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                        <span class="c"># I/O operation on closed file.</span>
+                        <span class="k">pass</span>
+
+                <span class="c"># close the pipes</span>
+                <span class="c"># NOTE: recipe_440544.Popen closes the stdout if no more</span>
+                <span class="c">#       output is available</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">stdout</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">stderr</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+                <span class="c"># wait for the subprocess termination</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tool</span><span class="o">.</span><span class="n">stdout_handler</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_tool</span><span class="o">.</span><span class="n">stdout_handler</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tool</span><span class="o">.</span><span class="n">stderr_handler</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_tool</span><span class="o">.</span><span class="n">stderr_handler</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_userstop</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;Execution stopped by the user.&#39;</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">returncode</span> <span class="o">!=</span> <span class="n">EX_OK</span><span class="p">:</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;Process (PID=</span><span class="si">%d</span><span class="s">) exited with return code </span><span class="si">%d</span><span class="s">.&#39;</span> <span class="o">%</span>
+                                           <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">pid</span><span class="p">,</span>
+                                            <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">returncode</span><span class="p">))</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+                <span class="c"># Call finalize hook is available</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">finalize_run_hook</span><span class="p">()</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="c"># Protect for unexpected errors in the feed and close methods of</span>
+            <span class="c"># the outputhandler</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_reset</span><span class="p">()</span>
+</div>
+    <span class="k">def</span> <span class="nf">_reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Internal reset.</span>
+
+<span class="sd">        Kill the controlled subprocess and reset I/O channels loosing</span>
+<span class="sd">        all unprocessed data.</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">stop</span><span class="p">(</span><span class="n">force</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">returncode</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">),</span> \
+                                        <span class="s">&#39;the process is still running&#39;</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">StdToolController</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">_reset</span><span class="p">()</span>
+
+<div class="viewcode-block" id="StdToolController.reset"><a class="viewcode-back" href="../../api/exectools.std.html#exectools.std.StdToolController.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Reset the tool controller instance.</span>
+
+<span class="sd">        Kill the controlled subprocess and reset the controller</span>
+<span class="sd">        instance loosing all unprocessed data.</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">StdToolController</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span> <span class="o">=</span> <span class="bp">None</span>
+</div>
+<div class="viewcode-block" id="StdToolController.handle_stdout"><a class="viewcode-back" href="../../api/exectools.std.html#exectools.std.StdToolController.handle_stdout">[docs]</a>    <span class="k">def</span> <span class="nf">handle_stdout</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Handle standard output data.</span>
+
+<span class="sd">        This method is not meant to be directly called by the user.</span>
+
+<span class="sd">        The user, anyway, can provide a custom implementation in</span>
+<span class="sd">        derived classes.</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">poll</span><span class="p">()</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="c"># NOTE: &#39;self.subprocess is None&#39; should never happen at this point</span>
+            <span class="c">#self.finalize_run() # @TODO: check</span>
+            <span class="k">return</span> <span class="bp">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">recv</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">data</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_tool</span><span class="o">.</span><span class="n">stdout_handler</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">True</span>
+</div>
+<div class="viewcode-block" id="StdToolController.handle_stderr"><a class="viewcode-back" href="../../api/exectools.std.html#exectools.std.StdToolController.handle_stderr">[docs]</a>    <span class="k">def</span> <span class="nf">handle_stderr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Handle standard  error.</span>
+
+<span class="sd">        This method is not meant to be directly called by the user.</span>
+
+<span class="sd">        The user, anyway, can provide a custom implementation in</span>
+<span class="sd">        derived classes.</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">poll</span><span class="p">()</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="c"># NOTE: &#39;self.subprocess is None&#39; should never happen ar this point</span>
+            <span class="c">#self.finalize_run() # @TODO: check</span>
+            <span class="k">return</span> <span class="bp">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">recv_err</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">data</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_tool</span><span class="o">.</span><span class="n">stderr_handler</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">True</span>
+</div>
+<div class="viewcode-block" id="StdToolController.stop_tool"><a class="viewcode-back" href="../../api/exectools.std.html#exectools.std.StdToolController.stop_tool">[docs]</a>    <span class="k">def</span> <span class="nf">stop_tool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Stop the execution of controlled subprocess.</span>
+
+<span class="sd">        When this method is invoked the controller instance is always</span>
+<span class="sd">        reset even if the controller is unable to stop the subprocess.</span>
+
+<span class="sd">        When possible the controller try to kill the subprocess in a</span>
+<span class="sd">        polite way.  If this fails it also tryes brute killing by</span>
+<span class="sd">        default (force=True).  This behaviour can be controlled using</span>
+<span class="sd">        the `force` parameter.</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="c"># @TODO: fix stop function with shell=True</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Execution stopped by the user.&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_userstop</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="n">stopped</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">stop</span><span class="p">(</span><span class="n">force</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">stopped</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;Unable to stop the sub-process (PID=</span><span class="si">%d</span><span class="s">).&#39;</span> <span class="o">%</span>
+                                                        <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">pid</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_reset</span><span class="p">()</span>
+            <span class="c"># The subprocess is successfully stopped.</span>
+            <span class="c"># The output handler will provide to the finalization</span>
+            <span class="c"># NOTE: return without reset</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_reset</span><span class="p">()</span>
+
+
+<span class="c"># @TODO: logging handler for progress</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+    
+    
+    <p>
+        <a href="http://sourceforge.net/projects/gsdview">
+            <img src="http://sflogo.sourceforge.net/sflogo.php?group_id=226458&type=14" width="150" height="40" alt="Get GSDView at SourceForge.net. Fast, secure and Free Open Source software downloads" />
+        </a>
+    </p>
+    
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li><a href="../../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../exectools.html" >exectools</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2008-2011, Antonio Valentino.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

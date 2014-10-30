@@ -1,0 +1,33 @@
+:13/11/2011: GSDView Open Source Edition v. 0.6.5 released.
+
+             Fixed some compatibility issues with new PyQt4 and sip versions.
+             Full support to PySide_ (>= 1.0.4).
+
+             Please refer to :doc:`CHANGES` for more details.
+
+:31/07/2011: GSDView now also works with PySide_
+
+             Full support to PySide_ has been implemented.
+             Now GSDView can optionally use PySide_ as Qt4_ bindings instead
+             PyQt4_ and SIP_.
+
+:24/07/2011: A new tentative package for Mac OS X
+
+             A new tentative package for Mac OS X. It includes a beta
+             version of GDSView 0.6.5.
+
+             Feedback is very welcome.
+
+:28/11/2010: GSDView Open v. 0.6.4 run on Fedora_ 14.
+
+             In Fedora_ 14 it has been fixed a bug in GDAL packaging
+             that caused a GSDView crash on startup.
+             The (recently updated) RPM package now runs nicely on
+             Fedora_ too.
+
+.. _PySide: http://www.pyside.org
+.. _SIP: http://www.riverbankcomputing.co.uk/software/sip
+.. _PyQt4: http://www.riverbankcomputing.co.uk/software/pyqt
+.. _Qt4: http://qt.nokia.com/products
+.. _Fedora: http://fedoraproject.org
+

@@ -1,0 +1,801 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>exectools.qt4 &mdash; GSDView Open Edition Home Page</title>
+    <link rel="stylesheet" href="../../_static/sourceforge.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.6.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/logo.ico"/>
+    <link rel="top" title="GSDView Open Edition Home Page" href="../../index.html" />
+    <link rel="up" title="exectools" href="../exectools.html" /> 
+  </head>
+  <body>
+    
+        
+    
+    
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li><a href="../../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../exectools.html" accesskey="U">exectools</a> &raquo;</li> 
+      </ul>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for exectools.qt4</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="c">### Copyright (C) 2006-2011 Antonio Valentino &lt;a_valentino@users.sf.net&gt;</span>
+
+<span class="c">### This file is part of exectools.</span>
+
+<span class="c">### This module is free software; you can redistribute it and/or modify</span>
+<span class="c">### it under the terms of the GNU General Public License as published by</span>
+<span class="c">### the Free Software Foundation; either version 2 of the License, or</span>
+<span class="c">### (at your option) any later version.</span>
+
+<span class="c">### This module is distributed in the hope that it will be useful,</span>
+<span class="c">### but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c">### MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c">### GNU General Public License for more details.</span>
+
+<span class="c">### You should have received a copy of the GNU General Public License</span>
+<span class="c">### along with this module; if not, write to the Free Software</span>
+<span class="c">### Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA.</span>
+
+<span class="sd">&#39;&#39;&#39;Tools for running external processes in a Qt4 GUI.&#39;&#39;&#39;</span>
+
+
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">qt</span> <span class="kn">import</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtGui</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="c"># Select the PyQt API 2</span>
+    <span class="kn">import</span> <span class="nn">sip</span>
+    <span class="n">sip</span><span class="o">.</span><span class="n">setapi</span><span class="p">(</span><span class="s">&#39;QDate&#39;</span><span class="p">,</span>       <span class="mi">2</span><span class="p">)</span>
+    <span class="n">sip</span><span class="o">.</span><span class="n">setapi</span><span class="p">(</span><span class="s">&#39;QDateTime&#39;</span><span class="p">,</span>   <span class="mi">2</span><span class="p">)</span>
+    <span class="n">sip</span><span class="o">.</span><span class="n">setapi</span><span class="p">(</span><span class="s">&#39;QString&#39;</span><span class="p">,</span>     <span class="mi">2</span><span class="p">)</span>
+    <span class="n">sip</span><span class="o">.</span><span class="n">setapi</span><span class="p">(</span><span class="s">&#39;QTextStream&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">sip</span><span class="o">.</span><span class="n">setapi</span><span class="p">(</span><span class="s">&#39;QTime&#39;</span><span class="p">,</span>       <span class="mi">2</span><span class="p">)</span>
+    <span class="n">sip</span><span class="o">.</span><span class="n">setapi</span><span class="p">(</span><span class="s">&#39;QUrl&#39;</span><span class="p">,</span>        <span class="mi">2</span><span class="p">)</span>
+    <span class="n">sip</span><span class="o">.</span><span class="n">setapi</span><span class="p">(</span><span class="s">&#39;QVariant&#39;</span><span class="p">,</span>    <span class="mi">2</span><span class="p">)</span>
+
+    <span class="kn">from</span> <span class="nn">PyQt4</span> <span class="kn">import</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtGui</span>
+    <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">pyqtSignal</span>
+    <span class="n">QtCore</span><span class="o">.</span><span class="n">Slot</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">pyqtSlot</span>
+
+<span class="kn">from</span> <span class="nn">exectools</span> <span class="kn">import</span> <span class="n">BaseOutputHandler</span><span class="p">,</span> <span class="n">BaseToolController</span><span class="p">,</span> <span class="n">EX_OK</span><span class="p">,</span> <span class="n">level2tag</span>
+
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s">&#39;Antonio Valentino &lt;a_valentino@users.sf.net&gt;&#39;</span>
+<span class="n">__revision__</span> <span class="o">=</span> <span class="s">&#39;$Revision: 992 $&#39;</span>
+<span class="n">__date__</span> <span class="o">=</span> <span class="s">&#39;$Date: 2011-08-01 12:32:03 +0200 (lun, 01 ago 2011) $&#39;</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;Qt4Blinker&#39;</span><span class="p">,</span> <span class="s">&#39;Qt4OutputPlane&#39;</span><span class="p">,</span> <span class="s">&#39;Qt4OutputHandler&#39;</span><span class="p">,</span>
+           <span class="s">&#39;Qt4LoggingHandler&#39;</span><span class="p">,</span> <span class="s">&#39;Qt4DialogLoggingHandler&#39;</span><span class="p">,</span> <span class="s">&#39;Qt4ToolController&#39;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="Qt4Blinker"><a class="viewcode-back" href="../../api/exectools.qt4.html#exectools.qt4.Qt4Blinker">[docs]</a><span class="k">class</span> <span class="nc">Qt4Blinker</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QLabel</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Qt4 linker.</span>
+
+<span class="sd">    :SLOTS:</span>
+
+<span class="sd">        * :meth:`pulse`</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">WindowFlags</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Qt4Blinker</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">flags</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="c">#qstyle = QtGui.QApplication.style()</span>
+        <span class="c">#pixmap = qstyle.standardPixmap(QtGui.QStyle.SP_MediaStop)</span>
+        <span class="n">pixmap</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QPixmap</span><span class="p">(</span>
+            <span class="s">&#39;:/trolltech/styles/commonstyle/images/standardbutton-no-32.png&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setPixmap</span><span class="p">(</span><span class="n">pixmap</span><span class="p">)</span>
+
+    <span class="nd">@QtCore.Slot</span><span class="p">()</span>
+<div class="viewcode-block" id="Qt4Blinker.pulse"><a class="viewcode-back" href="../../api/exectools.qt4.html#exectools.qt4.Qt4Blinker.pulse">[docs]</a>    <span class="k">def</span> <span class="nf">pulse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;A blinker pulse.</span>
+
+<span class="sd">        :C++ signature: `void pulse()`</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="n">sensitive</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">isEnabled</span><span class="p">()</span>
+        <span class="n">sensitive</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">sensitive</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="n">sensitive</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Qt4Blinker.flush"><a class="viewcode-back" href="../../api/exectools.qt4.html#exectools.qt4.Qt4Blinker.flush">[docs]</a>    <span class="k">def</span> <span class="nf">flush</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c">#QtGui.qApp.processEvents() # @TODO: check</span>
+        <span class="k">pass</span>
+</div>
+<div class="viewcode-block" id="Qt4Blinker.reset"><a class="viewcode-back" href="../../api/exectools.qt4.html#exectools.qt4.Qt4Blinker.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Reset the blinker.&#39;&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+
+</div></div>
+<div class="viewcode-block" id="Qt4OutputPlane"><a class="viewcode-back" href="../../api/exectools.qt4.html#exectools.qt4.Qt4OutputPlane">[docs]</a><span class="k">class</span> <span class="nc">Qt4OutputPlane</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QTextEdit</span><span class="p">):</span>
+
+    <span class="c">#: SIGNAL: emits a hide request.</span>
+    <span class="c">#:</span>
+    <span class="c">#: :C++ signature: `void planeHideRequest()`</span>
+    <span class="n">planeHideRequest</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Qt4OutputPlane</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setupActions</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">banner</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="k">def</span> <span class="nf">_setupActions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">qstype</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QApplication</span><span class="o">.</span><span class="n">style</span><span class="p">()</span>
+
+        <span class="c"># Setup actions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actions</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QActionGroup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="c"># Save As</span>
+        <span class="n">icon</span> <span class="o">=</span> <span class="n">qstype</span><span class="o">.</span><span class="n">standardIcon</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QStyle</span><span class="o">.</span><span class="n">SP_DialogSaveButton</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actionSaveAs</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QAction</span><span class="p">(</span><span class="n">icon</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;&amp;Save As&#39;</span><span class="p">),</span> <span class="bp">self</span><span class="p">,</span>
+                                          <span class="n">shortcut</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Ctrl+S&#39;</span><span class="p">),</span>
+                                          <span class="n">statusTip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span>
+                                                        <span class="s">&#39;Save text to file&#39;</span><span class="p">),</span>
+                                          <span class="n">triggered</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">actionSaveAs</span><span class="p">)</span>
+
+        <span class="c"># Clear</span>
+        <span class="n">icon</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QIcon</span><span class="p">(</span><span class="s">&#39;:/trolltech/styles/commonstyle/images/&#39;</span>
+                           <span class="s">&#39;standardbutton-clear-32.png&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actionClear</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QAction</span><span class="p">(</span><span class="n">icon</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;&amp;Clear&#39;</span><span class="p">),</span> <span class="bp">self</span><span class="p">,</span>
+                                         <span class="n">shortcut</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Shift+F5&#39;</span><span class="p">),</span>
+                                         <span class="n">statusTip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Clear the text&#39;</span><span class="p">),</span>
+                                         <span class="n">triggered</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">clear</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">actionClear</span><span class="p">)</span>
+
+        <span class="c"># Close</span>
+        <span class="n">icon</span> <span class="o">=</span> <span class="n">qstype</span><span class="o">.</span><span class="n">standardIcon</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QStyle</span><span class="o">.</span><span class="n">SP_DialogCloseButton</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actionHide</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QAction</span><span class="p">(</span><span class="n">icon</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;&amp;Hide&#39;</span><span class="p">),</span> <span class="bp">self</span><span class="p">,</span>
+                                        <span class="n">shortcut</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Ctrl+W&#39;</span><span class="p">),</span>
+                                        <span class="n">statusTip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span>
+                                                        <span class="s">&#39;Hide the text plane&#39;</span><span class="p">),</span>
+                                        <span class="n">triggered</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">planeHideRequest</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">actionHide</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Qt4OutputPlane.contextMenuEvent"><a class="viewcode-back" href="../../api/exectools.qt4.html#exectools.qt4.Qt4OutputPlane.contextMenuEvent">[docs]</a>    <span class="k">def</span> <span class="nf">contextMenuEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">menu</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QTextEdit</span><span class="o">.</span><span class="n">createStandardContextMenu</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">menu</span><span class="o">.</span><span class="n">addSeparator</span><span class="p">()</span>
+        <span class="n">menu</span><span class="o">.</span><span class="n">addActions</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">actions</span><span class="p">())</span>
+        <span class="n">menu</span><span class="o">.</span><span class="n">exec_</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">globalPos</span><span class="p">())</span>
+</div>
+    <span class="k">def</span> <span class="nf">_report</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">banner</span><span class="p">):</span>
+            <span class="n">header</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">banner</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">banner</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">header</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">banner</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">header</span> <span class="o">=</span> <span class="s">&#39;# Output log generated on </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">time</span><span class="o">.</span><span class="n">asctime</span><span class="p">()</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">toPlainText</span><span class="p">()</span>
+        <span class="k">return</span> <span class="s">&#39;</span><span class="si">%s</span><span class="se">\n\n</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+
+    <span class="c"># def clear(self): # it is a standard QtGui.QTextEdit method</span>
+
+<div class="viewcode-block" id="Qt4OutputPlane.save"><a class="viewcode-back" href="../../api/exectools.qt4.html#exectools.qt4.Qt4OutputPlane.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Save a file.&#39;&#39;&#39;</span>
+
+        <span class="n">filter_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Text files (*.txt)&#39;</span><span class="p">)</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QFileDialog</span><span class="o">.</span><span class="n">getSaveFileName</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="n">filter_</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">filename</span><span class="p">:</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_report</span><span class="p">()</span>
+            <span class="n">logfile</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s">&#39;w&#39;</span><span class="p">)</span>
+            <span class="n">logfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+            <span class="n">logfile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+</div></div>
+<div class="viewcode-block" id="Qt4OutputHandler"><a class="viewcode-back" href="../../api/exectools.qt4.html#exectools.qt4.Qt4OutputHandler">[docs]</a><span class="k">class</span> <span class="nc">Qt4OutputHandler</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QObject</span><span class="p">,</span> <span class="n">BaseOutputHandler</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Qt4 Output Handler.</span>
+
+<span class="sd">    :SIGNALS:</span>
+
+<span class="sd">        * :attr:`pulse`</span>
+<span class="sd">        * :attr:`percentageChanged`</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">_statusbar_timeout</span> <span class="o">=</span> <span class="mi">2000</span>  <span class="c"># ms</span>
+
+    <span class="c">#: SIGNAL: it is emitted to signal some kind of activity of the external</span>
+    <span class="c">#: process</span>
+    <span class="c">#:</span>
+    <span class="c">#: :param str text:</span>
+    <span class="c">#:     an optional text describing the kind activity of the external</span>
+    <span class="c">#:     process</span>
+    <span class="c">#:</span>
+    <span class="c">#: :C++ signature: `void pulse(QString)`</span>
+    <span class="n">pulse</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">([],</span> <span class="p">[</span><span class="nb">str</span><span class="p">])</span>
+
+    <span class="c">#: SIGNAL: it is emitted when the progress percentage changes</span>
+    <span class="c">#:</span>
+    <span class="c">#: :param float percentage:</span>
+    <span class="c">#:     the new completion percentage [0, 100]</span>
+    <span class="c">#:</span>
+    <span class="c">#: :C++ signature: `void percentageChanged(float)`</span>
+    <span class="n">percentageChanged</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">([</span><span class="nb">int</span><span class="p">],</span> <span class="p">[])</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">statusbar</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">progressbar</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                 <span class="n">blinker</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">QtCore</span><span class="o">.</span><span class="n">QObject</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">BaseOutputHandler</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logger</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">statusbar</span> <span class="o">=</span> <span class="n">statusbar</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">statusbar</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">blinker</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">blinker</span> <span class="o">=</span> <span class="n">Qt4Blinker</span><span class="p">()</span>
+                <span class="n">statusbar</span><span class="o">.</span><span class="n">addPermanentWidget</span><span class="p">(</span><span class="n">blinker</span><span class="p">)</span>
+                <span class="n">blinker</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pulse</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">blinker</span><span class="o">.</span><span class="n">show</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pulse</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">blinker</span><span class="o">.</span><span class="n">pulse</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pulse</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="k">lambda</span> <span class="n">text</span><span class="p">:</span>
+                        <span class="n">statusbar</span><span class="o">.</span><span class="n">showMessage</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_statusbar_timeout</span><span class="p">))</span>
+
+            <span class="k">if</span> <span class="n">progressbar</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">progressbar</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QProgressBar</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">statusbar</span><span class="p">)</span>
+                <span class="n">progressbar</span><span class="o">.</span><span class="n">setTextVisible</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+                <span class="n">statusbar</span><span class="o">.</span><span class="n">addPermanentWidget</span><span class="p">(</span><span class="n">progressbar</span><span class="p">)</span>  <span class="c"># , 1) # stretch=1</span>
+                <span class="n">progressbar</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">progressbar</span> <span class="o">=</span> <span class="n">progressbar</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">percentageChanged</span><span class="p">[()]</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">progressbar</span><span class="o">.</span><span class="n">show</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">percentageChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">progressbar</span><span class="o">.</span><span class="n">setValue</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">progressbar</span> <span class="o">=</span> <span class="n">progressbar</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">blinker</span> <span class="o">=</span> <span class="n">blinker</span>
+
+<div class="viewcode-block" id="Qt4OutputHandler.feed"><a class="viewcode-back" href="../../api/exectools.qt4.html#exectools.qt4.Qt4OutputHandler.feed">[docs]</a>    <span class="k">def</span> <span class="nf">feed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Feed some data to the parser.</span>
+
+<span class="sd">        It is processed insofar as it consists of complete elements;</span>
+<span class="sd">        incomplete data is buffered until more data is fed or close()</span>
+<span class="sd">        is called.</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">blinker</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">blinker</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Qt4OutputHandler</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Qt4OutputHandler.close"><a class="viewcode-back" href="../../api/exectools.qt4.html#exectools.qt4.Qt4OutputHandler.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Reset the instance.&#39;&#39;&#39;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">statusbar</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">statusbar</span><span class="o">.</span><span class="n">clearMessage</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Qt4OutputHandler</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="Qt4OutputHandler.reset"><a class="viewcode-back" href="../../api/exectools.qt4.html#exectools.qt4.Qt4OutputHandler.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Reset the handler instance.</span>
+
+<span class="sd">        Loses all unprocessed data. This is called implicitly at</span>
+<span class="sd">        instantiation time.</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">Qt4OutputHandler</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">progressbar</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">progressbar</span><span class="o">.</span><span class="n">setRange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">progressbar</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">progressbar</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">blinker</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">blinker</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">blinker</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="Qt4OutputHandler.handle_progress"><a class="viewcode-back" href="../../api/exectools.qt4.html#exectools.qt4.Qt4OutputHandler.handle_progress">[docs]</a>    <span class="k">def</span> <span class="nf">handle_progress</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Handle progress data.</span>
+
+<span class="sd">        :param data:</span>
+<span class="sd">            a list containing an item for each named group in the</span>
+<span class="sd">            &quot;progress&quot; regular expression: (pulse, percentage, text)</span>
+<span class="sd">            for the default implementation.</span>
+<span class="sd">            Each item can be None.</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="c">#pulse = data.get(&#39;pulse&#39;)</span>
+        <span class="n">percentage</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;percentage&#39;</span><span class="p">)</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;text&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">pulse</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">text</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pulse</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">percentage</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">percentageChanged</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">percentage</span><span class="p">))</span>
+
+</div></div>
+<div class="viewcode-block" id="Qt4LoggingHandler"><a class="viewcode-back" href="../../api/exectools.qt4.html#exectools.qt4.Qt4LoggingHandler">[docs]</a><span class="k">class</span> <span class="nc">Qt4LoggingHandler</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">Handler</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Custom handler for logging on Qt4 textviews.&#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">textview</span><span class="p">):</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">Handler</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">textview</span> <span class="o">=</span> <span class="n">textview</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_formats</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setupFormats</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_setupFormats</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Setup a different format for the different message types.&#39;&#39;&#39;</span>
+
+        <span class="n">fmap</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="n">fmt</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QTextCharFormat</span><span class="p">()</span>
+        <span class="n">fmt</span><span class="o">.</span><span class="n">setForeground</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QColor</span><span class="p">(</span><span class="s">&#39;red&#39;</span><span class="p">))</span>
+        <span class="n">fmap</span><span class="p">[</span><span class="s">&#39;error&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fmt</span>
+
+        <span class="n">fmt</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QTextCharFormat</span><span class="p">()</span>
+        <span class="n">fmt</span><span class="o">.</span><span class="n">setForeground</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QColor</span><span class="p">(</span><span class="s">&#39;orange&#39;</span><span class="p">))</span>
+        <span class="n">fmap</span><span class="p">[</span><span class="s">&#39;warning&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fmt</span>
+
+        <span class="n">fmt</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QTextCharFormat</span><span class="p">()</span>
+        <span class="n">fmt</span><span class="o">.</span><span class="n">setForeground</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QColor</span><span class="p">(</span><span class="s">&#39;blue&#39;</span><span class="p">))</span>
+        <span class="n">fmap</span><span class="p">[</span><span class="s">&#39;info&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fmt</span>
+
+        <span class="n">fmt</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QTextCharFormat</span><span class="p">()</span>
+        <span class="n">fmt</span><span class="o">.</span><span class="n">setForeground</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QColor</span><span class="p">(</span><span class="s">&#39;gray&#39;</span><span class="p">))</span>
+        <span class="n">fmap</span><span class="p">[</span><span class="s">&#39;debug&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fmt</span>
+
+        <span class="n">fmt</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QTextCharFormat</span><span class="p">()</span>
+        <span class="n">fmt</span><span class="o">.</span><span class="n">setFontWeight</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QFont</span><span class="o">.</span><span class="n">Bold</span><span class="p">)</span>
+        <span class="n">fmap</span><span class="p">[</span><span class="s">&#39;cmd&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fmt</span>
+
+        <span class="k">return</span> <span class="n">fmap</span>
+
+    <span class="k">def</span> <span class="nf">_flush</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">QtGui</span><span class="o">.</span><span class="n">qApp</span><span class="o">.</span><span class="n">processEvents</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">format_</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Write data on the textview.&#39;&#39;&#39;</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">format_</span><span class="p">,</span> <span class="nb">basestring</span><span class="p">):</span>
+            <span class="n">format_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_formats</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">format_</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">data</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">data</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">):</span>
+            <span class="n">data</span> <span class="o">+=</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span>
+
+        <span class="k">if</span> <span class="n">format_</span><span class="p">:</span>
+            <span class="n">oldFormat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">textview</span><span class="o">.</span><span class="n">currentCharFormat</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">textview</span><span class="o">.</span><span class="n">setCurrentCharFormat</span><span class="p">(</span><span class="n">format_</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">textview</span><span class="o">.</span><span class="n">insertPlainText</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">textview</span><span class="o">.</span><span class="n">setCurrentCharFormat</span><span class="p">(</span><span class="n">oldFormat</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">textview</span><span class="o">.</span><span class="n">insertPlainText</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">textview</span><span class="o">.</span><span class="n">ensureCursorVisible</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Qt4LoggingHandler.emit"><a class="viewcode-back" href="../../api/exectools.qt4.html#exectools.qt4.Qt4LoggingHandler.emit">[docs]</a>    <span class="k">def</span> <span class="nf">emit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>
+            <span class="n">tag</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">record</span><span class="p">,</span> <span class="s">&#39;tag&#39;</span><span class="p">,</span> <span class="n">level2tag</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">levelno</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_write</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">msg</span><span class="p">,</span> <span class="n">tag</span><span class="p">)</span>
+            <span class="c"># @TODO: check</span>
+            <span class="c">#self._flush()</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">KeyboardInterrupt</span><span class="p">,</span> <span class="ne">SystemExit</span><span class="p">):</span>
+            <span class="k">raise</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">handleError</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>
+
+</div></div>
+<div class="viewcode-block" id="Qt4DialogLoggingHandler"><a class="viewcode-back" href="../../api/exectools.qt4.html#exectools.qt4.Qt4DialogLoggingHandler">[docs]</a><span class="k">class</span> <span class="nc">Qt4DialogLoggingHandler</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">Handler</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Qt4 handler for the logging dialog.&#39;&#39;&#39;</span>
+
+    <span class="n">levelsmap</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">CRITICAL</span><span class="p">:</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QMessageBox</span><span class="o">.</span><span class="n">Critical</span><span class="p">,</span>
+        <span class="c"># FATAL = CRITICAL</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">:</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QMessageBox</span><span class="o">.</span><span class="n">Critical</span><span class="p">,</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">:</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QMessageBox</span><span class="o">.</span><span class="n">Warning</span><span class="p">,</span>
+        <span class="c"># WARN = WARNING</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">:</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QMessageBox</span><span class="o">.</span><span class="n">Information</span><span class="p">,</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">:</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QMessageBox</span><span class="o">.</span><span class="n">Information</span><span class="p">,</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">NOTSET</span><span class="p">:</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QMessageBox</span><span class="o">.</span><span class="n">Information</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dialog</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">Handler</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">dialog</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="c"># @TODO: check</span>
+            <span class="c">#~ if parent is None:</span>
+                <span class="c">#~ parent = QtGui.qApp.mainWidget()</span>
+
+            <span class="n">dialog</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QMessageBox</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+            <span class="n">dialog</span><span class="o">.</span><span class="n">addButton</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QMessageBox</span><span class="o">.</span><span class="n">Close</span><span class="p">)</span>
+            <span class="c"># @TODO: set dialog title</span>
+            <span class="n">dialog</span><span class="o">.</span><span class="n">setTextFormat</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">AutoText</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dialog</span> <span class="o">=</span> <span class="n">dialog</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">formatter</span> <span class="o">=</span> <span class="bp">None</span>
+
+<div class="viewcode-block" id="Qt4DialogLoggingHandler.emit"><a class="viewcode-back" href="../../api/exectools.qt4.html#exectools.qt4.Qt4DialogLoggingHandler.emit">[docs]</a>    <span class="k">def</span> <span class="nf">emit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dialog</span><span class="o">.</span><span class="n">isVisible</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&#39;trying to show again a dialog that is &#39;</span>
+                                   <span class="s">&#39;already visible.&#39;</span><span class="p">)</span>
+
+            <span class="n">msgtype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">levelsmap</span><span class="p">[</span><span class="n">record</span><span class="o">.</span><span class="n">levelno</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dialog</span><span class="o">.</span><span class="n">setIcon</span><span class="p">(</span><span class="n">msgtype</span><span class="p">)</span>
+
+            <span class="n">level</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLevelName</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">levelno</span><span class="p">)</span>
+            <span class="n">level</span> <span class="o">=</span> <span class="n">level</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dialog</span><span class="o">.</span><span class="n">setWindowTitle</span><span class="p">(</span><span class="n">level</span><span class="p">)</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;&lt;h1&gt;</span><span class="si">%s</span><span class="s">&lt;/h1&gt;&#39;</span> <span class="o">%</span> <span class="n">level</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">record</span><span class="o">.</span><span class="n">exc_info</span><span class="p">:</span>
+                <span class="n">msg</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;&lt;p&gt;&lt;b&gt;</span><span class="si">%s</span><span class="s">&lt;b&gt;&lt;/p&gt;&lt;br&gt;&#39;</span> <span class="o">%</span>
+                                        <span class="n">record</span><span class="o">.</span><span class="n">getMessage</span><span class="p">()</span><span class="o">.</span><span class="n">capitalize</span><span class="p">())</span>
+                <span class="c"># @TODO: background-color=&quot;white&quot;</span>
+                <span class="n">msg</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;&lt;pre&gt;</span><span class="si">%s</span><span class="s">&lt;/pre&gt;&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">record</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">msg</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;&lt;p&gt;</span><span class="si">%s</span><span class="s">&lt;/p&gt;&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">record</span><span class="p">)</span><span class="o">.</span><span class="n">capitalize</span><span class="p">())</span>
+
+            <span class="n">msg</span> <span class="o">=</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;UTF-8&#39;</span><span class="p">,</span> <span class="s">&#39;replace&#39;</span><span class="p">)</span>  <span class="c"># @TODO: check</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">dialog</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dialog</span><span class="o">.</span><span class="n">exec_</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dialog</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">KeyboardInterrupt</span><span class="p">,</span> <span class="ne">SystemExit</span><span class="p">):</span>
+            <span class="k">raise</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">handleError</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>
+
+</div></div>
+<div class="viewcode-block" id="Qt4ToolController"><a class="viewcode-back" href="../../api/exectools.qt4.html#exectools.qt4.Qt4ToolController">[docs]</a><span class="k">class</span> <span class="nc">Qt4ToolController</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QObject</span><span class="p">,</span> <span class="n">BaseToolController</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Qt4 tool controller.</span>
+
+<span class="sd">    :SIGNALS:</span>
+
+<span class="sd">        * :attr:`finished`</span>
+
+<span class="sd">    :SLOTS:</span>
+
+<span class="sd">        * :meth:`stop_tool`</span>
+<span class="sd">        * :meth:`finalize_run`</span>
+<span class="sd">        * :meth:`handle_stdout`</span>
+<span class="sd">        * :meth:`handle_stderr`</span>
+<span class="sd">        * :meth:`handle_error`</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">_delay_after_stop</span> <span class="o">=</span> <span class="mi">200</span>    <span class="c"># ms</span>
+
+    <span class="c">#: SIGNAL: it is emitted when the processing is finished.</span>
+    <span class="c">#:</span>
+    <span class="c">#: :param int exitcode:</span>
+    <span class="c">#:     the external proces exit code</span>
+    <span class="c">#:</span>
+    <span class="c">#: :C++ signature: `void finished(int exitCode)`</span>
+    <span class="n">finished</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">QtCore</span><span class="o">.</span><span class="n">QObject</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">BaseToolController</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logger</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QProcess</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">setProcessChannelMode</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QProcess</span><span class="o">.</span><span class="n">MergedChannels</span><span class="p">)</span>
+
+        <span class="c"># connect process handlers and I/O handlers</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">readyReadStandardOutput</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">handle_stdout</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">readyReadStandardError</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">handle_stderr</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">handle_error</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">finished</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">finalize_run</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="Qt4ToolController.isbusy"><a class="viewcode-back" href="../../api/exectools.qt4.html#exectools.qt4.Qt4ToolController.isbusy">[docs]</a>    <span class="k">def</span> <span class="nf">isbusy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;If True then the controller is already running a subprocess.&#39;&#39;&#39;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">state</span><span class="p">()</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">NotRunning</span>
+</div>
+    <span class="nd">@QtCore.Slot</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QProcess</span><span class="o">.</span><span class="n">ExitStatus</span><span class="p">)</span>
+<div class="viewcode-block" id="Qt4ToolController.finalize_run"><a class="viewcode-back" href="../../api/exectools.qt4.html#exectools.qt4.Qt4ToolController.finalize_run">[docs]</a>    <span class="k">def</span> <span class="nf">finalize_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exitCode</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">exitStatus</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Perform finalization actions.</span>
+
+<span class="sd">        This method is called when the controlled process terminates</span>
+<span class="sd">        to perform finalization actions like:</span>
+
+<span class="sd">        * read and handle residual data in buffers,</span>
+<span class="sd">        * flush and close output handlers,</span>
+<span class="sd">        * close subprocess file descriptors</span>
+<span class="sd">        * run the &quot;finalize_run_hook&quot; method</span>
+<span class="sd">        * reset the controller instance</span>
+
+<span class="sd">        If one just needs to perfor some additional finalization action</span>
+<span class="sd">        it should be better to use a custom &quot;finalize_run_hook&quot; instead</span>
+<span class="sd">        of overriging &quot;finalize_run&quot;.</span>
+
+<span class="sd">        :C++ signature: `finalize_run(int, QProcess::ExitStatus)`</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tool</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c"># retrieve residual data</span>
+            <span class="c"># @TODO: check if it is actually needed</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tool</span><span class="o">.</span><span class="n">stdout_handler</span><span class="p">:</span>
+                <span class="n">byteArray</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">readAllStandardOutput</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_tool</span><span class="o">.</span><span class="n">stdout_handler</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="n">byteArray</span><span class="o">.</span><span class="n">data</span><span class="p">())</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tool</span><span class="o">.</span><span class="n">stderr_handler</span><span class="p">:</span>
+                <span class="n">byteArray</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">readAllStandardError</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_tool</span><span class="o">.</span><span class="n">stderr_handler</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="n">byteArray</span><span class="o">.</span><span class="n">data</span><span class="p">())</span>
+
+            <span class="c"># close the pipe and wait for the subprocess termination</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tool</span><span class="o">.</span><span class="n">stdout_handler</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_tool</span><span class="o">.</span><span class="n">stdout_handler</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tool</span><span class="o">.</span><span class="n">stderr_handler</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_tool</span><span class="o">.</span><span class="n">stderr_handler</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_userstop</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;Execution stopped by the user.&#39;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">exitCode</span> <span class="o">!=</span> <span class="n">EX_OK</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;Process (PID=</span><span class="si">%d</span><span class="s">) exited with return code </span><span class="si">%d</span><span class="s">.&#39;</span> <span class="o">%</span>
+                                       <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">pid</span><span class="p">(),</span>
+                                        <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">exitCode</span><span class="p">()))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+            <span class="c"># Call finalize hook if available</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">finalize_run_hook</span><span class="p">()</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="c"># @TODO: check</span>
+            <span class="c"># Protect for unexpected errors in the feed and close methods of</span>
+            <span class="c"># the stdout_handler</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_reset</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">finished</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">exitCode</span><span class="p">)</span>
+</div>
+    <span class="k">def</span> <span class="nf">_reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Internal reset.&#39;&#39;&#39;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">state</span><span class="p">()</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">NotRunning</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_stop</span><span class="p">(</span><span class="n">force</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">waitForFinished</span><span class="p">()</span>
+            <span class="n">stopped</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">state</span><span class="p">()</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">NotRunning</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">stopped</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&#39;reset running process (PID=</span><span class="si">%d</span><span class="s">)&#39;</span> <span class="o">%</span>
+                                                        <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">pid</span><span class="p">())</span>
+
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">state</span><span class="p">()</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">NotRunning</span><span class="p">,</span> \
+                                                <span class="s">&#39;the process is still running&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">setProcessState</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">NotRunning</span><span class="p">)</span>
+        <span class="c"># @TODO: check</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">closeReadChannel</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QProcess</span><span class="o">.</span><span class="n">StandardOutput</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">closeReadChannel</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QProcess</span><span class="o">.</span><span class="n">StandardError</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">closeWriteChannel</span><span class="p">()</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">Qt4ToolController</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">_reset</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="nd">@QtCore.Slot</span><span class="p">()</span>
+<div class="viewcode-block" id="Qt4ToolController.handle_stdout"><a class="viewcode-back" href="../../api/exectools.qt4.html#exectools.qt4.Qt4ToolController.handle_stdout">[docs]</a>    <span class="k">def</span> <span class="nf">handle_stdout</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Handle standard output.</span>
+
+<span class="sd">        :C++ signature: `void handle_stdout()`</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="n">byteArray</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">readAllStandardOutput</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">byteArray</span><span class="o">.</span><span class="n">isEmpty</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tool</span><span class="o">.</span><span class="n">stdout_handler</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="n">byteArray</span><span class="o">.</span><span class="n">data</span><span class="p">())</span>
+</div>
+    <span class="nd">@QtCore.Slot</span><span class="p">()</span>
+<div class="viewcode-block" id="Qt4ToolController.handle_stderr"><a class="viewcode-back" href="../../api/exectools.qt4.html#exectools.qt4.Qt4ToolController.handle_stderr">[docs]</a>    <span class="k">def</span> <span class="nf">handle_stderr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Handle standard error.</span>
+
+<span class="sd">        :C++ signature: `void handle_stderr()`</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="n">byteArray</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">readAllStandardError</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">byteArray</span><span class="o">.</span><span class="n">isEmpty</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tool</span><span class="o">.</span><span class="n">stderr_handler</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="n">byteArray</span><span class="o">.</span><span class="n">data</span><span class="p">())</span>
+</div>
+    <span class="nd">@QtCore.Slot</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QProcess</span><span class="o">.</span><span class="n">ProcessError</span><span class="p">)</span>
+<div class="viewcode-block" id="Qt4ToolController.handle_error"><a class="viewcode-back" href="../../api/exectools.qt4.html#exectools.qt4.Qt4ToolController.handle_error">[docs]</a>    <span class="k">def</span> <span class="nf">handle_error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">error</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Handle a error in process execution.</span>
+
+<span class="sd">        Can be handle different types of errors:</span>
+
+<span class="sd">        * starting failed</span>
+<span class="sd">        * crashing after starts successfully</span>
+<span class="sd">        * timeout elapsed</span>
+<span class="sd">        * write error</span>
+<span class="sd">        * read error</span>
+<span class="sd">        * unknow error</span>
+
+<span class="sd">        :C++ signature: `void handle_error(QProcess::ProcessError)`</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="n">msg</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+        <span class="n">level</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span>
+        <span class="k">if</span> <span class="n">error</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QProcess</span><span class="o">.</span><span class="n">FailedToStart</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;The process failed to start. Either the invoked program &#39;</span>
+                   <span class="s">&#39;is missing, or you may have insufficient permissions to &#39;</span>
+                   <span class="s">&#39;invoke the program.&#39;</span><span class="p">)</span>
+            <span class="n">level</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_reset</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">error</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QProcess</span><span class="o">.</span><span class="n">Crashed</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_userstop</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">exitCode</span><span class="p">()</span> <span class="o">==</span> <span class="n">EX_OK</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;The process crashed some time after starting &#39;</span>
+                       <span class="s">&#39;successfully.&#39;</span><span class="p">)</span>
+                <span class="n">level</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span>
+        <span class="k">elif</span> <span class="n">error</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QProcess</span><span class="o">.</span><span class="n">Timedout</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;The last waitFor...() function timed out. The state of &#39;</span>
+                   <span class="s">&#39;QProcess is unchanged, and you can try calling &#39;</span>
+                   <span class="s">&#39;waitFor...() again.&#39;</span><span class="p">)</span>
+            <span class="n">level</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span>
+        <span class="k">elif</span> <span class="n">error</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QProcess</span><span class="o">.</span><span class="n">WriteError</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;An error occurred when attempting to write to the process.&#39;</span>
+                   <span class="s">&#39; For example, the process may not be running, or it may &#39;</span>
+                   <span class="s">&#39;have closed its input channel.&#39;</span><span class="p">)</span>
+            <span class="c">#level = logging.ERROR # @TODO: check</span>
+        <span class="k">elif</span> <span class="n">error</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QProcess</span><span class="o">.</span><span class="n">ReadError</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;An error occurred when attempting to read from the &#39;</span>
+                   <span class="s">&#39;process. For example, the process may not be running.&#39;</span><span class="p">)</span>
+            <span class="c">#level = logging.ERROR # @TODO: check</span>
+        <span class="k">elif</span> <span class="n">error</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QProcess</span><span class="o">.</span><span class="n">UnknownError</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;An unknown error occurred. This is the default return &#39;</span>
+                   <span class="s">&#39;value of error().&#39;</span><span class="p">)</span>
+            <span class="c">#level = logging.ERROR # @TODO: check</span>
+
+        <span class="k">if</span> <span class="n">msg</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
+
+        <span class="c"># @TODO: check</span>
+        <span class="c">#self.finished.emit(self.exitCode())</span>
+
+    <span class="c">#QtCore.Slot() # @TODO: check how to handle varargs</span></div>
+<div class="viewcode-block" id="Qt4ToolController.run_tool"><a class="viewcode-back" href="../../api/exectools.qt4.html#exectools.qt4.Qt4ToolController.run_tool">[docs]</a>    <span class="k">def</span> <span class="nf">run_tool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tool</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Run an external tool in controlled way.</span>
+
+<span class="sd">        The output of the child process is handled by the controller</span>
+<span class="sd">        and, optionally, notifications can be achieved at sub-process</span>
+<span class="sd">        termination.</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">state</span><span class="p">()</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">NotRunning</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tool</span> <span class="o">=</span> <span class="n">tool</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tool</span><span class="o">.</span><span class="n">stdout_handler</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tool</span><span class="o">.</span><span class="n">stdout_handler</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tool</span><span class="o">.</span><span class="n">stderr_handler</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tool</span><span class="o">.</span><span class="n">stderr_handler</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+
+        <span class="n">cmd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tool</span><span class="o">.</span><span class="n">cmdline</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prerun_hook</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+        <span class="n">cmd</span> <span class="o">=</span> <span class="s">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tool</span><span class="o">.</span><span class="n">env</span><span class="p">:</span>
+            <span class="n">qenv</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;</span><span class="si">%s</span><span class="s">=</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
+                                    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tool</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">items</span><span class="p">()]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">setEnvironment</span><span class="p">(</span><span class="n">qenv</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tool</span><span class="o">.</span><span class="n">cwd</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">setWorkingDirectory</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tool</span><span class="o">.</span><span class="n">cwd</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;&quot;shell&quot; flag set to </span><span class="si">%s</span><span class="s">.&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tool</span><span class="o">.</span><span class="n">shell</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Starting: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">cmd</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">closeWriteChannel</span><span class="p">()</span>
+</div>
+    <span class="k">def</span> <span class="nf">_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">state</span><span class="p">()</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">NotRunning</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">waitForFinished</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_delay_after_stop</span><span class="p">)</span>
+        <span class="n">stopped</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">state</span><span class="p">()</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">NotRunning</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">stopped</span> <span class="ow">and</span> <span class="n">force</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;Force process termination (PID=</span><span class="si">%d</span><span class="s">).&#39;</span> <span class="o">%</span>
+                                                        <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">pid</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+
+    <span class="nd">@QtCore.Slot</span><span class="p">()</span>
+    <span class="nd">@QtCore.Slot</span><span class="p">(</span><span class="nb">bool</span><span class="p">)</span>
+<div class="viewcode-block" id="Qt4ToolController.stop_tool"><a class="viewcode-back" href="../../api/exectools.qt4.html#exectools.qt4.Qt4ToolController.stop_tool">[docs]</a>    <span class="k">def</span> <span class="nf">stop_tool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Stop the execution of controlled subprocess.</span>
+
+<span class="sd">        When this method is invoked the controller instance is always</span>
+<span class="sd">        reset even if the controller is unable to stop the subprocess.</span>
+
+<span class="sd">        When possible the controller try to kill the subprocess in a</span>
+<span class="sd">        polite way.  If this fails it also tryes brute killing by</span>
+<span class="sd">        default (force=True).  This behaviour can be controlled using</span>
+<span class="sd">        the `force` parameter.</span>
+
+<span class="sd">        :C++ signature: `void stop_tool(bool)`</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_userstop</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">state</span><span class="p">()</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">NotRunning</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Execution stopped by the user.&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_userstop</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_stop</span><span class="p">(</span><span class="n">force</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">waitForFinished</span><span class="p">()</span>
+            <span class="n">stopped</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">state</span><span class="p">()</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">NotRunning</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">stopped</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;Unable to stop the sub-process (PID=</span><span class="si">%d</span><span class="s">).&#39;</span> <span class="o">%</span>
+                                                        <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">pid</span><span class="p">())</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+    
+    
+    <p>
+        <a href="http://sourceforge.net/projects/gsdview">
+            <img src="http://sflogo.sourceforge.net/sflogo.php?group_id=226458&type=14" width="150" height="40" alt="Get GSDView at SourceForge.net. Fast, secure and Free Open Source software downloads" />
+        </a>
+    </p>
+    
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li><a href="../../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../exectools.html" >exectools</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2008-2011, Antonio Valentino.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

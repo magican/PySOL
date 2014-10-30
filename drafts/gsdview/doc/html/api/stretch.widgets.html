@@ -1,0 +1,307 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>stretch.widgets &mdash; GSDView Open Edition Home Page</title>
+    <link rel="stylesheet" href="../_static/sourceforge.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.6.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/logo.ico"/>
+    <link rel="top" title="GSDView Open Edition Home Page" href="../index.html" />
+    <link rel="up" title="API Reference" href="../reference.html" />
+    <link rel="next" title="worldmap" href="worldmap.html" />
+    <link rel="prev" title="stretch.core" href="stretch.core.html" /> 
+  </head>
+  <body>
+    
+        
+    
+    
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li class="right" >
+          <a href="worldmap.html" title="worldmap"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="stretch.core.html" title="stretch.core"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../reference.html" accesskey="U">API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-stretch.widgets">
+<span id="stretch-widgets"></span><h1>stretch.widgets<a class="headerlink" href="#module-stretch.widgets" title="Permalink to this headline">¶</a></h1>
+<p>Widgets and dialogs for GSDView.</p>
+<p class="rubric">Classes</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><a class="reference internal" href="#stretch.widgets.StretchDialog" title="stretch.widgets.StretchDialog"><tt class="xref py py-obj docutils literal"><span class="pre">StretchDialog</span></tt></a>(**kwargs[,&nbsp;parent,&nbsp;flags])</td>
+<td>Stretch dialog.</td>
+</tr>
+<tr><td><tt class="xref py py-obj docutils literal"><span class="pre">StretchDialogBase</span></tt></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#stretch.widgets.StretchWidget" title="stretch.widgets.StretchWidget"><tt class="xref py py-obj docutils literal"><span class="pre">StretchWidget</span></tt></a>(**kwargs[,&nbsp;parent,&nbsp;flags])</td>
+<td>Stretch widget.</td>
+</tr>
+<tr><td><tt class="xref py py-obj docutils literal"><span class="pre">StretchWidgetBase</span></tt></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="class">
+<dt id="stretch.widgets.StretchDialog">
+<em class="property">class </em><tt class="descclassname">stretch.widgets.</tt><tt class="descname">StretchDialog</tt><big>(</big><em>parent=None</em>, <em>flags=&lt;PyQt4.QtCore.WindowFlags object at 0x38f6750&gt;</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/stretch/widgets.html#StretchDialog"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stretch.widgets.StretchDialog" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">PyQt4.QtGui.QDialog</span></tt>, <tt class="xref py py-class docutils literal"><span class="pre">stretch.ui.stretchdialog.Ui_stretchingDialog</span></tt></p>
+<p>Stretch dialog.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Signals :</th><td class="field-body"><ul class="first last simple">
+<li><a class="reference internal" href="#stretch.widgets.StretchDialog.valueChanged" title="stretch.widgets.StretchDialog.valueChanged"><tt class="xref py py-attr docutils literal"><span class="pre">valueChanged</span></tt></a></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="stretch.widgets.StretchDialog.advanced">
+<tt class="descname">advanced</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/stretch/widgets.html#StretchDialog.advanced"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stretch.widgets.StretchDialog.advanced" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="stretch.widgets.StretchDialog.floatmode">
+<tt class="descname">floatmode</tt><a class="headerlink" href="#stretch.widgets.StretchDialog.floatmode" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="stretch.widgets.StretchDialog.reset">
+<tt class="descname">reset</tt><big>(</big><em>d=None</em><big>)</big><a class="reference internal" href="../_modules/stretch/widgets.html#StretchDialog.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stretch.widgets.StretchDialog.reset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="stretch.widgets.StretchDialog.saveState">
+<tt class="descname">saveState</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/stretch/widgets.html#StretchDialog.saveState"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stretch.widgets.StretchDialog.saveState" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="stretch.widgets.StretchDialog.setAdvanced">
+<tt class="descname">setAdvanced</tt><big>(</big><em>advmode=True</em><big>)</big><a class="reference internal" href="../_modules/stretch/widgets.html#StretchDialog.setAdvanced"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stretch.widgets.StretchDialog.setAdvanced" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="stretch.widgets.StretchDialog.valueChanged">
+<tt class="descname">valueChanged</tt><a class="headerlink" href="#stretch.widgets.StretchDialog.valueChanged" title="Permalink to this definition">¶</a></dt>
+<dd><p>SIGNAL: it is emitted when the stretch value changes</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">C++ signature:</th><td class="field-body"><cite>void valueChanged()</cite></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="stretch.widgets.StretchDialog.values">
+<tt class="descname">values</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/stretch/widgets.html#StretchDialog.values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stretch.widgets.StretchDialog.values" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="stretch.widgets.StretchWidget">
+<em class="property">class </em><tt class="descclassname">stretch.widgets.</tt><tt class="descname">StretchWidget</tt><big>(</big><em>parent=None</em>, <em>flags=&lt;PyQt4.QtCore.WindowFlags object at 0x38f66e0&gt;</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/stretch/widgets.html#StretchWidget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stretch.widgets.StretchWidget" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">PyQt4.QtGui.QWidget</span></tt>, <tt class="xref py py-class docutils literal"><span class="pre">stretch.ui.doubleslider.Ui_doubleslider</span></tt></p>
+<p>Stretch widget.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Signals :</th><td class="field-body"><ul class="first last simple">
+<li><a class="reference internal" href="#stretch.widgets.StretchWidget.valueChanged" title="stretch.widgets.StretchWidget.valueChanged"><tt class="xref py py-attr docutils literal"><span class="pre">valueChanged</span></tt></a></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="stretch.widgets.StretchWidget.floatmode">
+<tt class="descname">floatmode</tt><a class="headerlink" href="#stretch.widgets.StretchWidget.floatmode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the tretch widget in floating point mode.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="stretch.widgets.StretchWidget.high">
+<tt class="descname">high</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/stretch/widgets.html#StretchWidget.high"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stretch.widgets.StretchWidget.high" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="stretch.widgets.StretchWidget.low">
+<tt class="descname">low</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/stretch/widgets.html#StretchWidget.low"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stretch.widgets.StretchWidget.low" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="stretch.widgets.StretchWidget.maximum">
+<tt class="descname">maximum</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/stretch/widgets.html#StretchWidget.maximum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stretch.widgets.StretchWidget.maximum" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="stretch.widgets.StretchWidget.minimum">
+<tt class="descname">minimum</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/stretch/widgets.html#StretchWidget.minimum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stretch.widgets.StretchWidget.minimum" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="stretch.widgets.StretchWidget.setHigh">
+<tt class="descname">setHigh</tt><big>(</big><em>value</em><big>)</big><a class="reference internal" href="../_modules/stretch/widgets.html#StretchWidget.setHigh"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stretch.widgets.StretchWidget.setHigh" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="stretch.widgets.StretchWidget.setLow">
+<tt class="descname">setLow</tt><big>(</big><em>value</em><big>)</big><a class="reference internal" href="../_modules/stretch/widgets.html#StretchWidget.setLow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stretch.widgets.StretchWidget.setLow" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="stretch.widgets.StretchWidget.setMaximum">
+<tt class="descname">setMaximum</tt><big>(</big><em>value</em><big>)</big><a class="reference internal" href="../_modules/stretch/widgets.html#StretchWidget.setMaximum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stretch.widgets.StretchWidget.setMaximum" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="stretch.widgets.StretchWidget.setMinimum">
+<tt class="descname">setMinimum</tt><big>(</big><em>value</em><big>)</big><a class="reference internal" href="../_modules/stretch/widgets.html#StretchWidget.setMinimum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stretch.widgets.StretchWidget.setMinimum" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="stretch.widgets.StretchWidget.setState">
+<tt class="descname">setState</tt><big>(</big><em>d</em><big>)</big><a class="reference internal" href="../_modules/stretch/widgets.html#StretchWidget.setState"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stretch.widgets.StretchWidget.setState" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="stretch.widgets.StretchWidget.state">
+<tt class="descname">state</tt><big>(</big><em>d=None</em><big>)</big><a class="reference internal" href="../_modules/stretch/widgets.html#StretchWidget.state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stretch.widgets.StretchWidget.state" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="stretch.widgets.StretchWidget.valueChanged">
+<tt class="descname">valueChanged</tt><a class="headerlink" href="#stretch.widgets.StretchWidget.valueChanged" title="Permalink to this definition">¶</a></dt>
+<dd><p>SIGNAL: it is emitted when the stretch value changes</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">C++ signature:</th><td class="field-body"><cite>void valueChanged()</cite></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="stretch.widgets.StretchWidget.values">
+<tt class="descname">values</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/stretch/widgets.html#StretchWidget.values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stretch.widgets.StretchWidget.values" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo.png" alt="Logo"/>
+            </a></p>
+    
+    
+    <p>
+        <a href="http://sourceforge.net/projects/gsdview">
+            <img src="http://sflogo.sourceforge.net/sflogo.php?group_id=226458&type=14" width="150" height="40" alt="Get GSDView at SourceForge.net. Fast, secure and Free Open Source software downloads" />
+        </a>
+    </p>
+    
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="stretch.core.html"
+                        title="previous chapter">stretch.core</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="worldmap.html"
+                        title="next chapter">worldmap</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/api/stretch.widgets.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li class="right" >
+          <a href="worldmap.html" title="worldmap"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="stretch.core.html" title="stretch.core"
+             >previous</a> |</li>
+        <li><a href="../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../reference.html" >API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2008-2011, Antonio Valentino.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

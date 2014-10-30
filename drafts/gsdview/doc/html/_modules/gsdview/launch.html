@@ -1,0 +1,318 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>gsdview.launch &mdash; GSDView Open Edition Home Page</title>
+    <link rel="stylesheet" href="../../_static/sourceforge.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.6.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/logo.ico"/>
+    <link rel="top" title="GSDView Open Edition Home Page" href="../../index.html" />
+    <link rel="up" title="gsdview" href="../gsdview.html" /> 
+  </head>
+  <body>
+    
+        
+    
+    
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li><a href="../../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../gsdview.html" accesskey="U">gsdview</a> &raquo;</li> 
+      </ul>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for gsdview.launch</h1><div class="highlight"><pre>
+<span class="c">#!/usr/bin/env python</span>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="c">### Copyright (C) 2008-2011 Antonio Valentino &lt;a_valentino@users.sf.net&gt;</span>
+
+<span class="c">### This file is part of GSDView.</span>
+
+<span class="c">### GSDView is free software; you can redistribute it and/or modify</span>
+<span class="c">### it under the terms of the GNU General Public License as published by</span>
+<span class="c">### the Free Software Foundation; either version 2 of the License, or</span>
+<span class="c">### (at your option) any later version.</span>
+
+<span class="c">### GSDView is distributed in the hope that it will be useful,</span>
+<span class="c">### but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c">### MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c">### GNU General Public License for more details.</span>
+
+<span class="c">### You should have received a copy of the GNU General Public License</span>
+<span class="c">### along with GSDView; if not, write to the Free Software</span>
+<span class="c">### Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA.</span>
+
+
+<span class="sd">&#39;&#39;&#39;Launcher script for gsdview.&#39;&#39;&#39;</span>
+
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+
+
+<div class="viewcode-block" id="Timer"><a class="viewcode-back" href="../../api/gsdview.launch.html#gsdview.launch.Timer">[docs]</a><span class="k">class</span> <span class="nc">Timer</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span>
+
+<div class="viewcode-block" id="Timer.elapsed"><a class="viewcode-back" href="../../api/gsdview.launch.html#gsdview.launch.Timer.elapsed">[docs]</a>    <span class="k">def</span> <span class="nf">elapsed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span>
+</div>
+<div class="viewcode-block" id="Timer.update"><a class="viewcode-back" href="../../api/gsdview.launch.html#gsdview.launch.Timer.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="n">delta</span> <span class="o">=</span> <span class="n">now</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">last</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last</span> <span class="o">=</span> <span class="n">now</span>
+        <span class="k">return</span> <span class="n">delta</span><span class="o">.</span><span class="n">seconds</span><span class="p">,</span> <span class="n">delta</span><span class="o">.</span><span class="n">microseconds</span>
+
+</div></div>
+<div class="viewcode-block" id="SplashLogHandler"><a class="viewcode-back" href="../../api/gsdview.launch.html#gsdview.launch.SplashLogHandler">[docs]</a><span class="k">class</span> <span class="nc">SplashLogHandler</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">Handler</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">splash</span><span class="p">,</span> <span class="n">app</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">NOTSET</span><span class="p">):</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">Handler</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">app</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">qt.QtGui</span> <span class="kn">import</span> <span class="n">qApp</span> <span class="k">as</span> <span class="n">app</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_app</span> <span class="o">=</span> <span class="n">app</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_splash</span> <span class="o">=</span> <span class="n">splash</span>
+
+<div class="viewcode-block" id="SplashLogHandler.emit"><a class="viewcode-back" href="../../api/gsdview.launch.html#gsdview.launch.SplashLogHandler.emit">[docs]</a>    <span class="k">def</span> <span class="nf">emit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">record</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_splash</span><span class="o">.</span><span class="n">showMessage</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_splash</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="n">msg</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">KeyboardInterrupt</span><span class="p">,</span> <span class="ne">SystemExit</span><span class="p">):</span>
+            <span class="k">raise</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">handleError</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="SplashLogHandler.flush"><a class="viewcode-back" href="../../api/gsdview.launch.html#gsdview.launch.SplashLogHandler.flush">[docs]</a>    <span class="k">def</span> <span class="nf">flush</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_app</span><span class="o">.</span><span class="n">processEvents</span><span class="p">()</span>
+
+</div></div>
+<span class="n">MODULES</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;os&#39;</span><span class="p">,</span> <span class="s">&#39;re&#39;</span><span class="p">,</span> <span class="s">&#39;sys&#39;</span><span class="p">,</span> <span class="s">&#39;itertools&#39;</span><span class="p">,</span>
+          <span class="s">&#39;numpy&#39;</span><span class="p">,</span>
+          <span class="s">&#39;osgeo.gdal&#39;</span><span class="p">,</span> <span class="s">&#39;osgeo.osr&#39;</span><span class="p">,</span>
+          <span class="s">&#39;qt.QtCore&#39;</span><span class="p">,</span> <span class="s">&#39;qt.QtGui&#39;</span><span class="p">,</span>
+          <span class="s">&#39;exectools&#39;</span><span class="p">,</span> <span class="s">&#39;exectools.qt4&#39;</span><span class="p">,</span>
+          <span class="s">&#39;gsdview.info&#39;</span><span class="p">,</span> <span class="s">&#39;gsdview.utils&#39;</span><span class="p">,</span> <span class="s">&#39;gsdview.apptools&#39;</span><span class="p">,</span>
+          <span class="s">&#39;gsdview.imgutils&#39;</span><span class="p">,</span> <span class="s">&#39;gsdview.qt4support&#39;</span><span class="p">,</span> <span class="s">&#39;gsdview.widgets&#39;</span><span class="p">,</span>
+          <span class="s">&#39;gsdview.graphicsview&#39;</span><span class="p">,</span> <span class="s">&#39;gsdview.mainwin&#39;</span><span class="p">,</span> <span class="s">&#39;gsdview.app&#39;</span><span class="p">,</span>
+          <span class="s">&#39;gsdview.gdalbackend&#39;</span><span class="p">,</span> <span class="s">&#39;gsdview.gdalbackend.core&#39;</span><span class="p">,</span>
+          <span class="s">&#39;gsdview.gdalbackend.gdalqt4&#39;</span><span class="p">,</span> <span class="s">&#39;gsdview.gdalbackend.widgets&#39;</span><span class="p">,</span>
+          <span class="s">&#39;gsdview.gdalbackend.modelitems&#39;</span><span class="p">,</span> <span class="s">&#39;gsdview.gdalbackend.gdalsupport&#39;</span><span class="p">,</span>
+          <span class="s">&#39;gsdview.gdalbackend.gdalexectools&#39;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="preload"><a class="viewcode-back" href="../../api/gsdview.launch.html#gsdview.launch.preload">[docs]</a><span class="k">def</span> <span class="nf">preload</span><span class="p">(</span><span class="n">modules</span><span class="p">,</span> <span class="n">app</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">app</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">qt</span> <span class="kn">import</span> <span class="n">QtGui</span>
+        <span class="n">app</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">qApp</span>
+
+    <span class="n">timer</span> <span class="o">=</span> <span class="n">Timer</span><span class="p">()</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s">&#39;gsdview&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">modname</span> <span class="ow">in</span> <span class="n">modules</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Importing </span><span class="si">%s</span><span class="s"> module ...&#39;</span><span class="p">)</span> <span class="o">%</span> <span class="n">modname</span><span class="p">)</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">processEvents</span><span class="p">()</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%s</span><span class="s"> import: </span><span class="si">%d</span><span class="s">.</span><span class="si">%06d</span><span class="s">s&#39;</span> <span class="o">%</span> <span class="p">((</span><span class="n">modname</span><span class="p">,)</span> <span class="o">+</span> <span class="n">timer</span><span class="o">.</span><span class="n">update</span><span class="p">()))</span>
+
+</div>
+<div class="viewcode-block" id="cmdline_ui"><a class="viewcode-back" href="../../api/gsdview.launch.html#gsdview.launch.cmdline_ui">[docs]</a><span class="k">def</span> <span class="nf">cmdline_ui</span><span class="p">():</span>
+    <span class="kn">from</span> <span class="nn">optparse</span> <span class="kn">import</span> <span class="n">OptionParser</span>
+
+    <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">info</span>
+
+    <span class="c"># filter out arguments that cause errors in Mac bundles</span>
+    <span class="kn">import</span> <span class="nn">sys</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="n">arg</span> <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">arg</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&#39;-psn_&#39;</span><span class="p">)]</span>
+
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">OptionParser</span><span class="p">(</span><span class="n">prog</span><span class="o">=</span><span class="s">&#39;gsdview&#39;</span><span class="p">,</span>
+                    <span class="c">#usage=&#39;%prog [options] [FILENAME [FILENAME [...]]]&#39;,</span>
+                    <span class="n">usage</span><span class="o">=</span><span class="s">&#39;%prog [options]&#39;</span><span class="p">,</span>
+                    <span class="n">version</span><span class="o">=</span><span class="s">&#39;</span><span class="si">%%</span><span class="s">prog Open Source Edition </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">info</span><span class="o">.</span><span class="n">version</span><span class="p">,</span>
+                    <span class="n">description</span><span class="o">=</span><span class="n">info</span><span class="o">.</span><span class="n">description</span><span class="p">,</span>
+                    <span class="n">epilog</span><span class="o">=</span><span class="s">&#39;Home Page: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">info</span><span class="o">.</span><span class="n">website</span><span class="p">)</span>
+
+    <span class="c"># @TODO: complete</span>
+    <span class="c">#~ parser.add_option(&#39;-c&#39;, &#39;--config-file&#39;, dest=&#39;configfile&#39;, metavar=&#39;FILE&#39;,</span>
+                      <span class="c">#~ help=&#39;use specified cnfig file instead of default one&#39;)</span>
+    <span class="c">#~ parser.add_option(&#39;-d&#39;, &#39;--debug&#39;, action=&#39;store_true&#39;, dest=&#39;debug&#39;,</span>
+                      <span class="c">#~ help=&#39;print debug messages&#39;)</span>
+    <span class="c">#~ parser.add_option(&#39;-p&#39;, &#39;--plugins-path&#39;, dest=&#39;plugins_path&#39;,</span>
+                      <span class="c">#~ metavar=&#39;PATH&#39;,</span>
+                      <span class="c">#~ help=&#39;prepend the specified path to default ones. &#39;</span>
+                      <span class="c">#~ &#39;A &quot;%s&quot; separated list can be used to specify multile &#39;</span>
+                      <span class="c">#~ &#39;paths. &#39; % os.pathsep)</span>
+
+    <span class="n">options</span><span class="p">,</span> <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">options</span><span class="p">,</span> <span class="n">args</span>
+
+</div>
+<div class="viewcode-block" id="main"><a class="viewcode-back" href="../../api/gsdview.launch.html#gsdview.launch.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="c"># @IMPORTANT: force numeric locale to &#39;C&#39; in order to avoid problems</span>
+    <span class="c">#             with GDAL and PPROJ4</span>
+    <span class="c"># @SEEALSO: http://trac.osgeo.org/gdal/wiki/FAQMiscellaneous#DoesGDALworkindifferentinternationalnumericlocales</span>
+    <span class="kn">import</span> <span class="nn">os</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s">&#39;LC_NUMERIC&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;C&#39;</span>
+
+    <span class="n">options</span><span class="p">,</span> <span class="n">args</span> <span class="o">=</span> <span class="n">cmdline_ui</span><span class="p">()</span>
+    <span class="c"># logging.basicConfig(level=logging.DEBUG,</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span>
+                        <span class="n">format</span><span class="o">=</span><span class="s">&#39;</span><span class="si">%(levelname)s</span><span class="s">: </span><span class="si">%(message)s</span><span class="s">&#39;</span><span class="p">)</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s">&#39;gsdview&#39;</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+
+    <span class="c"># @TODO:</span>
+    <span class="c"># * config logging using options.configfile, USER_CFG, SYS_CFG</span>
+    <span class="c"># * if options.debug: set rootlogger.level = logging.DEBUG</span>
+    <span class="c"># * maybe set loglevelfor other loggers</span>
+
+    <span class="n">timer</span> <span class="o">=</span> <span class="n">Timer</span><span class="p">()</span>
+
+    <span class="c">### splash screen #########################################################</span>
+    <span class="kn">from</span> <span class="nn">qt</span> <span class="kn">import</span> <span class="n">QtGui</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Qt4 import: </span><span class="si">%d</span><span class="s">.</span><span class="si">%06d</span><span class="s">s&#39;</span> <span class="o">%</span> <span class="n">timer</span><span class="o">.</span><span class="n">update</span><span class="p">())</span>
+
+    <span class="kn">import</span> <span class="nn">sys</span>
+    <span class="kn">from</span> <span class="nn">.info</span> <span class="kn">import</span> <span class="n">name</span> <span class="k">as</span> <span class="n">NAME</span>
+    <span class="kn">from</span> <span class="nn">.info</span> <span class="kn">import</span> <span class="n">version</span> <span class="k">as</span> <span class="n">VERSION</span>
+    <span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">getresource</span>
+
+    <span class="n">app</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QApplication</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">setApplicationName</span><span class="p">(</span><span class="n">NAME</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">setApplicationVersion</span><span class="p">(</span><span class="n">VERSION</span><span class="p">)</span>
+
+    <span class="n">pngfile</span> <span class="o">=</span> <span class="n">getresource</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s">&#39;images&#39;</span><span class="p">,</span> <span class="s">&#39;splash.png&#39;</span><span class="p">),</span> <span class="n">__name__</span><span class="p">)</span>
+    <span class="n">pixmap</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QPixmap</span><span class="p">(</span><span class="n">pngfile</span><span class="p">)</span>
+    <span class="n">splash</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QSplashScreen</span><span class="p">(</span><span class="n">pixmap</span><span class="p">)</span>
+    <span class="n">splash</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">processEvents</span><span class="p">()</span>
+
+    <span class="n">splash_loghandler</span> <span class="o">=</span> <span class="n">SplashLogHandler</span><span class="p">(</span><span class="n">splash</span><span class="p">,</span> <span class="n">app</span><span class="p">)</span>
+    <span class="n">splash_loghandler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%(message)s</span><span class="s">&#39;</span><span class="p">))</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">splash_loghandler</span><span class="p">)</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Splash screen setup completed&#39;</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;splash screen setup: </span><span class="si">%d</span><span class="s">.</span><span class="si">%06d</span><span class="s">s&#39;</span> <span class="o">%</span> <span class="n">timer</span><span class="o">.</span><span class="n">update</span><span class="p">())</span>
+
+    <span class="c">### modules loading #######################################################</span>
+    <span class="n">preload</span><span class="p">(</span><span class="n">MODULES</span><span class="p">,</span> <span class="n">app</span><span class="p">)</span>
+
+    <span class="c">### GUI ###################################################################</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;Build GUI ...&#39;</span><span class="p">)</span>
+    <span class="kn">from</span> <span class="nn">.app</span> <span class="kn">import</span> <span class="n">GSDView</span>
+    <span class="n">mainwin</span> <span class="o">=</span> <span class="n">GSDView</span><span class="p">()</span>    <span class="c"># @TODO: pass plugins_path, loglevel??</span>
+    <span class="n">mainwin</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;GUI setup completed&#39;</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;GUI setup: </span><span class="si">%d</span><span class="s">.</span><span class="si">%06d</span><span class="s">s&#39;</span> <span class="o">%</span> <span class="n">timer</span><span class="o">.</span><span class="n">update</span><span class="p">())</span>
+
+    <span class="c">### close splash and run app ##############################################</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">removeHandler</span><span class="p">(</span><span class="n">splash_loghandler</span><span class="p">)</span>
+    <span class="n">splash</span><span class="o">.</span><span class="n">finish</span><span class="p">(</span><span class="n">mainwin</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">processEvents</span><span class="p">()</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;Install the exception hook&#39;</span><span class="p">)</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">excepthook</span> <span class="o">=</span> <span class="n">mainwin</span><span class="o">.</span><span class="n">excepthook</span>     <span class="c"># @TODO: check</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;Enter main event loop&#39;</span><span class="p">)</span>
+
+    <span class="c"># @COMPATIBILITY: this will raise the window on Mac OS X</span>
+    <span class="n">mainwin</span><span class="o">.</span><span class="n">raise_</span><span class="p">()</span>
+
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">exec_</span><span class="p">())</span>
+</div>
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">os</span>
+    <span class="kn">import</span> <span class="nn">sys</span>
+
+    <span class="n">GSDVIEWROOT</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">__file__</span><span class="p">))</span>
+    <span class="n">EXTRAPATH</span><span class="p">,</span> <span class="n">PKGNAME</span> <span class="o">=</span> <span class="n">GSDVIEWROOT</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">PKGNAME</span> <span class="o">!=</span> <span class="s">&#39;gsdview&#39;</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&#39;wrong package name.&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">EXTRAPATH</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="p">:</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">EXTRAPATH</span><span class="p">)</span>
+
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+    
+    
+    <p>
+        <a href="http://sourceforge.net/projects/gsdview">
+            <img src="http://sflogo.sourceforge.net/sflogo.php?group_id=226458&type=14" width="150" height="40" alt="Get GSDView at SourceForge.net. Fast, secure and Free Open Source software downloads" />
+        </a>
+    </p>
+    
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li><a href="../../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../gsdview.html" >gsdview</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2008-2011, Antonio Valentino.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

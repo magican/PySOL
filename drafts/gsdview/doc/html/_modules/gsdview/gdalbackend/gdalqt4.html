@@ -1,0 +1,562 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>gsdview.gdalbackend.gdalqt4 &mdash; GSDView Open Edition Home Page</title>
+    <link rel="stylesheet" href="../../../_static/sourceforge.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.6.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../../_static/logo.ico"/>
+    <link rel="top" title="GSDView Open Edition Home Page" href="../../../index.html" />
+    <link rel="up" title="gsdview.gdalbackend" href="../gdalbackend.html" /> 
+  </head>
+  <body>
+    
+        
+    
+    
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li><a href="../../../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../gsdview.html" >gsdview</a> &raquo;</li>
+          <li><a href="../gdalbackend.html" accesskey="U">gsdview.gdalbackend</a> &raquo;</li> 
+      </ul>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for gsdview.gdalbackend.gdalqt4</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="c">### Copyright (C) 2008-2011 Antonio Valentino &lt;a_valentino@users.sf.net&gt;</span>
+
+<span class="c">### This file is part of GSDView.</span>
+
+<span class="c">### GSDView is free software; you can redistribute it and/or modify</span>
+<span class="c">### it under the terms of the GNU General Public License as published by</span>
+<span class="c">### the Free Software Foundation; either version 2 of the License, or</span>
+<span class="c">### (at your option) any later version.</span>
+
+<span class="c">### GSDView is distributed in the hope that it will be useful,</span>
+<span class="c">### but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c">### MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c">### GNU General Public License for more details.</span>
+
+<span class="c">### You should have received a copy of the GNU General Public License</span>
+<span class="c">### along with GSDView; if not, write to the Free Software</span>
+<span class="c">### Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA.</span>
+
+
+<span class="sd">&#39;&#39;&#39;Helper tools and custom components for binding GDAL and Qt4.&#39;&#39;&#39;</span>
+
+
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">ma</span>
+
+<span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">gdal</span>
+<span class="kn">from</span> <span class="nn">osgeo.gdal_array</span> <span class="kn">import</span> <span class="n">GDALTypeCodeToNumericTypeCode</span>
+
+<span class="kn">from</span> <span class="nn">qt</span> <span class="kn">import</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtGui</span>
+
+<span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">imgutils</span>
+<span class="kn">from</span> <span class="nn">..qt4support</span> <span class="kn">import</span> <span class="n">numpy2qimage</span>
+<span class="kn">from</span> <span class="nn">..gdalbackend</span> <span class="kn">import</span> <span class="n">gdalsupport</span>
+
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s">&#39;Antonio Valentino &lt;a_valentino@users.sf.net&gt;&#39;</span>
+<span class="n">__date__</span> <span class="o">=</span> <span class="s">&#39;$Date: 2011-07-30 18:30:47 +0200 (sab, 30 lug 2011) $&#39;</span>
+<span class="n">__revision__</span> <span class="o">=</span> <span class="s">&#39;$Revision: 978 $&#39;</span>
+
+
+<div class="viewcode-block" id="gdalcolorentry2qcolor"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.gdalqt4.html#gsdview.gdalbackend.gdalqt4.gdalcolorentry2qcolor">[docs]</a><span class="k">def</span> <span class="nf">gdalcolorentry2qcolor</span><span class="p">(</span><span class="n">colrentry</span><span class="p">,</span> <span class="n">interpretation</span><span class="o">=</span><span class="n">gdal</span><span class="o">.</span><span class="n">GPI_RGB</span><span class="p">):</span>
+    <span class="n">qcolor</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QColor</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">interpretation</span> <span class="o">==</span> <span class="n">gdal</span><span class="o">.</span><span class="n">GPI_RGB</span><span class="p">:</span>
+        <span class="n">qcolor</span><span class="o">.</span><span class="n">setRgb</span><span class="p">(</span><span class="n">colrentry</span><span class="o">.</span><span class="n">c1</span><span class="p">,</span> <span class="n">colrentry</span><span class="o">.</span><span class="n">c2</span><span class="p">,</span> <span class="n">colrentry</span><span class="o">.</span><span class="n">c3</span><span class="p">,</span> <span class="n">colrentry</span><span class="o">.</span><span class="n">c4</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">interpretation</span> <span class="o">==</span> <span class="n">gdal</span><span class="o">.</span><span class="n">GPI_Gray</span><span class="p">:</span>
+        <span class="n">qcolor</span><span class="o">.</span><span class="n">setRgb</span><span class="p">(</span><span class="n">colrentry</span><span class="o">.</span><span class="n">c1</span><span class="p">,</span> <span class="n">colrentry</span><span class="o">.</span><span class="n">c1</span><span class="p">,</span> <span class="n">colrentry</span><span class="o">.</span><span class="n">c1</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">interpretation</span> <span class="o">==</span> <span class="n">gdal</span><span class="o">.</span><span class="n">GPI_CMYK</span><span class="p">:</span>
+        <span class="n">qcolor</span><span class="o">.</span><span class="n">setCmyk</span><span class="p">(</span><span class="n">colrentry</span><span class="o">.</span><span class="n">c1</span><span class="p">,</span> <span class="n">colrentry</span><span class="o">.</span><span class="n">c2</span><span class="p">,</span> <span class="n">colrentry</span><span class="o">.</span><span class="n">c3</span><span class="p">,</span> <span class="n">colrentry</span><span class="o">.</span><span class="n">c4</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">interpretation</span> <span class="o">==</span> <span class="n">gdal</span><span class="o">.</span><span class="n">GPI_HLS</span><span class="p">:</span>
+        <span class="n">qcolor</span><span class="o">.</span><span class="n">setHsv</span><span class="p">(</span><span class="n">colrentry</span><span class="o">.</span><span class="n">c1</span><span class="p">,</span> <span class="n">colrentry</span><span class="o">.</span><span class="n">c2</span><span class="p">,</span> <span class="n">colrentry</span><span class="o">.</span><span class="n">c3</span><span class="p">)</span>
+                                                        <span class="c">#, colrentry.c4)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;invalid color intepretatin: &quot;</span><span class="si">%s</span><span class="s">&quot;&#39;</span> <span class="o">%</span> <span class="n">interpretation</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">qcolor</span>
+
+</div>
+<div class="viewcode-block" id="safeDataStats"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.gdalqt4.html#gsdview.gdalbackend.gdalqt4.safeDataStats">[docs]</a><span class="k">def</span> <span class="nf">safeDataStats</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">nodata</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">nodata</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">ma</span><span class="o">.</span><span class="n">masked_equal</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">nodata</span><span class="p">)</span>
+
+    <span class="n">stats</span> <span class="o">=</span> <span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">data</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">data</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="n">data</span><span class="o">.</span><span class="n">std</span><span class="p">())</span>
+    <span class="n">stddev</span> <span class="o">=</span> <span class="n">stats</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">ma</span><span class="o">.</span><span class="n">isMaskedArray</span><span class="p">(</span><span class="n">stddev</span><span class="p">)</span> <span class="ow">or</span> <span class="n">stddev</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">stats</span> <span class="o">=</span> <span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">stats</span>
+
+
+<span class="c"># @TODO: move GraphicsView here</span>
+
+</div>
+<div class="viewcode-block" id="BaseGdalGraphicsItem"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.gdalqt4.html#gsdview.gdalbackend.gdalqt4.BaseGdalGraphicsItem">[docs]</a><span class="k">class</span> <span class="nc">BaseGdalGraphicsItem</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QGraphicsItem</span><span class="p">):</span>
+    <span class="n">Type</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QStandardItem</span><span class="o">.</span><span class="n">UserType</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gdalobj</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">scene</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">BaseGdalGraphicsItem</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">scene</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c"># @COMPATIBILITY: Qt &gt;= 4.6.0 needs this flag to be set otherwise the</span>
+        <span class="c">#                 exact exposedRect is not computed</span>
+        <span class="c"># @SEEALSO: ItemUsesExtendedStyleOption item at</span>
+        <span class="c"># http://doc.qt.nokia.com/4.6/qgraphicsitem.html#GraphicsItemFlag-enum</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setFlag</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QGraphicsItem</span><span class="o">.</span><span class="n">ItemUsesExtendedStyleOptions</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setFlag</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QGraphicsItem</span><span class="o">.</span><span class="n">GraphicsItemFlag</span><span class="p">(</span><span class="mh">0x200</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">gdalobj</span> <span class="o">=</span> <span class="n">gdalobj</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c"># dataset</span>
+            <span class="n">w</span> <span class="o">=</span> <span class="n">gdalobj</span><span class="o">.</span><span class="n">RasterXSize</span>
+            <span class="n">h</span> <span class="o">=</span> <span class="n">gdalobj</span><span class="o">.</span><span class="n">RasterYSize</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="c"># raster band</span>
+            <span class="n">w</span> <span class="o">=</span> <span class="n">gdalobj</span><span class="o">.</span><span class="n">XSize</span>
+            <span class="n">h</span> <span class="o">=</span> <span class="n">gdalobj</span><span class="o">.</span><span class="n">YSize</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_boundingRect</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QRectF</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">)</span>
+        <span class="c">#self.read_threshold = 1600*1200</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">stretch</span> <span class="o">=</span> <span class="n">imgutils</span><span class="o">.</span><span class="n">LinearStretcher</span><span class="p">()</span>
+        <span class="c"># @TODO: use lazy gaphicsitem inirialization</span>
+        <span class="c"># @TODO: initilize stretching explicitly</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stretch_initialized</span> <span class="o">=</span> <span class="bp">False</span>
+
+<div class="viewcode-block" id="BaseGdalGraphicsItem.type"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.gdalqt4.html#gsdview.gdalbackend.gdalqt4.BaseGdalGraphicsItem.type">[docs]</a>    <span class="k">def</span> <span class="nf">type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">Type</span>
+</div>
+<div class="viewcode-block" id="BaseGdalGraphicsItem.boundingRect"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.gdalqt4.html#gsdview.gdalbackend.gdalqt4.BaseGdalGraphicsItem.boundingRect">[docs]</a>    <span class="k">def</span> <span class="nf">boundingRect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_boundingRect</span>
+</div>
+    <span class="k">def</span> <span class="nf">_clipRect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ovrband</span><span class="p">,</span> <span class="n">rect</span><span class="p">,</span> <span class="n">ovrlevel</span><span class="p">):</span>
+        <span class="n">boundingRect</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_boundingRect</span>
+
+        <span class="n">x</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">rect</span><span class="o">.</span><span class="n">x</span><span class="p">()</span> <span class="o">-</span> <span class="n">boundingRect</span><span class="o">.</span><span class="n">x</span><span class="p">())</span> <span class="o">//</span> <span class="n">ovrlevel</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">rect</span><span class="o">.</span><span class="n">y</span><span class="p">()</span> <span class="o">-</span> <span class="n">boundingRect</span><span class="o">.</span><span class="n">y</span><span class="p">())</span> <span class="o">//</span> <span class="n">ovrlevel</span><span class="p">)</span>
+        <span class="n">width</span> <span class="o">=</span> <span class="n">rect</span><span class="o">.</span><span class="n">width</span><span class="p">()</span> <span class="o">//</span> <span class="n">ovrlevel</span> <span class="o">+</span> <span class="mi">1</span>        <span class="c"># @TODO: check</span>
+        <span class="n">height</span> <span class="o">=</span> <span class="n">rect</span><span class="o">.</span><span class="n">height</span><span class="p">()</span> <span class="o">//</span> <span class="n">ovrlevel</span> <span class="o">+</span> <span class="mi">1</span>      <span class="c"># @TODO: check</span>
+
+        <span class="k">if</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">y</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="n">width</span><span class="p">)</span> <span class="o">*</span> <span class="n">ovrlevel</span> <span class="o">&gt;</span> <span class="n">boundingRect</span><span class="o">.</span><span class="n">width</span><span class="p">():</span>
+            <span class="n">width</span> <span class="o">=</span> <span class="n">ovrband</span><span class="o">.</span><span class="n">XSize</span> <span class="o">-</span> <span class="n">x</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">y</span> <span class="o">+</span> <span class="n">height</span><span class="p">)</span> <span class="o">*</span> <span class="n">ovrlevel</span> <span class="o">&gt;</span> <span class="n">boundingRect</span><span class="o">.</span><span class="n">height</span><span class="p">():</span>
+            <span class="n">height</span> <span class="o">=</span> <span class="n">ovrband</span><span class="o">.</span><span class="n">YSize</span> <span class="o">-</span> <span class="n">y</span>
+
+        <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span>
+
+    <span class="k">def</span> <span class="nf">_targetRect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">ovrlevel</span><span class="p">):</span>
+        <span class="n">boundingRect</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_boundingRect</span>
+        <span class="k">return</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QRect</span><span class="p">(</span><span class="n">x</span> <span class="o">*</span> <span class="n">ovrlevel</span> <span class="o">+</span> <span class="n">boundingRect</span><span class="o">.</span><span class="n">x</span><span class="p">(),</span>
+                            <span class="n">y</span> <span class="o">*</span> <span class="n">ovrlevel</span> <span class="o">+</span> <span class="n">boundingRect</span><span class="o">.</span><span class="n">y</span><span class="p">(),</span>
+                            <span class="n">w</span> <span class="o">*</span> <span class="n">ovrlevel</span><span class="p">,</span>
+                            <span class="n">h</span> <span class="o">*</span> <span class="n">ovrlevel</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_levelOfDetailFromTransform</span><span class="p">(</span><span class="n">worldTransform</span><span class="p">):</span>
+        <span class="c"># @COMPATIBILITY: since Qt v. 4.6.0 the levelOfDetail attribute of</span>
+        <span class="c"># QStyleOptionGraphicsItem is deprecated</span>
+        <span class="c"># @SEEALSO: ItemUsesExtendedStyleOption item at</span>
+        <span class="c"># http://doc.qt.nokia.com/4.6/qgraphicsitem.html#GraphicsItemFlag-enum</span>
+        <span class="c">#</span>
+        <span class="c"># From qt/src/gui/styles/qstyleoption.cpp:5130</span>
+        <span class="k">if</span> <span class="n">worldTransform</span><span class="o">.</span><span class="n">type</span><span class="p">()</span> <span class="o">&lt;=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QTransform</span><span class="o">.</span><span class="n">TxTranslate</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">1</span>    <span class="c"># Translation only? The LOD is 1.</span>
+
+        <span class="c"># Two unit vectors.</span>
+        <span class="n">v1</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QLineF</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">v2</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QLineF</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="c"># LOD is the transformed area of a 1x1 rectangle.</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">worldTransform</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">v1</span><span class="p">)</span><span class="o">.</span><span class="n">length</span><span class="p">()</span> <span class="o">*</span>
+                                            <span class="n">worldTransform</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">v2</span><span class="p">)</span><span class="o">.</span><span class="n">length</span><span class="p">())</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_levelOfDetail</span><span class="p">(</span><span class="n">option</span><span class="p">,</span> <span class="n">painter</span><span class="p">):</span>
+        <span class="c"># @COMPATIBILITY: since Qt v. 4.6.0 the levelOfDetail attribute of</span>
+        <span class="c"># QStyleOptionGraphicsItem is deprecated</span>
+        <span class="c"># @SEEALSO: ItemUsesExtendedStyleOption item at</span>
+        <span class="c"># http://doc.qt.nokia.com/4.6/qgraphicsitem.html#GraphicsItemFlag-enum</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">option</span><span class="p">,</span> <span class="s">&#39;levelOfDetailFromTransform&#39;</span><span class="p">):</span>
+            <span class="n">levelOfDetail</span> <span class="o">=</span> <span class="n">option</span><span class="o">.</span><span class="n">levelOfDetailFromTransform</span><span class="p">(</span>
+                                                    <span class="n">painter</span><span class="o">.</span><span class="n">transform</span><span class="p">())</span>
+        <span class="k">elif</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">qVersion</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="s">&#39;4.6.0&#39;</span><span class="p">:</span>
+            <span class="n">levelOfDetail</span> <span class="o">=</span> <span class="n">BaseGdalGraphicsItem</span><span class="o">.</span><span class="n">_levelOfDetailFromTransform</span><span class="p">(</span>
+                                                        <span class="n">painter</span><span class="o">.</span><span class="n">transform</span><span class="p">())</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">levelOfDetail</span> <span class="o">=</span> <span class="n">option</span><span class="o">.</span><span class="n">levelOfDetail</span>
+        <span class="k">return</span> <span class="n">levelOfDetail</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_bestOvrLevel</span><span class="p">(</span><span class="n">band</span><span class="p">,</span> <span class="n">levelOfDetail</span><span class="p">):</span>
+        <span class="n">ovrlevel</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">ovrindex</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="k">if</span> <span class="n">band</span><span class="o">.</span><span class="n">GetOverviewCount</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">levelOfDetail</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">reqlevel</span> <span class="o">=</span> <span class="mf">1.</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">reqlevel</span> <span class="o">=</span> <span class="mf">1.</span> <span class="o">/</span> <span class="n">levelOfDetail</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">ovrindex</span> <span class="o">=</span> <span class="n">gdalsupport</span><span class="o">.</span><span class="n">ovrBestIndex</span><span class="p">(</span><span class="n">band</span><span class="p">,</span> <span class="n">reqlevel</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">gdalsupport</span><span class="o">.</span><span class="n">MissingOvrError</span><span class="p">:</span>
+                <span class="k">pass</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ovrlevel</span> <span class="o">=</span> <span class="n">gdalsupport</span><span class="o">.</span><span class="n">ovrLevels</span><span class="p">(</span><span class="n">band</span><span class="p">)[</span><span class="n">ovrindex</span><span class="p">]</span>
+                <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">reqlevel</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&lt;</span> <span class="nb">abs</span><span class="p">(</span><span class="n">reqlevel</span> <span class="o">-</span> <span class="n">ovrlevel</span><span class="p">):</span>
+                    <span class="n">ovrlevel</span> <span class="o">=</span> <span class="mi">1</span>
+                    <span class="n">ovrindex</span> <span class="o">=</span> <span class="bp">None</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">band</span> <span class="o">=</span> <span class="n">band</span><span class="o">.</span><span class="n">GetOverview</span><span class="p">(</span><span class="n">ovrindex</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">band</span><span class="p">,</span> <span class="n">ovrlevel</span><span class="p">,</span> <span class="n">ovrindex</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_defaultStretch</span><span class="p">(</span><span class="n">band</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">nsigma</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+        <span class="c"># @NOTE: statistics computation is potentially slow so first check</span>
+        <span class="c">#        if fast statistics retriewing is possible</span>
+
+        <span class="n">stats</span> <span class="o">=</span> <span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">band</span> <span class="ow">and</span> <span class="n">gdalsupport</span><span class="o">.</span><span class="n">hasFastStats</span><span class="p">(</span><span class="n">band</span><span class="p">):</span>
+            <span class="n">stats</span> <span class="o">=</span> <span class="n">gdalsupport</span><span class="o">.</span><span class="n">SafeGetStatistics</span><span class="p">(</span><span class="n">band</span><span class="p">,</span> <span class="bp">True</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">None</span> <span class="ow">in</span> <span class="n">stats</span> <span class="ow">and</span> <span class="n">data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">data</span><span class="o">.</span><span class="n">size</span> <span class="o">&lt;=</span> <span class="mi">4</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">**</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">stats</span> <span class="o">=</span> <span class="n">safeDataStats</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">band</span><span class="o">.</span><span class="n">GetNoDataValue</span><span class="p">())</span>
+
+        <span class="k">if</span> <span class="bp">None</span> <span class="ow">in</span> <span class="n">stats</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">band</span> <span class="ow">and</span> <span class="n">band</span><span class="o">.</span><span class="n">DataType</span> <span class="o">==</span> <span class="n">gdal</span><span class="o">.</span><span class="n">GDT_Byte</span><span class="p">:</span>
+                <span class="k">return</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span>
+
+        <span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="p">,</span> <span class="n">mean</span><span class="p">,</span> <span class="n">stddev</span> <span class="o">=</span> <span class="n">stats</span>
+
+        <span class="n">lower</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">mean</span> <span class="o">-</span> <span class="n">nsigma</span> <span class="o">*</span> <span class="n">stddev</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">upper</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">mean</span> <span class="o">+</span> <span class="n">nsigma</span> <span class="o">*</span> <span class="n">stddev</span><span class="p">,</span> <span class="n">vmax</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">lower</span><span class="p">,</span> <span class="n">upper</span>
+
+<div class="viewcode-block" id="BaseGdalGraphicsItem.setDefaultStretch"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.gdalqt4.html#gsdview.gdalbackend.gdalqt4.BaseGdalGraphicsItem.setDefaultStretch">[docs]</a>    <span class="k">def</span> <span class="nf">setDefaultStretch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="n">lower</span><span class="p">,</span> <span class="n">upper</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_defaultStretch</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gdalobj</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">None</span> <span class="ow">in</span> <span class="p">(</span><span class="n">lower</span><span class="p">,</span> <span class="n">upper</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">lower</span> <span class="o">==</span> <span class="n">upper</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_stretch_initialized</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">stretch</span><span class="o">.</span><span class="n">set_range</span><span class="p">(</span><span class="n">lower</span><span class="p">,</span> <span class="n">upper</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stretch_initialized</span> <span class="o">=</span> <span class="bp">True</span>
+</div>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_dataRange</span><span class="p">(</span><span class="n">band</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">band</span> <span class="ow">and</span> <span class="n">gdalsupport</span><span class="o">.</span><span class="n">hasFastStats</span><span class="p">(</span><span class="n">band</span><span class="p">):</span>
+            <span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="p">,</span> <span class="n">mean</span><span class="p">,</span> <span class="n">stddev</span> <span class="o">=</span> <span class="n">gdalsupport</span><span class="o">.</span><span class="n">SafeGetStatistics</span><span class="p">(</span><span class="n">band</span><span class="p">,</span>
+                                                                     <span class="bp">True</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">None</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="p">,</span> <span class="n">mean</span><span class="p">,</span> <span class="n">stddev</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">gdal</span><span class="o">.</span><span class="n">DataTypeIsComplex</span><span class="p">(</span><span class="n">band</span><span class="o">.</span><span class="n">DataType</span><span class="p">):</span>
+                    <span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span>
+
+        <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">data</span><span class="o">.</span><span class="n">size</span> <span class="o">&lt;=</span> <span class="mi">4</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">**</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="p">,</span> <span class="n">mean</span><span class="p">,</span> <span class="n">stddev</span> <span class="o">=</span> <span class="n">safeDataStats</span><span class="p">(</span><span class="n">band</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">None</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="p">,</span> <span class="n">mean</span><span class="p">,</span> <span class="n">stddev</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">data</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">band</span><span class="p">:</span>
+            <span class="n">tmap</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">gdal</span><span class="o">.</span><span class="n">GDT_Byte</span><span class="p">:</span>      <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">),</span>
+                <span class="n">gdal</span><span class="o">.</span><span class="n">GDT_UInt16</span><span class="p">:</span>    <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span> <span class="o">**</span> <span class="mi">16</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span>
+                <span class="n">gdal</span><span class="o">.</span><span class="n">GDT_UInt32</span><span class="p">:</span>    <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span> <span class="o">**</span> <span class="mi">32</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span>
+                <span class="n">gdal</span><span class="o">.</span><span class="n">GDT_Int16</span><span class="p">:</span>     <span class="p">(</span><span class="o">-</span><span class="mi">2</span> <span class="o">**</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">2</span> <span class="o">**</span> <span class="mi">15</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span>
+                <span class="n">gdal</span><span class="o">.</span><span class="n">GDT_Int32</span><span class="p">:</span>     <span class="p">(</span><span class="o">-</span><span class="mi">2</span> <span class="o">**</span> <span class="mi">31</span><span class="p">,</span> <span class="mi">2</span> <span class="o">**</span> <span class="mi">31</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span>
+                <span class="n">gdal</span><span class="o">.</span><span class="n">GDT_CInt16</span><span class="p">:</span>    <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span> <span class="o">**</span> <span class="mi">15</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)),</span>
+                <span class="n">gdal</span><span class="o">.</span><span class="n">GDT_CInt32</span><span class="p">:</span>    <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span> <span class="o">**</span> <span class="mi">31</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)),</span>
+                <span class="n">gdal</span><span class="o">.</span><span class="n">GDT_CFloat32</span><span class="p">:</span>  <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">None</span><span class="p">),</span>
+                <span class="n">gdal</span><span class="o">.</span><span class="n">GDT_CFloat64</span><span class="p">:</span>  <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">None</span><span class="p">),</span>
+            <span class="p">}</span>
+            <span class="k">return</span> <span class="n">tmap</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">band</span><span class="o">.</span><span class="n">DataType</span><span class="p">,</span> <span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span>
+
+<div class="viewcode-block" id="BaseGdalGraphicsItem.dataRange"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.gdalqt4.html#gsdview.gdalbackend.gdalqt4.BaseGdalGraphicsItem.dataRange">[docs]</a>    <span class="k">def</span> <span class="nf">dataRange</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span>
+
+</div></div>
+<div class="viewcode-block" id="UIntGdalGraphicsItem"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.gdalqt4.html#gsdview.gdalbackend.gdalqt4.UIntGdalGraphicsItem">[docs]</a><span class="k">class</span> <span class="nc">UIntGdalGraphicsItem</span><span class="p">(</span><span class="n">BaseGdalGraphicsItem</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;GDAL graphics item specialized for 8 and 16 it unsigned integers.</span>
+
+<span class="sd">    Uses an unchecked LUT for transformations.</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">Type</span> <span class="o">=</span> <span class="n">BaseGdalGraphicsItem</span><span class="o">.</span><span class="n">Type</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">band</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">scene</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">UIntGdalGraphicsItem</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">band</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">scene</span><span class="p">,</span>
+                                                   <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c"># @TODO: maybe it is batter to use a custo mexception: ItemTypeError</span>
+        <span class="k">if</span> <span class="n">band</span><span class="o">.</span><span class="n">DataType</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="n">gdal</span><span class="o">.</span><span class="n">GDT_Byte</span><span class="p">,</span> <span class="n">gdal</span><span class="o">.</span><span class="n">GDT_UInt16</span><span class="p">):</span>
+            <span class="n">typename</span> <span class="o">=</span> <span class="n">gdal</span><span class="o">.</span><span class="n">GetDataTypeName</span><span class="p">(</span><span class="n">band</span><span class="o">.</span><span class="n">DataType</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;invalid data type: &quot;</span><span class="si">%s</span><span class="s">&quot;&#39;</span> <span class="o">%</span> <span class="n">typename</span><span class="p">)</span>
+
+        <span class="n">dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">GDALTypeCodeToNumericTypeCode</span><span class="p">(</span><span class="n">band</span><span class="o">.</span><span class="n">DataType</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stretch</span> <span class="o">=</span> <span class="n">imgutils</span><span class="o">.</span><span class="n">LUTStretcher</span><span class="p">(</span><span class="n">fill</span><span class="o">=</span><span class="mi">2</span> <span class="o">**</span> <span class="p">(</span><span class="mi">8</span> <span class="o">*</span> <span class="n">dtype</span><span class="o">.</span><span class="n">itemsize</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stretch_initialized</span> <span class="o">=</span> <span class="bp">False</span>
+
+<div class="viewcode-block" id="UIntGdalGraphicsItem.dataRange"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.gdalqt4.html#gsdview.gdalbackend.gdalqt4.UIntGdalGraphicsItem.dataRange">[docs]</a>    <span class="k">def</span> <span class="nf">dataRange</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dataRange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gdalobj</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="UIntGdalGraphicsItem.paint"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.gdalqt4.html#gsdview.gdalbackend.gdalqt4.UIntGdalGraphicsItem.paint">[docs]</a>    <span class="k">def</span> <span class="nf">paint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">painter</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="n">widget</span><span class="p">):</span>
+        <span class="n">levelOfDetail</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_levelOfDetail</span><span class="p">(</span><span class="n">option</span><span class="p">,</span> <span class="n">painter</span><span class="p">)</span>
+        <span class="n">ovrband</span><span class="p">,</span> <span class="n">ovrlevel</span><span class="p">,</span> <span class="n">ovrindex</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bestOvrLevel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gdalobj</span><span class="p">,</span>
+                                                         <span class="n">levelOfDetail</span><span class="p">)</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_clipRect</span><span class="p">(</span><span class="n">ovrband</span><span class="p">,</span>
+                                    <span class="n">option</span><span class="o">.</span><span class="n">exposedRect</span><span class="o">.</span><span class="n">toAlignedRect</span><span class="p">(),</span>
+                                    <span class="n">ovrlevel</span><span class="p">)</span>
+
+        <span class="c"># @TODO: threshold check</span>
+        <span class="c"># @WARNING: option.levelOfDetail is no more usable</span>
+        <span class="c">#threshold = 1600*1600</span>
+        <span class="c">#if w * h &gt; threshold:</span>
+        <span class="c">#    newoption = QtGui.QStyleOptionGraphicsItem(option)</span>
+        <span class="c">#    newoption.levelOfDetail = option.levelOfDetail*threshold/(w*h)</span>
+        <span class="c">#    return self.paint(painter, newoption, widget)</span>
+
+        <span class="n">data</span> <span class="o">=</span> <span class="n">ovrband</span><span class="o">.</span><span class="n">ReadAsArray</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stretch_initialized</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setDefaultStretch</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stretch</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="n">numpy2qimage</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="n">rect</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_targetRect</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">ovrlevel</span><span class="p">)</span>
+        <span class="n">painter</span><span class="o">.</span><span class="n">drawImage</span><span class="p">(</span><span class="n">rect</span><span class="p">,</span> <span class="n">image</span><span class="p">)</span>
+
+</div></div>
+<div class="viewcode-block" id="GdalGraphicsItem"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.gdalqt4.html#gsdview.gdalbackend.gdalqt4.GdalGraphicsItem">[docs]</a><span class="k">class</span> <span class="nc">GdalGraphicsItem</span><span class="p">(</span><span class="n">BaseGdalGraphicsItem</span><span class="p">):</span>
+
+    <span class="n">Type</span> <span class="o">=</span> <span class="n">BaseGdalGraphicsItem</span><span class="o">.</span><span class="n">Type</span> <span class="o">+</span> <span class="mi">2</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">band</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">scene</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">GdalGraphicsItem</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">band</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">scene</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">gdal</span><span class="o">.</span><span class="n">DataTypeIsComplex</span><span class="p">(</span><span class="n">band</span><span class="o">.</span><span class="n">DataType</span><span class="p">):</span>
+            <span class="c"># @TODO: raise ItemTypeError or NotImplementedError</span>
+            <span class="n">typename</span> <span class="o">=</span> <span class="n">gdal</span><span class="o">.</span><span class="n">GetDataTypeName</span><span class="p">(</span><span class="n">band</span><span class="o">.</span><span class="n">DataType</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s">&#39;support for &quot;</span><span class="si">%s</span><span class="s">&quot; data type not &#39;</span>
+                                      <span class="s">&#39;avalable&#39;</span> <span class="o">%</span> <span class="n">typename</span><span class="p">)</span>
+
+<div class="viewcode-block" id="GdalGraphicsItem.dataRange"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.gdalqt4.html#gsdview.gdalbackend.gdalqt4.GdalGraphicsItem.dataRange">[docs]</a>    <span class="k">def</span> <span class="nf">dataRange</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dataRange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gdalobj</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="GdalGraphicsItem.paint"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.gdalqt4.html#gsdview.gdalbackend.gdalqt4.GdalGraphicsItem.paint">[docs]</a>    <span class="k">def</span> <span class="nf">paint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">painter</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="n">widget</span><span class="p">):</span>
+        <span class="n">levelOfDetail</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_levelOfDetail</span><span class="p">(</span><span class="n">option</span><span class="p">,</span> <span class="n">painter</span><span class="p">)</span>
+        <span class="n">ovrband</span><span class="p">,</span> <span class="n">ovrlevel</span><span class="p">,</span> <span class="n">ovrindex</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bestOvrLevel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gdalobj</span><span class="p">,</span>
+                                                         <span class="n">levelOfDetail</span><span class="p">)</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_clipRect</span><span class="p">(</span><span class="n">ovrband</span><span class="p">,</span>
+                                    <span class="n">option</span><span class="o">.</span><span class="n">exposedRect</span><span class="o">.</span><span class="n">toAlignedRect</span><span class="p">(),</span>
+                                    <span class="n">ovrlevel</span><span class="p">)</span>
+
+        <span class="c"># @TODO: threshold check</span>
+        <span class="c"># @WARNING: option.levelOfDetail is no more usable</span>
+        <span class="c">#threshold = 1600*1600</span>
+        <span class="c">#if w * h &gt; threshold:</span>
+        <span class="c">#    newoption = QtGui.QStyleOptionGraphicsItem(option)</span>
+        <span class="c">#    newoption.levelOfDetail = (option.levelOfDetail *</span>
+        <span class="c">#                                               threshold / (w * h))</span>
+        <span class="c">#    return self.paint(painter, newoption, widget)</span>
+
+        <span class="n">data</span> <span class="o">=</span> <span class="n">ovrband</span><span class="o">.</span><span class="n">ReadAsArray</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stretch_initialized</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setDefaultStretch</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stretch</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="n">rect</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_targetRect</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">ovrlevel</span><span class="p">)</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="n">numpy2qimage</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">painter</span><span class="o">.</span><span class="n">drawImage</span><span class="p">(</span><span class="n">rect</span><span class="p">,</span> <span class="n">image</span><span class="p">)</span>
+
+</div></div>
+<div class="viewcode-block" id="GdalComplexGraphicsItem"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.gdalqt4.html#gsdview.gdalbackend.gdalqt4.GdalComplexGraphicsItem">[docs]</a><span class="k">class</span> <span class="nc">GdalComplexGraphicsItem</span><span class="p">(</span><span class="n">GdalGraphicsItem</span><span class="p">):</span>
+
+    <span class="n">Type</span> <span class="o">=</span> <span class="n">GdalGraphicsItem</span><span class="o">.</span><span class="n">Type</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">band</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">scene</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c"># @NOTE: skip GdalGraphicsItem __init__</span>
+        <span class="n">BaseGdalGraphicsItem</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">band</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">scene</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+<div class="viewcode-block" id="GdalComplexGraphicsItem.dataRange"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.gdalqt4.html#gsdview.gdalbackend.gdalqt4.GdalComplexGraphicsItem.dataRange">[docs]</a>    <span class="k">def</span> <span class="nf">dataRange</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">data</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dataRange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gdalobj</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="GdalComplexGraphicsItem.paint"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.gdalqt4.html#gsdview.gdalbackend.gdalqt4.GdalComplexGraphicsItem.paint">[docs]</a>    <span class="k">def</span> <span class="nf">paint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">painter</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="n">widget</span><span class="p">):</span>
+        <span class="n">levelOfDetail</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_levelOfDetail</span><span class="p">(</span><span class="n">option</span><span class="p">,</span> <span class="n">painter</span><span class="p">)</span>
+        <span class="n">ovrband</span><span class="p">,</span> <span class="n">ovrlevel</span><span class="p">,</span> <span class="n">ovrindex</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bestOvrLevel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gdalobj</span><span class="p">,</span>
+                                                         <span class="n">levelOfDetail</span><span class="p">)</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_clipRect</span><span class="p">(</span><span class="n">ovrband</span><span class="p">,</span>
+                                    <span class="n">option</span><span class="o">.</span><span class="n">exposedRect</span><span class="o">.</span><span class="n">toAlignedRect</span><span class="p">(),</span>
+                                    <span class="n">ovrlevel</span><span class="p">)</span>
+
+        <span class="c"># @TODO: threshold check</span>
+        <span class="c">#threshold = 1600*1600</span>
+        <span class="c">#if w * h &gt; threshold:</span>
+        <span class="c">#    newoption = QtGui.QStyleOptionGraphicsItem(option)</span>
+        <span class="c">#    newoption.levelOfDetail = (option.levelOfDetail *</span>
+        <span class="c">#                                               threshold / (w * h))</span>
+        <span class="c">#    return self.paint(painter, newoption, widget)</span>
+
+        <span class="n">data</span> <span class="o">=</span> <span class="n">ovrband</span><span class="o">.</span><span class="n">ReadAsArray</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">)</span>
+
+        <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stretch_initialized</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setDefaultStretch</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stretch</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="n">rect</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_targetRect</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">ovrlevel</span><span class="p">)</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="n">numpy2qimage</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">painter</span><span class="o">.</span><span class="n">drawImage</span><span class="p">(</span><span class="n">rect</span><span class="p">,</span> <span class="n">image</span><span class="p">)</span>
+
+</div></div>
+<div class="viewcode-block" id="GdalRgbGraphicsItem"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.gdalqt4.html#gsdview.gdalbackend.gdalqt4.GdalRgbGraphicsItem">[docs]</a><span class="k">class</span> <span class="nc">GdalRgbGraphicsItem</span><span class="p">(</span><span class="n">BaseGdalGraphicsItem</span><span class="p">):</span>
+
+    <span class="n">Type</span> <span class="o">=</span> <span class="n">BaseGdalGraphicsItem</span><span class="o">.</span><span class="n">Type</span> <span class="o">+</span> <span class="mi">3</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">scene</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">gdalsupport</span><span class="o">.</span><span class="n">isRGB</span><span class="p">(</span><span class="n">dataset</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s">&#39;RGB or RGBA iamge expected&#39;</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">GdalRgbGraphicsItem</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">scene</span><span class="p">,</span>
+                                                  <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stretch</span> <span class="o">=</span> <span class="bp">None</span>
+
+<div class="viewcode-block" id="GdalRgbGraphicsItem.paint"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.gdalqt4.html#gsdview.gdalbackend.gdalqt4.GdalRgbGraphicsItem.paint">[docs]</a>    <span class="k">def</span> <span class="nf">paint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">painter</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="n">widget</span><span class="p">):</span>
+        <span class="n">band</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gdalobj</span><span class="o">.</span><span class="n">GetRasterBand</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">levelOfDetail</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_levelOfDetail</span><span class="p">(</span><span class="n">option</span><span class="p">,</span> <span class="n">painter</span><span class="p">)</span>
+        <span class="n">ovrband</span><span class="p">,</span> <span class="n">ovrlevel</span><span class="p">,</span> <span class="n">ovrindex</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bestOvrLevel</span><span class="p">(</span><span class="n">band</span><span class="p">,</span> <span class="n">levelOfDetail</span><span class="p">)</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_clipRect</span><span class="p">(</span><span class="n">ovrband</span><span class="p">,</span>
+                                    <span class="n">option</span><span class="o">.</span><span class="n">exposedRect</span><span class="o">.</span><span class="n">toAlignedRect</span><span class="p">(),</span>
+                                    <span class="n">ovrlevel</span><span class="p">)</span>
+
+        <span class="n">dataset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gdalobj</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">gdalsupport</span><span class="o">.</span><span class="n">ovrRead</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">ovrindex</span><span class="p">)</span>
+        <span class="n">rect</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_targetRect</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">ovrlevel</span><span class="p">)</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="n">numpy2qimage</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">painter</span><span class="o">.</span><span class="n">drawImage</span><span class="p">(</span><span class="n">rect</span><span class="p">,</span> <span class="n">image</span><span class="p">)</span>
+
+</div></div>
+<div class="viewcode-block" id="graphicsItemFactory"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.gdalqt4.html#gsdview.gdalbackend.gdalqt4.graphicsItemFactory">[docs]</a><span class="k">def</span> <span class="nf">graphicsItemFactory</span><span class="p">(</span><span class="n">gdalobj</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">scene</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Factory function for GDAL graphics items.</span>
+
+<span class="sd">    Instantiates on object of the GDAL graphics item class taht best</span>
+<span class="sd">    fits the *gdalobj* passed as argument.</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">if</span> <span class="n">gdalsupport</span><span class="o">.</span><span class="n">isRGB</span><span class="p">(</span><span class="n">gdalobj</span><span class="p">):</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;new GdalRgbGraphicsItem&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">GdalRgbGraphicsItem</span><span class="p">(</span><span class="n">gdalobj</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">scene</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">gdalobj</span><span class="o">.</span><span class="n">DataType</span> <span class="ow">in</span> <span class="p">(</span><span class="n">gdal</span><span class="o">.</span><span class="n">GDT_Byte</span><span class="p">,</span> <span class="n">gdal</span><span class="o">.</span><span class="n">GDT_UInt16</span><span class="p">):</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;new GdalUIntGraphicsItem&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">UIntGdalGraphicsItem</span><span class="p">(</span><span class="n">gdalobj</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">scene</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">gdal</span><span class="o">.</span><span class="n">DataTypeIsComplex</span><span class="p">(</span><span class="n">gdalobj</span><span class="o">.</span><span class="n">DataType</span><span class="p">):</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;new GdalComplexGraphicsItem&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">GdalComplexGraphicsItem</span><span class="p">(</span><span class="n">gdalobj</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">scene</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;new GdalGraphicsItem&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">GdalGraphicsItem</span><span class="p">(</span><span class="n">gdalobj</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">scene</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/logo.png" alt="Logo"/>
+            </a></p>
+    
+    
+    <p>
+        <a href="http://sourceforge.net/projects/gsdview">
+            <img src="http://sflogo.sourceforge.net/sflogo.php?group_id=226458&type=14" width="150" height="40" alt="Get GSDView at SourceForge.net. Fast, secure and Free Open Source software downloads" />
+        </a>
+    </p>
+    
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li><a href="../../../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../gsdview.html" >gsdview</a> &raquo;</li>
+          <li><a href="../gdalbackend.html" >gsdview.gdalbackend</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2008-2011, Antonio Valentino.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

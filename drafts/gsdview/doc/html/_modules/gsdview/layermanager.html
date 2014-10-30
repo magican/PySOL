@@ -1,0 +1,605 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>gsdview.layermanager &mdash; GSDView Open Edition Home Page</title>
+    <link rel="stylesheet" href="../../_static/sourceforge.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.6.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/logo.ico"/>
+    <link rel="top" title="GSDView Open Edition Home Page" href="../../index.html" />
+    <link rel="up" title="gsdview" href="../gsdview.html" /> 
+  </head>
+  <body>
+    
+        
+    
+    
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li><a href="../../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../gsdview.html" accesskey="U">gsdview</a> &raquo;</li> 
+      </ul>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for gsdview.layermanager</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="c">### Copyright (C) 2008-2011 Antonio Valentino &lt;a_valentino@users.sf.net&gt;</span>
+
+<span class="c">### This file is part of GSDView.</span>
+
+<span class="c">### GSDView is free software; you can redistribute it and/or modify</span>
+<span class="c">### it under the terms of the GNU General Public License as published by</span>
+<span class="c">### the Free Software Foundation; either version 2 of the License, or</span>
+<span class="c">### (at your option) any later version.</span>
+
+<span class="c">### GSDView is distributed in the hope that it will be useful,</span>
+<span class="c">### but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c">### MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c">### GNU General Public License for more details.</span>
+
+<span class="c">### You should have received a copy of the GNU General Public License</span>
+<span class="c">### along with GSDView; if not, write to the Free Software</span>
+<span class="c">### Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA.</span>
+
+
+<span class="sd">&#39;&#39;&#39;Components for layers management.&#39;&#39;&#39;</span>
+
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+
+<span class="kn">from</span> <span class="nn">qt</span> <span class="kn">import</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtGui</span>
+
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s">&#39;Antonio Valentino &lt;a_valentino@users.sf.net&gt;&#39;</span>
+<span class="n">__date__</span> <span class="o">=</span> <span class="s">&#39;$Date: 2011-07-30 18:30:47 +0200 (sab, 30 lug 2011) $&#39;</span>
+<span class="n">__revision__</span> <span class="o">=</span> <span class="s">&#39;$Revision: 978 $&#39;</span>
+
+
+<span class="n">SelectCurrentRows</span> <span class="o">=</span> <span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QItemSelectionModel</span><span class="o">.</span><span class="n">SelectCurrent</span> <span class="o">|</span>
+                                                <span class="n">QtGui</span><span class="o">.</span><span class="n">QItemSelectionModel</span><span class="o">.</span><span class="n">Rows</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="BaseLayerManager"><a class="viewcode-back" href="../../api/gsdview.layermanager.html#gsdview.layermanager.BaseLayerManager">[docs]</a><span class="k">class</span> <span class="nc">BaseLayerManager</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QObject</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">BaseLayerManager</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="o">**</span><span class="n">kargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setupActions</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_setupActions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">style</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QApplication</span><span class="o">.</span><span class="n">style</span><span class="p">()</span>
+
+        <span class="n">actions</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QActionGroup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="n">icon</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QIcon</span><span class="p">(</span><span class="s">&#39;:/trolltech/styles/commonstyle/images/up-128.png&#39;</span><span class="p">)</span>
+        <span class="n">QtGui</span><span class="o">.</span><span class="n">QAction</span><span class="p">(</span><span class="n">icon</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Move to top&#39;</span><span class="p">),</span> <span class="n">actions</span><span class="p">,</span>
+                      <span class="n">objectName</span><span class="o">=</span><span class="s">&#39;moveToTopAction&#39;</span><span class="p">,</span>
+                      <span class="n">statusTip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Move to top&#39;</span><span class="p">),</span>
+                      <span class="n">shortcut</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Ctrl+PgUp&#39;</span><span class="p">))</span>
+
+        <span class="n">icon</span> <span class="o">=</span> <span class="n">style</span><span class="o">.</span><span class="n">standardIcon</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QStyle</span><span class="o">.</span><span class="n">SP_ArrowUp</span><span class="p">)</span>
+        <span class="n">QtGui</span><span class="o">.</span><span class="n">QAction</span><span class="p">(</span><span class="n">icon</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Move up&#39;</span><span class="p">),</span> <span class="n">actions</span><span class="p">,</span>
+                      <span class="n">objectName</span><span class="o">=</span><span class="s">&#39;moveUpAction&#39;</span><span class="p">,</span>
+                      <span class="n">statusTip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Move up&#39;</span><span class="p">),</span>
+                      <span class="n">shortcut</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Ctrl+Up&#39;</span><span class="p">))</span>
+
+        <span class="n">icon</span> <span class="o">=</span> <span class="n">style</span><span class="o">.</span><span class="n">standardIcon</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QStyle</span><span class="o">.</span><span class="n">SP_ArrowDown</span><span class="p">)</span>
+        <span class="n">QtGui</span><span class="o">.</span><span class="n">QAction</span><span class="p">(</span><span class="n">icon</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Move down&#39;</span><span class="p">),</span> <span class="n">actions</span><span class="p">,</span>
+                      <span class="n">objectName</span><span class="o">=</span><span class="s">&#39;moveDownAction&#39;</span><span class="p">,</span>
+                      <span class="n">statusTip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Move down&#39;</span><span class="p">),</span>
+                      <span class="n">shortcut</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Ctrl+Down&#39;</span><span class="p">))</span>
+
+        <span class="n">icon</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QIcon</span><span class="p">(</span>
+            <span class="s">&#39;:/trolltech/styles/commonstyle/images/down-128.png&#39;</span><span class="p">)</span>
+        <span class="n">QtGui</span><span class="o">.</span><span class="n">QAction</span><span class="p">(</span><span class="n">icon</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Move to bottom&#39;</span><span class="p">),</span> <span class="n">actions</span><span class="p">,</span>
+                      <span class="n">objectName</span><span class="o">=</span><span class="s">&#39;moveToBottomAction&#39;</span><span class="p">,</span>
+                      <span class="n">statusTip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Move to bottom&#39;</span><span class="p">),</span>
+                      <span class="n">shortcut</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Ctrl+PgDown&#39;</span><span class="p">))</span>
+
+        <span class="c">#~ #&#39;standardbutton-closetab-16.png&#39;</span>
+        <span class="n">icon</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QIcon</span><span class="p">(</span><span class="s">&#39;:/trolltech/styles/commonstyle/images/&#39;</span>
+                           <span class="s">&#39;standardbutton-cancel-128.png&#39;</span><span class="p">)</span>
+        <span class="n">QtGui</span><span class="o">.</span><span class="n">QAction</span><span class="p">(</span><span class="n">icon</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Remove&#39;</span><span class="p">),</span> <span class="n">actions</span><span class="p">,</span>
+                      <span class="n">objectName</span><span class="o">=</span><span class="s">&#39;removeLayerAction&#39;</span><span class="p">,</span>
+                      <span class="n">statusTip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Remove&#39;</span><span class="p">),</span>
+                      <span class="n">shortcut</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Del&#39;</span><span class="p">))</span>
+
+        <span class="n">icon</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QIcon</span><span class="p">(</span>
+            <span class="s">&#39;:/trolltech/styles/commonstyle/images/standardbutton-yes-128.png&#39;</span><span class="p">)</span>
+        <span class="n">QtGui</span><span class="o">.</span><span class="n">QAction</span><span class="p">(</span><span class="n">icon</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Show&#39;</span><span class="p">),</span> <span class="n">actions</span><span class="p">,</span>
+                      <span class="n">objectName</span><span class="o">=</span><span class="s">&#39;showLayerAction&#39;</span><span class="p">,</span>
+                      <span class="n">statusTip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Show the layer&#39;</span><span class="p">))</span>
+
+        <span class="n">icon</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QIcon</span><span class="p">(</span>
+            <span class="s">&#39;:/trolltech/styles/commonstyle/images/standardbutton-no-128.png&#39;</span><span class="p">)</span>
+        <span class="n">QtGui</span><span class="o">.</span><span class="n">QAction</span><span class="p">(</span><span class="n">icon</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Hide&#39;</span><span class="p">),</span> <span class="n">actions</span><span class="p">,</span>
+                      <span class="n">objectName</span><span class="o">=</span><span class="s">&#39;hideLayerAction&#39;</span><span class="p">,</span>
+                      <span class="n">statusTip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Hide the layer&#39;</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">actions</span>
+
+<div class="viewcode-block" id="BaseLayerManager.action"><a class="viewcode-back" href="../../api/gsdview.layermanager.html#gsdview.layermanager.BaseLayerManager.action">[docs]</a>    <span class="k">def</span> <span class="nf">action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">findChild</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QAction</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="BaseLayerManager.isLayer"><a class="viewcode-back" href="../../api/gsdview.layermanager.html#gsdview.layermanager.BaseLayerManager.isLayer">[docs]</a>    <span class="k">def</span> <span class="nf">isLayer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="c"># @TODO: complete</span>
+        <span class="k">return</span> <span class="bp">True</span>
+</div>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_selectionmap</span><span class="p">(</span><span class="n">selection</span><span class="p">):</span>
+        <span class="n">sortedselection</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">selection</span><span class="p">,</span>
+                                 <span class="n">key</span><span class="o">=</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QItemSelectionRange</span><span class="o">.</span><span class="n">parent</span><span class="p">)</span>
+
+        <span class="n">selectionmap</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c"># collections.OrderedDict()</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">sortedselection</span><span class="p">,</span>
+                                            <span class="n">QtGui</span><span class="o">.</span><span class="n">QItemSelectionRange</span><span class="o">.</span><span class="n">parent</span><span class="p">):</span>
+            <span class="n">ranges</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">group</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QItemSelectionRange</span><span class="o">.</span><span class="n">top</span><span class="p">):</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ranges</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">ranges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+                    <span class="k">continue</span>
+                <span class="n">lastitem</span> <span class="o">=</span> <span class="n">ranges</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                <span class="k">assert</span> <span class="n">lastitem</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span> <span class="o">==</span> <span class="n">item</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">lastitem</span><span class="o">.</span><span class="n">bottom</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&gt;=</span> <span class="n">item</span><span class="o">.</span><span class="n">top</span><span class="p">():</span>
+                    <span class="n">model</span> <span class="o">=</span> <span class="n">lastitem</span><span class="o">.</span><span class="n">model</span><span class="p">()</span>
+                    <span class="n">topleft</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">lastitem</span><span class="o">.</span><span class="n">top</span><span class="p">(),</span> <span class="n">item</span><span class="o">.</span><span class="n">top</span><span class="p">()),</span>
+                                          <span class="c">#min(lastitem.left(), item.left()),</span>
+                                          <span class="mi">0</span><span class="p">,</span>
+                                          <span class="n">lastitem</span><span class="o">.</span><span class="n">parent</span><span class="p">())</span>
+                    <span class="n">bottomright</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">index</span><span class="p">(</span>
+                                        <span class="nb">max</span><span class="p">(</span><span class="n">lastitem</span><span class="o">.</span><span class="n">bottom</span><span class="p">(),</span> <span class="n">item</span><span class="o">.</span><span class="n">bottom</span><span class="p">()),</span>
+                                        <span class="c">#max(lastitem.right(), item.right()),</span>
+                                        <span class="n">model</span><span class="o">.</span><span class="n">columnCount</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+                                        <span class="n">lastitem</span><span class="o">.</span><span class="n">parent</span><span class="p">())</span>
+                    <span class="n">ranges</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QItemSelectionRange</span><span class="p">(</span><span class="n">topleft</span><span class="p">,</span>
+                                                           <span class="n">bottomright</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">ranges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+            <span class="n">selectionmap</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">ranges</span>
+
+        <span class="k">return</span> <span class="n">selectionmap</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_parentitem</span><span class="p">(</span><span class="n">selectionrange</span><span class="p">):</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="n">selectionrange</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">index</span><span class="o">.</span><span class="n">isValid</span><span class="p">():</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="n">selectionrange</span><span class="o">.</span><span class="n">model</span><span class="p">()</span><span class="o">.</span><span class="n">itemFromIndex</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="n">selectionrange</span><span class="o">.</span><span class="n">model</span><span class="p">()</span><span class="o">.</span><span class="n">invisibleRootItem</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">item</span>
+
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="BaseLayerManager.updateStackOrder"><a class="viewcode-back" href="../../api/gsdview.layermanager.html#gsdview.layermanager.BaseLayerManager.updateStackOrder">[docs]</a>    <span class="k">def</span> <span class="nf">updateStackOrder</span><span class="p">(</span><span class="n">rootitem</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="n">nrows</span> <span class="o">=</span> <span class="n">rootitem</span><span class="o">.</span><span class="n">rowCount</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nrows</span><span class="p">):</span>
+            <span class="n">qitem</span> <span class="o">=</span> <span class="n">rootitem</span><span class="o">.</span><span class="n">child</span><span class="p">(</span><span class="n">row</span><span class="p">)</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">qitem</span><span class="p">:</span>
+                <span class="n">qitem</span><span class="o">.</span><span class="n">setZValue</span><span class="p">(</span><span class="n">nrows</span> <span class="o">+</span> <span class="n">offset</span> <span class="o">-</span> <span class="n">row</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&#39;no graphics item associated to layer &#39;</span>
+                                <span class="s">&#39;n. </span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">row</span><span class="p">)</span>
+
+    <span class="c"># @TODO: beginMoveRows, endMoveRows</span></div>
+    <span class="k">def</span> <span class="nf">_takeRowsRange</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selectionrange</span><span class="p">):</span>
+        <span class="n">parent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parentitem</span><span class="p">(</span><span class="n">selectionrange</span><span class="p">)</span>
+
+        <span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">selectionrange</span><span class="o">.</span><span class="n">bottom</span><span class="p">(),</span>
+                         <span class="n">selectionrange</span><span class="o">.</span><span class="n">top</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+            <span class="c"># @TODO: check</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">isLayer</span><span class="p">(</span><span class="n">parent</span><span class="o">.</span><span class="n">child</span><span class="p">(</span><span class="n">row</span><span class="p">)):</span>
+                <span class="c">#continue</span>
+                <span class="k">break</span>
+            <span class="n">items</span> <span class="o">=</span> <span class="n">parent</span><span class="o">.</span><span class="n">takeRow</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+            <span class="n">rows</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">items</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">rows</span>
+
+    <span class="c"># @TODO: beginMoveRows, endMoveRows</span>
+    <span class="k">def</span> <span class="nf">_moveSelectionRange</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selectionrange</span><span class="p">,</span> <span class="n">dst</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">selectionrange</span><span class="o">.</span><span class="n">top</span><span class="p">()</span> <span class="o">==</span> <span class="n">dst</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">selectionrange</span>
+
+        <span class="n">model</span> <span class="o">=</span> <span class="n">selectionrange</span><span class="o">.</span><span class="n">model</span><span class="p">()</span>
+        <span class="n">parentindex</span> <span class="o">=</span> <span class="n">selectionrange</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span>
+        <span class="n">parentitem</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parentitem</span><span class="p">(</span><span class="n">selectionrange</span><span class="p">)</span>
+        <span class="n">nrows_selected</span> <span class="o">=</span> <span class="n">selectionrange</span><span class="o">.</span><span class="n">bottom</span><span class="p">()</span> <span class="o">-</span> <span class="n">selectionrange</span><span class="o">.</span><span class="n">top</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">ncols</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">columnCount</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">nrows_selected</span> <span class="o">==</span> <span class="n">parentitem</span><span class="o">.</span><span class="n">rowCount</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">selectionrange</span>
+
+        <span class="k">if</span> <span class="n">dst</span> <span class="o">&gt;</span> <span class="n">parentitem</span><span class="o">.</span><span class="n">rowCount</span><span class="p">()</span> <span class="o">-</span> <span class="n">nrows_selected</span> <span class="ow">or</span> <span class="n">dst</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">selectionrange</span>
+
+        <span class="n">selectedrows</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_takeRowsRange</span><span class="p">(</span><span class="n">selectionrange</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">items</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">selectedrows</span><span class="p">):</span>
+            <span class="n">parentitem</span><span class="o">.</span><span class="n">insertRow</span><span class="p">(</span><span class="n">dst</span> <span class="o">+</span> <span class="n">index</span><span class="p">,</span> <span class="n">items</span><span class="p">)</span>
+
+        <span class="n">topleft</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">parentindex</span><span class="p">)</span>
+        <span class="n">bottomright</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">dst</span> <span class="o">+</span> <span class="n">nrows_selected</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">ncols</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+                                  <span class="n">parentindex</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QItemSelectionRange</span><span class="p">(</span><span class="n">topleft</span><span class="p">,</span> <span class="n">bottomright</span><span class="p">)</span>
+
+<div class="viewcode-block" id="BaseLayerManager.moveSelectionToTop"><a class="viewcode-back" href="../../api/gsdview.layermanager.html#gsdview.layermanager.BaseLayerManager.moveSelectionToTop">[docs]</a>    <span class="k">def</span> <span class="nf">moveSelectionToTop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selectionmodel</span><span class="p">):</span>
+        <span class="c">#assert selectionmodel.model() is self.model</span>
+        <span class="n">selection</span> <span class="o">=</span> <span class="n">selectionmodel</span><span class="o">.</span><span class="n">selection</span><span class="p">()</span>
+        <span class="n">selectionmap</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_selectionmap</span><span class="p">(</span><span class="n">selection</span><span class="p">)</span>
+        <span class="n">newselection</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QItemSelection</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">parent</span><span class="p">,</span> <span class="n">ranges</span> <span class="ow">in</span> <span class="n">selectionmap</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">dst</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">selectionrange</span> <span class="ow">in</span> <span class="n">ranges</span><span class="p">:</span>
+                <span class="n">newrange</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_moveSelectionRange</span><span class="p">(</span><span class="n">selectionrange</span><span class="p">,</span> <span class="n">dst</span><span class="p">)</span>
+                <span class="n">newselection</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">newrange</span><span class="p">)</span>
+                <span class="n">dst</span> <span class="o">=</span> <span class="n">newrange</span><span class="o">.</span><span class="n">bottom</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">selectionmodel</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">newselection</span><span class="p">,</span> <span class="n">SelectCurrentRows</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="BaseLayerManager.moveSelectionUp"><a class="viewcode-back" href="../../api/gsdview.layermanager.html#gsdview.layermanager.BaseLayerManager.moveSelectionUp">[docs]</a>    <span class="k">def</span> <span class="nf">moveSelectionUp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selectionmodel</span><span class="p">):</span>
+        <span class="c">#assert selectionmodel.model() is self.model</span>
+        <span class="n">selection</span> <span class="o">=</span> <span class="n">selectionmodel</span><span class="o">.</span><span class="n">selection</span><span class="p">()</span>
+        <span class="n">selectionmap</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_selectionmap</span><span class="p">(</span><span class="n">selection</span><span class="p">)</span>
+        <span class="n">newselection</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QItemSelection</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">parent</span><span class="p">,</span> <span class="n">ranges</span> <span class="ow">in</span> <span class="n">selectionmap</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">selectionrange</span> <span class="ow">in</span> <span class="n">ranges</span><span class="p">:</span>
+                <span class="n">dst</span> <span class="o">=</span> <span class="n">selectionrange</span><span class="o">.</span><span class="n">top</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span>
+                <span class="n">newrange</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_moveSelectionRange</span><span class="p">(</span><span class="n">selectionrange</span><span class="p">,</span> <span class="n">dst</span><span class="p">)</span>
+                <span class="n">newselection</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">newrange</span><span class="p">)</span>
+        <span class="n">selectionmodel</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">newselection</span><span class="p">,</span> <span class="n">SelectCurrentRows</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="BaseLayerManager.moveSelectionDown"><a class="viewcode-back" href="../../api/gsdview.layermanager.html#gsdview.layermanager.BaseLayerManager.moveSelectionDown">[docs]</a>    <span class="k">def</span> <span class="nf">moveSelectionDown</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selectionmodel</span><span class="p">):</span>
+        <span class="c">#assert selectionmodel.model() is self.model</span>
+        <span class="n">selection</span> <span class="o">=</span> <span class="n">selectionmodel</span><span class="o">.</span><span class="n">selection</span><span class="p">()</span>
+        <span class="n">selectionmap</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_selectionmap</span><span class="p">(</span><span class="n">selection</span><span class="p">)</span>
+        <span class="n">newselection</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QItemSelection</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">parent</span><span class="p">,</span> <span class="n">ranges</span> <span class="ow">in</span> <span class="n">selectionmap</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">ranges</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">selectionrange</span> <span class="ow">in</span> <span class="n">ranges</span><span class="p">:</span>
+                <span class="n">dst</span> <span class="o">=</span> <span class="n">selectionrange</span><span class="o">.</span><span class="n">top</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span>
+                <span class="n">newrange</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_moveSelectionRange</span><span class="p">(</span><span class="n">selectionrange</span><span class="p">,</span> <span class="n">dst</span><span class="p">)</span>
+                <span class="n">newselection</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">newrange</span><span class="p">)</span>
+        <span class="n">selectionmodel</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">newselection</span><span class="p">,</span> <span class="n">SelectCurrentRows</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="BaseLayerManager.moveSelectionToBottom"><a class="viewcode-back" href="../../api/gsdview.layermanager.html#gsdview.layermanager.BaseLayerManager.moveSelectionToBottom">[docs]</a>    <span class="k">def</span> <span class="nf">moveSelectionToBottom</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selectionmodel</span><span class="p">):</span>
+        <span class="c">#assert selectionmodel.model() is self.model</span>
+        <span class="n">selection</span> <span class="o">=</span> <span class="n">selectionmodel</span><span class="o">.</span><span class="n">selection</span><span class="p">()</span>
+        <span class="n">selectionmap</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_selectionmap</span><span class="p">(</span><span class="n">selection</span><span class="p">)</span>
+        <span class="n">newselection</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QItemSelection</span><span class="p">()</span>
+        <span class="n">nrows</span> <span class="o">=</span> <span class="n">selectionmodel</span><span class="o">.</span><span class="n">model</span><span class="p">()</span><span class="o">.</span><span class="n">rowCount</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">parent</span><span class="p">,</span> <span class="n">ranges</span> <span class="ow">in</span> <span class="n">selectionmap</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">ranges</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+            <span class="n">dst</span> <span class="o">=</span> <span class="n">nrows</span>
+            <span class="k">for</span> <span class="n">selectionrange</span> <span class="ow">in</span> <span class="n">ranges</span><span class="p">:</span>
+                <span class="n">dst</span> <span class="o">-=</span> <span class="n">selectionrange</span><span class="o">.</span><span class="n">height</span><span class="p">()</span>
+                <span class="n">newrange</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_moveSelectionRange</span><span class="p">(</span><span class="n">selectionrange</span><span class="p">,</span> <span class="n">dst</span><span class="p">)</span>
+                <span class="n">newselection</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">newrange</span><span class="p">)</span>
+        <span class="n">selectionmodel</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">newselection</span><span class="p">,</span> <span class="n">SelectCurrentRows</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="BaseLayerManager.removeSelectedLayers"><a class="viewcode-back" href="../../api/gsdview.layermanager.html#gsdview.layermanager.BaseLayerManager.removeSelectedLayers">[docs]</a>    <span class="k">def</span> <span class="nf">removeSelectedLayers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selectionmodel</span><span class="p">):</span>
+        <span class="n">selection</span> <span class="o">=</span> <span class="n">selectionmodel</span><span class="o">.</span><span class="n">selection</span><span class="p">()</span>
+        <span class="n">selectionmap</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_selectionmap</span><span class="p">(</span><span class="n">selection</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">parentindex</span><span class="p">,</span> <span class="n">ranges</span> <span class="ow">in</span> <span class="n">selectionmap</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">ranges</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+            <span class="n">parentitem</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parentitem</span><span class="p">(</span><span class="n">ranges</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">for</span> <span class="n">selectionrange</span> <span class="ow">in</span> <span class="n">ranges</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">selectionrange</span><span class="o">.</span><span class="n">top</span><span class="p">(),</span>
+                                 <span class="n">selectionrange</span><span class="o">.</span><span class="n">bottom</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                    <span class="n">item</span> <span class="o">=</span> <span class="n">parentitem</span><span class="o">.</span><span class="n">child</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">isLayer</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
+                        <span class="k">break</span>
+                    <span class="n">graphicsitem</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
+                    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">graphicsitem</span><span class="p">,</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QGraphicsItem</span><span class="p">)</span>
+                    <span class="n">scene</span> <span class="o">=</span> <span class="n">graphicsitem</span><span class="o">.</span><span class="n">scene</span><span class="p">()</span>
+                    <span class="n">scene</span><span class="o">.</span><span class="n">removeItem</span><span class="p">(</span><span class="n">graphicsitem</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">parentitem</span><span class="o">.</span><span class="n">removeRows</span><span class="p">(</span><span class="n">selectionrange</span><span class="o">.</span><span class="n">top</span><span class="p">(),</span>
+                                          <span class="n">selectionrange</span><span class="o">.</span><span class="n">height</span><span class="p">())</span>
+
+        <span class="c"># @TODO: check</span>
+        <span class="c">#self.updateStackOrder(parent)</span>
+</div>
+    <span class="k">def</span> <span class="nf">_updateActions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selectionmodel</span><span class="p">):</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">selectionmodel</span><span class="o">.</span><span class="n">model</span><span class="p">()</span>
+        <span class="n">enabled</span> <span class="o">=</span> <span class="n">selectionmodel</span><span class="o">.</span><span class="n">hasSelection</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">action</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">actions</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">action</span><span class="o">.</span><span class="n">objectName</span><span class="p">()</span> <span class="o">==</span> <span class="s">&#39;selectAllAction&#39;</span><span class="p">:</span>
+                <span class="n">selectedrows</span> <span class="o">=</span> <span class="n">selectionmodel</span><span class="o">.</span><span class="n">selectedRows</span><span class="p">()</span>
+                <span class="n">nselected</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">selectedrows</span><span class="p">)</span>
+                <span class="n">nlayers</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">rowCount</span><span class="p">()</span>
+                <span class="n">allselected</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">nselected</span> <span class="o">==</span> <span class="n">nlayers</span><span class="p">)</span>
+                <span class="n">action</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="n">nlayers</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">allselected</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="n">action</span><span class="o">.</span><span class="n">objectName</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39;showLayerAction&#39;</span><span class="p">,</span> <span class="s">&#39;hideLayerAction&#39;</span><span class="p">):</span>
+                <span class="n">selectedrows</span> <span class="o">=</span> <span class="n">selectionmodel</span><span class="o">.</span><span class="n">selectedRows</span><span class="p">()</span>
+                <span class="n">nselected</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">selectedrows</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">nselected</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">action</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">items</span> <span class="o">=</span> <span class="p">[</span><span class="n">model</span><span class="o">.</span><span class="n">itemFromIndex</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+                                                    <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">selectedrows</span><span class="p">]</span>
+                    <span class="n">activerows</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">row</span><span class="p">()</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span>
+                                    <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">checkState</span><span class="p">()</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">Checked</span><span class="p">]</span>
+
+                    <span class="k">if</span> <span class="n">action</span><span class="o">.</span><span class="n">objectName</span><span class="p">()</span> <span class="o">==</span> <span class="s">&#39;showLayerAction&#39;</span><span class="p">:</span>
+                        <span class="n">action</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">activerows</span><span class="p">)</span> <span class="o">!=</span> <span class="n">nselected</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">action</span><span class="o">.</span><span class="n">objectName</span><span class="p">()</span> <span class="o">==</span> <span class="s">&#39;hideLayerAction&#39;</span><span class="p">:</span>
+                        <span class="n">action</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">activerows</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">action</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="n">enabled</span><span class="p">)</span>
+
+    <span class="nd">@QtCore.Slot</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QModelIndex</span><span class="p">)</span>
+    <span class="c">#@QtCore.Slot(QtGui.QStandardItem)</span>
+    <span class="nd">@QtCore.Slot</span><span class="p">(</span><span class="s">&#39;QStandardItem*&#39;</span><span class="p">)</span>  <span class="c"># @TODO: fix</span>
+<div class="viewcode-block" id="BaseLayerManager.updateVisibility"><a class="viewcode-back" href="../../api/gsdview.layermanager.html#gsdview.layermanager.BaseLayerManager.updateVisibility">[docs]</a>    <span class="k">def</span> <span class="nf">updateVisibility</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QModelIndex</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">index</span><span class="o">.</span><span class="n">column</span><span class="p">()</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">return</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="n">index</span><span class="o">.</span><span class="n">model</span><span class="p">()</span><span class="o">.</span><span class="n">itemFromIndex</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QStandardItem</span><span class="p">):</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="n">index</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">index</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">index</span><span class="o">.</span><span class="n">column</span><span class="p">()</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">return</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s">&#39;unexpected type for index parameter: &quot;</span><span class="si">%s</span><span class="s">&quot;&#39;</span> <span class="o">%</span>
+                                                                <span class="nb">type</span><span class="p">(</span><span class="n">index</span><span class="p">))</span>
+
+        <span class="n">checked</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">checkState</span><span class="p">()</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">Checked</span><span class="p">)</span>
+        <span class="n">qlayer</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>  <span class="c"># index.data(QtCore.Qt.UserRole + 1)</span>
+        <span class="n">qlayer</span><span class="o">.</span><span class="n">setVisible</span><span class="p">(</span><span class="n">checked</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="BaseLayerManager.checkSelectedItems"><a class="viewcode-back" href="../../api/gsdview.layermanager.html#gsdview.layermanager.BaseLayerManager.checkSelectedItems">[docs]</a>    <span class="k">def</span> <span class="nf">checkSelectedItems</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selectionmodel</span><span class="p">,</span> <span class="n">checked</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">selectionmodel</span><span class="o">.</span><span class="n">model</span><span class="p">()</span>
+        <span class="c">#assert model is self.model</span>
+
+        <span class="k">if</span> <span class="n">checked</span><span class="p">:</span>
+            <span class="n">newstate</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">Checked</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">newstate</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">Unchecked</span>
+
+        <span class="n">update</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">selectionmodel</span><span class="o">.</span><span class="n">selectedRows</span><span class="p">():</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">itemFromIndex</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">checkState</span><span class="p">()</span> <span class="o">!=</span> <span class="n">newstate</span><span class="p">:</span>
+                <span class="n">item</span><span class="o">.</span><span class="n">setCheckState</span><span class="p">(</span><span class="n">newstate</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">updateVisibility</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+                <span class="n">update</span> <span class="o">=</span> <span class="bp">True</span>
+
+        <span class="k">if</span> <span class="n">update</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_updateActions</span><span class="p">(</span><span class="n">selectionmodel</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="BaseLayerManager.toggleSelectedItems"><a class="viewcode-back" href="../../api/gsdview.layermanager.html#gsdview.layermanager.BaseLayerManager.toggleSelectedItems">[docs]</a>    <span class="k">def</span> <span class="nf">toggleSelectedItems</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selectionmodel</span><span class="p">):</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">selectionmodel</span><span class="o">.</span><span class="n">model</span><span class="p">()</span>
+        <span class="c">#assert model is self.model</span>
+
+        <span class="n">update</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">selectionmodel</span><span class="o">.</span><span class="n">selectedRows</span><span class="p">():</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">itemFromIndex</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+            <span class="n">state</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">checkState</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">state</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">Checked</span><span class="p">:</span>
+                <span class="n">item</span><span class="o">.</span><span class="n">setCheckState</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">Unchecked</span><span class="p">)</span>
+                <span class="n">update</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="k">elif</span> <span class="n">state</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">Unchecked</span><span class="p">:</span>
+                <span class="n">item</span><span class="o">.</span><span class="n">setCheckState</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">Checked</span><span class="p">)</span>
+                <span class="n">update</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;unexpected check state: &quot;</span><span class="si">%s</span><span class="s">&quot;&#39;</span> <span class="o">%</span> <span class="n">state</span><span class="p">)</span>
+                <span class="k">continue</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">updateVisibility</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">update</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_updateActions</span><span class="p">(</span><span class="n">selectionmodel</span><span class="p">)</span>
+
+</div></div>
+<div class="viewcode-block" id="LayerManager"><a class="viewcode-back" href="../../api/gsdview.layermanager.html#gsdview.layermanager.LayerManager">[docs]</a><span class="k">class</span> <span class="nc">LayerManager</span><span class="p">(</span><span class="n">BaseLayerManager</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">view</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">view</span> <span class="o">=</span> <span class="n">view</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">LayerManager</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="o">**</span><span class="n">kargs</span><span class="p">)</span>
+
+        <span class="n">view</span><span class="o">.</span><span class="n">addActions</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">actions</span><span class="p">())</span>
+        <span class="n">view</span><span class="o">.</span><span class="n">installEventFilter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>   <span class="c"># spacebar</span>
+
+        <span class="c"># connect signals</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">model</span><span class="p">()</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">layoutChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">updateStackOrder</span><span class="p">)</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">rowsInserted</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">updateStackOrder</span><span class="p">)</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">rowsInserted</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_updateActions</span><span class="p">)</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">rowsRemoved</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">updateStackOrder</span><span class="p">)</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">rowsRemoved</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_updateActions</span><span class="p">)</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">itemChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">updateVisibility</span><span class="p">)</span>
+
+        <span class="n">view</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">updateVisibility</span><span class="p">)</span>
+        <span class="n">view</span><span class="o">.</span><span class="n">activated</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">toggleSelectedItems</span><span class="p">)</span>
+
+        <span class="n">view</span><span class="o">.</span><span class="n">selectionModel</span><span class="p">()</span><span class="o">.</span><span class="n">selectionChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_updateActions</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_updateActions</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="LayerManager.model"><a class="viewcode-back" href="../../api/gsdview.layermanager.html#gsdview.layermanager.LayerManager.model">[docs]</a>    <span class="k">def</span> <span class="nf">model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">model</span><span class="p">()</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="LayerManager.selectionmodel"><a class="viewcode-back" href="../../api/gsdview.layermanager.html#gsdview.layermanager.LayerManager.selectionmodel">[docs]</a>    <span class="k">def</span> <span class="nf">selectionmodel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">selectionModel</span><span class="p">()</span>
+</div>
+    <span class="k">def</span> <span class="nf">_setupActions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">actions</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">LayerManager</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">_setupActions</span><span class="p">()</span>
+
+        <span class="n">icon</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QIcon</span><span class="p">(</span>
+                <span class="s">&#39;:/trolltech/styles/commonstyle/images/viewdetailed-128.png&#39;</span><span class="p">)</span>
+        <span class="n">QtGui</span><span class="o">.</span><span class="n">QAction</span><span class="p">(</span><span class="n">icon</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Select all&#39;</span><span class="p">),</span> <span class="n">actions</span><span class="p">,</span>
+                      <span class="n">objectName</span><span class="o">=</span><span class="s">&#39;selectAllAction&#39;</span><span class="p">,</span>
+                      <span class="n">statusTip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Select all&#39;</span><span class="p">),</span>
+                      <span class="n">shortcut</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="s">&#39;Ctrl-A&#39;</span><span class="p">),</span>
+                      <span class="n">triggered</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">selectAll</span><span class="p">)</span>
+
+        <span class="c"># connect actions</span>
+        <span class="n">action</span> <span class="o">=</span> <span class="n">actions</span><span class="o">.</span><span class="n">findChild</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QAction</span><span class="p">,</span> <span class="s">&#39;moveToTopAction&#39;</span><span class="p">)</span>
+        <span class="n">action</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">moveSelectionToTop</span><span class="p">)</span>
+        <span class="n">action</span> <span class="o">=</span> <span class="n">actions</span><span class="o">.</span><span class="n">findChild</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QAction</span><span class="p">,</span> <span class="s">&#39;moveUpAction&#39;</span><span class="p">)</span>
+        <span class="n">action</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">moveSelectionUp</span><span class="p">)</span>
+        <span class="n">action</span> <span class="o">=</span> <span class="n">actions</span><span class="o">.</span><span class="n">findChild</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QAction</span><span class="p">,</span> <span class="s">&#39;moveDownAction&#39;</span><span class="p">)</span>
+        <span class="n">action</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">moveSelectionDown</span><span class="p">)</span>
+        <span class="n">action</span> <span class="o">=</span> <span class="n">actions</span><span class="o">.</span><span class="n">findChild</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QAction</span><span class="p">,</span> <span class="s">&#39;moveToBottomAction&#39;</span><span class="p">)</span>
+        <span class="n">action</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">moveSelectionToBottom</span><span class="p">)</span>
+        <span class="n">action</span> <span class="o">=</span> <span class="n">actions</span><span class="o">.</span><span class="n">findChild</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QAction</span><span class="p">,</span> <span class="s">&#39;removeLayerAction&#39;</span><span class="p">)</span>
+        <span class="n">action</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">removeSelectedLayers</span><span class="p">)</span>
+        <span class="n">action</span> <span class="o">=</span> <span class="n">actions</span><span class="o">.</span><span class="n">findChild</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QAction</span><span class="p">,</span> <span class="s">&#39;showLayerAction&#39;</span><span class="p">)</span>
+        <span class="n">action</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">checkSelectedItems</span><span class="p">)</span>
+        <span class="n">action</span> <span class="o">=</span> <span class="n">actions</span><span class="o">.</span><span class="n">findChild</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QAction</span><span class="p">,</span> <span class="s">&#39;hideLayerAction&#39;</span><span class="p">)</span>
+        <span class="n">action</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uncheckSelectedItems</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">actions</span>
+
+<div class="viewcode-block" id="LayerManager.eventFilter"><a class="viewcode-back" href="../../api/gsdview.layermanager.html#gsdview.layermanager.LayerManager.eventFilter">[docs]</a>    <span class="k">def</span> <span class="nf">eventFilter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">type</span><span class="p">()</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QEvent</span><span class="o">.</span><span class="n">KeyPress</span> <span class="ow">and</span>
+                                        <span class="n">event</span><span class="o">.</span><span class="n">key</span><span class="p">()</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">Key_Space</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">toggleSelectedItems</span><span class="p">()</span>
+            <span class="k">return</span> <span class="bp">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">LayerManager</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">eventFilter</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span>
+</div>
+    <span class="nd">@QtCore.Slot</span><span class="p">()</span>
+<div class="viewcode-block" id="LayerManager.moveSelectionToTop"><a class="viewcode-back" href="../../api/gsdview.layermanager.html#gsdview.layermanager.LayerManager.moveSelectionToTop">[docs]</a>    <span class="k">def</span> <span class="nf">moveSelectionToTop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selectionmodel</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">selectionmodel</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">selectionmodel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">selectionmodel</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">LayerManager</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">moveSelectionToTop</span><span class="p">(</span><span class="n">selectionmodel</span><span class="p">)</span>
+</div>
+    <span class="nd">@QtCore.Slot</span><span class="p">()</span>
+<div class="viewcode-block" id="LayerManager.moveSelectionUp"><a class="viewcode-back" href="../../api/gsdview.layermanager.html#gsdview.layermanager.LayerManager.moveSelectionUp">[docs]</a>    <span class="k">def</span> <span class="nf">moveSelectionUp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selectionmodel</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">selectionmodel</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">selectionmodel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">selectionmodel</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">LayerManager</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">moveSelectionUp</span><span class="p">(</span><span class="n">selectionmodel</span><span class="p">)</span>
+</div>
+    <span class="nd">@QtCore.Slot</span><span class="p">()</span>
+<div class="viewcode-block" id="LayerManager.moveSelectionDown"><a class="viewcode-back" href="../../api/gsdview.layermanager.html#gsdview.layermanager.LayerManager.moveSelectionDown">[docs]</a>    <span class="k">def</span> <span class="nf">moveSelectionDown</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selectionmodel</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">selectionmodel</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">selectionmodel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">selectionmodel</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">LayerManager</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">moveSelectionDown</span><span class="p">(</span><span class="n">selectionmodel</span><span class="p">)</span>
+</div>
+    <span class="nd">@QtCore.Slot</span><span class="p">()</span>
+<div class="viewcode-block" id="LayerManager.moveSelectionToBottom"><a class="viewcode-back" href="../../api/gsdview.layermanager.html#gsdview.layermanager.LayerManager.moveSelectionToBottom">[docs]</a>    <span class="k">def</span> <span class="nf">moveSelectionToBottom</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selectionmodel</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">selectionmodel</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">selectionmodel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">selectionmodel</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">LayerManager</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">moveSelectionToBottom</span><span class="p">(</span><span class="n">selectionmodel</span><span class="p">)</span>
+</div>
+    <span class="nd">@QtCore.Slot</span><span class="p">()</span>
+<div class="viewcode-block" id="LayerManager.removeSelectedLayers"><a class="viewcode-back" href="../../api/gsdview.layermanager.html#gsdview.layermanager.LayerManager.removeSelectedLayers">[docs]</a>    <span class="k">def</span> <span class="nf">removeSelectedLayers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selectionmodel</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">selectionmodel</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">selectionmodel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">selectionmodel</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">LayerManager</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">removeSelectedLayers</span><span class="p">(</span><span class="n">selectionmodel</span><span class="p">)</span>
+</div>
+    <span class="nd">@QtCore.Slot</span><span class="p">()</span>
+<div class="viewcode-block" id="LayerManager.checkSelectedItems"><a class="viewcode-back" href="../../api/gsdview.layermanager.html#gsdview.layermanager.LayerManager.checkSelectedItems">[docs]</a>    <span class="k">def</span> <span class="nf">checkSelectedItems</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selectionmodel</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">checked</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">selectionmodel</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">selectionmodel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">selectionmodel</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">LayerManager</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">checkSelectedItems</span><span class="p">(</span><span class="n">selectionmodel</span><span class="p">,</span> <span class="n">checked</span><span class="p">)</span>
+</div>
+    <span class="nd">@QtCore.Slot</span><span class="p">()</span>
+<div class="viewcode-block" id="LayerManager.uncheckSelectedItems"><a class="viewcode-back" href="../../api/gsdview.layermanager.html#gsdview.layermanager.LayerManager.uncheckSelectedItems">[docs]</a>    <span class="k">def</span> <span class="nf">uncheckSelectedItems</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selectionmodel</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">checkSelectedItems</span><span class="p">(</span><span class="n">selectionmodel</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+</div>
+    <span class="nd">@QtCore.Slot</span><span class="p">()</span>
+<div class="viewcode-block" id="LayerManager.toggleSelectedItems"><a class="viewcode-back" href="../../api/gsdview.layermanager.html#gsdview.layermanager.LayerManager.toggleSelectedItems">[docs]</a>    <span class="k">def</span> <span class="nf">toggleSelectedItems</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selectionmodel</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">selectionmodel</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">selectionmodel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">selectionmodel</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">LayerManager</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">toggleSelectedItems</span><span class="p">(</span><span class="n">selectionmodel</span><span class="p">)</span>
+</div>
+    <span class="nd">@QtCore.Slot</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">_updateActions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selectionmodel</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">selectionmodel</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">selectionmodel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">selectionmodel</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">LayerManager</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">_updateActions</span><span class="p">(</span><span class="n">selectionmodel</span><span class="p">)</span>
+
+    <span class="nd">@QtCore.Slot</span><span class="p">()</span>
+<div class="viewcode-block" id="LayerManager.updateStackOrder"><a class="viewcode-back" href="../../api/gsdview.layermanager.html#gsdview.layermanager.LayerManager.updateStackOrder">[docs]</a>    <span class="k">def</span> <span class="nf">updateStackOrder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rootitem</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">rootitem</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">rootitem</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">invisibleRootItem</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">LayerManager</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">updateStackOrder</span><span class="p">(</span><span class="n">rootitem</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+    
+    
+    <p>
+        <a href="http://sourceforge.net/projects/gsdview">
+            <img src="http://sflogo.sourceforge.net/sflogo.php?group_id=226458&type=14" width="150" height="40" alt="Get GSDView at SourceForge.net. Fast, secure and Free Open Source software downloads" />
+        </a>
+    </p>
+    
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li><a href="../../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../gsdview.html" >gsdview</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2008-2011, Antonio Valentino.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

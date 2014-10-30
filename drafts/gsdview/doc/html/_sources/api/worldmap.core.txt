@@ -1,0 +1,23 @@
+worldmap.core
+=============
+
+.. automodule:: worldmap.core
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      WorldmapController
+      WorldmapPanel
+   
+   
+
+   
+   
+   

@@ -1,0 +1,30 @@
+overview.core
+=============
+
+.. automodule:: overview.core
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      overrideCursor
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      BandOverviewDock
+      NavigationGraphicsView
+      OverviewController
+   
+   
+
+   
+   
+   

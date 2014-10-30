@@ -1,0 +1,548 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>gsdview.gdalbackend.ogrqt4 &mdash; GSDView Open Edition Home Page</title>
+    <link rel="stylesheet" href="../../../_static/sourceforge.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.6.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../../_static/logo.ico"/>
+    <link rel="top" title="GSDView Open Edition Home Page" href="../../../index.html" />
+    <link rel="up" title="gsdview.gdalbackend" href="../gdalbackend.html" /> 
+  </head>
+  <body>
+    
+        
+    
+    
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li><a href="../../../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../gsdview.html" >gsdview</a> &raquo;</li>
+          <li><a href="../gdalbackend.html" accesskey="U">gsdview.gdalbackend</a> &raquo;</li> 
+      </ul>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for gsdview.gdalbackend.ogrqt4</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="c">### Copyright (C) 2008-2011 Antonio Valentino &lt;a_valentino@users.sf.net&gt;</span>
+
+<span class="c">### This file is part of GSDView.</span>
+
+<span class="c">### GSDView is free software; you can redistribute it and/or modify</span>
+<span class="c">### it under the terms of the GNU General Public License as published by</span>
+<span class="c">### the Free Software Foundation; either version 2 of the License, or</span>
+<span class="c">### (at your option) any later version.</span>
+
+<span class="c">### GSDView is distributed in the hope that it will be useful,</span>
+<span class="c">### but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c">### MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c">### GNU General Public License for more details.</span>
+
+<span class="c">### You should have received a copy of the GNU General Public License</span>
+<span class="c">### along with GSDView; if not, write to the Free Software</span>
+<span class="c">### Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA.</span>
+
+
+<span class="sd">&#39;&#39;&#39;Helper tools and custom components for binding OGR and Qt4.&#39;&#39;&#39;</span>
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s">&#39;Antonio Valentino &lt;a_valentino@users.sf.net&gt;&#39;</span>
+<span class="n">__date__</span> <span class="o">=</span> <span class="s">&#39;$Date: 2011-07-30 13:19:15 +0200 (sab, 30 lug 2011) $&#39;</span>
+<span class="n">__revision__</span> <span class="o">=</span> <span class="s">&#39;$Revision: 974 $&#39;</span>
+
+
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">ogr</span><span class="p">,</span> <span class="n">osr</span>
+
+<span class="kn">from</span> <span class="nn">qt</span> <span class="kn">import</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtGui</span>
+
+<span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">qt4draw</span>
+
+
+<span class="c">### Graphics Items ############################################################</span>
+<span class="c">#~ class GraphicsLayerItem(qt4draw.GraphicsItemGroup):</span>
+    <span class="c">#~ &#39;&#39;&#39;Qt graphics item representing an OGR Layer.&#39;&#39;&#39;</span>
+
+    <span class="c">#~ Type = QtGui.QGraphicsItem.UserType + 102</span>
+
+    <span class="c">#~ def __init__(self, name=None, index=None, datasource=None,</span>
+                 <span class="c">#~ parent=None, scene=None, **kargs):</span>
+        <span class="c">#~ super(GraphicsLayerItem, self).__init__(parent, scene, **kargs)</span>
+
+        <span class="c">#~ self.name = name</span>
+        <span class="c">#~ self.index = index</span>
+        <span class="c">#~ self.datasource = datasource</span>
+
+        <span class="c">#~ if name:</span>
+            <span class="c">#~ self.setToolTip(&#39;Layer: %s&#39; % name)</span>
+
+    <span class="c">#~ def graphicsFeature(self, fid):</span>
+        <span class="c">#~ #return  self.childItems()[fid]</span>
+        <span class="c">#~ for item in self.childItems():</span>
+            <span class="c">#~ try:</span>
+                <span class="c">#~ if item.fid == fid:</span>
+                    <span class="c">#~ return item</span>
+            <span class="c">#~ except AttributeError:</span>
+                <span class="c">#~ logging.debug(&#39;item &quot;%s&quot; has no feature ID.&#39; % item)</span>
+        <span class="c">#~ return None</span>
+
+
+<span class="c">#~ class GraphicsFeatureItem(qt4draw.GraphicsItemGroup):</span>
+    <span class="c">#~ &#39;&#39;&#39;Qt graphics item representing an OGR feature.&#39;&#39;&#39;</span>
+
+    <span class="c">#~ Type = QtGui.QGraphicsItem.UserType + 103</span>
+
+    <span class="c">#~ def __init__(self, fid=None, parent=None, scene=None, **kargs):</span>
+        <span class="c">#~ super(GraphicsFeatureItem, self).__init__(parent, scene, **kargs)</span>
+
+        <span class="c">#~ self.fid = fid</span>
+
+
+<span class="c">### Helpers for geometry management ###########################################</span>
+<div class="viewcode-block" id="transformGeometry"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.ogrqt4.html#gsdview.gdalbackend.ogrqt4.transformGeometry">[docs]</a><span class="k">def</span> <span class="nf">transformGeometry</span><span class="p">(</span><span class="n">geom</span><span class="p">,</span> <span class="n">transform</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Apply an OSR transform to an OGR geometry.</span>
+
+<span class="sd">    This function is almost equal to the ogr.Geometry.Transform method</span>
+<span class="sd">    but raises an exception if the conversion fails and clone the</span>
+<span class="sd">    geometry before performing the transformation in order to leave the</span>
+<span class="sd">    original geometry unmodified.</span>
+
+<span class="sd">    :param geom:</span>
+<span class="sd">        OGR geometry</span>
+<span class="sd">    :param transform:</span>
+<span class="sd">        OSR transformer</span>
+<span class="sd">    :returns:</span>
+<span class="sd">        a new geometry instance with transforation applied</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">geom</span> <span class="o">=</span> <span class="n">geom</span><span class="o">.</span><span class="n">Clone</span><span class="p">()</span>  <span class="c"># @TODO: check</span>
+    <span class="n">err</span> <span class="o">=</span> <span class="n">geom</span><span class="o">.</span><span class="n">Transform</span><span class="p">(</span><span class="n">transform</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">err</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;geomery coordinate transformation failed&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">geom</span>
+
+</div>
+<div class="viewcode-block" id="singleGeometryToGraphicsItem"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.ogrqt4.html#gsdview.gdalbackend.ogrqt4.singleGeometryToGraphicsItem">[docs]</a><span class="k">def</span> <span class="nf">singleGeometryToGraphicsItem</span><span class="p">(</span><span class="n">geom</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Convert a single OGR geometry into a Qt4 graphics item.</span>
+
+<span class="sd">    A &quot;single geometry&quot; is an OGR gemetry that don&#39;t include other</span>
+<span class="sd">    geometries (GetGeometryCount() == 0).</span>
+
+<span class="sd">    If the *transform* callable is provided then each point in the</span>
+<span class="sd">    geometry is converted using the `transform(x, y, z)` call before</span>
+<span class="sd">    genereting the graphics item path.</span>
+
+<span class="sd">    .. note: for 2.5D geometries the *z* value is ignored.</span>
+
+<span class="sd">    :param geom:</span>
+<span class="sd">        a single OGR geometry</span>
+<span class="sd">    :param transform:</span>
+<span class="sd">        callable object for arbitrary coordinate conversion</span>
+<span class="sd">    :returns:</span>
+<span class="sd">        a Qt4 graphics item representing the geometry</span>
+
+<span class="sd">    .. seealso:: :func:`geometryToGraphicsItem`</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">assert</span> <span class="n">geom</span><span class="o">.</span><span class="n">GetGeometryCount</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span>
+
+    <span class="n">gtype</span> <span class="o">=</span> <span class="n">geom</span><span class="o">.</span><span class="n">GetGeometryType</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">gtype</span> <span class="ow">in</span> <span class="p">(</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbPoint</span><span class="p">,</span> <span class="n">ogr</span><span class="o">.</span><span class="n">wkbPoint25D</span><span class="p">):</span>
+
+        <span class="c"># @TODO: check</span>
+        <span class="n">RADIUS</span> <span class="o">=</span> <span class="mi">3</span>
+
+        <span class="n">point</span> <span class="o">=</span> <span class="n">geom</span><span class="o">.</span><span class="n">GetPoint</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">transform</span><span class="p">:</span>
+            <span class="n">point</span> <span class="o">=</span> <span class="n">transform</span><span class="p">(</span><span class="o">*</span><span class="n">point</span><span class="p">)</span>
+        <span class="n">qitem</span> <span class="o">=</span> <span class="n">qt4draw</span><span class="o">.</span><span class="n">GraphicsPointItem</span><span class="p">(</span><span class="n">point</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">point</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">RADIUS</span><span class="p">)</span>
+
+        <span class="c"># @TODO: style options should be set in a more general way.</span>
+        <span class="c">#        Probably it is better to set them in an external function.</span>
+        <span class="c"># Red point</span>
+        <span class="n">pen</span> <span class="o">=</span> <span class="n">qitem</span><span class="o">.</span><span class="n">pen</span><span class="p">()</span>
+        <span class="n">pen</span><span class="o">.</span><span class="n">setColor</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">red</span><span class="p">)</span>
+        <span class="c">#pen.setWidth(15)</span>
+        <span class="n">qitem</span><span class="o">.</span><span class="n">setPen</span><span class="p">(</span><span class="n">pen</span><span class="p">)</span>
+
+        <span class="n">brush</span> <span class="o">=</span> <span class="n">qitem</span><span class="o">.</span><span class="n">brush</span><span class="p">()</span>
+        <span class="n">brush</span><span class="o">.</span><span class="n">setColor</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">red</span><span class="p">)</span>
+        <span class="c">#brush.setStyle(QtCore.Qt.SolidPattern)</span>
+        <span class="n">qitem</span><span class="o">.</span><span class="n">setBrush</span><span class="p">(</span><span class="n">brush</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="p">(</span><span class="n">gtype</span> <span class="ow">in</span> <span class="p">(</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbLineString</span><span class="p">,</span> <span class="n">ogr</span><span class="o">.</span><span class="n">wkbLineString25D</span><span class="p">)</span> <span class="ow">and</span>
+                                                <span class="n">geom</span><span class="o">.</span><span class="n">GetPointCount</span><span class="p">()</span> <span class="o">==</span> <span class="mi">2</span><span class="p">):</span>
+        <span class="n">p0</span> <span class="o">=</span> <span class="n">geom</span><span class="o">.</span><span class="n">GetPoint</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">p1</span> <span class="o">=</span> <span class="n">geom</span><span class="o">.</span><span class="n">GetPoint</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">transform</span><span class="p">:</span>
+            <span class="n">p0</span> <span class="o">=</span> <span class="n">transform</span><span class="p">(</span><span class="o">*</span><span class="n">p0</span><span class="p">)</span>
+            <span class="n">p1</span> <span class="o">=</span> <span class="n">transform</span><span class="p">(</span><span class="o">*</span><span class="n">p1</span><span class="p">)</span>
+        <span class="n">qline</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QLineF</span><span class="p">(</span><span class="n">p0</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">p0</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">p1</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">p1</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">qitem</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QGraphicsLineItem</span><span class="p">(</span><span class="n">qline</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">gtype</span> <span class="ow">in</span> <span class="p">(</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbLinearRing</span><span class="p">,</span> <span class="n">ogr</span><span class="o">.</span><span class="n">wkbPolygon</span><span class="p">,</span> <span class="n">ogr</span><span class="o">.</span><span class="n">wkbPolygon25D</span><span class="p">,</span>
+                   <span class="n">ogr</span><span class="o">.</span><span class="n">wkbLineString</span><span class="p">,</span> <span class="n">ogr</span><span class="o">.</span><span class="n">wkbLineString25D</span><span class="p">):</span>
+
+        <span class="c"># @NOTE: use only if geometry is a ring</span>
+        <span class="k">if</span> <span class="n">geom</span><span class="o">.</span><span class="n">IsRing</span><span class="p">():</span>
+            <span class="n">qpoly</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QPolygonF</span><span class="p">(</span><span class="n">geom</span><span class="o">.</span><span class="n">GetPointCount</span><span class="p">())</span>
+            <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">geom</span><span class="o">.</span><span class="n">GetPointCount</span><span class="p">()):</span>
+                <span class="n">point</span> <span class="o">=</span> <span class="n">geom</span><span class="o">.</span><span class="n">GetPoint</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">transform</span><span class="p">:</span>
+                    <span class="n">point</span> <span class="o">=</span> <span class="n">transform</span><span class="p">(</span><span class="o">*</span><span class="n">point</span><span class="p">)</span>
+                <span class="n">qpoly</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QPointF</span><span class="p">(</span><span class="n">point</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">point</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">qitem</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QGraphicsPolygonItem</span><span class="p">(</span><span class="n">qpoly</span><span class="p">)</span>
+            <span class="c">#qitem.setFillRule(QtCore.Qt.WindingFill)    # @TODO: check</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">qpath</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QPainterPath</span><span class="p">()</span>
+            <span class="c">#qpath.setFillRule(QtCore.Qt.WindingFill)    # @TODO: check</span>
+            <span class="n">point</span> <span class="o">=</span> <span class="n">geom</span><span class="o">.</span><span class="n">GetPoint</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">transform</span><span class="p">:</span>
+                <span class="n">point</span> <span class="o">=</span> <span class="n">transform</span><span class="p">(</span><span class="o">*</span><span class="n">point</span><span class="p">)</span>
+            <span class="n">qpath</span><span class="o">.</span><span class="n">moveTo</span><span class="p">(</span><span class="n">point</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">point</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">geom</span><span class="o">.</span><span class="n">GetPointCount</span><span class="p">()):</span>
+                <span class="n">point</span> <span class="o">=</span> <span class="n">geom</span><span class="o">.</span><span class="n">GetPoint</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">transform</span><span class="p">:</span>
+                    <span class="n">point</span> <span class="o">=</span> <span class="n">transform</span><span class="p">(</span><span class="o">*</span><span class="n">point</span><span class="p">)</span>
+                <span class="n">qpath</span><span class="o">.</span><span class="n">lineTo</span><span class="p">(</span><span class="n">point</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">point</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">qitem</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QGraphicsPathItem</span><span class="p">(</span><span class="n">qpath</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">gtype</span> <span class="ow">in</span> <span class="p">(</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbMultiPoint</span><span class="p">,</span> <span class="n">ogr</span><span class="o">.</span><span class="n">wkbMultiPoint25D</span><span class="p">,</span>
+                   <span class="n">ogr</span><span class="o">.</span><span class="n">wkbMultiLineString</span><span class="p">,</span> <span class="n">ogr</span><span class="o">.</span><span class="n">wkbMultiLineString25D</span><span class="p">,</span>
+                   <span class="n">ogr</span><span class="o">.</span><span class="n">wkbMultiPolygon</span><span class="p">,</span> <span class="n">ogr</span><span class="o">.</span><span class="n">wkbMultiPolygon25D</span><span class="p">,</span>
+                   <span class="n">ogr</span><span class="o">.</span><span class="n">wkbGeometryCollection</span><span class="p">,</span> <span class="n">ogr</span><span class="o">.</span><span class="n">wkbGeometryCollection25D</span><span class="p">):</span>
+
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;should not happen.&#39;</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">gtype</span> <span class="ow">in</span> <span class="p">(</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbUnknown</span><span class="p">,</span> <span class="n">ogr</span><span class="o">.</span><span class="n">wkbNone</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;invalid geopetry type: &#39;</span>
+                         <span class="s">&#39;&quot;</span><span class="si">%s</span><span class="s">&quot;&#39;</span> <span class="o">%</span> <span class="n">geom</span><span class="o">.</span><span class="n">GetGeometryName</span><span class="p">())</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;invalid geopetry type: &quot;</span><span class="si">%d</span><span class="s">&quot;&#39;</span> <span class="o">%</span> <span class="n">gtype</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">qitem</span>
+
+</div>
+<div class="viewcode-block" id="geometryToGraphicsItem"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.ogrqt4.html#gsdview.gdalbackend.ogrqt4.geometryToGraphicsItem">[docs]</a><span class="k">def</span> <span class="nf">geometryToGraphicsItem</span><span class="p">(</span><span class="n">geom</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Convert an OGR geometry into a Qt4 graphics item.</span>
+
+<span class="sd">    If the *transform* callable is provided then each point in the</span>
+<span class="sd">    geometry is converted using the `transform(x, y, z)` call before</span>
+<span class="sd">    genereting the graphics item path.</span>
+
+<span class="sd">    .. note: for 2.5D geometries the *z* value is ignored.</span>
+
+<span class="sd">    :param geom:</span>
+<span class="sd">        an OGR geometry</span>
+<span class="sd">    :param transform:</span>
+<span class="sd">        callable object for arbitrary coordinate conversion</span>
+<span class="sd">    :returns:</span>
+<span class="sd">        a Qt4 graphics item representing the geometry</span>
+
+<span class="sd">    .. seealso:: :func:`singleGeometryToGraphicsItem`</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">if</span> <span class="n">geom</span><span class="o">.</span><span class="n">GetGeometryCount</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="c">#qitem = QtGui.QGraphicsItemGroup()</span>
+        <span class="n">qitem</span> <span class="o">=</span> <span class="n">qt4draw</span><span class="o">.</span><span class="n">GraphicsItemGroup</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">subgeom</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">geom</span><span class="p">):</span>
+            <span class="n">qsubitem</span> <span class="o">=</span> <span class="n">geometryToGraphicsItem</span><span class="p">(</span><span class="n">subgeom</span><span class="p">,</span> <span class="n">transform</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">qsubitem</span><span class="p">:</span>
+                <span class="n">qsubitem</span><span class="o">.</span><span class="n">setData</span><span class="p">(</span><span class="n">DATAKEY</span><span class="p">[</span><span class="s">&#39;index&#39;</span><span class="p">],</span> <span class="n">index</span><span class="p">)</span>
+                <span class="n">qitem</span><span class="o">.</span><span class="n">addToGroup</span><span class="p">(</span><span class="n">qsubitem</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;unable to instantiate a graphics item from &#39;</span>
+                              <span class="s">&#39;OGR geometry &quot;</span><span class="si">%s</span><span class="s">&quot;&#39;</span> <span class="o">%</span> <span class="n">subgeom</span><span class="p">)</span>
+        <span class="c">#qitem.setFlag(QtGui.QGraphicsItem.ItemIsSelectable)</span>
+        <span class="k">return</span> <span class="n">qitem</span>
+    <span class="k">elif</span> <span class="n">geom</span><span class="o">.</span><span class="n">GetGeometryCount</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">subgeom</span> <span class="o">=</span> <span class="n">geom</span><span class="o">.</span><span class="n">GetGeometryRef</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">geometryToGraphicsItem</span><span class="p">(</span><span class="n">subgeom</span><span class="p">,</span> <span class="n">transform</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">qitem</span> <span class="o">=</span> <span class="n">singleGeometryToGraphicsItem</span><span class="p">(</span><span class="n">geom</span><span class="p">,</span> <span class="n">transform</span><span class="p">)</span>
+
+    <span class="n">qitem</span><span class="o">.</span><span class="n">setFlag</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QGraphicsItem</span><span class="o">.</span><span class="n">ItemIsSelectable</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">qitem</span>
+
+<span class="c">#: the max number of features that are converted whan the graphics item</span>
+<span class="c">#: for a layer is generated</span></div>
+<span class="n">MAX_FEATURE_COUNT</span> <span class="o">=</span> <span class="mi">600</span>
+<span class="n">DATAKEY</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s">&#39;index&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="s">&#39;datasource&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+    <span class="s">&#39;FID&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="layerToGraphicsItem"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.ogrqt4.html#gsdview.gdalbackend.ogrqt4.layerToGraphicsItem">[docs]</a><span class="k">def</span> <span class="nf">layerToGraphicsItem</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="n">srs</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Convert an OGR layer into a Qt4 graphics item.</span>
+
+<span class="sd">    If the *srs* parameter is provided each feature is converted into</span>
+<span class="sd">    the target spatial reference system before generating the graphics</span>
+<span class="sd">    item.</span>
+
+<span class="sd">    If the *transform* callable is provided then each point in the</span>
+<span class="sd">    geometry is converted using the `transform(x, y, z)` call before</span>
+<span class="sd">    genereting the graphics item path.</span>
+
+<span class="sd">    .. note: for 2.5D geometries the *z* value is ignored.</span>
+
+<span class="sd">    :param layer:</span>
+<span class="sd">        ane OGR layer</span>
+<span class="sd">    :param srs:</span>
+<span class="sd">        the target OSR spatial reference system</span>
+<span class="sd">    :param transform:</span>
+<span class="sd">        callable object for arbitrary coordinate conversion</span>
+<span class="sd">    :returns:</span>
+<span class="sd">        a Qt4 graphics item (QGraphicsItemGroup) representing the layer</span>
+
+<span class="sd">    .. seealso:: :func:`singleGeometryToGraphicsItem`,</span>
+<span class="sd">                 :func:`geometryToGraphicsItem` and</span>
+<span class="sd">                 :data:`MAX_FEATURE_COUNT`</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">layer_srs</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">GetSpatialRef</span><span class="p">()</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">srs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">layer_srs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span>
+                                            <span class="ow">not</span> <span class="n">layer_srs</span><span class="o">.</span><span class="n">IsSame</span><span class="p">(</span><span class="n">srs</span><span class="p">)):</span>
+        <span class="n">srs_transform</span> <span class="o">=</span> <span class="n">osr</span><span class="o">.</span><span class="n">CoordinateTransformation</span><span class="p">(</span><span class="n">layer_srs</span><span class="p">,</span> <span class="n">srs</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">srs_transform</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="k">if</span> <span class="n">layer</span><span class="o">.</span><span class="n">GetFeatureCount</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">MAX_FEATURE_COUNT</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&#39;too many features in layed </span><span class="si">%s</span><span class="s">: </span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                                    <span class="n">layer</span><span class="o">.</span><span class="n">GetName</span><span class="p">(),</span> <span class="n">layer</span><span class="o">.</span><span class="n">GetFeatureCount</span><span class="p">()))</span>
+
+    <span class="c">#~ print &#39;extent:&#39;, layer.GetExtent() # @TODO: check</span>
+    <span class="c">#qlayer = GraphicsLayerItem(layer.GetName())</span>
+    <span class="n">qlayer</span> <span class="o">=</span> <span class="n">qt4draw</span><span class="o">.</span><span class="n">GraphicsItemGroup</span><span class="p">()</span>
+    <span class="n">qlayer</span><span class="o">.</span><span class="n">setData</span><span class="p">(</span><span class="n">DATAKEY</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">],</span> <span class="n">layer</span><span class="o">.</span><span class="n">GetName</span><span class="p">())</span>
+    <span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">layer</span><span class="p">:</span>
+        <span class="c">#qfeature = GraphicsFeatureItem(feature.GetFID())</span>
+        <span class="n">qfeature</span> <span class="o">=</span> <span class="n">qt4draw</span><span class="o">.</span><span class="n">GraphicsItemGroup</span><span class="p">()</span>
+        <span class="n">qfeature</span><span class="o">.</span><span class="n">setData</span><span class="p">(</span><span class="n">DATAKEY</span><span class="p">[</span><span class="s">&#39;FID&#39;</span><span class="p">],</span> <span class="n">feature</span><span class="o">.</span><span class="n">GetFID</span><span class="p">())</span>
+
+        <span class="n">geom</span> <span class="o">=</span> <span class="n">feature</span><span class="o">.</span><span class="n">GetGeometryRef</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">geom</span><span class="p">:</span>
+            <span class="n">geotransform</span> <span class="o">=</span> <span class="n">srs_transform</span>
+            <span class="n">geom_srs</span> <span class="o">=</span> <span class="n">geom</span><span class="o">.</span><span class="n">GetSpatialReference</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">geom_srs</span><span class="p">:</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">layer_srs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">geom_srs</span><span class="o">.</span><span class="n">IsSame</span><span class="p">(</span><span class="n">layer_srs</span><span class="p">)):</span>
+                    <span class="k">if</span> <span class="n">srs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                        <span class="n">geotransform</span> <span class="o">=</span> <span class="n">osr</span><span class="o">.</span><span class="n">CoordinateTransformation</span><span class="p">(</span><span class="n">geom_srs</span><span class="p">,</span>
+                                                                    <span class="n">srs</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">geotransform</span> <span class="o">=</span> <span class="n">osr</span><span class="o">.</span><span class="n">CoordinateTransformation</span><span class="p">(</span><span class="n">geom_srs</span><span class="p">,</span>
+                                                                    <span class="n">layer_srs</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">srs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">geom_srs</span><span class="o">.</span><span class="n">IsSame</span><span class="p">(</span><span class="n">srs</span><span class="p">):</span>
+                    <span class="n">geotransform</span> <span class="o">=</span> <span class="n">osr</span><span class="o">.</span><span class="n">CoordinateTransformation</span><span class="p">(</span><span class="n">geom_srs</span><span class="p">,</span> <span class="n">srs</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">geotransform</span><span class="p">:</span>
+                <span class="n">geom</span> <span class="o">=</span> <span class="n">transformGeometry</span><span class="p">(</span><span class="n">geom</span><span class="p">,</span> <span class="n">geotransform</span><span class="p">)</span>
+
+            <span class="n">qitem</span> <span class="o">=</span> <span class="n">geometryToGraphicsItem</span><span class="p">(</span><span class="n">geom</span><span class="p">,</span> <span class="n">transform</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">qitem</span><span class="p">:</span>
+                <span class="n">qfeature</span><span class="o">.</span><span class="n">addToGroup</span><span class="p">(</span><span class="n">qitem</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&#39;unable to instantiate a graphics &#39;</span>
+                                <span class="s">&#39;item from OGR geometry &quot;</span><span class="si">%s</span><span class="s">&quot;&#39;</span> <span class="o">%</span> <span class="n">geom</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;feature </span><span class="si">%d</span><span class="s"> has no geometry&#39;</span> <span class="o">%</span>
+                                                    <span class="n">feature</span><span class="o">.</span><span class="n">GetFID</span><span class="p">())</span>
+        <span class="n">qlayer</span><span class="o">.</span><span class="n">addToGroup</span><span class="p">(</span><span class="n">qfeature</span><span class="p">)</span>
+
+    <span class="n">nfeatures</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">qlayer</span><span class="o">.</span><span class="n">childItems</span><span class="p">())</span>
+    <span class="k">if</span> <span class="n">nfeatures</span> <span class="o">!=</span> <span class="n">layer</span><span class="o">.</span><span class="n">GetFeatureCount</span><span class="p">():</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&#39;only </span><span class="si">%d</span><span class="s"> of </span><span class="si">%d</span><span class="s"> geometries converted to graphics items &#39;</span>
+                        <span class="s">&#39;for layer &quot;</span><span class="si">%s</span><span class="s">&quot;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">nfeatures</span><span class="p">,</span> <span class="n">layer</span><span class="o">.</span><span class="n">GetFeatureCount</span><span class="p">(),</span>
+                                            <span class="n">layer</span><span class="o">.</span><span class="n">GetName</span><span class="p">()))</span>
+
+    <span class="n">qlayer</span><span class="o">.</span><span class="n">setToolTip</span><span class="p">(</span><span class="s">&#39;Layer &quot;</span><span class="si">%s</span><span class="s">&quot;: </span><span class="si">%d</span><span class="s"> features.&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">layer</span><span class="o">.</span><span class="n">GetName</span><span class="p">(),</span>
+                                                    <span class="n">nfeatures</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">qlayer</span>
+
+
+<span class="c">### Helpers for layers management #############################################</span>
+<span class="c">#~ class LayerItemModel(QtGui.QStandardItemModel):</span>
+    <span class="c">#~ #def __init__(self, parent=None, **kargs):</span>
+    <span class="c">#~ #    super(LayerItemModel, self).__init__(parent, **kargs)</span>
+    <span class="c">#~ #    # @TODO: spatial filter</span>
+
+    <span class="c">#~ def addLayer(self, layer):</span>
+        <span class="c">#~ &#39;&#39;&#39;Add a new layer on top of the stack.&#39;&#39;&#39;</span>
+
+        <span class="c">#~ pass</span>
+
+    <span class="c">#~ def insertLayer(self, row, layer):</span>
+        <span class="c">#~ &#39;&#39;&#39;Insert a new layer in the specified position.&#39;&#39;&#39;</span>
+
+        <span class="c">#~ pass</span>
+
+    <span class="c">#~ def removeLayer(self, layer):</span>
+        <span class="c">#~ &#39;&#39;&#39;Remove specified layer.&#39;&#39;&#39;</span>
+
+        <span class="c">#~ if not isinstance(layer, basestring):</span>
+            <span class="c">#~ name = layer.GetName()</span>
+        <span class="c">#~ else:</span>
+            <span class="c">#~ name = layer</span>
+
+        <span class="c">#~ pass</span>
+
+    <span class="c">#~ def move(self, src, dst):</span>
+        <span class="c">#~ pass</span>
+
+    <span class="c">#~ def move(self, itemselection, dst):</span>
+        <span class="c">#~ #QItemSelection</span>
+        <span class="c">#~ pass</span>
+
+    <span class="c">#~ def moveToTop(self, row):</span>
+        <span class="c">#~ pass</span>
+
+    <span class="c">#~ def moveToTop(self, itemselection):</span>
+        <span class="c">#~ #QItemSelection</span>
+        <span class="c">#~ pass</span>
+
+    <span class="c">#~ def moveToBottom(self, row):</span>
+        <span class="c">#~ pass</span>
+
+    <span class="c">#~ def moveToBottom(self, itemselection):</span>
+        <span class="c">#~ #QItemSelection</span>
+        <span class="c">#~ pass</span>
+
+    <span class="c">#~ def _updateZValues(self):</span>
+        <span class="c">#~ # ??</span>
+        <span class="c">#~ pass</span>
+
+
+<span class="c">### OGR feature style #########################################################</span></div>
+<span class="sd">&#39;&#39;&#39;Style String Syntax</span>
+
+<span class="sd">Each feature object has a style property (a string)::</span>
+
+<span class="sd">  &lt;style_property&gt; = &quot;&lt;style_def&gt;&quot; | &quot;&quot; | &quot;@&lt;style_name&gt;&quot; | &quot;{&lt;field_name&gt;}&quot;</span>
+
+<span class="sd">* &quot;&lt;style_def&gt;&quot; is defined later in this section.</span>
+<span class="sd">* An empty style property means that the feature directly inherits its</span>
+<span class="sd">  style from the layer it is in.</span>
+<span class="sd">* &quot;@&lt;style_name&gt;&quot; is a reference to a predefined style in the layer or</span>
+<span class="sd">  the dataset&#39;s style table. The layer&#39;s table is looked up first,</span>
+<span class="sd">  and if style_name is not found there then the dataset&#39;s table will be</span>
+<span class="sd">  looked up.</span>
+<span class="sd">* Finally, &quot;{&lt;field_name&gt;}&quot; means that the style property should be</span>
+<span class="sd">  read from the specified attribute field.</span>
+
+<span class="sd">The &lt;style_def&gt; is the real style definition.</span>
+<span class="sd">It is a combination of 1 or more style parts separated by semicolons.</span>
+<span class="sd">Each style_part uses a drawing tool to define a portion of the complete</span>
+<span class="sd">graphical representation::</span>
+
+<span class="sd">  &lt;style_def&gt;   = &lt;style_part&gt;[;&lt;style_part&gt;[;...]]</span>
+<span class="sd">  &lt;style_part&gt;  = &lt;tool_name&gt;([&lt;tool_param&gt;[,&lt;tool_param&gt;[,...]]])</span>
+<span class="sd">  &lt;tool_name&gt;   = name of a drawing tool, for now: PEN | BRUSH | SYMBOL | LABEL</span>
+<span class="sd">  &lt;tool_param&gt;  = &lt;param_name&gt;:&lt;param_value&gt;</span>
+<span class="sd">  &lt;param_name&gt;  = see list of parameters names for each drawing tool</span>
+<span class="sd">  &lt;param_value&gt; = &lt;value&gt; | &lt;value&gt;&lt;units&gt;</span>
+<span class="sd">  &lt;value&gt;       = &quot;&lt;string_value&gt;&quot; | &lt;numeric_value&gt; | {&lt;field_name&gt;}</span>
+<span class="sd">  &lt;units&gt;       = g | px | pt | mm | cm | in</span>
+
+
+<span class="sd">.. seealso:: http://www.gdal.org/ogr/ogr_feature_style.html sect 2.2</span>
+
+<span class="sd">&#39;&#39;&#39;</span>
+
+
+<span class="c">#gdal-1.8.x/src/autotest/ogr/ogr_dgn.py</span>
+<span class="c">#gdal-1.8.x/src/autotest/ogr/ogr_dxf.py</span>
+<span class="c">#gdal-1.8.x/src/autotest/ogr/ogr_openir.py</span>
+<span class="c">#gdal-1.8.x/src/autotest/ogr/ogr_sqltest.py</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/logo.png" alt="Logo"/>
+            </a></p>
+    
+    
+    <p>
+        <a href="http://sourceforge.net/projects/gsdview">
+            <img src="http://sflogo.sourceforge.net/sflogo.php?group_id=226458&type=14" width="150" height="40" alt="Get GSDView at SourceForge.net. Fast, secure and Free Open Source software downloads" />
+        </a>
+    </p>
+    
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li><a href="../../../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../gsdview.html" >gsdview</a> &raquo;</li>
+          <li><a href="../gdalbackend.html" >gsdview.gdalbackend</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2008-2011, Antonio Valentino.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

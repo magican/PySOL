@@ -1,0 +1,250 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>gsdview.utils &mdash; GSDView Open Edition Home Page</title>
+    <link rel="stylesheet" href="../_static/sourceforge.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.6.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/logo.ico"/>
+    <link rel="top" title="GSDView Open Edition Home Page" href="../index.html" />
+    <link rel="up" title="API Reference" href="../reference.html" />
+    <link rel="next" title="gsdview.widgets" href="gsdview.widgets.html" />
+    <link rel="prev" title="gsdview.qtwindowlistmenu" href="gsdview.qtwindowlistmenu.html" /> 
+  </head>
+  <body>
+    
+        
+    
+    
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li class="right" >
+          <a href="gsdview.widgets.html" title="gsdview.widgets"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="gsdview.qtwindowlistmenu.html" title="gsdview.qtwindowlistmenu"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../reference.html" accesskey="U">API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-gsdview.utils">
+<span id="gsdview-utils"></span><h1>gsdview.utils<a class="headerlink" href="#module-gsdview.utils" title="Permalink to this headline">¶</a></h1>
+<p>Utility functions and classes for GSDView.</p>
+<p class="rubric">Functions</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><a class="reference internal" href="#gsdview.utils.default_workdir" title="gsdview.utils.default_workdir"><tt class="xref py py-obj docutils literal"><span class="pre">default_workdir</span></tt></a>()</td>
+<td>Return the defaut workinhg directory.</td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.utils.foramt_bugreport" title="gsdview.utils.foramt_bugreport"><tt class="xref py py-obj docutils literal"><span class="pre">foramt_bugreport</span></tt></a>([exctype,&nbsp;excvalue,&nbsp;...])</td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.utils.format_platform_info" title="gsdview.utils.format_platform_info"><tt class="xref py py-obj docutils literal"><span class="pre">format_platform_info</span></tt></a>()</td>
+<td></td>
+</tr>
+<tr><td><tt class="xref py py-obj docutils literal"><span class="pre">geonormalize</span></tt>(x[,&nbsp;angle_range])</td>
+<td>Normalize angles to fit expected range</td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.utils.getresource" title="gsdview.utils.getresource"><tt class="xref py py-obj docutils literal"><span class="pre">getresource</span></tt></a>(resource[,&nbsp;package])</td>
+<td>Return the resurce path.</td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.utils.isexecutable" title="gsdview.utils.isexecutable"><tt class="xref py py-obj docutils literal"><span class="pre">isexecutable</span></tt></a>(cmd)</td>
+<td>Check if &#8220;cmd&#8221; actually is an executable program.</td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.utils.isscript" title="gsdview.utils.isscript"><tt class="xref py py-obj docutils literal"><span class="pre">isscript</span></tt></a>(filename)</td>
+<td>Check if a file is a script.</td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.utils.scriptcmd" title="gsdview.utils.scriptcmd"><tt class="xref py py-obj docutils literal"><span class="pre">scriptcmd</span></tt></a>(scriptname)</td>
+<td>Return the list of args for starting the script via subprocess.</td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.utils.which" title="gsdview.utils.which"><tt class="xref py py-obj docutils literal"><span class="pre">which</span></tt></a>(cmd[,&nbsp;env])</td>
+<td>Return the full path of the program (<em>cmd</em>) or None.</td>
+</tr>
+</tbody>
+</table>
+<dl class="function">
+<dt id="gsdview.utils.which">
+<tt class="descclassname">gsdview.utils.</tt><tt class="descname">which</tt><big>(</big><em>cmd</em>, <em>env=None</em><big>)</big><a class="reference internal" href="../_modules/gsdview/utils.html#which"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.utils.which" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the full path of the program (<em>cmd</em>) or None.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">which</span><span class="p">(</span><span class="s">&#39;ls&#39;</span><span class="p">)</span>
+<span class="go">&#39;/bin/ls&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="gsdview.utils.isexecutable">
+<tt class="descclassname">gsdview.utils.</tt><tt class="descname">isexecutable</tt><big>(</big><em>cmd</em><big>)</big><a class="reference internal" href="../_modules/gsdview/utils.html#isexecutable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.utils.isexecutable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if &#8220;cmd&#8221; actually is an executable program.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="gsdview.utils.isscript">
+<tt class="descclassname">gsdview.utils.</tt><tt class="descname">isscript</tt><big>(</big><em>filename</em><big>)</big><a class="reference internal" href="../_modules/gsdview/utils.html#isscript"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.utils.isscript" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if a file is a script.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="gsdview.utils.scriptcmd">
+<tt class="descclassname">gsdview.utils.</tt><tt class="descname">scriptcmd</tt><big>(</big><em>scriptname</em><big>)</big><a class="reference internal" href="../_modules/gsdview/utils.html#scriptcmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.utils.scriptcmd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the list of args for starting the script via subprocess.</p>
+<p>On unix platforms the shebang string is used so almost all
+scripting languages are recognized.</p>
+<p>On windows platforms this function only works with batch files and
+python scripts.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">if the <em>scriptname</em> is not recognized to be a script
+it is assumed it is a binary executable so the only
+argument in the returned list will be <em>scriptname</em>
+itself.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><strong>scriptname</strong> &#8211; the filename of the script</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">a list of strings containing the command line arguments for
+startting the program via subprocess</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="gsdview.utils.default_workdir">
+<tt class="descclassname">gsdview.utils.</tt><tt class="descname">default_workdir</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/utils.html#default_workdir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.utils.default_workdir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the defaut workinhg directory.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="gsdview.utils.getresource">
+<tt class="descclassname">gsdview.utils.</tt><tt class="descname">getresource</tt><big>(</big><em>resource</em>, <em>package=None</em><big>)</big><a class="reference internal" href="../_modules/gsdview/utils.html#getresource"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.utils.getresource" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the resurce path.</p>
+<p>If <cite>package</cite> is specified (usually passing <cite>__name__</cite> of the called
+modile) the package resource name is returned.</p>
+<p>If no <cite>package</cite> is specified then it is assumed that resource is
+located in the common resource directory (e.g.
+<cite>/usr/share/&lt;PROJECTNAME&gt;</cite> on UNIX-like systems.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">it is safe to use this function also if the package is
+distributed as a compressed <em>egg</em> or as standalon package
+generated using <a class="reference external" href="http://www.pyinstaller.org">pyinstaller</a>.</p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="gsdview.utils.format_platform_info">
+<tt class="descclassname">gsdview.utils.</tt><tt class="descname">format_platform_info</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/utils.html#format_platform_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.utils.format_platform_info" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="gsdview.utils.foramt_bugreport">
+<tt class="descclassname">gsdview.utils.</tt><tt class="descname">foramt_bugreport</tt><big>(</big><em>exctype=None</em>, <em>excvalue=None</em>, <em>tracebackobj=None</em><big>)</big><a class="reference internal" href="../_modules/gsdview/utils.html#foramt_bugreport"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.utils.foramt_bugreport" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo.png" alt="Logo"/>
+            </a></p>
+    
+    
+    <p>
+        <a href="http://sourceforge.net/projects/gsdview">
+            <img src="http://sflogo.sourceforge.net/sflogo.php?group_id=226458&type=14" width="150" height="40" alt="Get GSDView at SourceForge.net. Fast, secure and Free Open Source software downloads" />
+        </a>
+    </p>
+    
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="gsdview.qtwindowlistmenu.html"
+                        title="previous chapter">gsdview.qtwindowlistmenu</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="gsdview.widgets.html"
+                        title="next chapter">gsdview.widgets</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/api/gsdview.utils.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li class="right" >
+          <a href="gsdview.widgets.html" title="gsdview.widgets"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="gsdview.qtwindowlistmenu.html" title="gsdview.qtwindowlistmenu"
+             >previous</a> |</li>
+        <li><a href="../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../reference.html" >API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2008-2011, Antonio Valentino.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

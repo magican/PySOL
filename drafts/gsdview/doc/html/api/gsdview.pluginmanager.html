@@ -1,0 +1,286 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>gsdview.pluginmanager &mdash; GSDView Open Edition Home Page</title>
+    <link rel="stylesheet" href="../_static/sourceforge.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.6.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/logo.ico"/>
+    <link rel="top" title="GSDView Open Edition Home Page" href="../index.html" />
+    <link rel="up" title="API Reference" href="../reference.html" />
+    <link rel="next" title="gsdview.qt4draw" href="gsdview.qt4draw.html" />
+    <link rel="prev" title="gsdview.mousemanager" href="gsdview.mousemanager.html" /> 
+  </head>
+  <body>
+    
+        
+    
+    
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li class="right" >
+          <a href="gsdview.qt4draw.html" title="gsdview.qt4draw"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="gsdview.mousemanager.html" title="gsdview.mousemanager"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../reference.html" accesskey="U">API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-gsdview.pluginmanager">
+<span id="gsdview-pluginmanager"></span><h1>gsdview.pluginmanager<a class="headerlink" href="#module-gsdview.pluginmanager" title="Permalink to this headline">¶</a></h1>
+<p>Plugin manager.</p>
+<p class="rubric">Classes</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><a class="reference internal" href="#gsdview.pluginmanager.PluginInfoDialog" title="gsdview.pluginmanager.PluginInfoDialog"><tt class="xref py py-obj docutils literal"><span class="pre">PluginInfoDialog</span></tt></a>(plugin,&nbsp;active,&nbsp;**kwargs[,&nbsp;...])</td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.pluginmanager.PluginInfoForm" title="gsdview.pluginmanager.PluginInfoForm"><tt class="xref py py-obj docutils literal"><span class="pre">PluginInfoForm</span></tt></a>(**kwargs[,&nbsp;plugin,&nbsp;active,&nbsp;...])</td>
+<td></td>
+</tr>
+<tr><td><tt class="xref py py-obj docutils literal"><span class="pre">PluginInfoFormBase</span></tt></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.pluginmanager.PluginManager" title="gsdview.pluginmanager.PluginManager"><tt class="xref py py-obj docutils literal"><span class="pre">PluginManager</span></tt></a>(app[,&nbsp;syspath])</td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.pluginmanager.PluginManagerGui" title="gsdview.pluginmanager.PluginManagerGui"><tt class="xref py py-obj docutils literal"><span class="pre">PluginManagerGui</span></tt></a>(pluginmanager,&nbsp;**kwargs[,&nbsp;...])</td>
+<td></td>
+</tr>
+<tr><td><tt class="xref py py-obj docutils literal"><span class="pre">PluginManagerGuiBase</span></tt></td>
+<td></td>
+</tr>
+<tr><td><tt class="xref py py-obj docutils literal"><span class="pre">VersionPredicate</span></tt>(versionPredicateStr)</td>
+<td>Parse and test package version predicates.</td>
+</tr>
+</tbody>
+</table>
+<dl class="class">
+<dt id="gsdview.pluginmanager.PluginInfoDialog">
+<em class="property">class </em><tt class="descclassname">gsdview.pluginmanager.</tt><tt class="descname">PluginInfoDialog</tt><big>(</big><em>plugin</em>, <em>active</em>, <em>parent=None</em>, <em>flags=&lt;PyQt4.QtCore.WindowFlags object at 0x39030c0&gt;</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/gsdview/pluginmanager.html#PluginInfoDialog"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.pluginmanager.PluginInfoDialog" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">PyQt4.QtGui.QDialog</span></tt></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="gsdview.pluginmanager.PluginInfoForm">
+<em class="property">class </em><tt class="descclassname">gsdview.pluginmanager.</tt><tt class="descname">PluginInfoForm</tt><big>(</big><em>plugin=None</em>, <em>active=None</em>, <em>parent=None</em>, <em>flags=&lt;PyQt4.QtCore.WindowFlags object at 0x3903130&gt;</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/gsdview/pluginmanager.html#PluginInfoForm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.pluginmanager.PluginInfoForm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">PyQt4.QtGui.QFrame</span></tt>, <tt class="xref py py-class docutils literal"><span class="pre">gsdview.ui.plugininfo.Ui_pluginInfoForm</span></tt></p>
+<dl class="method">
+<dt id="gsdview.pluginmanager.PluginInfoForm.clear">
+<tt class="descname">clear</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/pluginmanager.html#PluginInfoForm.clear"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.pluginmanager.PluginInfoForm.clear" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.pluginmanager.PluginInfoForm.loadinfo">
+<tt class="descname">loadinfo</tt><big>(</big><em>plugin</em>, <em>active</em><big>)</big><a class="reference internal" href="../_modules/gsdview/pluginmanager.html#PluginInfoForm.loadinfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.pluginmanager.PluginInfoForm.loadinfo" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gsdview.pluginmanager.PluginManager">
+<em class="property">class </em><tt class="descclassname">gsdview.pluginmanager.</tt><tt class="descname">PluginManager</tt><big>(</big><em>app</em>, <em>syspath=None</em><big>)</big><a class="reference internal" href="../_modules/gsdview/pluginmanager.html#PluginManager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.pluginmanager.PluginManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<dl class="attribute">
+<dt id="gsdview.pluginmanager.PluginManager.allplugins">
+<tt class="descname">allplugins</tt><a class="headerlink" href="#gsdview.pluginmanager.PluginManager.allplugins" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of all availabe plugins.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gsdview.pluginmanager.PluginManager.load">
+<tt class="descname">load</tt><big>(</big><em>names</em>, <em>paths=None</em>, <em>info_only=False</em>, <em>type_='plugins'</em><big>)</big><a class="reference internal" href="../_modules/gsdview/pluginmanager.html#PluginManager.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.pluginmanager.PluginManager.load" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.pluginmanager.PluginManager.load_module">
+<tt class="descname">load_module</tt><big>(</big><em>module</em>, <em>name=None</em><big>)</big><a class="reference internal" href="../_modules/gsdview/pluginmanager.html#PluginManager.load_module"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.pluginmanager.PluginManager.load_module" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.pluginmanager.PluginManager.load_settings">
+<tt class="descname">load_settings</tt><big>(</big><em>settings</em><big>)</big><a class="reference internal" href="../_modules/gsdview/pluginmanager.html#PluginManager.load_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.pluginmanager.PluginManager.load_settings" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.pluginmanager.PluginManager.reset">
+<tt class="descname">reset</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/pluginmanager.html#PluginManager.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.pluginmanager.PluginManager.reset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.pluginmanager.PluginManager.save_settings">
+<tt class="descname">save_settings</tt><big>(</big><em>settings</em><big>)</big><a class="reference internal" href="../_modules/gsdview/pluginmanager.html#PluginManager.save_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.pluginmanager.PluginManager.save_settings" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.pluginmanager.PluginManager.unload">
+<tt class="descname">unload</tt><big>(</big><em>names</em>, <em>type_='plugin'</em><big>)</big><a class="reference internal" href="../_modules/gsdview/pluginmanager.html#PluginManager.unload"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.pluginmanager.PluginManager.unload" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gsdview.pluginmanager.PluginManagerGui">
+<em class="property">class </em><tt class="descclassname">gsdview.pluginmanager.</tt><tt class="descname">PluginManagerGui</tt><big>(</big><em>pluginmanager</em>, <em>parent=None</em>, <em>flags=&lt;PyQt4.QtCore.WindowFlags object at 0x3990ec0&gt;</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/gsdview/pluginmanager.html#PluginManagerGui"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.pluginmanager.PluginManagerGui" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">PyQt4.QtGui.QWidget</span></tt>, <tt class="xref py py-class docutils literal"><span class="pre">gsdview.ui.pluginmanager.Ui_pluginManagerForm</span></tt></p>
+<dl class="method">
+<dt id="gsdview.pluginmanager.PluginManagerGui.addPathItem">
+<tt class="descname">addPathItem</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/pluginmanager.html#PluginManagerGui.addPathItem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.pluginmanager.PluginManagerGui.addPathItem" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.pluginmanager.PluginManagerGui.editSelectedPathItem">
+<tt class="descname">editSelectedPathItem</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/pluginmanager.html#PluginManagerGui.editSelectedPathItem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.pluginmanager.PluginManagerGui.editSelectedPathItem" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.pluginmanager.PluginManagerGui.load">
+<tt class="descname">load</tt><big>(</big><em>settings</em><big>)</big><a class="reference internal" href="../_modules/gsdview/pluginmanager.html#PluginManagerGui.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.pluginmanager.PluginManagerGui.load" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.pluginmanager.PluginManagerGui.moveSelectedPathItemsDown">
+<tt class="descname">moveSelectedPathItemsDown</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/pluginmanager.html#PluginManagerGui.moveSelectedPathItemsDown"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.pluginmanager.PluginManagerGui.moveSelectedPathItemsDown" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.pluginmanager.PluginManagerGui.moveSelectedPathItemsUp">
+<tt class="descname">moveSelectedPathItemsUp</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/pluginmanager.html#PluginManagerGui.moveSelectedPathItemsUp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.pluginmanager.PluginManagerGui.moveSelectedPathItemsUp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.pluginmanager.PluginManagerGui.pathSelectionChanged">
+<tt class="descname">pathSelectionChanged</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/pluginmanager.html#PluginManagerGui.pathSelectionChanged"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.pluginmanager.PluginManagerGui.pathSelectionChanged" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.pluginmanager.PluginManagerGui.removeSelectedPathItem">
+<tt class="descname">removeSelectedPathItem</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/pluginmanager.html#PluginManagerGui.removeSelectedPathItem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.pluginmanager.PluginManagerGui.removeSelectedPathItem" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.pluginmanager.PluginManagerGui.save">
+<tt class="descname">save</tt><big>(</big><em>settings</em><big>)</big><a class="reference internal" href="../_modules/gsdview/pluginmanager.html#PluginManagerGui.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.pluginmanager.PluginManagerGui.save" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.pluginmanager.PluginManagerGui.showPluginInfo">
+<tt class="descname">showPluginInfo</tt><big>(</big><em>index</em><big>)</big><a class="reference internal" href="../_modules/gsdview/pluginmanager.html#PluginManagerGui.showPluginInfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.pluginmanager.PluginManagerGui.showPluginInfo" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.pluginmanager.PluginManagerGui.update_pluginmanager">
+<tt class="descname">update_pluginmanager</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/pluginmanager.html#PluginManagerGui.update_pluginmanager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.pluginmanager.PluginManagerGui.update_pluginmanager" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.pluginmanager.PluginManagerGui.update_view">
+<tt class="descname">update_view</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/pluginmanager.html#PluginManagerGui.update_view"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.pluginmanager.PluginManagerGui.update_view" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo.png" alt="Logo"/>
+            </a></p>
+    
+    
+    <p>
+        <a href="http://sourceforge.net/projects/gsdview">
+            <img src="http://sflogo.sourceforge.net/sflogo.php?group_id=226458&type=14" width="150" height="40" alt="Get GSDView at SourceForge.net. Fast, secure and Free Open Source software downloads" />
+        </a>
+    </p>
+    
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="gsdview.mousemanager.html"
+                        title="previous chapter">gsdview.mousemanager</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="gsdview.qt4draw.html"
+                        title="next chapter">gsdview.qt4draw</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/api/gsdview.pluginmanager.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li class="right" >
+          <a href="gsdview.qt4draw.html" title="gsdview.qt4draw"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="gsdview.mousemanager.html" title="gsdview.mousemanager"
+             >previous</a> |</li>
+        <li><a href="../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../reference.html" >API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2008-2011, Antonio Valentino.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

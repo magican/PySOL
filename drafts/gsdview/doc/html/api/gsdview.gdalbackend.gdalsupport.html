@@ -1,0 +1,503 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>gsdview.gdalbackend.gdalsupport &mdash; GSDView Open Edition Home Page</title>
+    <link rel="stylesheet" href="../_static/sourceforge.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.6.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/logo.ico"/>
+    <link rel="top" title="GSDView Open Edition Home Page" href="../index.html" />
+    <link rel="up" title="API Reference" href="../reference.html" />
+    <link rel="next" title="gsdview.gdalbackend.helpers" href="gsdview.gdalbackend.helpers.html" />
+    <link rel="prev" title="gsdview.gdalbackend.gdalqt4" href="gsdview.gdalbackend.gdalqt4.html" /> 
+  </head>
+  <body>
+    
+        
+    
+    
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li class="right" >
+          <a href="gsdview.gdalbackend.helpers.html" title="gsdview.gdalbackend.helpers"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="gsdview.gdalbackend.gdalqt4.html" title="gsdview.gdalbackend.gdalqt4"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../reference.html" accesskey="U">API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-gsdview.gdalbackend.gdalsupport">
+<span id="gsdview-gdalbackend-gdalsupport"></span><h1>gsdview.gdalbackend.gdalsupport<a class="headerlink" href="#module-gsdview.gdalbackend.gdalsupport" title="Permalink to this headline">¶</a></h1>
+<p>Support tools and classes for the GDAL library.</p>
+<p class="rubric">Functions</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><a class="reference internal" href="#gsdview.gdalbackend.gdalsupport.GetCachedStatistics" title="gsdview.gdalbackend.gdalsupport.GetCachedStatistics"><tt class="xref py py-obj docutils literal"><span class="pre">GetCachedStatistics</span></tt></a>(band)</td>
+<td>Retrieve cached statistics from a raster band.</td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.gdalbackend.gdalsupport.SafeGetStatistics" title="gsdview.gdalbackend.gdalsupport.SafeGetStatistics"><tt class="xref py py-obj docutils literal"><span class="pre">SafeGetStatistics</span></tt></a>(band[,&nbsp;approx_ok,&nbsp;force])</td>
+<td>Safe replacement of gdal.Band.GetSrtatistics.</td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.gdalbackend.gdalsupport.colortable2numpy" title="gsdview.gdalbackend.gdalsupport.colortable2numpy"><tt class="xref py py-obj docutils literal"><span class="pre">colortable2numpy</span></tt></a>(colortable)</td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.gdalbackend.gdalsupport.coordinate_mapper" title="gsdview.gdalbackend.gdalsupport.coordinate_mapper"><tt class="xref py py-obj docutils literal"><span class="pre">coordinate_mapper</span></tt></a>(dataset)</td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.gdalbackend.gdalsupport.driverList" title="gsdview.gdalbackend.gdalsupport.driverList"><tt class="xref py py-obj docutils literal"><span class="pre">driverList</span></tt></a>([drivertype])</td>
+<td>Return the list of available GDAL/OGR drivers</td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.gdalbackend.gdalsupport.gdalFilters" title="gsdview.gdalbackend.gdalsupport.gdalFilters"><tt class="xref py py-obj docutils literal"><span class="pre">gdalFilters</span></tt></a>([mode])</td>
+<td>Returns the list of GDAL file filters as expected by Qt.</td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.gdalbackend.gdalsupport.hasFastStats" title="gsdview.gdalbackend.gdalsupport.hasFastStats"><tt class="xref py py-obj docutils literal"><span class="pre">hasFastStats</span></tt></a>(band[,&nbsp;approx_ok])</td>
+<td>Return true if band statistics can be retrieved quickly.</td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.gdalbackend.gdalsupport.has_complex_bands" title="gsdview.gdalbackend.gdalsupport.has_complex_bands"><tt class="xref py py-obj docutils literal"><span class="pre">has_complex_bands</span></tt></a>(dataset)</td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.gdalbackend.gdalsupport.isRGB" title="gsdview.gdalbackend.gdalsupport.isRGB"><tt class="xref py py-obj docutils literal"><span class="pre">isRGB</span></tt></a>(dataset[,&nbsp;strict])</td>
+<td>Return True if a dataset is compatible with RGB representaion.</td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.gdalbackend.gdalsupport.ogrFilters" title="gsdview.gdalbackend.gdalsupport.ogrFilters"><tt class="xref py py-obj docutils literal"><span class="pre">ogrFilters</span></tt></a>()</td>
+<td>Returns the list of OGR file filters as expected by Qt</td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.gdalbackend.gdalsupport.ovrBestIndex" title="gsdview.gdalbackend.gdalsupport.ovrBestIndex"><tt class="xref py py-obj docutils literal"><span class="pre">ovrBestIndex</span></tt></a>(gdalobj[,&nbsp;ovrlevel,&nbsp;policy])</td>
+<td>Return the overview index that best fits <em>ovrlevel</em>.</td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.gdalbackend.gdalsupport.ovrComputeLevels" title="gsdview.gdalbackend.gdalsupport.ovrComputeLevels"><tt class="xref py py-obj docutils literal"><span class="pre">ovrComputeLevels</span></tt></a>(gdalobj[,&nbsp;ovrsize,&nbsp;estep,&nbsp;...])</td>
+<td>Compute the overview levels to be generated.</td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.gdalbackend.gdalsupport.ovrLevelAdjust" title="gsdview.gdalbackend.gdalsupport.ovrLevelAdjust"><tt class="xref py py-obj docutils literal"><span class="pre">ovrLevelAdjust</span></tt></a>(ovrlevel,&nbsp;xsize)</td>
+<td>Adjust the overview level</td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.gdalbackend.gdalsupport.ovrLevelForSize" title="gsdview.gdalbackend.gdalsupport.ovrLevelForSize"><tt class="xref py py-obj docutils literal"><span class="pre">ovrLevelForSize</span></tt></a>(gdalobj[,&nbsp;ovrsize])</td>
+<td>Compute the overview factor that fits the ovrsize request.</td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.gdalbackend.gdalsupport.ovrLevels" title="gsdview.gdalbackend.gdalsupport.ovrLevels"><tt class="xref py py-obj docutils literal"><span class="pre">ovrLevels</span></tt></a>(gdalobj[,&nbsp;raw])</td>
+<td>Return availabe overview levels.</td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.gdalbackend.gdalsupport.ovrRead" title="gsdview.gdalbackend.gdalsupport.ovrRead"><tt class="xref py py-obj docutils literal"><span class="pre">ovrRead</span></tt></a>(dataset[,&nbsp;x,&nbsp;y,&nbsp;w,&nbsp;h,&nbsp;ovrindex,&nbsp;...])</td>
+<td>Read an image block from overviews of all spacified bands.</td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.gdalbackend.gdalsupport.uniqueDatasetID" title="gsdview.gdalbackend.gdalsupport.uniqueDatasetID"><tt class="xref py py-obj docutils literal"><span class="pre">uniqueDatasetID</span></tt></a>(prod)</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Classes</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><a class="reference internal" href="#gsdview.gdalbackend.gdalsupport.CoordinateMapper" title="gsdview.gdalbackend.gdalsupport.CoordinateMapper"><tt class="xref py py-obj docutils literal"><span class="pre">CoordinateMapper</span></tt></a>(dataset)</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Exceptions</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><a class="reference internal" href="#gsdview.gdalbackend.gdalsupport.InvalidProjection" title="gsdview.gdalbackend.gdalsupport.InvalidProjection"><tt class="xref py py-obj docutils literal"><span class="pre">InvalidProjection</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.gdalbackend.gdalsupport.MissingOvrError" title="gsdview.gdalbackend.gdalsupport.MissingOvrError"><tt class="xref py py-obj docutils literal"><span class="pre">MissingOvrError</span></tt></a>(ovrlevel)</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="class">
+<dt id="gsdview.gdalbackend.gdalsupport.CoordinateMapper">
+<em class="property">class </em><tt class="descclassname">gsdview.gdalbackend.gdalsupport.</tt><tt class="descname">CoordinateMapper</tt><big>(</big><em>dataset</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/gdalsupport.html#CoordinateMapper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.gdalsupport.CoordinateMapper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<dl class="method">
+<dt id="gsdview.gdalbackend.gdalsupport.CoordinateMapper.geoToImgGrid">
+<tt class="descname">geoToImgGrid</tt><big>(</big><em>lon</em>, <em>lat</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/gdalsupport.html#CoordinateMapper.geoToImgGrid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.gdalsupport.CoordinateMapper.geoToImgGrid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Coordinate conversion: (lon,lat) &#8211;&gt; (pixel,line) on regular grids.</p>
+<p>Elements of the return (pixel,line) touple are 2D array with shape
+(len(lon), len(lat)).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.gdalsupport.CoordinateMapper.geoToImgPoints">
+<tt class="descname">geoToImgPoints</tt><big>(</big><em>lon</em>, <em>lat</em>, <em>h=0</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/gdalsupport.html#CoordinateMapper.geoToImgPoints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.gdalsupport.CoordinateMapper.geoToImgPoints" title="Permalink to this definition">¶</a></dt>
+<dd><p>Coordinate conversion: (lon,lat) &#8211;&gt; (pixel,line).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.gdalsupport.CoordinateMapper.imgToGeoGrid">
+<tt class="descname">imgToGeoGrid</tt><big>(</big><em>pixel</em>, <em>line</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/gdalsupport.html#CoordinateMapper.imgToGeoGrid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.gdalsupport.CoordinateMapper.imgToGeoGrid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Coordinate conversion: (pixel,line) &#8211;&gt; (lon,lat) on regular grids.</p>
+<p>Elements of the return (lon, lat) touple are 2D array with shape
+(len(pixels), len(line)).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.gdalsupport.CoordinateMapper.imgToGeoPoints">
+<tt class="descname">imgToGeoPoints</tt><big>(</big><em>pixel</em>, <em>line</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/gdalsupport.html#CoordinateMapper.imgToGeoPoints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.gdalsupport.CoordinateMapper.imgToGeoPoints" title="Permalink to this definition">¶</a></dt>
+<dd><p>Coordinate conversion: (pixel,line) &#8211;&gt; (lon,lat).</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="gsdview.gdalbackend.gdalsupport.GetCachedStatistics">
+<tt class="descclassname">gsdview.gdalbackend.gdalsupport.</tt><tt class="descname">GetCachedStatistics</tt><big>(</big><em>band</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/gdalsupport.html#GetCachedStatistics"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.gdalsupport.GetCachedStatistics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve cached statistics from a raster band.</p>
+<p>GDAL usually stores pre-computed statistics in the raster band
+metadata: STATISTICS_MINIMUM, STATISTICS_MAXIMUM, STATISTICS_MEAN
+and STATISTICS_STDDEV.</p>
+<p>This function retrieves cached statistics and returns them as a
+four items tuple: (MINIMUM, MAXIMUM, MEAN, STDDEV).</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="gsdview.gdalbackend.gdalsupport.InvalidProjection">
+<em class="property">exception </em><tt class="descclassname">gsdview.gdalbackend.gdalsupport.</tt><tt class="descname">InvalidProjection</tt><a class="reference internal" href="../_modules/gsdview/gdalbackend/gdalsupport.html#InvalidProjection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.gdalsupport.InvalidProjection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">exceptions.ValueError</span></tt></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="gsdview.gdalbackend.gdalsupport.MissingOvrError">
+<em class="property">exception </em><tt class="descclassname">gsdview.gdalbackend.gdalsupport.</tt><tt class="descname">MissingOvrError</tt><big>(</big><em>ovrlevel</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/gdalsupport.html#MissingOvrError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.gdalsupport.MissingOvrError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">exceptions.Exception</span></tt></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="gsdview.gdalbackend.gdalsupport.SafeGetStatistics">
+<tt class="descclassname">gsdview.gdalbackend.gdalsupport.</tt><tt class="descname">SafeGetStatistics</tt><big>(</big><em>band</em>, <em>approx_ok=False</em>, <em>force=True</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/gdalsupport.html#SafeGetStatistics"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.gdalsupport.SafeGetStatistics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Safe replacement of gdal.Band.GetSrtatistics.</p>
+<p>The standard version of GetSrtatistics not always allows to know
+whenever statistics have beed actually computed or not (e.g. &#8220;force&#8221;
+flag set to False and no statistics available).</p>
+<p>This function gracefully handles this case an also cases in which
+an error happend during statistics computation (e.g. to many nodata
+values).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>band</strong> &#8211; GDAL raster band</li>
+<li><strong>approx_ok</strong> &#8211; if approximate statistics are sufficient, the approx_ok flag
+can be set to True in which case overviews, or a subset of
+image tiles may be used in computing the statistics
+(default: False)</li>
+<li><strong>force</strong> &#8211; if force is False results will only be returned if it can be
+done quickly (ie. without scanning the data).
+If force is False and results cannot be returned efficiently,
+the function will return four None instead of actual statistics
+values.
+Dafault: True.</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">a tuple containing (min, max, mean, stddev) if statistics can
+be retriewed according to the input flags.
+A tuple of four None if statistics are not available or can&#8217;t
+be computer according to input flags or if some error occurs
+during computation.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="gsdview.gdalbackend.gdalsupport.colortable2numpy">
+<tt class="descclassname">gsdview.gdalbackend.gdalsupport.</tt><tt class="descname">colortable2numpy</tt><big>(</big><em>colortable</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/gdalsupport.html#colortable2numpy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.gdalsupport.colortable2numpy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="gsdview.gdalbackend.gdalsupport.coordinate_mapper">
+<tt class="descclassname">gsdview.gdalbackend.gdalsupport.</tt><tt class="descname">coordinate_mapper</tt><big>(</big><em>dataset</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/gdalsupport.html#coordinate_mapper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.gdalsupport.coordinate_mapper" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="gsdview.gdalbackend.gdalsupport.driverList">
+<tt class="descclassname">gsdview.gdalbackend.gdalsupport.</tt><tt class="descname">driverList</tt><big>(</big><em>drivertype='raster'</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/gdalsupport.html#driverList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.gdalsupport.driverList" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the list of available GDAL/OGR drivers</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="gsdview.gdalbackend.gdalsupport.gdalFilters">
+<tt class="descclassname">gsdview.gdalbackend.gdalsupport.</tt><tt class="descname">gdalFilters</tt><big>(</big><em>mode='r'</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/gdalsupport.html#gdalFilters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.gdalsupport.gdalFilters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the list of GDAL file filters as expected by Qt.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="gsdview.gdalbackend.gdalsupport.hasFastStats">
+<tt class="descclassname">gsdview.gdalbackend.gdalsupport.</tt><tt class="descname">hasFastStats</tt><big>(</big><em>band</em>, <em>approx_ok=True</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/gdalsupport.html#hasFastStats"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.gdalsupport.hasFastStats" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return true if band statistics can be retrieved quickly.</p>
+<p>If precomputed stistics are in band metadata or small enough band
+overviews does exist then it is assumed that band statistics can
+be retriewed in a very quick way.</p>
+<p>if the <em>approx_ok</em> only precomputed statistics are taken into
+account.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="gsdview.gdalbackend.gdalsupport.has_complex_bands">
+<tt class="descclassname">gsdview.gdalbackend.gdalsupport.</tt><tt class="descname">has_complex_bands</tt><big>(</big><em>dataset</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/gdalsupport.html#has_complex_bands"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.gdalsupport.has_complex_bands" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="gsdview.gdalbackend.gdalsupport.isRGB">
+<tt class="descclassname">gsdview.gdalbackend.gdalsupport.</tt><tt class="descname">isRGB</tt><big>(</big><em>dataset</em>, <em>strict=False</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/gdalsupport.html#isRGB"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.gdalsupport.isRGB" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if a dataset is compatible with RGB representaion.</p>
+<p>Conditions tested are:</p>
+<blockquote>
+<div><ul>
+<li><p class="first">3 or 4 raster bands (3 in strict mode)</p>
+</li>
+<li><p class="first">raster band datatype is GDT_Byte</p>
+</li>
+<li><p class="first">color interpretation respect the expected order:</p>
+<blockquote>
+<div><p>band1: GCI_RedBand
+band2: GCI_GreenBand
+band3: GCI_BlueBand
+band4: GCI_AlphaBand (RGBA only allowed in non strict mode)</p>
+</div></blockquote>
+<p>GCI_Undefined color interpretation is allowed in non strict mode.</p>
+</li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="gsdview.gdalbackend.gdalsupport.ogrFilters">
+<tt class="descclassname">gsdview.gdalbackend.gdalsupport.</tt><tt class="descname">ogrFilters</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/gdalsupport.html#ogrFilters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.gdalsupport.ogrFilters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the list of OGR file filters as expected by Qt</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="gsdview.gdalbackend.gdalsupport.ovrBestIndex">
+<tt class="descclassname">gsdview.gdalbackend.gdalsupport.</tt><tt class="descname">ovrBestIndex</tt><big>(</big><em>gdalobj</em>, <em>ovrlevel=None</em>, <em>policy='NEAREST'</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/gdalsupport.html#ovrBestIndex"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.gdalsupport.ovrBestIndex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the overview index that best fits <em>ovrlevel</em>.</p>
+<p>If <em>ovrlevel</em> is <cite>None</cite> it is used the level returner by the
+<cite>ovrLevelForSize</cite> function i.e. the lavel ensures that the data
+size doesn&#8217;t exceede a certain memory size (defaut 300K).</p>
+<p>The <em>policy</em> parameter can be set to:</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Nearest :</th><td class="field-body">between available ovr factors the one closest to the
+requested one (<em>ovrlevel</em>) is returned</td>
+</tr>
+<tr class="field"><th class="field-name">Greater :</th><td class="field-body">between available ovr factors it is returned the closest
+one that is greater or equal to the requested <em>ovrlevel</em></td>
+</tr>
+<tr class="field"><th class="field-name">Smaller :</th><td class="field-body">between available ovr factors it is returned the closest
+one that is smaller or equal to the requested <em>ovrlevel</em></td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">plase note that <em>GREATER</em> for overview level implies a
+larger reduction factor hence a smaller image (and vice
+versa).</p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="gsdview.gdalbackend.gdalsupport.ovrComputeLevels">
+<tt class="descclassname">gsdview.gdalbackend.gdalsupport.</tt><tt class="descname">ovrComputeLevels</tt><big>(</big><em>gdalobj</em>, <em>ovrsize=409600</em>, <em>estep=3</em>, <em>threshold=0.1</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/gdalsupport.html#ovrComputeLevels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.gdalsupport.ovrComputeLevels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the overview levels to be generated.</p>
+<p>GSDView relies on overviews to provide a confortable image
+navigation experience (scroll, pan, zoom etc).
+This function evaluated the number and overview factors to be
+pre-calculated in order to provide such a confortable experience.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>ovrsize</strong> &#8211; memory size that the smallest overview should not exceede</li>
+<li><strong>estep</strong> &#8211; <p>step for overview levels computation:</p>
+<div class="highlight-python"><pre>estep = 3 ==&gt; 3, 9, 27, 81, ...</pre>
+</div>
+</li>
+<li><strong>threshold</strong> &#8211; if already exist overview levels close (with respect to
+threshold) to requested ones then computation is skipped</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="gsdview.gdalbackend.gdalsupport.ovrLevelAdjust">
+<tt class="descclassname">gsdview.gdalbackend.gdalsupport.</tt><tt class="descname">ovrLevelAdjust</tt><big>(</big><em>ovrlevel</em>, <em>xsize</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/gdalsupport.html#ovrLevelAdjust"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.gdalsupport.ovrLevelAdjust" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adjust the overview level</p>
+<p>Replicate the GDALOvLevelAdjust function from
+gdal/gcore/gdaldefaultoverviews.cpp:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="kt">int</span> <span class="n">nOXSize</span> <span class="o">=</span> <span class="p">(</span><span class="n">nXSize</span> <span class="o">+</span> <span class="n">nOvLevel</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">nOvLevel</span><span class="p">;</span>
+<span class="k">return</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span> <span class="p">(</span><span class="mf">0.5</span> <span class="o">+</span> <span class="n">nXSize</span> <span class="o">/</span> <span class="p">(</span><span class="kt">double</span><span class="p">)</span> <span class="n">nOXSize</span><span class="p">);</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="gsdview.gdalbackend.gdalsupport.ovrLevelForSize">
+<tt class="descclassname">gsdview.gdalbackend.gdalsupport.</tt><tt class="descname">ovrLevelForSize</tt><big>(</big><em>gdalobj</em>, <em>ovrsize=409600</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/gdalsupport.html#ovrLevelForSize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.gdalsupport.ovrLevelForSize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the overview factor that fits the ovrsize request.</p>
+<p>Default ovrsize = 300 KBytes ==&gt; about 640x640 pixels paletted or
+320x320 pixels RGB32.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="gsdview.gdalbackend.gdalsupport.ovrLevels">
+<tt class="descclassname">gsdview.gdalbackend.gdalsupport.</tt><tt class="descname">ovrLevels</tt><big>(</big><em>gdalobj</em>, <em>raw=False</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/gdalsupport.html#ovrLevels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.gdalsupport.ovrLevels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return availabe overview levels.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="gsdview.gdalbackend.gdalsupport.ovrRead">
+<tt class="descclassname">gsdview.gdalbackend.gdalsupport.</tt><tt class="descname">ovrRead</tt><big>(</big><em>dataset</em>, <em>x=0</em>, <em>y=0</em>, <em>w=None</em>, <em>h=None</em>, <em>ovrindex=None</em>, <em>bstart=1</em>, <em>bcount=None</em>, <em>dtype=None</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/gdalsupport.html#ovrRead"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.gdalsupport.ovrRead" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read an image block from overviews of all spacified bands.</p>
+<p>This function read a data block from the overview corresponding to
+<em>ovrindex</em> for all <em>bcount</em> raster bands starting drom the
+<em>bstart</em>th one.</p>
+<p>Parameters:</p>
+<dl class="docutils">
+<dt>dataset: GDAL dataset object</dt>
+<dd>the GDAL dataset to read from</dd>
+<dt>x, y: int</dt>
+<dd>origin of the box to read in overview coordinates</dd>
+<dt>w, h: int</dt>
+<dd>size of the box to read in overview coordinates</dd>
+<dt>ovrindex: int</dt>
+<dd>index of the overview to read from.
+If the overview index is <cite>None</cite> data are retrieved directly
+from the raster band instead of overviews.</dd>
+<dt>bstart: int</dt>
+<dd>raster band start index (default 1).</dd>
+<dt>bcount: int or None</dt>
+<dd>raster band count (defaut all starting from <em>bstart</em>)</dd>
+</dl>
+<p>Returns:</p>
+<dl class="docutils">
+<dt>data: ndarray</dt>
+<dd>the array of data read with shape (h, w, bcount)</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="gsdview.gdalbackend.gdalsupport.uniqueDatasetID">
+<tt class="descclassname">gsdview.gdalbackend.gdalsupport.</tt><tt class="descname">uniqueDatasetID</tt><big>(</big><em>prod</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/gdalsupport.html#uniqueDatasetID"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.gdalsupport.uniqueDatasetID" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo.png" alt="Logo"/>
+            </a></p>
+    
+    
+    <p>
+        <a href="http://sourceforge.net/projects/gsdview">
+            <img src="http://sflogo.sourceforge.net/sflogo.php?group_id=226458&type=14" width="150" height="40" alt="Get GSDView at SourceForge.net. Fast, secure and Free Open Source software downloads" />
+        </a>
+    </p>
+    
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="gsdview.gdalbackend.gdalqt4.html"
+                        title="previous chapter">gsdview.gdalbackend.gdalqt4</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="gsdview.gdalbackend.helpers.html"
+                        title="next chapter">gsdview.gdalbackend.helpers</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/api/gsdview.gdalbackend.gdalsupport.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li class="right" >
+          <a href="gsdview.gdalbackend.helpers.html" title="gsdview.gdalbackend.helpers"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="gsdview.gdalbackend.gdalqt4.html" title="gsdview.gdalbackend.gdalqt4"
+             >previous</a> |</li>
+        <li><a href="../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../reference.html" >API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2008-2011, Antonio Valentino.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

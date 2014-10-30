@@ -1,0 +1,16 @@
+metadata.info
+=============
+
+.. automodule:: metadata.info
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   

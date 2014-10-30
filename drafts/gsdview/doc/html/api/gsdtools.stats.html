@@ -1,0 +1,317 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>gsdtools.stats &mdash; GSDView Open Edition Home Page</title>
+    <link rel="stylesheet" href="../_static/sourceforge.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.6.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/logo.ico"/>
+    <link rel="top" title="GSDView Open Edition Home Page" href="../index.html" />
+    <link rel="up" title="API Reference" href="../reference.html" />
+    <link rel="next" title="gsdtools.ras2vec" href="gsdtools.ras2vec.html" />
+    <link rel="prev" title="gsdtools" href="gsdtools.html" /> 
+  </head>
+  <body>
+    
+        
+    
+    
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li class="right" >
+          <a href="gsdtools.ras2vec.html" title="gsdtools.ras2vec"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="gsdtools.html" title="gsdtools"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../reference.html" accesskey="U">API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-gsdtools.stats">
+<span id="gsdtools-stats"></span><h1>gsdtools.stats<a class="headerlink" href="#module-gsdtools.stats" title="Permalink to this headline">¶</a></h1>
+<p>Compute statistics and histograms of geo-spatial data.</p>
+<p class="rubric">Functions</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><a class="reference internal" href="#gsdtools.stats.GetStatisticsFromMetadata" title="gsdtools.stats.GetStatisticsFromMetadata"><tt class="xref py py-obj docutils literal"><span class="pre">GetStatisticsFromMetadata</span></tt></a>(band)</td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdtools.stats.SafeGetStatistics" title="gsdtools.stats.SafeGetStatistics"><tt class="xref py py-obj docutils literal"><span class="pre">SafeGetStatistics</span></tt></a>(band,&nbsp;approxok,&nbsp;force)</td>
+<td>Retriewe statistics form a GDAL raster band in a safe way.</td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdtools.stats.computestats" title="gsdtools.stats.computestats"><tt class="xref py py-obj docutils literal"><span class="pre">computestats</span></tt></a>(dataset[,&nbsp;bands,&nbsp;computestats,&nbsp;...])</td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdtools.stats.copy_dataset_subwin" title="gsdtools.stats.copy_dataset_subwin"><tt class="xref py py-obj docutils literal"><span class="pre">copy_dataset_subwin</span></tt></a>(dataset,&nbsp;srcwin[,&nbsp;...])</td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdtools.stats.handlecmd" title="gsdtools.stats.handlecmd"><tt class="xref py py-obj docutils literal"><span class="pre">handlecmd</span></tt></a>([argv])</td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdtools.stats.main" title="gsdtools.stats.main"><tt class="xref py py-obj docutils literal"><span class="pre">main</span></tt></a>(*argv)</td>
+<td></td>
+</tr>
+<tr><td><tt class="xref py py-obj docutils literal"><span class="pre">namedtuple</span></tt>(typename,&nbsp;field_names[,&nbsp;verbose,&nbsp;...])</td>
+<td>Returns a new subclass of tuple with named fields.</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Classes</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><a class="reference internal" href="#gsdtools.stats.HistogramRequest" title="gsdtools.stats.HistogramRequest"><tt class="xref py py-obj docutils literal"><span class="pre">HistogramRequest</span></tt></a>([hmin,&nbsp;hmax,&nbsp;nbuckets,&nbsp;...])</td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdtools.stats.Statistics" title="gsdtools.stats.Statistics"><tt class="xref py py-obj docutils literal"><span class="pre">Statistics</span></tt></a></td>
+<td>Statistics(min, max, mean, stddev)</td>
+</tr>
+</tbody>
+</table>
+<dl class="function">
+<dt id="gsdtools.stats.GetStatisticsFromMetadata">
+<tt class="descclassname">gsdtools.stats.</tt><tt class="descname">GetStatisticsFromMetadata</tt><big>(</big><em>band</em><big>)</big><a class="reference internal" href="../_modules/gsdtools/stats.html#GetStatisticsFromMetadata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdtools.stats.GetStatisticsFromMetadata" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="gsdtools.stats.HistogramRequest">
+<em class="property">class </em><tt class="descclassname">gsdtools.stats.</tt><tt class="descname">HistogramRequest</tt><big>(</big><em>hmin=None</em>, <em>hmax=None</em>, <em>nbuckets=None</em>, <em>include_out_of_range=False</em>, <em>computehistogram=True</em><big>)</big><a class="reference internal" href="../_modules/gsdtools/stats.html#HistogramRequest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdtools.stats.HistogramRequest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<dl class="attribute">
+<dt id="gsdtools.stats.HistogramRequest.computehistogram">
+<tt class="descname">computehistogram</tt><a class="headerlink" href="#gsdtools.stats.HistogramRequest.computehistogram" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enable histogram computation.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gsdtools.stats.HistogramRequest.hmax">
+<tt class="descname">hmax</tt><a class="headerlink" href="#gsdtools.stats.HistogramRequest.hmax" title="Permalink to this definition">¶</a></dt>
+<dd><p>Histogram maximum.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gsdtools.stats.HistogramRequest.hmin">
+<tt class="descname">hmin</tt><a class="headerlink" href="#gsdtools.stats.HistogramRequest.hmin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Histogram minimum.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gsdtools.stats.HistogramRequest.include_out_of_range">
+<tt class="descname">include_out_of_range</tt><a class="headerlink" href="#gsdtools.stats.HistogramRequest.include_out_of_range" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flag for out of range values handling.</p>
+<p>If set then values below the histogram range will be mapped into
+the first bucket, and values above will be mapped into last one.
+Otherwise out of range values are discarded.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gsdtools.stats.HistogramRequest.iscustom">
+<tt class="descname">iscustom</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdtools/stats.html#HistogramRequest.iscustom"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdtools.stats.HistogramRequest.iscustom" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gsdtools.stats.HistogramRequest.nbuckets">
+<tt class="descname">nbuckets</tt><a class="headerlink" href="#gsdtools.stats.HistogramRequest.nbuckets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of buckets for histogram comutation.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gsdtools.stats.HistogramRequest.values">
+<tt class="descname">values</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdtools/stats.html#HistogramRequest.values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdtools.stats.HistogramRequest.values" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="gsdtools.stats.SafeGetStatistics">
+<tt class="descclassname">gsdtools.stats.</tt><tt class="descname">SafeGetStatistics</tt><big>(</big><em>band</em>, <em>approxok</em>, <em>force</em><big>)</big><a class="reference internal" href="../_modules/gsdtools/stats.html#SafeGetStatistics"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdtools.stats.SafeGetStatistics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retriewe statistics form a GDAL raster band in a safe way.</p>
+<p>If it is not possible to get statistics (e.g. because the force
+flag is set to false and statistics are not available, or because
+the approxok is set and there are too many nodata elements in the
+raster band) then a tuple of four None is returned.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>approxok</strong> &#8211; if True statistics may be computed based on overviews or a
+subset of all tiles</li>
+<li><strong>force</strong> &#8211; if False statistics will only be returned if it can be done
+without rescanning the image</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">in order to check errors due to nodata values the GDAL
+internal error status is reset.</p>
+</div>
+<div class="admonition important">
+<p class="first admonition-title">Important</p>
+<p class="last">this function only works for versions of GDAL in
+which gdal.Band.GetStatistics correctly reset the
+return values: 1.6.4 &lt;= GDAL &lt; 1.7.0 and
+GDAL &gt; 1.7.2 (see <a class="reference external" href="http://trac.osgeo.org/gdal/ticket/3572">ticket #3572</a> on <a class="reference external" href="http://trac.osgeo.org/gdal">GDAL Trac</a>.</p>
+</div>
+</dd></dl>
+
+<dl class="class">
+<dt id="gsdtools.stats.Statistics">
+<em class="property">class </em><tt class="descclassname">gsdtools.stats.</tt><tt class="descname">Statistics</tt><a class="headerlink" href="#gsdtools.stats.Statistics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">tuple</span></tt></p>
+<p>Statistics(min, max, mean, stddev)</p>
+<dl class="attribute">
+<dt id="gsdtools.stats.Statistics.max">
+<tt class="descname">max</tt><a class="headerlink" href="#gsdtools.stats.Statistics.max" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gsdtools.stats.Statistics.mean">
+<tt class="descname">mean</tt><a class="headerlink" href="#gsdtools.stats.Statistics.mean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 2</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gsdtools.stats.Statistics.min">
+<tt class="descname">min</tt><a class="headerlink" href="#gsdtools.stats.Statistics.min" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gsdtools.stats.Statistics.stddev">
+<tt class="descname">stddev</tt><a class="headerlink" href="#gsdtools.stats.Statistics.stddev" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 3</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="gsdtools.stats.computestats">
+<tt class="descclassname">gsdtools.stats.</tt><tt class="descname">computestats</tt><big>(</big><em>dataset</em>, <em>bands=None</em>, <em>computestats=True</em>, <em>histreq=None</em>, <em>approxok=False</em>, <em>minmax_only=False</em>, <em>callback=None</em><big>)</big><a class="reference internal" href="../_modules/gsdtools/stats.html#computestats"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdtools.stats.computestats" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="gsdtools.stats.copy_dataset_subwin">
+<tt class="descclassname">gsdtools.stats.</tt><tt class="descname">copy_dataset_subwin</tt><big>(</big><em>dataset</em>, <em>srcwin</em>, <em>bands=None</em>, <em>vrtfile=''</em><big>)</big><a class="reference internal" href="../_modules/gsdtools/stats.html#copy_dataset_subwin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdtools.stats.copy_dataset_subwin" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="gsdtools.stats.handlecmd">
+<tt class="descclassname">gsdtools.stats.</tt><tt class="descname">handlecmd</tt><big>(</big><em>argv=None</em><big>)</big><a class="reference internal" href="../_modules/gsdtools/stats.html#handlecmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdtools.stats.handlecmd" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="gsdtools.stats.main">
+<tt class="descclassname">gsdtools.stats.</tt><tt class="descname">main</tt><big>(</big><em>*argv</em><big>)</big><a class="reference internal" href="../_modules/gsdtools/stats.html#main"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdtools.stats.main" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo.png" alt="Logo"/>
+            </a></p>
+    
+    
+    <p>
+        <a href="http://sourceforge.net/projects/gsdview">
+            <img src="http://sflogo.sourceforge.net/sflogo.php?group_id=226458&type=14" width="150" height="40" alt="Get GSDView at SourceForge.net. Fast, secure and Free Open Source software downloads" />
+        </a>
+    </p>
+    
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="gsdtools.html"
+                        title="previous chapter">gsdtools</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="gsdtools.ras2vec.html"
+                        title="next chapter">gsdtools.ras2vec</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/api/gsdtools.stats.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li class="right" >
+          <a href="gsdtools.ras2vec.html" title="gsdtools.ras2vec"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="gsdtools.html" title="gsdtools"
+             >previous</a> |</li>
+        <li><a href="../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../reference.html" >API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2008-2011, Antonio Valentino.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,369 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>gsdtoolsui.tooldescriptors &mdash; GSDView Open Edition Home Page</title>
+    <link rel="stylesheet" href="../../_static/sourceforge.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.6.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/logo.ico"/>
+    <link rel="top" title="GSDView Open Edition Home Page" href="../../index.html" />
+    <link rel="up" title="gsdtoolsui" href="../gsdtoolsui.html" /> 
+  </head>
+  <body>
+    
+        
+    
+    
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li><a href="../../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../gsdtoolsui.html" accesskey="U">gsdtoolsui</a> &raquo;</li> 
+      </ul>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for gsdtoolsui.tooldescriptors</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="c">### Copyright (C) 2008-2011 Antonio Valentino &lt;a_valentino@users.sf.net&gt;</span>
+
+<span class="c">### This file is part of GSDView.</span>
+
+<span class="c">### GSDView is free software; you can redistribute it and/or modify</span>
+<span class="c">### it under the terms of the GNU General Public License as published by</span>
+<span class="c">### the Free Software Foundation; either version 2 of the License, or</span>
+<span class="c">### (at your option) any later version.</span>
+
+<span class="c">### GSDView is distributed in the hope that it will be useful,</span>
+<span class="c">### but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c">### MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c">### GNU General Public License for more details.</span>
+
+<span class="c">### You should have received a copy of the GNU General Public License</span>
+<span class="c">### along with GSDView; if not, write to the Free Software</span>
+<span class="c">### Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA.</span>
+
+
+<span class="sd">&#39;&#39;&#39;Exectools tool descriptors for gsdtools .&#39;&#39;&#39;</span>
+
+
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">import</span> <span class="nn">gsdtools</span>
+<span class="kn">from</span> <span class="nn">gsdtools.stats</span> <span class="kn">import</span> <span class="n">HistogramRequest</span>
+
+<span class="kn">from</span> <span class="nn">gsdview</span> <span class="kn">import</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">gsdview.gdalbackend.gdalexectools</span> <span class="kn">import</span> <span class="n">BaseGdalToolDescriptor</span>
+
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s">&#39;Antonio Valentino &lt;a_valentino@users.sf.net&gt;&#39;</span>
+<span class="n">__date__</span> <span class="o">=</span> <span class="s">&#39;$Date: 2011-07-30 11:07:42 +0200 (sab, 30 lug 2011) $&#39;</span>
+<span class="n">__revision__</span> <span class="o">=</span> <span class="s">&#39;$Revision: 971 $&#39;</span>
+
+
+<span class="k">def</span> <span class="nf">_gsdtoolcmd</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">gsdtools</span><span class="o">.</span><span class="n">__path__</span><span class="p">)</span>
+    <span class="n">script</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">name</span> <span class="o">+</span> <span class="s">&#39;.py&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">variant</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39;o&#39;</span><span class="p">,</span> <span class="s">&#39;c&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">):</span>
+        <span class="n">variant</span> <span class="o">=</span> <span class="n">script</span> <span class="o">+</span> <span class="n">variant</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">variant</span><span class="p">):</span>
+            <span class="n">script</span> <span class="o">=</span> <span class="n">variant</span>
+            <span class="k">break</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">None</span>
+
+    <span class="n">cmd</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">scriptcmd</span><span class="p">(</span><span class="n">script</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">cmd</span>
+
+
+<div class="viewcode-block" id="StatsDescriptor"><a class="viewcode-back" href="../../api/gsdtoolsui.tooldescriptors.html#gsdtoolsui.tooldescriptors.StatsDescriptor">[docs]</a><span class="k">class</span> <span class="nc">StatsDescriptor</span><span class="p">(</span><span class="n">BaseGdalToolDescriptor</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Descriptor for gsdstats tool.</span>
+
+<span class="sd">    .. seealso:: :class:`exectools.ToolDescriptor`</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">env</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                 <span class="n">stdout_handler</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">stderr_handler</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        :param cwd:</span>
+<span class="sd">            program working directory</span>
+<span class="sd">        :param env:</span>
+<span class="sd">            environment dictionary</span>
+<span class="sd">        :param envmerge:</span>
+<span class="sd">            if set to True (default) it is the :attr:`env` dictionaty is</span>
+<span class="sd">            used to update the system environment</span>
+<span class="sd">        :param stdout_handler:</span>
+<span class="sd">            *OutputHandler* for the stdout of the tool</span>
+<span class="sd">        :param stderr_handler:</span>
+<span class="sd">            *OutputHandler* for the stderr of the tool</span>
+
+<span class="sd">        .. seealso:: :class:`exectools.BaseOutputHandler`</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="n">executable</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">which</span><span class="p">(</span><span class="s">&#39;gsdstats&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">executable</span><span class="p">:</span>
+            <span class="n">cmd</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">scriptcmd</span><span class="p">(</span><span class="n">executable</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">cmd</span> <span class="o">=</span> <span class="n">_gsdtoolcmd</span><span class="p">(</span><span class="s">&#39;stats&#39;</span><span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">StatsDescriptor</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="p">[],</span>
+                                    <span class="n">cwd</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">stdout_handler</span><span class="p">,</span> <span class="n">stderr_handler</span><span class="p">)</span>
+
+        <span class="c">#: Disable statistics computation (default: False)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nostats</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="c">#: Compute statistics for a specific raster band.</span>
+        <span class="c">#:</span>
+        <span class="c">#: Default: all bands are precessed.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">band</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="c">#: Allow approximate statistics computation.</span>
+        <span class="c">#:</span>
+        <span class="c">#: If set then statistics may be computed based on overviews or a</span>
+        <span class="c">#: subset of all tiles (default: False)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">approxok</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="c">#: Only print minimum and maximum on the same line</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">minmaxonly</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="c">#: Specify source window in image coordinates.</span>
+        <span class="c">#:</span>
+        <span class="c">#: Default: the entire image is processed.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">srcwin</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="c">#: Write results to FILE.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outfile</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="c">#: Suppress progress messages.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">quiet</span> <span class="o">=</span> <span class="bp">False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_histreq</span> <span class="o">=</span> <span class="n">HistogramRequest</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_histreq</span><span class="o">.</span><span class="n">computehistogram</span> <span class="o">=</span> <span class="bp">False</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">hist</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Histogram request.</span>
+
+<span class="sd">        Histogram request objects allow to specifie parameters for</span>
+<span class="sd">        historams computarion or disable histogram computation at all.</span>
+
+<span class="sd">        .. seealso:: :class:`gsdtools.stats.HistogramRequest`.</span>
+
+<span class="sd">        If set to a non null value the histogram computation is enabled::</span>
+
+<span class="sd">          desctiptot.hist = True</span>
+
+<span class="sd">        the above code is equivalent to::</span>
+
+<span class="sd">          desctiptot.hist.computehistogram = True</span>
+
+<span class="sd">        Use histogram request object attributes to speficy custom</span>
+<span class="sd">        parameters for historam comutation::</span>
+
+<span class="sd">          desctiptot.hist.hmin = - 0.5</span>
+<span class="sd">          desctiptot.hist.hmax = 3000.5</span>
+<span class="sd">          desctiptot.hist.nbuckets = 101</span>
+<span class="sd">          desctiptot.hist.include_out_of_range = True</span>
+
+<span class="sd">        .. note: the *include_out_of_range* parameter is only taken</span>
+<span class="sd">                 into account if all *hmin*, *hmax* and *nbuckets* are</span>
+<span class="sd">                 specified.</span>
+
+<span class="sd">        To disable histocram computation set it :attr:`hist` to</span>
+<span class="sd">        *False*::</span>
+
+<span class="sd">            desctiptot.hist = False</span>
+
+<span class="sd">        Setting :attr:`hist` to *None* disable histogram computation</span>
+<span class="sd">        and perform a fiull reset of the histogram requast object::</span>
+
+<span class="sd">            desctiptot.hist = None</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_histreq</span>
+
+    <span class="nd">@hist.setter</span>
+<div class="viewcode-block" id="StatsDescriptor.hist"><a class="viewcode-back" href="../../api/gsdtoolsui.tooldescriptors.html#gsdtoolsui.tooldescriptors.StatsDescriptor.hist">[docs]</a>    <span class="k">def</span> <span class="nf">hist</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_histreq</span><span class="o">.</span><span class="n">computehistogram</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_histreq</span><span class="o">.</span><span class="n">hmin</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_histreq</span><span class="o">.</span><span class="n">hmax</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_histreq</span><span class="o">.</span><span class="n">nbuckets</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_histreq</span><span class="o">.</span><span class="n">include_out_of_range</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">HistogramRequest</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_histreq</span> <span class="o">=</span> <span class="n">value</span>
+</div>
+<div class="viewcode-block" id="StatsDescriptor.cmdline"><a class="viewcode-back" href="../../api/gsdtoolsui.tooldescriptors.html#gsdtoolsui.tooldescriptors.StatsDescriptor.cmdline">[docs]</a>    <span class="k">def</span> <span class="nf">cmdline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">nostats</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="s">&#39;--no-stats&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;--no-stats&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">args</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">hist</span><span class="o">.</span><span class="n">computehistogram</span> <span class="ow">and</span> <span class="s">&#39;--hist&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;--hist&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">args</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">band</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span>
+                            <span class="ow">not</span> <span class="nb">set</span><span class="p">((</span><span class="s">&#39;-b&#39;</span><span class="p">,</span> <span class="s">&#39;--band&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">args</span><span class="p">)):</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;--band&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">band</span><span class="p">)]</span> <span class="o">+</span> <span class="n">args</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">approxok</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span>
+                            <span class="ow">not</span> <span class="nb">set</span><span class="p">((</span><span class="s">&#39;-a&#39;</span><span class="p">,</span> <span class="s">&#39;--approxok&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">args</span><span class="p">)):</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;--approxok&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">args</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">hist</span><span class="o">.</span><span class="n">minmaxonly</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="s">&#39;--minmax-only&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;--minmax-only&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">args</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">hist</span><span class="o">.</span><span class="n">iscustom</span><span class="p">()</span> <span class="ow">and</span> <span class="s">&#39;--histreq&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">hist</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;--histreq&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">values</span> <span class="o">+</span> <span class="n">args</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hist</span><span class="o">.</span><span class="n">include_out_of_range</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span>
+                <span class="ow">not</span> <span class="nb">set</span><span class="p">((</span><span class="s">&#39;-i&#39;</span><span class="p">,</span> <span class="s">&#39;--include_out_of_range&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">args</span><span class="p">)):</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;--include_out_of_range&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">args</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">srcwin</span> <span class="ow">and</span> <span class="s">&#39;--srcwin&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">srcwin</span><span class="p">]</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;--srcwin&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">values</span> <span class="o">+</span> <span class="n">args</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">outfile</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span>
+                            <span class="ow">not</span> <span class="nb">set</span><span class="p">((</span><span class="s">&#39;-o&#39;</span><span class="p">,</span> <span class="s">&#39;--outfile&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">args</span><span class="p">)):</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;--outfile&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">outfile</span><span class="p">]</span> <span class="o">+</span> <span class="n">args</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">quiet</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span>
+                            <span class="ow">not</span> <span class="nb">set</span><span class="p">((</span><span class="s">&#39;-q&#39;</span><span class="p">,</span> <span class="s">&#39;--quiet&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">args</span><span class="p">)):</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;--quiet&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">args</span>
+
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">StatsDescriptor</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">cmdline</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+</div></div>
+<div class="viewcode-block" id="Ras2vecDescriptor"><a class="viewcode-back" href="../../api/gsdtoolsui.tooldescriptors.html#gsdtoolsui.tooldescriptors.Ras2vecDescriptor">[docs]</a><span class="k">class</span> <span class="nc">Ras2vecDescriptor</span><span class="p">(</span><span class="n">BaseGdalToolDescriptor</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Descriptor for ras2vec tool.</span>
+
+<span class="sd">    .. seealso:: :class:`exectools.ToolDescriptor`</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">env</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                 <span class="n">stdout_handler</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">stderr_handler</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        :param cwd:</span>
+<span class="sd">            program working directory</span>
+<span class="sd">        :param env:</span>
+<span class="sd">            environment dictionary</span>
+<span class="sd">        :param envmerge:</span>
+<span class="sd">            if set to True (default) it is the :attr:`env` dictionaty is</span>
+<span class="sd">            used to update the system environment</span>
+<span class="sd">        :param stdout_handler:</span>
+<span class="sd">            *OutputHandler* for the stdout of the tool</span>
+<span class="sd">        :param stderr_handler:</span>
+<span class="sd">            +OutputHandler* for the stderr of the tool</span>
+
+<span class="sd">        .. seealso:: :class:`exectools.BaseOutputHandler`</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="n">executable</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">which</span><span class="p">(</span><span class="s">&#39;ras2vec&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">executable</span><span class="p">:</span>
+            <span class="n">cmd</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">scriptcmd</span><span class="p">(</span><span class="n">executable</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">cmd</span> <span class="o">=</span> <span class="n">_gsdtoolcmd</span><span class="p">(</span><span class="s">&#39;ras2vec&#39;</span><span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">Ras2vecDescriptor</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="p">[],</span>
+                                    <span class="n">cwd</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">stdout_handler</span><span class="p">,</span> <span class="n">stderr_handler</span><span class="p">)</span>
+
+        <span class="c">#: Generate an additional layer for GCPs.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gcps</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="c">#: Generate markers for bounding box corners.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">corners</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="c">#: Store absolute path in bounding box feature description.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">abspath</span> <span class="o">=</span> <span class="bp">None</span>
+
+<div class="viewcode-block" id="Ras2vecDescriptor.cmdline"><a class="viewcode-back" href="../../api/gsdtoolsui.tooldescriptors.html#gsdtoolsui.tooldescriptors.Ras2vecDescriptor.cmdline">[docs]</a>    <span class="k">def</span> <span class="nf">cmdline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gcps</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span>
+                            <span class="ow">not</span> <span class="nb">set</span><span class="p">((</span><span class="s">&#39;-g&#39;</span><span class="p">,</span> <span class="s">&#39;--gcps&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">args</span><span class="p">)):</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;--gcps&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">args</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">corners</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span>
+                            <span class="ow">not</span> <span class="nb">set</span><span class="p">((</span><span class="s">&#39;-c&#39;</span><span class="p">,</span> <span class="s">&#39;--corners&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">args</span><span class="p">)):</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;--corners&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">args</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">abspath</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span>
+                            <span class="ow">not</span> <span class="nb">set</span><span class="p">((</span><span class="s">&#39;-a&#39;</span><span class="p">,</span> <span class="s">&#39;--abspath&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">args</span><span class="p">)):</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;--abspath&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">args</span>
+
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">Ras2vecDescriptor</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">cmdline</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+    
+    
+    <p>
+        <a href="http://sourceforge.net/projects/gsdview">
+            <img src="http://sflogo.sourceforge.net/sflogo.php?group_id=226458&type=14" width="150" height="40" alt="Get GSDView at SourceForge.net. Fast, secure and Free Open Source software downloads" />
+        </a>
+    </p>
+    
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li><a href="../../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../gsdtoolsui.html" >gsdtoolsui</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2008-2011, Antonio Valentino.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

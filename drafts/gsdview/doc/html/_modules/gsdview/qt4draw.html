@@ -1,0 +1,567 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>gsdview.qt4draw &mdash; GSDView Open Edition Home Page</title>
+    <link rel="stylesheet" href="../../_static/sourceforge.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.6.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/logo.ico"/>
+    <link rel="top" title="GSDView Open Edition Home Page" href="../../index.html" />
+    <link rel="up" title="gsdview" href="../gsdview.html" /> 
+  </head>
+  <body>
+    
+        
+    
+    
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li><a href="../../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../gsdview.html" accesskey="U">gsdview</a> &raquo;</li> 
+      </ul>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for gsdview.qt4draw</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="c">### Copyright (C) 2008-2011 Antonio Valentino &lt;a_valentino@users.sf.net&gt;</span>
+
+<span class="c">### This file is part of GSDView.</span>
+
+<span class="c">### GSDView is free software; you can redistribute it and/or modify</span>
+<span class="c">### it under the terms of the GNU General Public License as published by</span>
+<span class="c">### the Free Software Foundation; either version 2 of the License, or</span>
+<span class="c">### (at your option) any later version.</span>
+
+<span class="c">### GSDView is distributed in the hope that it will be useful,</span>
+<span class="c">### but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c">### MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c">### GNU General Public License for more details.</span>
+
+<span class="c">### You should have received a copy of the GNU General Public License</span>
+<span class="c">### along with GSDView; if not, write to the Free Software</span>
+<span class="c">### Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA.</span>
+
+
+<span class="sd">&#39;&#39;&#39;Drawing components for Qt4.&#39;&#39;&#39;</span>
+
+
+<span class="kn">from</span> <span class="nn">qt</span> <span class="kn">import</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtGui</span>
+
+<span class="kn">from</span> <span class="nn">.mousemanager</span> <span class="kn">import</span> <span class="n">MouseMode</span>  <span class="c"># , RubberBandMode</span>
+
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s">&#39;Antonio Valentino &lt;a_valentino@users.sf.net&gt;&#39;</span>
+<span class="n">__date__</span> <span class="o">=</span> <span class="s">&#39;$Date: 2011-08-01 19:26:21 +0200 (lun, 01 ago 2011) $&#39;</span>
+<span class="n">__revision__</span> <span class="o">=</span> <span class="s">&#39;$Revision: 997 $&#39;</span>
+
+
+<span class="c">### Graphics Items ############################################################</span>
+<span class="k">def</span> <span class="nf">_highlightSelectedGraphicsItem</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">painter</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="n">boundingrect</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Highlights item as selected.</span>
+
+<span class="sd">    .. note:: This function is a duplicate of</span>
+<span class="sd">              qt_graphicsItem_highlightSelected() in</span>
+<span class="sd">              qgraphicssvgitem.cpp!</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">murect</span> <span class="o">=</span> <span class="n">painter</span><span class="o">.</span><span class="n">transform</span><span class="p">()</span><span class="o">.</span><span class="n">mapRect</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QRectF</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">murect</span><span class="o">.</span><span class="n">width</span><span class="p">(),</span> <span class="n">murect</span><span class="o">.</span><span class="n">height</span><span class="p">()))</span> <span class="o">&lt;=</span> <span class="mf">0.000000000001</span><span class="p">:</span>
+        <span class="k">return</span>
+
+    <span class="k">if</span> <span class="n">boundingrect</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">boundingrect</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">boundingRect</span><span class="p">()</span>
+
+    <span class="n">mbrect</span> <span class="o">=</span> <span class="n">painter</span><span class="o">.</span><span class="n">transform</span><span class="p">()</span><span class="o">.</span><span class="n">mapRect</span><span class="p">(</span><span class="n">boundingrect</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">min</span><span class="p">(</span><span class="n">mbrect</span><span class="o">.</span><span class="n">width</span><span class="p">(),</span> <span class="n">mbrect</span><span class="o">.</span><span class="n">height</span><span class="p">())</span> <span class="o">&lt;</span> <span class="mf">1.0</span><span class="p">:</span>
+        <span class="k">return</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c">#if item.type() in (QGraphicsEllipseItem.Type,</span>
+        <span class="c">#                   QGraphicsPathItem.Type,</span>
+        <span class="c">#                   QGraphicsPolygonItem.Type,</span>
+        <span class="c">#                   QGraphicsRectItem.Type,</span>
+        <span class="c">#                   QGraphicsSimpleTextItem.Type,</span>
+        <span class="c">#                   QGraphicsLineItem.Type):</span>
+        <span class="n">itemPenWidth</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">pen</span><span class="p">()</span><span class="o">.</span><span class="n">widthF</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="n">itemPenWidth</span> <span class="o">=</span> <span class="mf">1.0</span>
+
+    <span class="n">pad</span> <span class="o">=</span> <span class="n">itemPenWidth</span> <span class="o">/</span> <span class="mi">2</span>
+    <span class="n">penWidth</span> <span class="o">=</span> <span class="mi">0</span>            <span class="c"># cosmetic pen</span>
+
+    <span class="n">fgcolor</span> <span class="o">=</span> <span class="n">option</span><span class="o">.</span><span class="n">palette</span><span class="o">.</span><span class="n">windowText</span><span class="p">()</span><span class="o">.</span><span class="n">color</span><span class="p">()</span>
+    <span class="c"># ensure good contrast against fgcolor</span>
+    <span class="n">bgcolor</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QColor</span><span class="p">(</span><span class="mi">0</span> <span class="k">if</span> <span class="n">fgcolor</span><span class="o">.</span><span class="n">red</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">127</span> <span class="k">else</span> <span class="mi">255</span><span class="p">,</span>
+                           <span class="mi">0</span> <span class="k">if</span> <span class="n">fgcolor</span><span class="o">.</span><span class="n">green</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">127</span> <span class="k">else</span> <span class="mi">255</span><span class="p">,</span>
+                           <span class="mi">0</span> <span class="k">if</span> <span class="n">fgcolor</span><span class="o">.</span><span class="n">blue</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">127</span> <span class="k">else</span> <span class="mi">255</span><span class="p">)</span>
+
+    <span class="n">painter</span><span class="o">.</span><span class="n">setPen</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QPen</span><span class="p">(</span><span class="n">bgcolor</span><span class="p">,</span> <span class="n">penWidth</span><span class="p">,</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">SolidLine</span><span class="p">))</span>
+    <span class="n">painter</span><span class="o">.</span><span class="n">setBrush</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">NoBrush</span><span class="p">)</span>
+    <span class="n">painter</span><span class="o">.</span><span class="n">drawRect</span><span class="p">(</span><span class="n">boundingrect</span><span class="o">.</span><span class="n">adjusted</span><span class="p">(</span><span class="n">pad</span><span class="p">,</span> <span class="n">pad</span><span class="p">,</span> <span class="o">-</span><span class="n">pad</span><span class="p">,</span> <span class="o">-</span><span class="n">pad</span><span class="p">))</span>
+
+    <span class="n">painter</span><span class="o">.</span><span class="n">setPen</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QPen</span><span class="p">(</span><span class="n">option</span><span class="o">.</span><span class="n">palette</span><span class="o">.</span><span class="n">windowText</span><span class="p">(),</span> <span class="mi">0</span><span class="p">,</span>
+                              <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">DashLine</span><span class="p">))</span>
+    <span class="n">painter</span><span class="o">.</span><span class="n">setBrush</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">NoBrush</span><span class="p">)</span>
+    <span class="n">painter</span><span class="o">.</span><span class="n">drawRect</span><span class="p">(</span><span class="n">boundingrect</span><span class="o">.</span><span class="n">adjusted</span><span class="p">(</span><span class="n">pad</span><span class="p">,</span> <span class="n">pad</span><span class="p">,</span> <span class="o">-</span><span class="n">pad</span><span class="p">,</span> <span class="o">-</span><span class="n">pad</span><span class="p">))</span>
+
+
+<div class="viewcode-block" id="GraphicsPointItem"><a class="viewcode-back" href="../../api/gsdview.qt4draw.html#gsdview.qt4draw.GraphicsPointItem">[docs]</a><span class="k">class</span> <span class="nc">GraphicsPointItem</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QAbstractGraphicsShapeItem</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Qt graphics item for point merkers.</span>
+
+<span class="sd">    Draw a symbol that scales its size according to the zoom level in</span>
+<span class="sd">    order to keep approximatively constant size.</span>
+<span class="sd">    Original size and maximum scaling factor are configurable.</span>
+
+<span class="sd">    .. note:: currently the only symbol supported is a filled circle</span>
+<span class="sd">              (pen and brush are configurable).</span>
+
+<span class="sd">    .. note:: this class don&#39;t depends on OGR so it can be moved in a</span>
+<span class="sd">              module out of the gdalbackend.</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">Type</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QGraphicsItem</span><span class="o">.</span><span class="n">UserType</span> <span class="o">+</span> <span class="mi">100</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">scene</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                 <span class="o">**</span><span class="n">kargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">GraphicsPointItem</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">scene</span><span class="p">,</span> <span class="o">**</span><span class="n">kargs</span><span class="p">)</span>
+
+        <span class="c"># @COMPATIBILITY: Qt &gt;= 4.6.0 needs this flag to be set otherwise the</span>
+        <span class="c">#                 exact exposedRect is not computed</span>
+        <span class="c"># @SEEALSO: ItemUsesExtendedStyleOption item at</span>
+        <span class="c"># http://doc.qt.nokia.com/4.6/qgraphicsitem.html#GraphicsItemFlag-enum</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setFlag</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QGraphicsItem</span><span class="o">.</span><span class="n">ItemUsesExtendedStyleOptions</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="n">ItemUsesExtendedStyleOptions</span> <span class="o">=</span> <span class="mh">0x200</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setFlag</span><span class="p">(</span><span class="n">ItemUsesExtendedStyleOptions</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">None</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setPos</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_radius</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">radius</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_radius</span> <span class="o">=</span> <span class="n">radius</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_maxfact</span> <span class="o">=</span> <span class="mi">10</span>
+
+        <span class="n">brush</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">brush</span><span class="p">()</span>
+        <span class="n">brush</span><span class="o">.</span><span class="n">setStyle</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">SolidPattern</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setBrush</span><span class="p">(</span><span class="n">brush</span><span class="p">)</span>
+
+<div class="viewcode-block" id="GraphicsPointItem.radius"><a class="viewcode-back" href="../../api/gsdview.qt4draw.html#gsdview.qt4draw.GraphicsPointItem.radius">[docs]</a>    <span class="k">def</span> <span class="nf">radius</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_radius</span>
+</div>
+<div class="viewcode-block" id="GraphicsPointItem.setRadius"><a class="viewcode-back" href="../../api/gsdview.qt4draw.html#gsdview.qt4draw.GraphicsPointItem.setRadius">[docs]</a>    <span class="k">def</span> <span class="nf">setRadius</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">radius</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">radius</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;invalid radius: &quot;</span><span class="si">%s</span><span class="s">&quot;&#39;</span> <span class="o">%</span> <span class="n">radius</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_radius</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">radius</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="GraphicsPointItem.maxFactor"><a class="viewcode-back" href="../../api/gsdview.qt4draw.html#gsdview.qt4draw.GraphicsPointItem.maxFactor">[docs]</a>    <span class="k">def</span> <span class="nf">maxFactor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_maxfact</span>
+</div>
+<div class="viewcode-block" id="GraphicsPointItem.setMaxFactor"><a class="viewcode-back" href="../../api/gsdview.qt4draw.html#gsdview.qt4draw.GraphicsPointItem.setMaxFactor">[docs]</a>    <span class="k">def</span> <span class="nf">setMaxFactor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">maxfact</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">maxfact</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;invalid saling factor: &quot;</span><span class="si">%s</span><span class="s">&quot;&#39;</span> <span class="o">%</span> <span class="n">maxfact</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_maxfact</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">maxfact</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="GraphicsPointItem.type"><a class="viewcode-back" href="../../api/gsdview.qt4draw.html#gsdview.qt4draw.GraphicsPointItem.type">[docs]</a>    <span class="k">def</span> <span class="nf">type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">Type</span>
+</div>
+<div class="viewcode-block" id="GraphicsPointItem.boundingRect"><a class="viewcode-back" href="../../api/gsdview.qt4draw.html#gsdview.qt4draw.GraphicsPointItem.boundingRect">[docs]</a>    <span class="k">def</span> <span class="nf">boundingRect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">penwidth</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pen</span><span class="p">()</span><span class="o">.</span><span class="n">widthF</span><span class="p">()</span>
+        <span class="n">radius</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_maxfact</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_radius</span>
+        <span class="n">diameter</span> <span class="o">=</span> <span class="mf">2.</span> <span class="o">*</span> <span class="n">radius</span>
+        <span class="k">return</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QRectF</span><span class="p">(</span><span class="o">-</span><span class="n">radius</span> <span class="o">-</span> <span class="n">penwidth</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="n">radius</span> <span class="o">-</span> <span class="n">penwidth</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span>
+                             <span class="n">diameter</span> <span class="o">+</span> <span class="n">penwidth</span><span class="p">,</span> <span class="n">diameter</span> <span class="o">+</span> <span class="n">penwidth</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="GraphicsPointItem.paint"><a class="viewcode-back" href="../../api/gsdview.qt4draw.html#gsdview.qt4draw.GraphicsPointItem.paint">[docs]</a>    <span class="k">def</span> <span class="nf">paint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">painter</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="n">widget</span><span class="p">):</span>
+        <span class="n">levelOfDetail</span> <span class="o">=</span> <span class="n">option</span><span class="o">.</span><span class="n">levelOfDetailFromTransform</span><span class="p">(</span><span class="n">painter</span><span class="o">.</span><span class="n">transform</span><span class="p">())</span>
+
+        <span class="n">painter</span><span class="o">.</span><span class="n">setPen</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pen</span><span class="p">())</span>
+        <span class="n">painter</span><span class="o">.</span><span class="n">setBrush</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">brush</span><span class="p">())</span>
+
+        <span class="n">radius</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_radius</span> <span class="o">/</span> <span class="n">levelOfDetail</span><span class="p">,</span>
+                     <span class="bp">self</span><span class="o">.</span><span class="n">_radius</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_maxfact</span><span class="p">)</span>
+        <span class="n">painter</span><span class="o">.</span><span class="n">drawEllipse</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QPointF</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">radius</span><span class="p">,</span> <span class="n">radius</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">option</span><span class="o">.</span><span class="n">state</span> <span class="o">&amp;</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QStyle</span><span class="o">.</span><span class="n">State_Selected</span><span class="p">:</span>
+            <span class="n">penwidth</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pen</span><span class="p">()</span><span class="o">.</span><span class="n">widthF</span><span class="p">()</span>
+            <span class="n">diameter</span> <span class="o">=</span> <span class="mf">2.</span> <span class="o">*</span> <span class="n">radius</span>
+            <span class="n">rect</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QRectF</span><span class="p">(</span><span class="o">-</span><span class="n">radius</span> <span class="o">-</span> <span class="n">penwidth</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span>
+                                 <span class="o">-</span><span class="n">radius</span> <span class="o">-</span> <span class="n">penwidth</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span>
+                                 <span class="n">diameter</span> <span class="o">+</span> <span class="n">penwidth</span><span class="p">,</span> <span class="n">diameter</span> <span class="o">+</span> <span class="n">penwidth</span><span class="p">)</span>
+
+            <span class="n">_highlightSelectedGraphicsItem</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">painter</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="n">rect</span><span class="p">)</span>
+
+</div></div>
+<div class="viewcode-block" id="GraphicsItemGroup"><a class="viewcode-back" href="../../api/gsdview.qt4draw.html#gsdview.qt4draw.GraphicsItemGroup">[docs]</a><span class="k">class</span> <span class="nc">GraphicsItemGroup</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QGraphicsItemGroup</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Qt graphics item group with common style.&#39;&#39;&#39;</span>
+
+    <span class="n">Type</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QGraphicsItem</span><span class="o">.</span><span class="n">UserType</span> <span class="o">+</span> <span class="mi">101</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">scene</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">GraphicsItemGroup</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">scene</span><span class="p">,</span> <span class="o">**</span><span class="n">kargs</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pen</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QPen</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_brush</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QBrush</span><span class="p">()</span>
+
+<div class="viewcode-block" id="GraphicsItemGroup.addToGroup"><a class="viewcode-back" href="../../api/gsdview.qt4draw.html#gsdview.qt4draw.GraphicsItemGroup.addToGroup">[docs]</a>    <span class="k">def</span> <span class="nf">addToGroup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">GraphicsItemGroup</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">addToGroup</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">item</span><span class="o">.</span><span class="n">setPen</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pen</span><span class="p">)</span>
+            <span class="n">item</span><span class="o">.</span><span class="n">setBrusH</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_brush</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+    <span class="c"># @TODO: check pyqtProperty</span></div>
+<div class="viewcode-block" id="GraphicsItemGroup.pen"><a class="viewcode-back" href="../../api/gsdview.qt4draw.html#gsdview.qt4draw.GraphicsItemGroup.pen">[docs]</a>    <span class="k">def</span> <span class="nf">pen</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pen</span>
+</div>
+<div class="viewcode-block" id="GraphicsItemGroup.setPen"><a class="viewcode-back" href="../../api/gsdview.qt4draw.html#gsdview.qt4draw.GraphicsItemGroup.setPen">[docs]</a>    <span class="k">def</span> <span class="nf">setPen</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pen</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pen</span><span class="p">,</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QPen</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s">&#39;invalid pen object: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">pen</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pen</span> <span class="o">=</span> <span class="n">pen</span>
+
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">childItems</span><span class="p">():</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">item</span><span class="o">.</span><span class="n">setPen</span><span class="p">(</span><span class="n">pen</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                <span class="k">pass</span>
+</div>
+<div class="viewcode-block" id="GraphicsItemGroup.brush"><a class="viewcode-back" href="../../api/gsdview.qt4draw.html#gsdview.qt4draw.GraphicsItemGroup.brush">[docs]</a>    <span class="k">def</span> <span class="nf">brush</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_brush</span>
+</div>
+<div class="viewcode-block" id="GraphicsItemGroup.setBrush"><a class="viewcode-back" href="../../api/gsdview.qt4draw.html#gsdview.qt4draw.GraphicsItemGroup.setBrush">[docs]</a>    <span class="k">def</span> <span class="nf">setBrush</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">brush</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">brush</span><span class="p">,</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QBrush</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s">&#39;invalid brush object: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">brush</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_brush</span> <span class="o">=</span> <span class="n">brush</span>
+
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">childItems</span><span class="p">():</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">item</span><span class="o">.</span><span class="n">setBrush</span><span class="p">(</span><span class="n">brush</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                <span class="k">pass</span>
+
+
+<span class="c">### Drawing tools #############################################################</span></div></div>
+<div class="viewcode-block" id="DrawPointMode"><a class="viewcode-back" href="../../api/gsdview.qt4draw.html#gsdview.qt4draw.DrawPointMode">[docs]</a><span class="k">class</span> <span class="nc">DrawPointMode</span><span class="p">(</span><span class="n">MouseMode</span><span class="p">):</span>
+    <span class="n">dragmode</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QGraphicsView</span><span class="o">.</span><span class="n">NoDrag</span>
+    <span class="n">cursor</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">CrossCursor</span>
+    <span class="n">icon</span> <span class="o">=</span> <span class="s">&#39;:/trolltech/styles/commonstyle/images/standardbutton-yes-128.png&#39;</span>
+    <span class="n">label</span> <span class="o">=</span> <span class="s">&#39;Draw Point&#39;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s">&#39;drawPoint&#39;</span>
+
+<div class="viewcode-block" id="DrawPointMode.sceneEventFilter"><a class="viewcode-back" href="../../api/gsdview.qt4draw.html#gsdview.qt4draw.DrawPointMode.sceneEventFilter">[docs]</a>    <span class="k">def</span> <span class="nf">sceneEventFilter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">type</span><span class="p">()</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QEvent</span><span class="o">.</span><span class="n">GraphicsSceneMousePress</span> <span class="ow">and</span>
+                                    <span class="n">event</span><span class="o">.</span><span class="n">button</span><span class="p">()</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">LeftButton</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">True</span>
+
+        <span class="k">elif</span> <span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">type</span><span class="p">()</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QEvent</span><span class="o">.</span><span class="n">GraphicsSceneMouseRelease</span> <span class="ow">and</span>
+                                    <span class="n">event</span><span class="o">.</span><span class="n">button</span><span class="p">()</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">LeftButton</span><span class="p">):</span>
+            <span class="n">pen</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QPen</span><span class="p">()</span>
+            <span class="n">pen</span><span class="o">.</span><span class="n">setColor</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">red</span><span class="p">)</span>
+
+            <span class="n">brush</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QBrush</span><span class="p">()</span>
+            <span class="n">brush</span><span class="o">.</span><span class="n">setColor</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">red</span><span class="p">)</span>
+            <span class="n">brush</span><span class="o">.</span><span class="n">setStyle</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">SolidPattern</span><span class="p">)</span>
+
+            <span class="n">RADIUS</span> <span class="o">=</span> <span class="mi">3</span>
+            <span class="n">point</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">scenePos</span><span class="p">()</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="n">GraphicsPointItem</span><span class="p">(</span><span class="n">point</span><span class="o">.</span><span class="n">x</span><span class="p">(),</span> <span class="n">point</span><span class="o">.</span><span class="n">y</span><span class="p">(),</span> <span class="n">RADIUS</span><span class="p">)</span>
+            <span class="n">item</span><span class="o">.</span><span class="n">setPen</span><span class="p">(</span><span class="n">pen</span><span class="p">)</span>
+            <span class="n">item</span><span class="o">.</span><span class="n">setBrush</span><span class="p">(</span><span class="n">brush</span><span class="p">)</span>
+            <span class="n">item</span><span class="o">.</span><span class="n">setFlag</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QGraphicsItem</span><span class="o">.</span><span class="n">ItemIsSelectable</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
+            <span class="n">item</span><span class="o">.</span><span class="n">setFlag</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QGraphicsItem</span><span class="o">.</span><span class="n">ItemIsMovable</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">True</span>
+
+        <span class="k">return</span> <span class="bp">False</span>
+
+</div></div>
+<div class="viewcode-block" id="DrawLineMode"><a class="viewcode-back" href="../../api/gsdview.qt4draw.html#gsdview.qt4draw.DrawLineMode">[docs]</a><span class="k">class</span> <span class="nc">DrawLineMode</span><span class="p">(</span><span class="n">MouseMode</span><span class="p">):</span>
+    <span class="n">dragmode</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QGraphicsView</span><span class="o">.</span><span class="n">NoDrag</span>
+    <span class="n">cursor</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">CrossCursor</span>
+    <span class="n">icon</span> <span class="o">=</span> <span class="s">&#39;:/trolltech/dialogs/qprintpreviewdialog/images/fit-width-24.png&#39;</span>
+    <span class="n">label</span> <span class="o">=</span> <span class="s">&#39;Draw Line&#39;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s">&#39;drawLine&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">DrawLineMode</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rubberband</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pen</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QPen</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pen</span><span class="o">.</span><span class="n">setWidth</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pen</span><span class="o">.</span><span class="n">setColor</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">red</span><span class="p">)</span>
+
+<div class="viewcode-block" id="DrawLineMode.sceneEventFilter"><a class="viewcode-back" href="../../api/gsdview.qt4draw.html#gsdview.qt4draw.DrawLineMode.sceneEventFilter">[docs]</a>    <span class="k">def</span> <span class="nf">sceneEventFilter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">type</span><span class="p">()</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QEvent</span><span class="o">.</span><span class="n">GraphicsSceneMousePress</span> <span class="ow">and</span>
+                                    <span class="n">event</span><span class="o">.</span><span class="n">button</span><span class="p">()</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">LeftButton</span><span class="p">):</span>
+            <span class="k">assert</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rubberband</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rubberband</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QRubberBand</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QRubberBand</span><span class="o">.</span><span class="n">Line</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rubberband</span><span class="o">.</span><span class="n">setGeometry</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QRect</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">screenPos</span><span class="p">(),</span>
+                                                     <span class="n">QtCore</span><span class="o">.</span><span class="n">QSize</span><span class="p">()))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rubberband</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+            <span class="k">return</span> <span class="bp">True</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">type</span><span class="p">()</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QEvent</span><span class="o">.</span><span class="n">GraphicsSceneMouseRelease</span> <span class="ow">and</span>
+                                    <span class="n">event</span><span class="o">.</span><span class="n">button</span><span class="p">()</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">LeftButton</span><span class="p">):</span>
+            <span class="k">assert</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rubberband</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rubberband</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rubberband</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QLineF</span><span class="p">(</span>
+                            <span class="n">event</span><span class="o">.</span><span class="n">buttonDownScenePos</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">LeftButton</span><span class="p">),</span>
+                            <span class="n">event</span><span class="o">.</span><span class="n">scenePos</span><span class="p">())</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">addLine</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pen</span><span class="p">)</span>
+            <span class="n">item</span><span class="o">.</span><span class="n">setFlag</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QGraphicsItem</span><span class="o">.</span><span class="n">ItemIsSelectable</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
+            <span class="n">item</span><span class="o">.</span><span class="n">setFlag</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QGraphicsItem</span><span class="o">.</span><span class="n">ItemIsMovable</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">True</span>
+
+        <span class="k">elif</span> <span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">type</span><span class="p">()</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QEvent</span><span class="o">.</span><span class="n">GraphicsSceneMouseMove</span> <span class="ow">and</span>
+                                <span class="nb">bool</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">buttons</span><span class="p">()</span> <span class="o">&amp;</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">LeftButton</span><span class="p">)):</span>
+            <span class="k">assert</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rubberband</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">)</span>
+            <span class="n">rect</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QRect</span><span class="p">(</span>
+                            <span class="n">event</span><span class="o">.</span><span class="n">buttonDownScreenPos</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">LeftButton</span><span class="p">),</span>
+                            <span class="n">event</span><span class="o">.</span><span class="n">screenPos</span><span class="p">())</span><span class="o">.</span><span class="n">normalized</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rubberband</span><span class="o">.</span><span class="n">setGeometry</span><span class="p">(</span><span class="n">rect</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">True</span>
+
+        <span class="k">return</span> <span class="bp">False</span>
+
+
+<span class="c">#~ class DrawPolygonMode(MouseMode):</span>
+    <span class="c">#~ dragmode = QtGui.QGraphicsView.NoDrag</span>
+    <span class="c">#~ cursor = QtCore.Qt.CrossCursor</span>
+    <span class="c">#~ icon = &#39;:/trolltech/dialogs/qprintpreviewdialog/images/fit-width-24.png&#39;</span>
+    <span class="c">#~ label = &#39;Draw Line&#39;</span>
+    <span class="c">#~ name = &#39;drawLine&#39;</span>
+
+    <span class="c">#~ def __init__(self, parent=None):</span>
+        <span class="c">#~ super(DrawPolygonMode, self).__init__(parent)</span>
+        <span class="c">#~ self.rubberband = None</span>
+        <span class="c">#~ self.pen = QtGui.QPen()</span>
+        <span class="c">#~ self.pen.setWidth(1)</span>
+        <span class="c">#~ self.pen.setColor(QtCore.Qt.red)</span>
+        <span class="c">#~ self.brush = QtGui.QBrush()</span>
+        <span class="c">#~ #self.brush.setStyle(QtCore.Qt.SolidPattern)</span>
+        <span class="c">#~ #self.brush.setColor(QtCore.Qt.red)</span>
+
+    <span class="c">#~ def sceneEventFilter(self, obj, event):</span>
+        <span class="c">#~ if (event.type() == QtCore.QEvent.GraphicsSceneMousePress and</span>
+                                    <span class="c">#~ event.button() == QtCore.Qt.LeftButton):</span>
+            <span class="c">#~ assert(self.rubberband is None)</span>
+            <span class="c">#~ self.rubberband = QtGui.QRubberBand(QtGui.QRubberBand.Line)</span>
+            <span class="c">#~ self.rubberband.setGeometry(QtCore.QRect(event.screenPos(),</span>
+                                                     <span class="c">#~ QtCore.QSize()))</span>
+            <span class="c">#~ self.rubberband.show()</span>
+            <span class="c">#~ return True</span>
+
+        <span class="c">#~ if (event.type() == QtCore.QEvent.GraphicsSceneMouseRelease and</span>
+                                    <span class="c">#~ event.button() == QtCore.Qt.LeftButton):</span>
+            <span class="c">#~ assert(self.rubberband is not None)</span>
+            <span class="c">#~ self.rubberband.hide()</span>
+            <span class="c">#~ self.rubberband = None</span>
+            <span class="c">#~ line = QtCore.QLineF(</span>
+                            <span class="c">#~ event.buttonDownScenePos(QtCore.Qt.LeftButton),</span>
+                            <span class="c">#~ event.scenePos())</span>
+            <span class="c">#~ item = obj.addLine(line, self.pen)</span>
+            <span class="c">#~ item.setFlag(QtGui.QGraphicsItem.ItemIsSelectable, True)</span>
+            <span class="c">#~ item.setFlag(QtGui.QGraphicsItem.ItemIsMovable, True)</span>
+            <span class="c">#~ return True</span>
+
+        <span class="c">#~ elif (event.type() == QtCore.QEvent.GraphicsSceneMouseMove and</span>
+                                <span class="c">#~ bool(event.buttons() &amp; QtCore.Qt.LeftButton)):</span>
+            <span class="c">#~ assert(self.rubberband is not None)</span>
+            <span class="c">#~ rect = QtCore.QRect(</span>
+                            <span class="c">#~ event.buttonDownScreenPos(QtCore.Qt.LeftButton),</span>
+                            <span class="c">#~ event.screenPos()).normalized()</span>
+            <span class="c">#~ self.rubberband.setGeometry(rect)</span>
+            <span class="c">#~ return True</span>
+
+        <span class="c">#~ return False</span>
+
+</div></div>
+<div class="viewcode-block" id="DrawRectMode"><a class="viewcode-back" href="../../api/gsdview.qt4draw.html#gsdview.qt4draw.DrawRectMode">[docs]</a><span class="k">class</span> <span class="nc">DrawRectMode</span><span class="p">(</span><span class="n">MouseMode</span><span class="p">):</span>
+    <span class="n">dragmode</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QGraphicsView</span><span class="o">.</span><span class="n">NoDrag</span>
+    <span class="n">cursor</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">CrossCursor</span>
+    <span class="n">icon</span> <span class="o">=</span> <span class="s">&#39;:/trolltech/styles/commonstyle/images/media-stop-32.png&#39;</span>
+    <span class="n">label</span> <span class="o">=</span> <span class="s">&#39;Draw Rect&#39;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s">&#39;drawRect&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">DrawRectMode</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rubberband</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pen</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QPen</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pen</span><span class="o">.</span><span class="n">setWidth</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pen</span><span class="o">.</span><span class="n">setColor</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">red</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">brush</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QBrush</span><span class="p">()</span>
+        <span class="c">#self.brush.setStyle(QtCore.Qt.SolidPattern)</span>
+        <span class="c">#self.brush.setColor(QtCore.Qt.red)</span>
+
+<div class="viewcode-block" id="DrawRectMode.sceneEventFilter"><a class="viewcode-back" href="../../api/gsdview.qt4draw.html#gsdview.qt4draw.DrawRectMode.sceneEventFilter">[docs]</a>    <span class="k">def</span> <span class="nf">sceneEventFilter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">type</span><span class="p">()</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QEvent</span><span class="o">.</span><span class="n">GraphicsSceneMousePress</span> <span class="ow">and</span>
+                                    <span class="n">event</span><span class="o">.</span><span class="n">button</span><span class="p">()</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">LeftButton</span><span class="p">):</span>
+            <span class="k">assert</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rubberband</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rubberband</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QRubberBand</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QRubberBand</span><span class="o">.</span><span class="n">Rectangle</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rubberband</span><span class="o">.</span><span class="n">setGeometry</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QRect</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">screenPos</span><span class="p">(),</span>
+                                                     <span class="n">QtCore</span><span class="o">.</span><span class="n">QSize</span><span class="p">()))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rubberband</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+            <span class="k">return</span> <span class="bp">True</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">type</span><span class="p">()</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QEvent</span><span class="o">.</span><span class="n">GraphicsSceneMouseRelease</span> <span class="ow">and</span>
+                                    <span class="n">event</span><span class="o">.</span><span class="n">button</span><span class="p">()</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">LeftButton</span><span class="p">):</span>
+            <span class="k">assert</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rubberband</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rubberband</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rubberband</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="n">rect</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QRectF</span><span class="p">(</span>
+                            <span class="n">event</span><span class="o">.</span><span class="n">buttonDownScenePos</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">LeftButton</span><span class="p">),</span>
+                            <span class="n">event</span><span class="o">.</span><span class="n">scenePos</span><span class="p">())</span><span class="o">.</span><span class="n">normalized</span><span class="p">()</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">addRect</span><span class="p">(</span><span class="n">rect</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pen</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">brush</span><span class="p">)</span>
+            <span class="n">item</span><span class="o">.</span><span class="n">setFlag</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QGraphicsItem</span><span class="o">.</span><span class="n">ItemIsSelectable</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
+            <span class="n">item</span><span class="o">.</span><span class="n">setFlag</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QGraphicsItem</span><span class="o">.</span><span class="n">ItemIsMovable</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">True</span>
+
+        <span class="k">elif</span> <span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">type</span><span class="p">()</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QEvent</span><span class="o">.</span><span class="n">GraphicsSceneMouseMove</span> <span class="ow">and</span>
+                                <span class="nb">bool</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">buttons</span><span class="p">()</span> <span class="o">&amp;</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">LeftButton</span><span class="p">)):</span>
+            <span class="k">assert</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rubberband</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">)</span>
+            <span class="n">rect</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QRect</span><span class="p">(</span>
+                            <span class="n">event</span><span class="o">.</span><span class="n">buttonDownScreenPos</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">LeftButton</span><span class="p">),</span>
+                            <span class="n">event</span><span class="o">.</span><span class="n">screenPos</span><span class="p">())</span><span class="o">.</span><span class="n">normalized</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rubberband</span><span class="o">.</span><span class="n">setGeometry</span><span class="p">(</span><span class="n">rect</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">True</span>
+
+        <span class="k">return</span> <span class="bp">False</span>
+
+</div></div>
+<div class="viewcode-block" id="DrawEllipseMode"><a class="viewcode-back" href="../../api/gsdview.qt4draw.html#gsdview.qt4draw.DrawEllipseMode">[docs]</a><span class="k">class</span> <span class="nc">DrawEllipseMode</span><span class="p">(</span><span class="n">MouseMode</span><span class="p">):</span>
+    <span class="n">dragmode</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QGraphicsView</span><span class="o">.</span><span class="n">NoDrag</span>
+    <span class="n">cursor</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">CrossCursor</span>
+    <span class="n">icon</span> <span class="o">=</span> <span class="s">&#39;:/trolltech/styles/commonstyle/images/standardbutton-no-128.png&#39;</span>
+    <span class="n">label</span> <span class="o">=</span> <span class="s">&#39;Draw Ellipse&#39;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s">&#39;drawEllipse&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">DrawEllipseMode</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rubberband</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pen</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QPen</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pen</span><span class="o">.</span><span class="n">setWidth</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pen</span><span class="o">.</span><span class="n">setColor</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">red</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">brush</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QBrush</span><span class="p">()</span>
+        <span class="c">#self.brush.setStyle(QtCore.Qt.SolidPattern)</span>
+        <span class="c">#self.brush.setColor(QtCore.Qt.red)</span>
+
+<div class="viewcode-block" id="DrawEllipseMode.sceneEventFilter"><a class="viewcode-back" href="../../api/gsdview.qt4draw.html#gsdview.qt4draw.DrawEllipseMode.sceneEventFilter">[docs]</a>    <span class="k">def</span> <span class="nf">sceneEventFilter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">type</span><span class="p">()</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QEvent</span><span class="o">.</span><span class="n">GraphicsSceneMousePress</span> <span class="ow">and</span>
+                                    <span class="n">event</span><span class="o">.</span><span class="n">button</span><span class="p">()</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">LeftButton</span><span class="p">):</span>
+            <span class="k">assert</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rubberband</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rubberband</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QRubberBand</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QRubberBand</span><span class="o">.</span><span class="n">Rectangle</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rubberband</span><span class="o">.</span><span class="n">setGeometry</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QRect</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">screenPos</span><span class="p">(),</span>
+                                                     <span class="n">QtCore</span><span class="o">.</span><span class="n">QSize</span><span class="p">()))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rubberband</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+            <span class="k">return</span> <span class="bp">True</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">type</span><span class="p">()</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QEvent</span><span class="o">.</span><span class="n">GraphicsSceneMouseRelease</span> <span class="ow">and</span>
+                                    <span class="n">event</span><span class="o">.</span><span class="n">button</span><span class="p">()</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">LeftButton</span><span class="p">):</span>
+            <span class="k">assert</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rubberband</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rubberband</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rubberband</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="n">rect</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QRectF</span><span class="p">(</span>
+                            <span class="n">event</span><span class="o">.</span><span class="n">buttonDownScenePos</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">LeftButton</span><span class="p">),</span>
+                            <span class="n">event</span><span class="o">.</span><span class="n">scenePos</span><span class="p">())</span><span class="o">.</span><span class="n">normalized</span><span class="p">()</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">addEllipse</span><span class="p">(</span><span class="n">rect</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pen</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">brush</span><span class="p">)</span>
+            <span class="n">item</span><span class="o">.</span><span class="n">setFlag</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QGraphicsItem</span><span class="o">.</span><span class="n">ItemIsSelectable</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
+            <span class="n">item</span><span class="o">.</span><span class="n">setFlag</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QGraphicsItem</span><span class="o">.</span><span class="n">ItemIsMovable</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">True</span>
+
+        <span class="k">elif</span> <span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">type</span><span class="p">()</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QEvent</span><span class="o">.</span><span class="n">GraphicsSceneMouseMove</span> <span class="ow">and</span>
+                                <span class="nb">bool</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">buttons</span><span class="p">()</span> <span class="o">&amp;</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">LeftButton</span><span class="p">)):</span>
+            <span class="k">assert</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rubberband</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">)</span>
+            <span class="n">rect</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QRect</span><span class="p">(</span>
+                            <span class="n">event</span><span class="o">.</span><span class="n">buttonDownScreenPos</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">LeftButton</span><span class="p">),</span>
+                            <span class="n">event</span><span class="o">.</span><span class="n">screenPos</span><span class="p">())</span><span class="o">.</span><span class="n">normalized</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rubberband</span><span class="o">.</span><span class="n">setGeometry</span><span class="p">(</span><span class="n">rect</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">True</span>
+
+        <span class="k">return</span> <span class="bp">False</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+    
+    
+    <p>
+        <a href="http://sourceforge.net/projects/gsdview">
+            <img src="http://sflogo.sourceforge.net/sflogo.php?group_id=226458&type=14" width="150" height="40" alt="Get GSDView at SourceForge.net. Fast, secure and Free Open Source software downloads" />
+        </a>
+    </p>
+    
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li><a href="../../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../gsdview.html" >gsdview</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2008-2011, Antonio Valentino.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,362 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>gsdview.mousemanager &mdash; GSDView Open Edition Home Page</title>
+    <link rel="stylesheet" href="../_static/sourceforge.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.6.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/logo.ico"/>
+    <link rel="top" title="GSDView Open Edition Home Page" href="../index.html" />
+    <link rel="up" title="API Reference" href="../reference.html" />
+    <link rel="next" title="gsdview.pluginmanager" href="gsdview.pluginmanager.html" />
+    <link rel="prev" title="gsdview.mdi" href="gsdview.mdi.html" /> 
+  </head>
+  <body>
+    
+        
+    
+    
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li class="right" >
+          <a href="gsdview.pluginmanager.html" title="gsdview.pluginmanager"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="gsdview.mdi.html" title="gsdview.mdi"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../reference.html" accesskey="U">API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-gsdview.mousemanager">
+<span id="gsdview-mousemanager"></span><h1>gsdview.mousemanager<a class="headerlink" href="#module-gsdview.mousemanager" title="Permalink to this headline">¶</a></h1>
+<p>Mouse manager for the Qt4 graphics framework.</p>
+<p>Mouse management for the Qt4 graphics framework is implemented by a set
+of MouseMode objects, that provide specific event handlers and behave
+like a descriptor, and a manager object that catches mouse events and
+dispatch them to the appropriate hendler.</p>
+<p>The MouseManager provides methods for eddeing/removing mouse modes,
+making the system expandible, and also methods to register objects
+(QGraphicsScene and QGraphicsView) to be controlled.</p>
+<p class="rubric">Classes</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><a class="reference internal" href="#gsdview.mousemanager.MouseManager" title="gsdview.mousemanager.MouseManager"><tt class="xref py py-obj docutils literal"><span class="pre">MouseManager</span></tt></a>(**kwargs[,&nbsp;parent,&nbsp;stdmodes])</td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.mousemanager.MouseMode" title="gsdview.mousemanager.MouseMode"><tt class="xref py py-obj docutils literal"><span class="pre">MouseMode</span></tt></a></td>
+<td>Base class for mouse mode desctiptors.</td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.mousemanager.PointerMode" title="gsdview.mousemanager.PointerMode"><tt class="xref py py-obj docutils literal"><span class="pre">PointerMode</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.mousemanager.RubberBandMode" title="gsdview.mousemanager.RubberBandMode"><tt class="xref py py-obj docutils literal"><span class="pre">RubberBandMode</span></tt></a></td>
+<td>Mouse mode for rubber band selection.</td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.mousemanager.ScrollHandMode" title="gsdview.mousemanager.ScrollHandMode"><tt class="xref py py-obj docutils literal"><span class="pre">ScrollHandMode</span></tt></a></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="class">
+<dt id="gsdview.mousemanager.MouseManager">
+<em class="property">class </em><tt class="descclassname">gsdview.mousemanager.</tt><tt class="descname">MouseManager</tt><big>(</big><em>parent=None</em>, <em>stdmodes=True</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/gsdview/mousemanager.html#MouseManager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.mousemanager.MouseManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">PyQt4.QtCore.QObject</span></tt></p>
+<dl class="method">
+<dt id="gsdview.mousemanager.MouseManager.addMode">
+<tt class="descname">addMode</tt><big>(</big><em>mode</em><big>)</big><a class="reference internal" href="../_modules/gsdview/mousemanager.html#MouseManager.addMode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.mousemanager.MouseManager.addMode" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.mousemanager.MouseManager.eventFilter">
+<tt class="descname">eventFilter</tt><big>(</big><em>obj</em>, <em>event</em><big>)</big><a class="reference internal" href="../_modules/gsdview/mousemanager.html#MouseManager.eventFilter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.mousemanager.MouseManager.eventFilter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Events dispatcher</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gsdview.mousemanager.MouseManager.getModeDescriptor">
+<tt class="descname">getModeDescriptor</tt><big>(</big><em>name=None</em><big>)</big><a class="reference internal" href="../_modules/gsdview/mousemanager.html#MouseManager.getModeDescriptor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.mousemanager.MouseManager.getModeDescriptor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the mouse mode object</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.mousemanager.MouseManager.mode">
+<tt class="descname">mode</tt><a class="headerlink" href="#gsdview.mousemanager.MouseManager.mode" title="Permalink to this definition">¶</a></dt>
+<dd><p>mouse mode name</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.mousemanager.MouseManager.modeChanged">
+<tt class="descname">modeChanged</tt><a class="headerlink" href="#gsdview.mousemanager.MouseManager.modeChanged" title="Permalink to this definition">¶</a></dt>
+<dd><p>SIGNAL: it is emitted when the mouse mode is changed</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">C++ signature:</th><td class="field-body"><cite>void modeChanged(const QString&amp;)</cite></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="gsdview.mousemanager.MouseManager.modes">
+<tt class="descname">modes</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/mousemanager.html#MouseManager.modes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.mousemanager.MouseManager.modes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.mousemanager.MouseManager.register">
+<tt class="descname">register</tt><big>(</big><em>obj</em><big>)</big><a class="reference internal" href="../_modules/gsdview/mousemanager.html#MouseManager.register"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.mousemanager.MouseManager.register" title="Permalink to this definition">¶</a></dt>
+<dd><p>Register a Qt graphics object to be monitored by the mouse manager.</p>
+<p>QGraphicsScene and QGrapgicsViews (and descending classes) objects
+can be registered to be monitored by the mouse manager.</p>
+<p>Scene objects associated to views (passes as argument) are
+automatically registered.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gsdview.mousemanager.MouseManager.registerStandardModes">
+<tt class="descname">registerStandardModes</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/mousemanager.html#MouseManager.registerStandardModes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.mousemanager.MouseManager.registerStandardModes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.mousemanager.MouseManager.unregister">
+<tt class="descname">unregister</tt><big>(</big><em>obj</em><big>)</big><a class="reference internal" href="../_modules/gsdview/mousemanager.html#MouseManager.unregister"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.mousemanager.MouseManager.unregister" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unregister monitored objects.</p>
+<p>If the object passed as argument is not a registered object
+nothing happens.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">this method never tries to unregister scene objects
+associated to the view passed as argument.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gsdview.mousemanager.MouseMode">
+<em class="property">class </em><tt class="descclassname">gsdview.mousemanager.</tt><tt class="descname">MouseMode</tt><a class="reference internal" href="../_modules/gsdview/mousemanager.html#MouseMode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.mousemanager.MouseMode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">PyQt4.QtCore.QObject</span></tt></p>
+<p>Base class for mouse mode desctiptors.</p>
+<p>Qt Graphics Framework mouse mode descriptors define some basic
+property for mouse related matters:</p>
+<ul class="simple">
+<li>cursor</li>
+<li>dragmode</li>
+<li>eventFilter</li>
+<li>name</li>
+<li>label</li>
+<li>icon</li>
+</ul>
+<p>The first three properties (not to be intender as python progremming
+language property) are strongly characterizing of the way the mouse
+works.</p>
+<p>In particular the eventFilter method is used to filter all events
+coming from graphics scenes an graphics views.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">in order to work properly the eventFilter should be installed
+on both graphics scene and view and also on the scrollbars of
+the graphics view.
+So please always use the register method of MouseManager for
+a proper installaton of al event filters.</p>
+</div>
+<dl class="method">
+<dt id="gsdview.mousemanager.MouseMode.eventFilter">
+<tt class="descname">eventFilter</tt><big>(</big><em>obj</em>, <em>event</em><big>)</big><a class="reference internal" href="../_modules/gsdview/mousemanager.html#MouseMode.eventFilter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.mousemanager.MouseMode.eventFilter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Basic implementation of the eventFilter method.</p>
+<p>The dafault implementation makes some basic operation such setting
+the mouse cursor anc dispatch the event to specific methods:</p>
+<ul class="simple">
+<li>sceneEventFilter</li>
+<li>viewEventFilter</li>
+<li>scrollbarEventFilter</li>
+</ul>
+<p>In most of the cases derived classes only need to specialize one or
+more of this specific methods.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gsdview.mousemanager.MouseMode.sceneEventFilter">
+<tt class="descname">sceneEventFilter</tt><big>(</big><em>obj</em>, <em>event</em><big>)</big><a class="reference internal" href="../_modules/gsdview/mousemanager.html#MouseMode.sceneEventFilter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.mousemanager.MouseMode.sceneEventFilter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.mousemanager.MouseMode.scrollbarEventFilter">
+<tt class="descname">scrollbarEventFilter</tt><big>(</big><em>obj</em>, <em>event</em><big>)</big><a class="reference internal" href="../_modules/gsdview/mousemanager.html#MouseMode.scrollbarEventFilter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.mousemanager.MouseMode.scrollbarEventFilter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.mousemanager.MouseMode.viewEventFilter">
+<tt class="descname">viewEventFilter</tt><big>(</big><em>obj</em>, <em>event</em><big>)</big><a class="reference internal" href="../_modules/gsdview/mousemanager.html#MouseMode.viewEventFilter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.mousemanager.MouseMode.viewEventFilter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gsdview.mousemanager.PointerMode">
+<em class="property">class </em><tt class="descclassname">gsdview.mousemanager.</tt><tt class="descname">PointerMode</tt><a class="reference internal" href="../_modules/gsdview/mousemanager.html#PointerMode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.mousemanager.PointerMode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gsdview.mousemanager.MouseMode" title="gsdview.mousemanager.MouseMode"><tt class="xref py py-class docutils literal"><span class="pre">gsdview.mousemanager.MouseMode</span></tt></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="gsdview.mousemanager.RubberBandMode">
+<em class="property">class </em><tt class="descclassname">gsdview.mousemanager.</tt><tt class="descname">RubberBandMode</tt><a class="reference internal" href="../_modules/gsdview/mousemanager.html#RubberBandMode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.mousemanager.RubberBandMode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gsdview.mousemanager.MouseMode" title="gsdview.mousemanager.MouseMode"><tt class="xref py py-class docutils literal"><span class="pre">gsdview.mousemanager.MouseMode</span></tt></a></p>
+<p>Mouse mode for rubber band selection.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Signals :</th><td class="field-body"><ul class="first last simple">
+<li><a class="reference internal" href="#gsdview.mousemanager.RubberBandMode.rubberBandSeclection" title="gsdview.mousemanager.RubberBandMode.rubberBandSeclection"><tt class="xref py py-attr docutils literal"><span class="pre">rubberBandSeclection</span></tt></a></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="gsdview.mousemanager.RubberBandMode.rubberBandSeclection">
+<tt class="descname">rubberBandSeclection</tt><a class="headerlink" href="#gsdview.mousemanager.RubberBandMode.rubberBandSeclection" title="Permalink to this definition">¶</a></dt>
+<dd><p>SIGNAL: it is emitted when a rectangular area is selected</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">C++ signature:</th><td class="field-body"><cite>void rubberBandSeclection(const QRectF&amp;)</cite></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="gsdview.mousemanager.RubberBandMode.sceneEventFilter">
+<tt class="descname">sceneEventFilter</tt><big>(</big><em>obj</em>, <em>event</em><big>)</big><a class="reference internal" href="../_modules/gsdview/mousemanager.html#RubberBandMode.sceneEventFilter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.mousemanager.RubberBandMode.sceneEventFilter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.mousemanager.RubberBandMode.scrollbarEventFilter">
+<tt class="descname">scrollbarEventFilter</tt><big>(</big><em>obj</em>, <em>event</em><big>)</big><a class="reference internal" href="../_modules/gsdview/mousemanager.html#RubberBandMode.scrollbarEventFilter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.mousemanager.RubberBandMode.scrollbarEventFilter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gsdview.mousemanager.ScrollHandMode">
+<em class="property">class </em><tt class="descclassname">gsdview.mousemanager.</tt><tt class="descname">ScrollHandMode</tt><a class="reference internal" href="../_modules/gsdview/mousemanager.html#ScrollHandMode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.mousemanager.ScrollHandMode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gsdview.mousemanager.MouseMode" title="gsdview.mousemanager.MouseMode"><tt class="xref py py-class docutils literal"><span class="pre">gsdview.mousemanager.MouseMode</span></tt></a></p>
+<dl class="method">
+<dt id="gsdview.mousemanager.ScrollHandMode.scrollbarEventFilter">
+<tt class="descname">scrollbarEventFilter</tt><big>(</big><em>obj</em>, <em>event</em><big>)</big><a class="reference internal" href="../_modules/gsdview/mousemanager.html#ScrollHandMode.scrollbarEventFilter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.mousemanager.ScrollHandMode.scrollbarEventFilter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.mousemanager.ScrollHandMode.viewEventFilter">
+<tt class="descname">viewEventFilter</tt><big>(</big><em>obj</em>, <em>event</em><big>)</big><a class="reference internal" href="../_modules/gsdview/mousemanager.html#ScrollHandMode.viewEventFilter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.mousemanager.ScrollHandMode.viewEventFilter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo.png" alt="Logo"/>
+            </a></p>
+    
+    
+    <p>
+        <a href="http://sourceforge.net/projects/gsdview">
+            <img src="http://sflogo.sourceforge.net/sflogo.php?group_id=226458&type=14" width="150" height="40" alt="Get GSDView at SourceForge.net. Fast, secure and Free Open Source software downloads" />
+        </a>
+    </p>
+    
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="gsdview.mdi.html"
+                        title="previous chapter">gsdview.mdi</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="gsdview.pluginmanager.html"
+                        title="next chapter">gsdview.pluginmanager</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/api/gsdview.mousemanager.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li class="right" >
+          <a href="gsdview.pluginmanager.html" title="gsdview.pluginmanager"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="gsdview.mdi.html" title="gsdview.mdi"
+             >previous</a> |</li>
+        <li><a href="../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../reference.html" >API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2008-2011, Antonio Valentino.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

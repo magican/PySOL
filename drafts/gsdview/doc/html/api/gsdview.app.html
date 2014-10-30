@@ -1,0 +1,384 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>gsdview.app &mdash; GSDView Open Edition Home Page</title>
+    <link rel="stylesheet" href="../_static/sourceforge.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.6.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/logo.ico"/>
+    <link rel="top" title="GSDView Open Edition Home Page" href="../index.html" />
+    <link rel="up" title="API Reference" href="../reference.html" />
+    <link rel="next" title="gsdview.appsite" href="gsdview.appsite.html" />
+    <link rel="prev" title="gsdview" href="gsdview.html" /> 
+  </head>
+  <body>
+    
+        
+    
+    
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li class="right" >
+          <a href="gsdview.appsite.html" title="gsdview.appsite"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="gsdview.html" title="gsdview"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../reference.html" accesskey="U">API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-gsdview.app">
+<span id="gsdview-app"></span><h1>gsdview.app<a class="headerlink" href="#module-gsdview.app" title="Permalink to this headline">¶</a></h1>
+<p>GUI front-end for the Geospatial Data Abstracton Library (GDAL).</p>
+<p class="rubric">Classes</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><tt class="xref py py-obj docutils literal"><span class="pre">AboutDialog</span></tt>(**kwargs[,&nbsp;parent,&nbsp;flags])</td>
+<td></td>
+</tr>
+<tr><td><tt class="xref py py-obj docutils literal"><span class="pre">ExceptionDialog</span></tt></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.app.GSDView" title="gsdview.app.GSDView"><tt class="xref py py-obj docutils literal"><span class="pre">GSDView</span></tt></a>(**kwargs[,&nbsp;parent,&nbsp;flags])</td>
+<td>Main window class for GSDView application.</td>
+</tr>
+<tr><td><tt class="xref py py-obj docutils literal"><span class="pre">ItemModelMainWindow</span></tt>(**kwargs[,&nbsp;parent,&nbsp;flags])</td>
+<td></td>
+</tr>
+<tr><td><tt class="xref py py-obj docutils literal"><span class="pre">PreferencesDialog</span></tt>(**kwargs[,&nbsp;parent,&nbsp;flags])</td>
+<td>Extendible preferences dialogg for GSDView.</td>
+</tr>
+<tr><td><tt class="xref py py-obj docutils literal"><span class="pre">Qt4DialogLoggingHandler</span></tt>([dialog,&nbsp;parent])</td>
+<td>Qt4 handler for the logging dialog.</td>
+</tr>
+<tr><td><tt class="xref py py-obj docutils literal"><span class="pre">Qt4ToolController</span></tt>(**kwargs[,&nbsp;logger,&nbsp;parent])</td>
+<td>Qt4 tool controller.</td>
+</tr>
+</tbody>
+</table>
+<dl class="class">
+<dt id="gsdview.app.GSDView">
+<em class="property">class </em><tt class="descclassname">gsdview.app.</tt><tt class="descname">GSDView</tt><big>(</big><em>parent=None</em>, <em>flags=&lt;PyQt4.QtCore.WindowFlags object at 0x3981f30&gt;</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/gsdview/app.html#GSDView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.app.GSDView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="gsdview.mdi.html#gsdview.mdi.ItemModelMainWindow" title="gsdview.mdi.ItemModelMainWindow"><tt class="xref py py-class docutils literal"><span class="pre">gsdview.mdi.ItemModelMainWindow</span></tt></a></p>
+<p>Main window class for GSDView application.</p>
+<dl class="attribute">
+<dt id="gsdview.app.GSDView.aboutdialog">
+<tt class="descname">aboutdialog</tt><a class="headerlink" href="#gsdview.app.GSDView.aboutdialog" title="Permalink to this definition">¶</a></dt>
+<dd><p>application global about dialog instance</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gsdview.app.GSDView.applySettings">
+<tt class="descname">applySettings</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/app.html#GSDView.applySettings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.app.GSDView.applySettings" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.app.GSDView.backends">
+<tt class="descname">backends</tt><a class="headerlink" href="#gsdview.app.GSDView.backends" title="Permalink to this definition">¶</a></dt>
+<dd><p>backends list</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.app.GSDView.cachedir">
+<tt class="descname">cachedir</tt><a class="headerlink" href="#gsdview.app.GSDView.cachedir" title="Permalink to this definition">¶</a></dt>
+<dd><p>cache directory path</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gsdview.app.GSDView.changeEvent">
+<tt class="descname">changeEvent</tt><big>(</big><em>event</em><big>)</big><a class="reference internal" href="../_modules/gsdview/app.html#GSDView.changeEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.app.GSDView.changeEvent" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.app.GSDView.closeAll">
+<tt class="descname">closeAll</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/app.html#GSDView.closeAll"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.app.GSDView.closeAll" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.app.GSDView.closeEvent">
+<tt class="descname">closeEvent</tt><big>(</big><em>event</em><big>)</big><a class="reference internal" href="../_modules/gsdview/app.html#GSDView.closeEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.app.GSDView.closeEvent" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.app.GSDView.closeItem">
+<tt class="descname">closeItem</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/app.html#GSDView.closeItem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.app.GSDView.closeItem" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.app.GSDView.controller">
+<tt class="descname">controller</tt><a class="headerlink" href="#gsdview.app.GSDView.controller" title="Permalink to this definition">¶</a></dt>
+<dd><p>external tool controller</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gsdview.app.GSDView.currentGraphicsView">
+<tt class="descname">currentGraphicsView</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/app.html#GSDView.currentGraphicsView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.app.GSDView.currentGraphicsView" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.app.GSDView.excepthook">
+<tt class="descname">excepthook</tt><big>(</big><em>exctype</em>, <em>excvalue</em>, <em>tracebackobj</em><big>)</big><a class="reference internal" href="../_modules/gsdview/app.html#GSDView.excepthook"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.app.GSDView.excepthook" title="Permalink to this definition">¶</a></dt>
+<dd><p>Global function to catch unhandled exceptions.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>exctype</strong> &#8211; exception class</li>
+<li><strong>excvalue</strong> &#8211; exception instance</li>
+<li><strong>tracebackobj</strong> &#8211; traceback object</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.app.GSDView.fileActions">
+<tt class="descname">fileActions</tt><a class="headerlink" href="#gsdview.app.GSDView.fileActions" title="Permalink to this definition">¶</a></dt>
+<dd><p>actions associated to file menu</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.app.GSDView.filedialog">
+<tt class="descname">filedialog</tt><a class="headerlink" href="#gsdview.app.GSDView.filedialog" title="Permalink to this definition">¶</a></dt>
+<dd><p>application global file dialog instance</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.app.GSDView.helpActions">
+<tt class="descname">helpActions</tt><a class="headerlink" href="#gsdview.app.GSDView.helpActions" title="Permalink to this definition">¶</a></dt>
+<dd><p>help actions</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gsdview.app.GSDView.itemContextMenu">
+<tt class="descname">itemContextMenu</tt><big>(</big><em>pos</em><big>)</big><a class="reference internal" href="../_modules/gsdview/app.html#GSDView.itemContextMenu"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.app.GSDView.itemContextMenu" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.app.GSDView.loadSettings">
+<tt class="descname">loadSettings</tt><big>(</big><em>settings=None</em><big>)</big><a class="reference internal" href="../_modules/gsdview/app.html#GSDView.loadSettings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.app.GSDView.loadSettings" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.app.GSDView.logger">
+<tt class="descname">logger</tt><a class="headerlink" href="#gsdview.app.GSDView.logger" title="Permalink to this definition">¶</a></dt>
+<dd><p>application sandard logger</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.app.GSDView.monitor">
+<tt class="descname">monitor</tt><a class="headerlink" href="#gsdview.app.GSDView.monitor" title="Permalink to this definition">¶</a></dt>
+<dd><p>graphics scenes/views monitor</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.app.GSDView.mousemanager">
+<tt class="descname">mousemanager</tt><a class="headerlink" href="#gsdview.app.GSDView.mousemanager" title="Permalink to this definition">¶</a></dt>
+<dd><p>mouse manager for graphics scenes/views</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gsdview.app.GSDView.openFile">
+<tt class="descname">openFile</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/app.html#GSDView.openFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.app.GSDView.openFile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.app.GSDView.pluginmanager">
+<tt class="descname">pluginmanager</tt><a class="headerlink" href="#gsdview.app.GSDView.pluginmanager" title="Permalink to this definition">¶</a></dt>
+<dd><p>plugin manager instance</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.app.GSDView.preferencesdialog">
+<tt class="descname">preferencesdialog</tt><a class="headerlink" href="#gsdview.app.GSDView.preferencesdialog" title="Permalink to this definition">¶</a></dt>
+<dd><p>prefernces dialog instance</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gsdview.app.GSDView.processingDone">
+<tt class="descname">processingDone</tt><big>(</big><em>returncode=0</em><big>)</big><a class="reference internal" href="../_modules/gsdview/app.html#GSDView.processingDone"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.app.GSDView.processingDone" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.app.GSDView.processingStarted">
+<tt class="descname">processingStarted</tt><big>(</big><em>msg=None</em><big>)</big><a class="reference internal" href="../_modules/gsdview/app.html#GSDView.processingStarted"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.app.GSDView.processingStarted" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.app.GSDView.progressbar">
+<tt class="descname">progressbar</tt><a class="headerlink" href="#gsdview.app.GSDView.progressbar" title="Permalink to this definition">¶</a></dt>
+<dd><p>application progress bar</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gsdview.app.GSDView.saveSettings">
+<tt class="descname">saveSettings</tt><big>(</big><em>settings=None</em><big>)</big><a class="reference internal" href="../_modules/gsdview/app.html#GSDView.saveSettings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.app.GSDView.saveSettings" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.app.GSDView.settings">
+<tt class="descname">settings</tt><a class="headerlink" href="#gsdview.app.GSDView.settings" title="Permalink to this definition">¶</a></dt>
+<dd><p>application settings</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.app.GSDView.settingsActions">
+<tt class="descname">settingsActions</tt><a class="headerlink" href="#gsdview.app.GSDView.settingsActions" title="Permalink to this definition">¶</a></dt>
+<dd><p>settings actions</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.app.GSDView.settings_submenu">
+<tt class="descname">settings_submenu</tt><a class="headerlink" href="#gsdview.app.GSDView.settings_submenu" title="Permalink to this definition">¶</a></dt>
+<dd><p>settings sub-menu</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gsdview.app.GSDView.setupActions">
+<tt class="descname">setupActions</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/app.html#GSDView.setupActions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.app.GSDView.setupActions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.app.GSDView.setupController">
+<tt class="descname">setupController</tt><big>(</big><em>logger</em>, <em>statusbar</em>, <em>progressbar</em><big>)</big><a class="reference internal" href="../_modules/gsdview/app.html#GSDView.setupController"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.app.GSDView.setupController" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.app.GSDView.setupLogging">
+<tt class="descname">setupLogging</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/app.html#GSDView.setupLogging"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.app.GSDView.setupLogging" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.app.GSDView.setupPlugins">
+<tt class="descname">setupPlugins</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/app.html#GSDView.setupPlugins"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.app.GSDView.setupPlugins" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.app.GSDView.showPreferencesDialog">
+<tt class="descname">showPreferencesDialog</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/app.html#GSDView.showPreferencesDialog"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.app.GSDView.showPreferencesDialog" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.app.GSDView.stopbutton">
+<tt class="descname">stopbutton</tt><a class="headerlink" href="#gsdview.app.GSDView.stopbutton" title="Permalink to this definition">¶</a></dt>
+<dd><p>stop button for external tools</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gsdview.app.GSDView.updateProgressBar">
+<tt class="descname">updateProgressBar</tt><big>(</big><em>fract</em><big>)</big><a class="reference internal" href="../_modules/gsdview/app.html#GSDView.updateProgressBar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.app.GSDView.updateProgressBar" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.app.GSDView.updateSettingsMenu">
+<tt class="descname">updateSettingsMenu</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/app.html#GSDView.updateSettingsMenu"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.app.GSDView.updateSettingsMenu" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo.png" alt="Logo"/>
+            </a></p>
+    
+    
+    <p>
+        <a href="http://sourceforge.net/projects/gsdview">
+            <img src="http://sflogo.sourceforge.net/sflogo.php?group_id=226458&type=14" width="150" height="40" alt="Get GSDView at SourceForge.net. Fast, secure and Free Open Source software downloads" />
+        </a>
+    </p>
+    
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="gsdview.html"
+                        title="previous chapter">gsdview</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="gsdview.appsite.html"
+                        title="next chapter">gsdview.appsite</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/api/gsdview.app.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li class="right" >
+          <a href="gsdview.appsite.html" title="gsdview.appsite"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="gsdview.html" title="gsdview"
+             >previous</a> |</li>
+        <li><a href="../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../reference.html" >API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2008-2011, Antonio Valentino.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

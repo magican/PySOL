@@ -1,0 +1,366 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>gsdview.graphicsview &mdash; GSDView Open Edition Home Page</title>
+    <link rel="stylesheet" href="../../_static/sourceforge.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.6.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/logo.ico"/>
+    <link rel="top" title="GSDView Open Edition Home Page" href="../../index.html" />
+    <link rel="up" title="gsdview" href="../gsdview.html" /> 
+  </head>
+  <body>
+    
+        
+    
+    
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li><a href="../../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../gsdview.html" accesskey="U">gsdview</a> &raquo;</li> 
+      </ul>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for gsdview.graphicsview</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="c">### Copyright (C) 2008-2011 Antonio Valentino &lt;a_valentino@users.sf.net&gt;</span>
+
+<span class="c">### This file is part of GSDView.</span>
+
+<span class="c">### GSDView is free software; you can redistribute it and/or modify</span>
+<span class="c">### it under the terms of the GNU General Public License as published by</span>
+<span class="c">### the Free Software Foundation; either version 2 of the License, or</span>
+<span class="c">### (at your option) any later version.</span>
+
+<span class="c">### GSDView is distributed in the hope that it will be useful,</span>
+<span class="c">### but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c">### MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c">### GNU General Public License for more details.</span>
+
+<span class="c">### You should have received a copy of the GNU General Public License</span>
+<span class="c">### along with GSDView; if not, write to the Free Software</span>
+<span class="c">### Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA.</span>
+
+
+<span class="sd">&#39;&#39;&#39;Custom QtGui.QGraphicsView component.&#39;&#39;&#39;</span>
+
+
+<span class="kn">from</span> <span class="nn">qt</span> <span class="kn">import</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtGui</span>
+
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s">&#39;Antonio Valentino &lt;a_valentino@users.sf.net&gt;&#39;</span>
+<span class="n">__date__</span> <span class="o">=</span> <span class="s">&#39;$Date: 2011-07-30 21:10:38 +0200 (sab, 30 lug 2011) $&#39;</span>
+<span class="n">__revision__</span> <span class="o">=</span> <span class="s">&#39;$Revision: 981 $&#39;</span>
+
+
+<span class="c"># @TODO: move to gdalqt4.py</span>
+<span class="c"># @TODO: maybe this is not the best solution. Maybe a custom GraphicsItem</span>
+<span class="c">#        would be better</span>
+<span class="c"># @TODO: use event filters instead</span>
+<div class="viewcode-block" id="GraphicsView"><a class="viewcode-back" href="../../api/gsdview.graphicsview.html#gsdview.graphicsview.GraphicsView">[docs]</a><span class="k">class</span> <span class="nc">GraphicsView</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QGraphicsView</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+    <span class="c"># @TODO: check</span>
+    <span class="c">#~ enter = QtCore.Signal()</span>
+    <span class="c">#~ leave = QtCore.Signal()</span>
+    <span class="c">#~ mousePositionUpdated = QtCore.Signal(QtCore.QPoint)</span>
+    <span class="c">#~ posMarked = QtCore.Signal(QtCore.QPoint)</span>
+    <span class="c">#~ newSize = QtCore.Signal(QtCore.QSize)</span>
+    <span class="c">#~ scaled = QtCore.Signal()</span>
+
+    <span class="c">#~ def __init__(self, *args, **kwargs):</span>
+        <span class="c">#~ super(GraphicsView, self).__init__(*args, **kwargs)</span>
+        <span class="c">#~ graphicsview.setMouseTracking(True)</span>
+
+    <span class="c"># @TODO: move to GraphicsViewMonitor</span>
+    <span class="c">#~ def enterEvent(self, event):</span>
+        <span class="c">#~ self.enter.emit()</span>
+        <span class="c">#~ return QtGui.QGraphicsView.enterEvent(self, event)</span>
+
+    <span class="c"># @TODO: move to GraphicsViewMonitor</span>
+    <span class="c">#~ def leaveEvent(self, event):</span>
+        <span class="c">#~ self.leave.emit()</span>
+        <span class="c">#~ return QtGui.QGraphicsView.leaveEvent(self, event)</span>
+
+    <span class="c"># @TODO: move to GraphicsViewMonitor</span>
+    <span class="c"># @TODO: use GraphicsSceneMouseMove</span>
+    <span class="c">#~ def mouseMoveEvent(self, event):</span>
+        <span class="c">#~ #if self.dragMode() == QtGui.QGraphicsView.NoDrag:</span>
+        <span class="c">#~ self.mousePositionUpdated.emit(event.pos())</span>
+        <span class="c">#~ if event.buttons() &amp; QtCore.Qt.LeftButton:</span>
+            <span class="c">#~ self.posMarked.emit(event.pos())</span>
+        <span class="c">#~ #event.accept()</span>
+        <span class="c">#~ return QtGui.QGraphicsView.mouseMoveEvent(self, event)</span>
+
+    <span class="c"># @TODO: move to GraphicsViewMonitor</span>
+    <span class="c"># @TODO: use GraphicsSceneMousePress</span>
+    <span class="c">#~ def mousePressEvent(self, event):</span>
+        <span class="c">#~ if self.dragMode() == QtGui.QGraphicsView.NoDrag:</span>
+            <span class="c">#~ if event.buttons() &amp; QtCore.Qt.LeftButton:</span>
+                <span class="c">#~ self.posMarked.emit(event.pos())</span>
+            <span class="c">#~ #event.accept()</span>
+        <span class="c">#~ return QtGui.QGraphicsView.mousePressEvent(self, event)</span>
+
+    <span class="c"># @TODO: move to GraphicsViewMonitor</span>
+    <span class="c">#~ def resizeEvent(self, event):</span>
+        <span class="c">#~ self.newSize.emit(event.size())</span>
+        <span class="c">#~ return QtGui.QGraphicsView.resizeEvent(self, event)</span>
+
+    <span class="c">### Emit signals on transform modifications ###############################</span>
+    <span class="c">#~ def scale(self, sx, sy):</span>
+        <span class="c">#~ QtGui.QGraphicsView.scale(self, sx, sy)</span>
+        <span class="c">#~ self.scaled.emit()</span>
+
+    <span class="c">#~ def resetMatrix(self):</span>
+        <span class="c">#~ if not self.matrix().isIdentity():</span>
+            <span class="c">#~ QtGui.QGraphicsView.resetMatrix(self)</span>
+            <span class="c">#~ self.scaled.emit()</span>
+
+    <span class="c"># @TODO: remove</span>
+    <span class="c">#~ def clearScene(self):</span>
+        <span class="c">#~ scene = self.scene()</span>
+        <span class="c">#~ for item in scene.items():</span>
+            <span class="c">#~ scene.removeItem(item)</span>
+
+        <span class="c">#~ scene.setSceneRect(0, 0, 1, 1)</span>
+        <span class="c">#~ self.setSceneRect(scene.sceneRect())</span>
+        <span class="c">#~ self.resetTransform()</span>
+
+</div>
+<div class="viewcode-block" id="GraphicsViewMonitor"><a class="viewcode-back" href="../../api/gsdview.graphicsview.html#gsdview.graphicsview.GraphicsViewMonitor">[docs]</a><span class="k">class</span> <span class="nc">GraphicsViewMonitor</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QObject</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Emit signals when a registered graphics view changes status.</span>
+
+<span class="sd">    :SIGNALS:</span>
+
+<span class="sd">        * :attr:`leave`</span>
+<span class="sd">        * :attr:`scrolled`</span>
+<span class="sd">        * :attr:`resized`</span>
+<span class="sd">        * :attr:`viewportResized`</span>
+<span class="sd">        * :attr:`mouseMoved`</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="c">##: SIGNAL: it is emitted when the mouse pointer enterss the scene</span>
+    <span class="c">##:</span>
+    <span class="c">##: :C++ signature: `void enter(QGraphicsView*)`</span>
+    <span class="c">###enter = QtCore.Signal(QtGui.QGraphicsScene)</span>
+    <span class="c">##enter = QtCore.Signal(QtCore.QObject) # @TODO: check</span>
+
+    <span class="c">#: SIGNAL: it is emitted when the mouse pointer leaves the scene</span>
+    <span class="c">#:</span>
+    <span class="c">#: :C++ signature: `void leave(QGraphicsView*)`</span>
+    <span class="n">leave</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QGraphicsScene</span><span class="p">)</span>
+
+    <span class="c">#: SIGNAL: it is emitted when a graphics view is scrolled</span>
+    <span class="c">#:</span>
+    <span class="c">#: :C++ signature: `void scrolled(QGraphicsView*)`</span>
+    <span class="n">scrolled</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QGraphicsView</span><span class="p">)</span>
+
+    <span class="c">#: SIGNAL: it is emitted when the graphicsview window is resized</span>
+    <span class="c">#:</span>
+    <span class="c">#: :C++ signature: `void resized(QGraphicsView*, QSize)`</span>
+    <span class="n">resized</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QGraphicsView</span><span class="p">,</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QSize</span><span class="p">)</span>
+
+    <span class="c"># @TODO: explain difference with previous</span>
+    <span class="c">#: SIGNAL:</span>
+    <span class="c">#:</span>
+    <span class="c">#: :C++ signature: `void viewportResized(QGraphicsView*)`</span>
+    <span class="n">viewportResized</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QGraphicsView</span><span class="p">)</span>
+
+    <span class="c">#: SIGNAL: it is emitted when the mouse pointer is moved on the scene</span>
+    <span class="c">#:</span>
+    <span class="c">#: :C++ signature: `void mouseMoved(QtGui.QGraphicsScene, QtCore.QPointF,</span>
+    <span class="c">#:                                  QtCore.Qt.MuseButtons)`</span>
+    <span class="n">mouseMoved</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QGraphicsScene</span><span class="p">,</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QPointF</span><span class="p">,</span>
+                               <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">MouseButtons</span><span class="p">)</span>
+
+    <span class="c">##: SIGNAL:</span>
+    <span class="c">##:</span>
+    <span class="c">##: :C++ signature: `newPos(QtCore.QObject, QPoint)`</span>
+    <span class="c">###newPos = QtCore.Signal(QtGui.QGraphicsView, QtCore.QPoint)</span>
+    <span class="c">##newPos = QtCore.Signal(QtCore.QObject, QtCore.QPoint) # @TODO: check</span>
+
+    <span class="c"># @TODO: use signal mappers</span>
+    <span class="c">#~ def __init__(self, parent=None, **kwargs):</span>
+        <span class="c">#~ super(GraphicsViewMonitor, self).__init__(parent, **kwargs)</span>
+
+        <span class="c">#~ self.mappers = {}</span>
+        <span class="c">#~ self.mappers[&#39;scroll&#39;] = QtCore.QSignalMapper(self,</span>
+                                                      <span class="c">#~ mapped=self.scrolled)</span>
+        <span class="c">#~ #self.mappers[&#39;scroll&#39;].mapped.connect(self.scrolled)</span>
+
+        <span class="c">#~ self.mappers[&#39;scale&#39;] = QtCore.QSignalMapper(self, mapped=self.scaled)</span>
+        <span class="c">#~ #self.mappers[&#39;scale&#39;].mapped.connect(self.scaled)</span>
+
+    <span class="c">#~ def register(self, graphicsview):</span>
+        <span class="c">#~ graphicsview.horizontalScrollBar().valueChanged.connect(</span>
+                                                <span class="c">#~ self.mappers[&#39;scroll&#39;].map)</span>
+        <span class="c">#~ graphicsview.verticalScrollBar().valueChanged.connect(</span>
+                                                <span class="c">#~ self.mappers[&#39;scroll&#39;].map)</span>
+        <span class="c">#~ self.mappers[&#39;scroll&#39;].setMapping(graphicsview, graphicsview)</span>
+        <span class="c">#~ graphicsview.viewportResized.connect(self.mappers[&#39;scale&#39;].map)</span>
+        <span class="c">#~ self.mappers[&#39;scale&#39;].setMapping(graphicsview, graphicsview)</span>
+
+<div class="viewcode-block" id="GraphicsViewMonitor.register"><a class="viewcode-back" href="../../api/gsdview.graphicsview.html#gsdview.graphicsview.GraphicsViewMonitor.register">[docs]</a>    <span class="k">def</span> <span class="nf">register</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graphicsview</span><span class="p">):</span>
+        <span class="n">graphicsview</span><span class="o">.</span><span class="n">horizontalScrollBar</span><span class="p">()</span><span class="o">.</span><span class="n">valueChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+                                    <span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">scrolled</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">graphicsview</span><span class="p">))</span>
+        <span class="n">graphicsview</span><span class="o">.</span><span class="n">verticalScrollBar</span><span class="p">()</span><span class="o">.</span><span class="n">valueChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+                                    <span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">scrolled</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">graphicsview</span><span class="p">))</span>
+        <span class="n">graphicsview</span><span class="o">.</span><span class="n">horizontalScrollBar</span><span class="p">()</span><span class="o">.</span><span class="n">rangeChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+                            <span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">viewportResized</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">graphicsview</span><span class="p">))</span>
+        <span class="n">graphicsview</span><span class="o">.</span><span class="n">verticalScrollBar</span><span class="p">()</span><span class="o">.</span><span class="n">rangeChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+                            <span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">viewportResized</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">graphicsview</span><span class="p">))</span>
+        <span class="n">graphicsview</span><span class="o">.</span><span class="n">installEventFilter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="c"># Many views can refer to the same scene so before installing a new</span>
+        <span class="c"># event filter old ones are removed</span>
+        <span class="n">scene</span> <span class="o">=</span> <span class="n">graphicsview</span><span class="o">.</span><span class="n">scene</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">scene</span><span class="p">:</span>
+            <span class="n">scene</span><span class="o">.</span><span class="n">removeEventFilter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="n">scene</span><span class="o">.</span><span class="n">installEventFilter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="GraphicsViewMonitor.eventFilter"><a class="viewcode-back" href="../../api/gsdview.graphicsview.html#gsdview.graphicsview.GraphicsViewMonitor.eventFilter">[docs]</a>    <span class="k">def</span> <span class="nf">eventFilter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="c"># @TODO: use an event map (??)</span>
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span><span class="p">()</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QEvent</span><span class="o">.</span><span class="n">Resize</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QGraphicsView</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">resized</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">size</span><span class="p">())</span>
+        <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span><span class="p">()</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QEvent</span><span class="o">.</span><span class="n">GraphicsSceneMouseMove</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QGraphicsScene</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mouseMoved</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">scenePos</span><span class="p">(),</span> <span class="n">event</span><span class="o">.</span><span class="n">buttons</span><span class="p">())</span>
+        <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span><span class="p">()</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QEvent</span><span class="o">.</span><span class="n">Leave</span><span class="p">:</span>
+            <span class="c"># Discard events from graphicsviews</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QGraphicsScene</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">leave</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">eventFilter</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span>
+
+    <span class="c">#~ def eventFilter(self, obj, event):</span>
+        <span class="c">#~ &#39;&#39;&#39;bool QObject.eventFilter (self, QObject, QEvent)&#39;&#39;&#39;</span>
+
+        <span class="c">#~ QEvent = QtCore.QEvent</span>
+
+        <span class="c">#~ eventmap = {</span>
+            <span class="c">#~ QEvent.Enter: self.enterEvent,</span>
+            <span class="c">#~ QEvent.Leave: self.leaveEvent,</span>
+
+            <span class="c">#~ #QEvent.GraphicsSceneMouseDoubleClick</span>
+            <span class="c">#~ QEvent.GraphicsSceneMouseMove: self.mouseMoveEvent,</span>
+            <span class="c">#~ QEvent.GraphicsSceneMousePress: self.mousePressEvent,</span>
+            <span class="c">#~ #QEvent.GraphicsSceneMouseRelease</span>
+            <span class="c">#~ #QEvent.GraphicsSceneWheel</span>
+
+            <span class="c">#~ #QEvent.MouseButtonDblClick</span>
+            <span class="c">#~ #QEvent.MouseButtonPress: self.mouseMoveEvent,</span>
+            <span class="c">#~ #QEvent.MouseButtonRelease</span>
+            <span class="c">#~ #QEvent.MouseMove: self.mousePressEvent,</span>
+
+            <span class="c">#~ QEvent.Resize: self.resizeEvent,</span>
+        <span class="c">#~ }</span>
+
+        <span class="c">#~ methd = eventmap[event.type()]</span>
+        <span class="c">#~ return method(object, event)</span>
+        <span class="c">#~ #return True # stop event</span>
+
+    <span class="c">### Mouse events ##########################################################</span>
+    <span class="c">#~ def enterEvent(self, obj, event):</span>
+        <span class="c">#~ self.enter.emit(obj)</span>
+        <span class="c">#~ return obj.eventFilter(obj, event)</span>
+
+    <span class="c">#~ def leaveEvent(self, obj, event):</span>
+        <span class="c">#~ self.leave.emit(obj)</span>
+        <span class="c">#~ return obj.eventFilter(obj, event)</span>
+
+    <span class="c">#~ def mouseMoveEvent(self, obj, event):</span>
+        <span class="c">#~ self.mouseMove.emit(obj, event.pos())</span>
+        <span class="c">#~ if event.buttons() &amp; QtCore.Qt.LeftButton:</span>
+            <span class="c">#~ self.newPos.emit(obj, event.pos())</span>
+        <span class="c">#~ return obj.eventFilter(obj, event)</span>
+
+    <span class="c">#~ def mousePressEvent(self, obj, event):</span>
+        <span class="c">#~ if self.dragMode() == QtGui.QGraphicsView.NoDrag:</span>
+            <span class="c">#~ if event.buttons() &amp; QtCore.Qt.LeftButton:</span>
+                <span class="c">#~ self.newPos.emit(obj, event.pos())</span>
+            <span class="c">#~ #event.accept()</span>
+        <span class="c">#~ return obj.eventFilter(obj, event)</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+    
+    
+    <p>
+        <a href="http://sourceforge.net/projects/gsdview">
+            <img src="http://sflogo.sourceforge.net/sflogo.php?group_id=226458&type=14" width="150" height="40" alt="Get GSDView at SourceForge.net. Fast, secure and Free Open Source software downloads" />
+        </a>
+    </p>
+    
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li><a href="../../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../gsdview.html" >gsdview</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2008-2011, Antonio Valentino.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

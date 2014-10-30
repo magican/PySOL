@@ -1,0 +1,425 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>overview.core &mdash; GSDView Open Edition Home Page</title>
+    <link rel="stylesheet" href="../../_static/sourceforge.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.6.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/logo.ico"/>
+    <link rel="top" title="GSDView Open Edition Home Page" href="../../index.html" />
+    <link rel="up" title="overview" href="../overview.html" /> 
+  </head>
+  <body>
+    
+        
+    
+    
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li><a href="../../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../overview.html" accesskey="U">overview</a> &raquo;</li> 
+      </ul>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for overview.core</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="c">### Copyright (C) 2008-2011 Antonio Valentino &lt;a_valentino@users.sf.net&gt;</span>
+
+<span class="c">### This file is part of GSDView.</span>
+
+<span class="c">### GSDView is free software; you can redistribute it and/or modify</span>
+<span class="c">### it under the terms of the GNU General Public License as published by</span>
+<span class="c">### the Free Software Foundation; either version 2 of the License, or</span>
+<span class="c">### (at your option) any later version.</span>
+
+<span class="c">### GSDView is distributed in the hope that it will be useful,</span>
+<span class="c">### but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c">### MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c">### GNU General Public License for more details.</span>
+
+<span class="c">### You should have received a copy of the GNU General Public License</span>
+<span class="c">### along with GSDView; if not, write to the Free Software</span>
+<span class="c">### Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA.</span>
+
+
+<span class="sd">&#39;&#39;&#39;Overview pannel for GDAL raster bands.&#39;&#39;&#39;</span>
+
+
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">from</span> <span class="nn">qt</span> <span class="kn">import</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtGui</span>
+
+<span class="kn">from</span> <span class="nn">gsdview.qt4support</span> <span class="kn">import</span> <span class="n">overrideCursor</span>
+<span class="kn">from</span> <span class="nn">gsdview.gdalbackend</span> <span class="kn">import</span> <span class="n">gdalsupport</span>
+
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s">&#39;Antonio Valentino &lt;a_valentino@users.sf.net&gt;&#39;</span>
+<span class="n">__date__</span> <span class="o">=</span> <span class="s">&#39;$Date: 2011-07-30 16:57:37 +0200 (sab, 30 lug 2011) $&#39;</span>
+<span class="n">__revision__</span> <span class="o">=</span> <span class="s">&#39;$Revision: 976 $&#39;</span>
+
+
+<div class="viewcode-block" id="NavigationGraphicsView"><a class="viewcode-back" href="../../api/overview.core.html#overview.core.NavigationGraphicsView">[docs]</a><span class="k">class</span> <span class="nc">NavigationGraphicsView</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QGraphicsView</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Graphics view for dataset navigation.</span>
+
+<span class="sd">    The view usually displays an auto-scalled low resolution overview</span>
+<span class="sd">    of the scene with a red box indicating the area currently displayed</span>
+<span class="sd">    in the high resolution view.</span>
+
+<span class="sd">    :SIGNALS:</span>
+
+<span class="sd">        * :attr:`mousePressed`</span>
+<span class="sd">        * :attr:`mouseMoved`</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">BOXCOLOR</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QColor</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">red</span><span class="p">)</span>
+
+    <span class="c">#: SIGNAL: it is emitted when a mouse button is presses on the view</span>
+    <span class="c">#:</span>
+    <span class="c">#: :param point:</span>
+    <span class="c">#:     the scene position</span>
+    <span class="c">#: :param mousebutton:</span>
+    <span class="c">#:     the ID of the pressed button</span>
+    <span class="c">#: :param dragmode:</span>
+    <span class="c">#:     current darg mode</span>
+    <span class="c">#:</span>
+    <span class="c">#: :C++ signature: `void mousePressed(QPointF, Qt::MouseButtons,</span>
+    <span class="c">#:                                    QGraphicsView::DragMode)`</span>
+    <span class="n">mousePressed</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QPointF</span><span class="p">,</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">MouseButtons</span><span class="p">,</span>
+                                 <span class="n">QtGui</span><span class="o">.</span><span class="n">QGraphicsView</span><span class="o">.</span><span class="n">DragMode</span><span class="p">)</span>
+
+    <span class="c">#: SIGNAL: it is emitted when the mouse is moved on the view</span>
+    <span class="c">#:</span>
+    <span class="c">#: :param point:</span>
+    <span class="c">#:     the scene position</span>
+    <span class="c">#: :param mousebutton:</span>
+    <span class="c">#:     the ID of the pressed button</span>
+    <span class="c">#: :param dragmode:</span>
+    <span class="c">#:     current darg mode</span>
+    <span class="c">#:</span>
+    <span class="c">#: :C++ signature: `void mouseMoved(QPointF, Qt::MouseButtons,</span>
+    <span class="c">#:                                    QGraphicsView::DragMode)`</span>
+    <span class="n">mouseMoved</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QPointF</span><span class="p">,</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">MouseButtons</span><span class="p">,</span>
+                               <span class="n">QtGui</span><span class="o">.</span><span class="n">QGraphicsView</span><span class="o">.</span><span class="n">DragMode</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">NavigationGraphicsView</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_viewbox</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_autoscale</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMouseTracking</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+
+<div class="viewcode-block" id="NavigationGraphicsView.getbox"><a class="viewcode-back" href="../../api/overview.core.html#overview.core.NavigationGraphicsView.getbox">[docs]</a>    <span class="k">def</span> <span class="nf">getbox</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_viewbox</span>
+</div>
+<div class="viewcode-block" id="NavigationGraphicsView.setbox"><a class="viewcode-back" href="../../api/overview.core.html#overview.core.NavigationGraphicsView.setbox">[docs]</a>    <span class="k">def</span> <span class="nf">setbox</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">box</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">box</span><span class="p">,</span> <span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QRect</span><span class="p">,</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QRectF</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_viewbox</span> <span class="o">=</span> <span class="n">box</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">isVisible</span><span class="p">():</span>
+            <span class="c"># @WARNING: calling &quot;update&quot; on the scene causes a repaint of</span>
+            <span class="c">#           *all* attached views and for each view the entire</span>
+            <span class="c">#           exposedRect is updated.</span>
+            <span class="c">#           Using QGraphicsView.invalidateScene with the</span>
+            <span class="c">#           QtGui.QGraphicsScene.ForegroundLayer parameter</span>
+            <span class="c">#           should be faster and repaint only one layer of the</span>
+            <span class="c">#           current view.</span>
+
+            <span class="c"># @TODO: check</span>
+            <span class="c">#self.invalidateScene(self.sceneRect(),</span>
+            <span class="c">#                     QtGui.QGraphicsScene.ForegroundLayer)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+</div>
+    <span class="n">viewbox</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">getbox</span><span class="p">,</span> <span class="n">setbox</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s">&#39;viewport box in scene coordinates&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="NavigationGraphicsView.drawForeground"><a class="viewcode-back" href="../../api/overview.core.html#overview.core.NavigationGraphicsView.drawForeground">[docs]</a>    <span class="k">def</span> <span class="nf">drawForeground</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">painter</span><span class="p">,</span> <span class="n">rect</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">viewbox</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">pen</span> <span class="o">=</span> <span class="n">painter</span><span class="o">.</span><span class="n">pen</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">box</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">viewbox</span><span class="o">.</span><span class="n">intersected</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sceneRect</span><span class="p">())</span>
+            <span class="n">painter</span><span class="o">.</span><span class="n">setPen</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">BOXCOLOR</span><span class="p">)</span>
+            <span class="n">painter</span><span class="o">.</span><span class="n">drawRect</span><span class="p">(</span><span class="n">box</span><span class="p">)</span>
+            <span class="c">#painter.drawConvexPolygon(self.viewbox) #@TODO: check</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">painter</span><span class="o">.</span><span class="n">setPen</span><span class="p">(</span><span class="n">pen</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="NavigationGraphicsView.fitInView"><a class="viewcode-back" href="../../api/overview.core.html#overview.core.NavigationGraphicsView.fitInView">[docs]</a>    <span class="k">def</span> <span class="nf">fitInView</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rect</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">aspectRatioMode</span><span class="o">=</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">KeepAspectRatio</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">rect</span><span class="p">:</span>
+            <span class="n">scene</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">scene</span><span class="p">:</span>
+                <span class="n">rect</span> <span class="o">=</span> <span class="n">scene</span><span class="o">.</span><span class="n">sceneRect</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span>
+        <span class="n">QtGui</span><span class="o">.</span><span class="n">QGraphicsView</span><span class="o">.</span><span class="n">fitInView</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rect</span><span class="p">,</span> <span class="n">aspectRatioMode</span><span class="p">)</span>
+</div>
+    <span class="k">def</span> <span class="nf">_getAutoscale</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_autoscale</span>
+
+    <span class="k">def</span> <span class="nf">_setAutoscale</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">flag</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_autoscale</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">flag</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_autoscale</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fitInView</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setMatrix</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QMatrix</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+
+    <span class="n">autoscale</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_getAutoscale</span><span class="p">,</span> <span class="n">_setAutoscale</span><span class="p">)</span>
+
+<div class="viewcode-block" id="NavigationGraphicsView.resizeEvent"><a class="viewcode-back" href="../../api/overview.core.html#overview.core.NavigationGraphicsView.resizeEvent">[docs]</a>    <span class="k">def</span> <span class="nf">resizeEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">autoscale</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fitInView</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QGraphicsView</span><span class="o">.</span><span class="n">resizeEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span>
+
+    <span class="c"># @TODO: use event filters</span></div>
+<div class="viewcode-block" id="NavigationGraphicsView.mousePressEvent"><a class="viewcode-back" href="../../api/overview.core.html#overview.core.NavigationGraphicsView.mousePressEvent">[docs]</a>    <span class="k">def</span> <span class="nf">mousePressEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapToScene</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">pos</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mousePressed</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">buttons</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">dragMode</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QGraphicsView</span><span class="o">.</span><span class="n">mousePressEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="NavigationGraphicsView.mouseMoveEvent"><a class="viewcode-back" href="../../api/overview.core.html#overview.core.NavigationGraphicsView.mouseMoveEvent">[docs]</a>    <span class="k">def</span> <span class="nf">mouseMoveEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapToScene</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">pos</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mouseMoved</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">buttons</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">dragMode</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QGraphicsView</span><span class="o">.</span><span class="n">mouseMoveEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span>
+
+</div></div>
+<div class="viewcode-block" id="BandOverviewDock"><a class="viewcode-back" href="../../api/overview.core.html#overview.core.BandOverviewDock">[docs]</a><span class="k">class</span> <span class="nc">BandOverviewDock</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QDockWidget</span><span class="p">):</span>
+    <span class="n">OVRMAXSIZE</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">**</span> <span class="mi">2</span>  <span class="c"># 10MB</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">WindowFlags</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c">#title = self.tr(&#39;Dataset Browser&#39;)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">BandOverviewDock</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="s">&#39;Band Overview&#39;</span><span class="p">,</span> <span class="n">app</span><span class="p">,</span> <span class="n">flags</span><span class="p">,</span>
+                                               <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="c">#self.setObjectName(&#39;datasetBroeserPanel&#39;) # @TODO: check</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">app</span> <span class="o">=</span> <span class="n">app</span>  <span class="c"># @TODO: check</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graphicsview</span> <span class="o">=</span> <span class="n">NavigationGraphicsView</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graphicsview</span><span class="p">)</span>
+
+    <span class="c"># @TODO: understand why this doewn&#39;t work</span>
+    <span class="c">#</span>
+    <span class="c">#    self.graphicsview.installEventFilter(self)</span>
+    <span class="c">#</span>
+    <span class="c">#def eventFilter(self, obj, event):</span>
+    <span class="c">#    if obj.scene():</span>
+    <span class="c">#        if event.type() in (QtCore.QEvent.MouseButtonPress,</span>
+    <span class="c">#                            QtCore.QEvent.MouseMove):</span>
+    <span class="c">#            if event.buttons() &amp; QtCore.Qt.LeftButton:</span>
+    <span class="c">#                pos = obj.mapToScene(event.pos())</span>
+    <span class="c">#                self.centerMainViewOn(pos)</span>
+    <span class="c">#    return obj.eventFilter(obj, event)</span>
+
+    <span class="nd">@overrideCursor</span>
+<div class="viewcode-block" id="BandOverviewDock.setItem"><a class="viewcode-back" href="../../api/overview.core.html#overview.core.BandOverviewDock.setItem">[docs]</a>    <span class="k">def</span> <span class="nf">setItem</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="n">item</span><span class="o">.</span><span class="n">backend</span> <span class="o">==</span> <span class="s">&#39;gdalbackend&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">graphicsview</span><span class="o">.</span><span class="n">setUpdatesEnabled</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">level</span> <span class="o">=</span> <span class="n">gdalsupport</span><span class="o">.</span><span class="n">ovrLevelForSize</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">OVRMAXSIZE</span><span class="p">)</span>
+                <span class="c"># @NOTE: use GREATER for overview level to ensure an overview</span>
+                <span class="c">#        size smaller than OVRMAXSIZE</span>
+                <span class="n">ovrindex</span> <span class="o">=</span> <span class="n">gdalsupport</span><span class="o">.</span><span class="n">ovrBestIndex</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="s">&#39;GREATER&#39;</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">gdalsupport</span><span class="o">.</span><span class="n">MissingOvrError</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;no overview available or available overviews &#39;</span>
+                             <span class="s">&#39;are too large&#39;</span><span class="p">)</span>
+                <span class="k">return</span>
+
+            <span class="n">scene</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">scene</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">graphicsview</span><span class="o">.</span><span class="n">setScene</span><span class="p">(</span><span class="n">scene</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">graphicsview</span><span class="o">.</span><span class="n">setSceneRect</span><span class="p">(</span><span class="n">scene</span><span class="o">.</span><span class="n">sceneRect</span><span class="p">())</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">graphicsview</span><span class="o">.</span><span class="n">autoscale</span><span class="p">:</span>
+                <span class="n">ovrlevel</span> <span class="o">=</span> <span class="n">gdalsupport</span><span class="o">.</span><span class="n">ovrLevels</span><span class="p">(</span><span class="n">item</span><span class="p">)[</span><span class="n">ovrindex</span><span class="p">]</span>
+                <span class="n">matrix</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QMatirx</span><span class="p">(</span><span class="n">ovrlevel</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">ovrlevel</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">graphicsview</span><span class="o">.</span><span class="n">setMatrix</span><span class="p">(</span><span class="n">matrix</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">graphicsview</span><span class="o">.</span><span class="n">fitInView</span><span class="p">()</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">updateMainViewBox</span><span class="p">()</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">graphicsview</span><span class="o">.</span><span class="n">setUpdatesEnabled</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">graphicsview</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="BandOverviewDock.centerMainViewOn"><a class="viewcode-back" href="../../api/overview.core.html#overview.core.BandOverviewDock.centerMainViewOn">[docs]</a>    <span class="k">def</span> <span class="nf">centerMainViewOn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenepos</span><span class="p">):</span>
+        <span class="n">view</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">currentGraphicsView</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">view</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">graphicsview</span><span class="o">.</span><span class="n">scene</span><span class="p">():</span>
+                <span class="c"># @TODO: check</span>
+                <span class="k">assert</span> <span class="n">view</span><span class="o">.</span><span class="n">scene</span><span class="p">()</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">graphicsview</span><span class="o">.</span><span class="n">scene</span><span class="p">()</span>
+            <span class="n">view</span><span class="o">.</span><span class="n">centerOn</span><span class="p">(</span><span class="n">scenepos</span><span class="p">)</span>
+</div>
+    <span class="nd">@QtCore.Slot</span><span class="p">()</span>
+    <span class="nd">@QtCore.Slot</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QGraphicsView</span><span class="p">)</span>
+<div class="viewcode-block" id="BandOverviewDock.updateMainViewBox"><a class="viewcode-back" href="../../api/overview.core.html#overview.core.BandOverviewDock.updateMainViewBox">[docs]</a>    <span class="k">def</span> <span class="nf">updateMainViewBox</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">srcview</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">graphicsview</span><span class="o">.</span><span class="n">scene</span><span class="p">():</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">srcview</span><span class="p">:</span>
+            <span class="c"># @TODO: check API</span>
+            <span class="n">srcview</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">currentGraphicsView</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">srcview</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">currentGraphicsView</span><span class="p">():</span>
+            <span class="c"># current view not yet updated: do nothing</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="n">srcview</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">srcview</span><span class="o">.</span><span class="n">scene</span><span class="p">()</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">graphicsview</span><span class="o">.</span><span class="n">scene</span><span class="p">()</span>  <span class="c"># @TODO: check</span>
+            <span class="n">hbar</span> <span class="o">=</span> <span class="n">srcview</span><span class="o">.</span><span class="n">horizontalScrollBar</span><span class="p">()</span>
+            <span class="n">vbar</span> <span class="o">=</span> <span class="n">srcview</span><span class="o">.</span><span class="n">verticalScrollBar</span><span class="p">()</span>
+
+            <span class="c"># @TODO: bug report: mapping to scene seems to introduce a</span>
+            <span class="c">#        spurious offset &quot;x1 = 2*x0&quot; and y1 = 2*y0;</span>
+            <span class="c">#        this doesn&#39;t happen for &quot;w&quot; and &quot;h&quot;</span>
+            <span class="c">#polygon = srcview.mapToScene(hbar.value(), vbar.value(),</span>
+            <span class="c">#                             hbar.pageStep(), vbar.pageStep())</span>
+            <span class="c">#@TODO: in case of rotations it should be better keep using</span>
+            <span class="c">#       a polygon</span>
+            <span class="c">#self.graphicsview.viewbox = polygon.boundingRect()</span>
+
+            <span class="c"># @NOTE: this is a workaround; mapToScene should be used instead</span>
+            <span class="n">rect</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QRectF</span><span class="p">(</span><span class="n">hbar</span><span class="o">.</span><span class="n">value</span><span class="p">(),</span> <span class="n">vbar</span><span class="o">.</span><span class="n">value</span><span class="p">(),</span>
+                                 <span class="n">hbar</span><span class="o">.</span><span class="n">pageStep</span><span class="p">(),</span> <span class="n">vbar</span><span class="o">.</span><span class="n">pageStep</span><span class="p">())</span>
+            <span class="n">transform</span> <span class="o">=</span> <span class="n">srcview</span><span class="o">.</span><span class="n">transform</span><span class="p">()</span><span class="o">.</span><span class="n">inverted</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">graphicsview</span><span class="o">.</span><span class="n">viewbox</span> <span class="o">=</span> <span class="n">transform</span><span class="o">.</span><span class="n">mapRect</span><span class="p">(</span><span class="n">rect</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="BandOverviewDock.reset"><a class="viewcode-back" href="../../api/overview.core.html#overview.core.BandOverviewDock.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graphicsview</span><span class="o">.</span><span class="n">setScene</span><span class="p">(</span><span class="bp">None</span><span class="p">)</span>
+
+</div></div>
+<div class="viewcode-block" id="OverviewController"><a class="viewcode-back" href="../../api/overview.core.html#overview.core.OverviewController">[docs]</a><span class="k">class</span> <span class="nc">OverviewController</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QObject</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">OverviewController</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">app</span> <span class="o">=</span> <span class="n">app</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">panel</span> <span class="o">=</span> <span class="n">BandOverviewDock</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">panel</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="s">&#39;bandOverviewPanel&#39;</span><span class="p">)</span>   <span class="c"># @TODO: check</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">addDockWidget</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">LeftDockWidgetArea</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">panel</span><span class="p">)</span>
+
+        <span class="c"># Connect signals</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">mdiarea</span><span class="o">.</span><span class="n">subWindowActivated</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">onSubWindowChanged</span><span class="p">)</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">subWindowClosed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">onWindowClosed</span><span class="p">)</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">itemChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">onItemChanged</span><span class="p">)</span>
+
+        <span class="n">app</span><span class="o">.</span><span class="n">monitor</span><span class="o">.</span><span class="n">scrolled</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">panel</span><span class="o">.</span><span class="n">updateMainViewBox</span><span class="p">)</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">monitor</span><span class="o">.</span><span class="n">viewportResized</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">panel</span><span class="o">.</span><span class="n">updateMainViewBox</span><span class="p">)</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">monitor</span><span class="o">.</span><span class="n">resized</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">panel</span><span class="o">.</span><span class="n">updateMainViewBox</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">panel</span><span class="o">.</span><span class="n">graphicsview</span><span class="o">.</span><span class="n">mousePressed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">onNewPos</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">panel</span><span class="o">.</span><span class="n">graphicsview</span><span class="o">.</span><span class="n">mouseMoved</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">onNewPos</span><span class="p">)</span>
+
+    <span class="nd">@QtCore.Slot</span><span class="p">()</span>
+    <span class="nd">@QtCore.Slot</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QMdiSubWindow</span><span class="p">)</span>
+<div class="viewcode-block" id="OverviewController.onSubWindowChanged"><a class="viewcode-back" href="../../api/overview.core.html#overview.core.OverviewController.onSubWindowChanged">[docs]</a>    <span class="k">def</span> <span class="nf">onSubWindowChanged</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subwin</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">subwin</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">subwin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">mdiarea</span><span class="o">.</span><span class="n">activeSubWindow</span><span class="p">()</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="n">subwin</span><span class="o">.</span><span class="n">item</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">panel</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">panel</span><span class="o">.</span><span class="n">setItem</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+</div>
+    <span class="nd">@QtCore.Slot</span><span class="p">()</span>
+<div class="viewcode-block" id="OverviewController.onWindowClosed"><a class="viewcode-back" href="../../api/overview.core.html#overview.core.OverviewController.onWindowClosed">[docs]</a>    <span class="k">def</span> <span class="nf">onWindowClosed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">mdiarea</span><span class="o">.</span><span class="n">subWindowList</span><span class="p">())</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">panel</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+
+    <span class="c">#@QtCore.Slot(QtGui.QStandardItem)</span></div>
+    <span class="nd">@QtCore.Slot</span><span class="p">(</span><span class="s">&#39;QStandardItem*&#39;</span><span class="p">)</span>  <span class="c"># @TODO:check</span>
+<div class="viewcode-block" id="OverviewController.onItemChanged"><a class="viewcode-back" href="../../api/overview.core.html#overview.core.OverviewController.onItemChanged">[docs]</a>    <span class="k">def</span> <span class="nf">onItemChanged</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="s">&#39;scene&#39;</span><span class="p">):</span>
+            <span class="n">srcview</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">currentGraphicsView</span><span class="p">()</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">srcview</span> <span class="ow">and</span> <span class="n">srcview</span><span class="o">.</span><span class="n">scene</span><span class="p">()</span> <span class="ow">is</span> <span class="n">item</span><span class="o">.</span><span class="n">scene</span>
+                                <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">panel</span><span class="o">.</span><span class="n">graphicsview</span><span class="o">.</span><span class="n">scene</span><span class="p">()):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">panel</span><span class="o">.</span><span class="n">setItem</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+
+    <span class="c"># @TODO: translate into an event handler</span></div>
+    <span class="nd">@QtCore.Slot</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QPointF</span><span class="p">,</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">MouseButtons</span><span class="p">,</span>
+                 <span class="n">QtGui</span><span class="o">.</span><span class="n">QGraphicsView</span><span class="o">.</span><span class="n">DragMode</span><span class="p">)</span>
+<div class="viewcode-block" id="OverviewController.onNewPos"><a class="viewcode-back" href="../../api/overview.core.html#overview.core.OverviewController.onNewPos">[docs]</a>    <span class="k">def</span> <span class="nf">onNewPos</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">buttons</span><span class="p">,</span> <span class="n">dragmode</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">buttons</span> <span class="o">&amp;</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">LeftButton</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">panel</span><span class="o">.</span><span class="n">centerMainViewOn</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+    
+    
+    <p>
+        <a href="http://sourceforge.net/projects/gsdview">
+            <img src="http://sflogo.sourceforge.net/sflogo.php?group_id=226458&type=14" width="150" height="40" alt="Get GSDView at SourceForge.net. Fast, secure and Free Open Source software downloads" />
+        </a>
+    </p>
+    
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li><a href="../../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../overview.html" >overview</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2008-2011, Antonio Valentino.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

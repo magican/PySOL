@@ -1,0 +1,287 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>ChangeLog &mdash; GSDView Open Edition Home Page</title>
+    <link rel="stylesheet" href="_static/sourceforge.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.6.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="shortcut icon" href="_static/logo.ico"/>
+    <link rel="top" title="GSDView Open Edition Home Page" href="index.html" />
+    <link rel="next" title="Links" href="links.html" />
+    <link rel="prev" title="Features" href="features.html" /> 
+  </head>
+  <body>
+    
+        
+    
+    
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li class="right" >
+          <a href="links.html" title="Links"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="features.html" title="Features"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">GSDView</a> &raquo;</li> 
+      </ul>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="changelog">
+<h1>ChangeLog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="changes-from-0-6-4-to-0-6-5-13-11-2011">
+<h2>Changes from 0.6.4 to 0.6.5 (13/11/2011)<a class="headerlink" href="#changes-from-0-6-4-to-0-6-5-13-11-2011" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>New gsdtools package providing extra utilities for geo-spatial data
+handling.  The gsdview.gsdtools module has been renamed into
+gsdview.imgutils.</li>
+<li>New functions for KML export and dataset area display on &#8220;Google Earth&#8221;
+and &#8220;Google Maps&#8221; (see <a class="reference external" href="http://sf.net/apps/trac/gsdview/ticket/50">#50</a>)</li>
+<li>Fixed workaround for incorrect GCP handling of ENVISAT stripline products</li>
+<li>Fixed global exception handler</li>
+<li>Fixed calls to external GDAL utilities by adding quotes to config options</li>
+<li>Fixed an unicode related issue in calls to gdal.SetConfigOption</li>
+<li>Improved <a class="reference external" href="http://www.pyinstaller.org">PyInstaller</a> packaging (upgreded to 1.5.1)</li>
+<li>Fix plugin loading when no plugin have to be loaded</li>
+<li>Support for <a class="reference external" href="http://www.pyside.org">PySide</a> (closes <a class="reference external" href="http://sf.net/apps/trac/gsdview/ticket/69">#69</a>, see also <a class="reference external" href="http://sf.net/apps/trac/gsdview/ticket/70">#70</a>)</li>
+</ul>
+</div>
+<div class="section" id="changes-from-0-6-3-to-0-6-4-14-11-2010">
+<h2>Changes from 0.6.3 to 0.6.4 (14/11/2010)<a class="headerlink" href="#changes-from-0-6-3-to-0-6-4-14-11-2010" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Restored full compatibility wirh GDAL 1.6.x series</li>
+<li>Metadata export and printing (<a class="reference external" href="http://sf.net/apps/trac/gsdview/ticket/67">#67</a> and <a class="reference external" href="http://sf.net/apps/trac/gsdview/ticket/68">#68</a>)</li>
+<li>mainwin.py module renamed into mdi.py</li>
+<li>Set numeric locale to &#8220;C&#8221; at application startup in order to prevent
+issues with GDAL statistics serialization in virtual files</li>
+<li>Improved management of Qt4 items type</li>
+<li>Strongly improved GDAL dataset dialog</li>
+<li>Update to the new debian package format and new packaging standards</li>
+</ul>
+</div>
+<div class="section" id="changes-from-0-6-2-to-0-6-3-13-08-2010">
+<h2>Changes from 0.6.2 to 0.6.3 (13/08/2010)<a class="headerlink" href="#changes-from-0-6-2-to-0-6-3-13-08-2010" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Switch to the new PyQt4 signal/slot API (close <a class="reference external" href="http://sf.net/apps/trac/gsdview/ticket/25">#25</a>)</li>
+<li>Switch to PyQt4 API 2 for QString, QVariant etc (close <a class="reference external" href="http://sf.net/apps/trac/gsdview/ticket/66">#66</a>)</li>
+<li>All classes that inherit from Qt objects or widgets now can be initialized
+using keyword arguments for Qt properties and signals setup</li>
+<li>Improved overviews handling:<ul>
+<li>overview items are no more displayed in the treeview by default.
+It is possible to get the old behaviour by checking the appropriate
+flag in the preferences dialog (close <a class="reference external" href="http://sf.net/apps/trac/gsdview/ticket/34">#34</a>)</li>
+<li>enabled action for overview computation in the dataset item context menu</li>
+<li>the GDAL info dialog for raster bands has a new tab for overviews
+that also allows computation of new overviews (close <a class="reference external" href="http://sf.net/apps/trac/gsdview/ticket/57">#57</a>)</li>
+</ul>
+</li>
+<li>Improved complex datasets support</li>
+<li>Improved sub-datasets handling</li>
+<li>Improved Radarsat2 support</li>
+<li>Now exectools.Qt4OutputHandler emits signals</li>
+</ul>
+</div>
+<div class="section" id="changes-from-0-6-1-to-0-6-2-20-07-2010">
+<h2>Changes from 0.6.1 to 0.6.2 (20/07/2010)<a class="headerlink" href="#changes-from-0-6-1-to-0-6-2-20-07-2010" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>System info reporting improvements</li>
+<li>Fix system path setup in frozen environments</li>
+<li>Exectools package improved (close <a class="reference external" href="http://sf.net/apps/trac/gsdview/ticket/40">#40</a>)</li>
+<li>Always use (x,y,z) convention for geometric transforms</li>
+<li>Enabled complex selection on all lists and tables (close <a class="reference external" href="http://sf.net/apps/trac/gsdview/ticket/51">#51</a>)</li>
+<li>New button for stopping external tools (close <a class="reference external" href="http://sf.net/apps/trac/gsdview/ticket/41">#41</a>)</li>
+<li>Drop GDAL 1.5.x series: now GSDView requires GDAL 1.6.1 or higher</li>
+<li>Statistics and histograms computation now is fully asynchronous
+(close <a class="reference external" href="http://sf.net/apps/trac/gsdview/ticket/28">#28</a>).
+Configuration of custom histogram parameters in the GDAL info dialogs is
+temporary disabled.</li>
+</ul>
+</div>
+<div class="section" id="changes-from-0-6-0-to-0-6-1-09-05-2010">
+<h2>Changes from 0.6.0 to 0.6.1 (09/05/2010)<a class="headerlink" href="#changes-from-0-6-0-to-0-6-1-09-05-2010" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Basic support for RGB views (<a class="reference external" href="http://sf.net/apps/trac/gsdview/ticket/1">#1</a>)</li>
+<li>Use global exception hook to catch un-handled exceptions (close
+<a class="reference external" href="http://sf.net/apps/trac/gsdview/ticket/11">#11</a>).  An error dialog is showed and the application quits.</li>
+<li>New mouse manager component (<a class="reference external" href="http://sf.net/apps/trac/gsdview/ticket/24">#24</a>)</li>
+<li>Re-factoring of graphics items components</li>
+<li>New tool (plugin) for image stretching (close <a class="reference external" href="http://sf.net/apps/trac/gsdview/ticket/37">#37</a>)</li>
+<li>Strongly improved GDAL info dialogs (enhancement <a class="reference external" href="http://sf.net/apps/trac/gsdview/ticket/22">#22</a> and
+<a class="reference external" href="http://sf.net/apps/trac/gsdview/ticket/32">#32</a>).  Now dialogs show more info including:<ul>
+<li>image structure metadata</li>
+<li>histograms (only in table form at the moment)</li>
+<li>color tables</li>
+<li>metadata for ˆIMAGE_STRUCTUREˆ, ˆSUBDATASETSˆ and ˆRPCˆ domains
+(standard domain was already available)</li>
+</ul>
+</li>
+<li>Plugins re-factoring</li>
+<li>Auto detect GDAL framework binaries on Mac OS X (close <a class="reference external" href="http://sf.net/apps/trac/gsdview/ticket/20">#20</a>)</li>
+<li>Improved support for Mac OS X (<a class="reference external" href="http://sf.net/apps/trac/gsdview/ticket/14">#14</a>, <a class="reference external" href="http://sf.net/apps/trac/gsdview/ticket/15">#15</a>, <a class="reference external" href="http://sf.net/apps/trac/gsdview/ticket/16">#16</a>,
+<a class="reference external" href="http://sf.net/apps/trac/gsdview/ticket/17">#17</a>). None Qt &gt;= 4.6.2 is required on Mac OS X.</li>
+<li>Reduced a bit the time required for datasets opening (see <a class="reference external" href="http://sf.net/apps/trac/gsdview/ticket/12">#12</a>)</li>
+<li>Improved the algorithm to determine the overview levels to compute at
+band opening time (see <a class="reference external" href="http://sf.net/apps/trac/gsdview/ticket/23">#23</a>)</li>
+<li>Now it is possible to pre-compile UI files into python modules and use
+generated modules to set the GUI up.
+If pre-compiled python forms are not available the GUI is set up using
+Qt UI files directly.</li>
+<li>Now use docutils for generating the manpage (<a class="reference external" href="http://sf.net/apps/trac/gsdview/ticket/33">#33</a>)</li>
+<li>Packaging using <a class="reference external" href="http://www.pyinstaller.org">PyInstaller</a> (<a class="reference external" href="http://sf.net/apps/trac/gsdview/ticket/8">#8</a>)</li>
+<li>Other bug fix (<a class="reference external" href="http://sf.net/apps/trac/gsdview/ticket/21">#21</a>, <a class="reference external" href="http://sf.net/apps/trac/gsdview/ticket/31">#31</a>, <a class="reference external" href="http://sf.net/apps/trac/gsdview/ticket/36">#36</a>)</li>
+</ul>
+</div>
+<div class="section" id="changes-from-0-5-9-to-0-6-0-24-08-2009">
+<h2>Changes from 0.5.9 to 0.6.0 (24/08/2009)<a class="headerlink" href="#changes-from-0-5-9-to-0-6-0-24-08-2009" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>New plugin manager module (close <a class="reference external" href="http://sf.net/apps/trac/gsdview/ticket/2">#2</a>):<ul>
+<li>configurable search path for plugins</li>
+<li>support for zip imports and eggs (<strong>not tested</strong>)</li>
+<li>a new tab in preferences dialog allows to configure plugins manager
+via GUI</li>
+</ul>
+</li>
+<li>Fixed bug in sub-datasets handling</li>
+<li>Improved debian packaging (close <a class="reference external" href="http://sf.net/apps/trac/gsdview/ticket/3">#3</a>)</li>
+<li>API reference added to documentation</li>
+<li>Resources handling re-factoring (close <a class="reference external" href="http://sf.net/apps/trac/gsdview/ticket/6">#6</a>)</li>
+<li>Initial support for <a class="reference external" href="http://www.pyinstaller.org">PyInstaller</a> packaging (<a class="reference external" href="http://sf.net/apps/trac/gsdview/ticket/8">#8</a>)</li>
+<li>Improved project layout: exectools in now an independent python package,
+no more a sub-package of gsdview (close <a class="reference external" href="http://sf.net/apps/trac/gsdview/ticket/10">#10</a>)</li>
+<li><a class="reference external" href="http://pypi.python.org/pypi/setuptools">setuptools</a> support
+(close <a class="reference external" href="http://sf.net/apps/trac/gsdview/ticket/7">#7</a>)</li>
+</ul>
+</div>
+<div class="section" id="changes-from-0-3-0-to-0-5-9-10-05-2009">
+<h2>Changes from 0.3.0 to 0.5.9 (10/05/2009)<a class="headerlink" href="#changes-from-0-3-0-to-0-5-9-10-05-2009" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Complete application rewrite:<ul>
+<li>new architecture that allows multiple backends for actual data access
+(currently only GDAL backend is provided)</li>
+<li>updated dataset browser with new contextual actions</li>
+<li>now the application uses a Multiple Document Interface (MDI)</li>
+<li>pluggable about dialog (plugins can add their own tab)</li>
+<li>preference dialog</li>
+<li>splash screen</li>
+</ul>
+</li>
+<li>Improved GDAL configuration handling (without application re-spawning)</li>
+<li>New function for converting a numpy array into a QImage: now PyQwt is no
+more a strong dependency</li>
+</ul>
+</div>
+<div class="section" id="version-0-3-0-18-05-2008">
+<h2>Version 0.3.0 (18/05/2008)<a class="headerlink" href="#version-0-3-0-18-05-2008" title="Permalink to this headline">¶</a></h2>
+<p>First public release</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/logo.png" alt="Logo"/>
+            </a></p>
+    
+    
+    <p>
+        <a href="http://sourceforge.net/projects/gsdview">
+            <img src="http://sflogo.sourceforge.net/sflogo.php?group_id=226458&type=14" width="150" height="40" alt="Get GSDView at SourceForge.net. Fast, secure and Free Open Source software downloads" />
+        </a>
+    </p>
+    
+
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">ChangeLog</a><ul>
+<li><a class="reference internal" href="#changes-from-0-6-4-to-0-6-5-13-11-2011">Changes from 0.6.4 to 0.6.5 (13/11/2011)</a></li>
+<li><a class="reference internal" href="#changes-from-0-6-3-to-0-6-4-14-11-2010">Changes from 0.6.3 to 0.6.4 (14/11/2010)</a></li>
+<li><a class="reference internal" href="#changes-from-0-6-2-to-0-6-3-13-08-2010">Changes from 0.6.2 to 0.6.3 (13/08/2010)</a></li>
+<li><a class="reference internal" href="#changes-from-0-6-1-to-0-6-2-20-07-2010">Changes from 0.6.1 to 0.6.2 (20/07/2010)</a></li>
+<li><a class="reference internal" href="#changes-from-0-6-0-to-0-6-1-09-05-2010">Changes from 0.6.0 to 0.6.1 (09/05/2010)</a></li>
+<li><a class="reference internal" href="#changes-from-0-5-9-to-0-6-0-24-08-2009">Changes from 0.5.9 to 0.6.0 (24/08/2009)</a></li>
+<li><a class="reference internal" href="#changes-from-0-3-0-to-0-5-9-10-05-2009">Changes from 0.3.0 to 0.5.9 (10/05/2009)</a></li>
+<li><a class="reference internal" href="#version-0-3-0-18-05-2008">Version 0.3.0 (18/05/2008)</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="features.html"
+                        title="previous chapter">Features</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="links.html"
+                        title="next chapter">Links</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/CHANGES.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li class="right" >
+          <a href="links.html" title="Links"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="features.html" title="Features"
+             >previous</a> |</li>
+        <li><a href="index.html">GSDView</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2008-2011, Antonio Valentino.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

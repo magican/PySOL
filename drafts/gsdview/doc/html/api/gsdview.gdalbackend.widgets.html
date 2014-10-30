@@ -1,0 +1,825 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>gsdview.gdalbackend.widgets &mdash; GSDView Open Edition Home Page</title>
+    <link rel="stylesheet" href="../_static/sourceforge.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.6.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/logo.ico"/>
+    <link rel="top" title="GSDView Open Edition Home Page" href="../index.html" />
+    <link rel="up" title="API Reference" href="../reference.html" />
+    <link rel="next" title="exectools" href="exectools.html" />
+    <link rel="prev" title="gsdview.gdalbackend.ogrqt4" href="gsdview.gdalbackend.ogrqt4.html" /> 
+  </head>
+  <body>
+    
+        
+    
+    
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li class="right" >
+          <a href="exectools.html" title="exectools"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="gsdview.gdalbackend.ogrqt4.html" title="gsdview.gdalbackend.ogrqt4"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../reference.html" accesskey="U">API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-gsdview.gdalbackend.widgets">
+<span id="gsdview-gdalbackend-widgets"></span><h1>gsdview.gdalbackend.widgets<a class="headerlink" href="#module-gsdview.gdalbackend.widgets" title="Permalink to this headline">¶</a></h1>
+<p>Widgets and dialogs for GSDView.</p>
+<p class="rubric">Functions</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><tt class="xref py py-obj docutils literal"><span class="pre">get_filedialog</span></tt>([parent])</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Classes</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><a class="reference internal" href="#gsdview.gdalbackend.widgets.BackendPreferencesPage" title="gsdview.gdalbackend.widgets.BackendPreferencesPage"><tt class="xref py py-obj docutils literal"><span class="pre">BackendPreferencesPage</span></tt></a>(**kwargs[,&nbsp;parent,&nbsp;flags])</td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.gdalbackend.widgets.BandInfoDialog" title="gsdview.gdalbackend.widgets.BandInfoDialog"><tt class="xref py py-obj docutils literal"><span class="pre">BandInfoDialog</span></tt></a>(**kwargs[,&nbsp;band,&nbsp;parent,&nbsp;flags])</td>
+<td>Info dialog for GDAL raster bands.</td>
+</tr>
+<tr><td><tt class="xref py py-obj docutils literal"><span class="pre">BandInfoDialogBase</span></tt></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.gdalbackend.widgets.DatasetInfoDialog" title="gsdview.gdalbackend.widgets.DatasetInfoDialog"><tt class="xref py py-obj docutils literal"><span class="pre">DatasetInfoDialog</span></tt></a>(**kwargs[,&nbsp;dataset,&nbsp;...])</td>
+<td></td>
+</tr>
+<tr><td><tt class="xref py py-obj docutils literal"><span class="pre">DatasetInfoDialogBase</span></tt></td>
+<td></td>
+</tr>
+<tr><td><tt class="xref py py-obj docutils literal"><span class="pre">FileEntryWidget</span></tt>(**kwargs[,&nbsp;contents,&nbsp;mode,&nbsp;...])</td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.gdalbackend.widgets.GDALInfoWidget" title="gsdview.gdalbackend.widgets.GDALInfoWidget"><tt class="xref py py-obj docutils literal"><span class="pre">GDALInfoWidget</span></tt></a>(**kwargs[,&nbsp;parent,&nbsp;flags])</td>
+<td></td>
+</tr>
+<tr><td><tt class="xref py py-obj docutils literal"><span class="pre">GDALInfoWidgetBase</span></tt></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.gdalbackend.widgets.GDALPreferencesPage" title="gsdview.gdalbackend.widgets.GDALPreferencesPage"><tt class="xref py py-obj docutils literal"><span class="pre">GDALPreferencesPage</span></tt></a>(**kwargs[,&nbsp;parent,&nbsp;flags])</td>
+<td></td>
+</tr>
+<tr><td><tt class="xref py py-obj docutils literal"><span class="pre">GDALPreferencesPageBase</span></tt></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.gdalbackend.widgets.HistogramConfigDialog" title="gsdview.gdalbackend.widgets.HistogramConfigDialog"><tt class="xref py py-obj docutils literal"><span class="pre">HistogramConfigDialog</span></tt></a>(**kwargs[,&nbsp;parent,&nbsp;flags])</td>
+<td></td>
+</tr>
+<tr><td><tt class="xref py py-obj docutils literal"><span class="pre">HistogramConfigDialogBase</span></tt></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.gdalbackend.widgets.KeyPressEater" title="gsdview.gdalbackend.widgets.KeyPressEater"><tt class="xref py py-obj docutils literal"><span class="pre">KeyPressEater</span></tt></a>([keys,&nbsp;parent])</td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.gdalbackend.widgets.MajorObjectInfoDialog" title="gsdview.gdalbackend.widgets.MajorObjectInfoDialog"><tt class="xref py py-obj docutils literal"><span class="pre">MajorObjectInfoDialog</span></tt></a>(gdalobj,&nbsp;**kwargs[,&nbsp;...])</td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.gdalbackend.widgets.MetadataWidget" title="gsdview.gdalbackend.widgets.MetadataWidget"><tt class="xref py py-obj docutils literal"><span class="pre">MetadataWidget</span></tt></a>(**kwargs[,&nbsp;parent,&nbsp;flags])</td>
+<td>Widget for matadata display.</td>
+</tr>
+<tr><td><tt class="xref py py-obj docutils literal"><span class="pre">MetadataWidgetBase</span></tt></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.gdalbackend.widgets.OverviewDialog" title="gsdview.gdalbackend.widgets.OverviewDialog"><tt class="xref py py-obj docutils literal"><span class="pre">OverviewDialog</span></tt></a>(**kargs[,&nbsp;item,&nbsp;parent,&nbsp;flags])</td>
+<td>Dialog for overview management.</td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.gdalbackend.widgets.OverviewWidget" title="gsdview.gdalbackend.widgets.OverviewWidget"><tt class="xref py py-obj docutils literal"><span class="pre">OverviewWidget</span></tt></a>(**kwargs[,&nbsp;item,&nbsp;parent,&nbsp;flags])</td>
+<td>Widget for overview management.</td>
+</tr>
+<tr><td><tt class="xref py py-obj docutils literal"><span class="pre">OverviewWidgetBase</span></tt></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.gdalbackend.widgets.SpecialOverviewWidget" title="gsdview.gdalbackend.widgets.SpecialOverviewWidget"><tt class="xref py py-obj docutils literal"><span class="pre">SpecialOverviewWidget</span></tt></a>(**kwargs[,&nbsp;item,&nbsp;...])</td>
+<td>An overview widget that always performs overview recomputation.</td>
+</tr>
+</tbody>
+</table>
+<dl class="class">
+<dt id="gsdview.gdalbackend.widgets.BackendPreferencesPage">
+<em class="property">class </em><tt class="descclassname">gsdview.gdalbackend.widgets.</tt><tt class="descname">BackendPreferencesPage</tt><big>(</big><em>parent=None</em>, <em>flags=&lt;PyQt4.QtCore.WindowFlags object at 0x3720bb0&gt;</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#BackendPreferencesPage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.BackendPreferencesPage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gsdview.gdalbackend.widgets.GDALPreferencesPage" title="gsdview.gdalbackend.widgets.GDALPreferencesPage"><tt class="xref py py-class docutils literal"><span class="pre">gsdview.gdalbackend.widgets.GDALPreferencesPage</span></tt></a></p>
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.BackendPreferencesPage.load">
+<tt class="descname">load</tt><big>(</big><em>settings</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#BackendPreferencesPage.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.BackendPreferencesPage.load" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.BackendPreferencesPage.save">
+<tt class="descname">save</tt><big>(</big><em>settings</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#BackendPreferencesPage.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.BackendPreferencesPage.save" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gsdview.gdalbackend.widgets.BandInfoDialog">
+<em class="property">class </em><tt class="descclassname">gsdview.gdalbackend.widgets.</tt><tt class="descname">BandInfoDialog</tt><big>(</big><em>band=None</em>, <em>parent=None</em>, <em>flags=&lt;PyQt4.QtCore.WindowFlags object at 0x3720ec0&gt;</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#BandInfoDialog"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.BandInfoDialog" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gsdview.gdalbackend.widgets.MajorObjectInfoDialog" title="gsdview.gdalbackend.widgets.MajorObjectInfoDialog"><tt class="xref py py-class docutils literal"><span class="pre">gsdview.gdalbackend.widgets.MajorObjectInfoDialog</span></tt></a>, <tt class="xref py py-class docutils literal"><span class="pre">gsdview.gdalbackend.ui.banddialog.Ui_bandDialog</span></tt></p>
+<p>Info dialog for GDAL raster bands.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Signals :</th><td class="field-body"><ul class="first last simple">
+<li><a class="reference internal" href="#gsdview.gdalbackend.widgets.BandInfoDialog.statsComputationRequest" title="gsdview.gdalbackend.widgets.BandInfoDialog.statsComputationRequest"><tt class="xref py py-attr docutils literal"><span class="pre">statsComputationRequest</span></tt></a></li>
+<li><a class="reference internal" href="#gsdview.gdalbackend.widgets.BandInfoDialog.histogramComputationRequest" title="gsdview.gdalbackend.widgets.BandInfoDialog.histogramComputationRequest"><tt class="xref py py-attr docutils literal"><span class="pre">histogramComputationRequest</span></tt></a></li>
+<li><a class="reference internal" href="#gsdview.gdalbackend.widgets.BandInfoDialog.overviewComputationRequest" title="gsdview.gdalbackend.widgets.BandInfoDialog.overviewComputationRequest"><tt class="xref py py-attr docutils literal"><span class="pre">overviewComputationRequest</span></tt></a></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="gsdview.gdalbackend.widgets.BandInfoDialog.band">
+<tt class="descname">band</tt><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#BandInfoDialog.band"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.BandInfoDialog.band" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.gdalbackend.widgets.BandInfoDialog.histogramComputationRequest">
+<tt class="descname">histogramComputationRequest</tt><a class="headerlink" href="#gsdview.gdalbackend.widgets.BandInfoDialog.histogramComputationRequest" title="Permalink to this definition">¶</a></dt>
+<dd><p>SIGNAL: it is emitted when a time expensive computation of an histogram
+is required</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">C++ signature:</th><td class="field-body"><cite>void histogramComputationRequest(QtGui.QStandardItem)</cite></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.gdalbackend.widgets.BandInfoDialog.overviewComputationRequest">
+<tt class="descname">overviewComputationRequest</tt><a class="headerlink" href="#gsdview.gdalbackend.widgets.BandInfoDialog.overviewComputationRequest" title="Permalink to this definition">¶</a></dt>
+<dd><p>SIGNAL: it is emitted when overview computation is required</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">C++ signature:</th><td class="field-body"><cite>void overviewComputationRequest()</cite></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.gdalbackend.widgets.BandInfoDialog.overviewWidget">
+<tt class="descname">overviewWidget</tt><a class="headerlink" href="#gsdview.gdalbackend.widgets.BandInfoDialog.overviewWidget" title="Permalink to this definition">¶</a></dt>
+<dd><p>overview widget</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.BandInfoDialog.reset">
+<tt class="descname">reset</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#BandInfoDialog.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.BandInfoDialog.reset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.BandInfoDialog.resetColorTable">
+<tt class="descname">resetColorTable</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#BandInfoDialog.resetColorTable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.BandInfoDialog.resetColorTable" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.BandInfoDialog.resetHistogram">
+<tt class="descname">resetHistogram</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#BandInfoDialog.resetHistogram"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.BandInfoDialog.resetHistogram" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.BandInfoDialog.resetImageStructure">
+<tt class="descname">resetImageStructure</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#BandInfoDialog.resetImageStructure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.BandInfoDialog.resetImageStructure" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.BandInfoDialog.resetInfoTab">
+<tt class="descname">resetInfoTab</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#BandInfoDialog.resetInfoTab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.BandInfoDialog.resetInfoTab" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.BandInfoDialog.resetStatistics">
+<tt class="descname">resetStatistics</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#BandInfoDialog.resetStatistics"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.BandInfoDialog.resetStatistics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reset statistics.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.BandInfoDialog.setBand">
+<tt class="descname">setBand</tt><big>(</big><em>band</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#BandInfoDialog.setBand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.BandInfoDialog.setBand" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.BandInfoDialog.setColorTable">
+<tt class="descname">setColorTable</tt><big>(</big><em>colortable</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#BandInfoDialog.setColorTable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.BandInfoDialog.setColorTable" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.BandInfoDialog.setHistogram">
+<tt class="descname">setHistogram</tt><big>(</big><em>vmin</em>, <em>vmax</em>, <em>nbuckets</em>, <em>hist</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#BandInfoDialog.setHistogram"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.BandInfoDialog.setHistogram" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.BandInfoDialog.setImageStructure">
+<tt class="descname">setImageStructure</tt><big>(</big><em>metadata</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#BandInfoDialog.setImageStructure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.BandInfoDialog.setImageStructure" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.BandInfoDialog.setStatistics">
+<tt class="descname">setStatistics</tt><big>(</big><em>vmin</em>, <em>vmax</em>, <em>mean</em>, <em>stddev</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#BandInfoDialog.setStatistics"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.BandInfoDialog.setStatistics" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.gdalbackend.widgets.BandInfoDialog.statsComputationRequest">
+<tt class="descname">statsComputationRequest</tt><a class="headerlink" href="#gsdview.gdalbackend.widgets.BandInfoDialog.statsComputationRequest" title="Permalink to this definition">¶</a></dt>
+<dd><p>SIGNAL: it is emitted when a time expensive computation of statistics
+is required</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">C++ signature:</th><td class="field-body"><cite>void statsComputationRequest(QtGui.QStandardItem)</cite></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.BandInfoDialog.update">
+<tt class="descname">update</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#BandInfoDialog.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.BandInfoDialog.update" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.BandInfoDialog.updateColorTable">
+<tt class="descname">updateColorTable</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#BandInfoDialog.updateColorTable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.BandInfoDialog.updateColorTable" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.BandInfoDialog.updateHistogram">
+<tt class="descname">updateHistogram</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#BandInfoDialog.updateHistogram"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.BandInfoDialog.updateHistogram" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.BandInfoDialog.updateImageStructure">
+<tt class="descname">updateImageStructure</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#BandInfoDialog.updateImageStructure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.BandInfoDialog.updateImageStructure" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.BandInfoDialog.updateInfoTab">
+<tt class="descname">updateInfoTab</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#BandInfoDialog.updateInfoTab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.BandInfoDialog.updateInfoTab" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.BandInfoDialog.updateOverviewInfo">
+<tt class="descname">updateOverviewInfo</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#BandInfoDialog.updateOverviewInfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.BandInfoDialog.updateOverviewInfo" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.BandInfoDialog.updateStatistics">
+<tt class="descname">updateStatistics</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#BandInfoDialog.updateStatistics"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.BandInfoDialog.updateStatistics" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gsdview.gdalbackend.widgets.DatasetInfoDialog">
+<em class="property">class </em><tt class="descclassname">gsdview.gdalbackend.widgets.</tt><tt class="descname">DatasetInfoDialog</tt><big>(</big><em>dataset=None</em>, <em>parent=None</em>, <em>flags=&lt;PyQt4.QtCore.WindowFlags object at 0x3720f30&gt;</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#DatasetInfoDialog"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.DatasetInfoDialog" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gsdview.gdalbackend.widgets.MajorObjectInfoDialog" title="gsdview.gdalbackend.widgets.MajorObjectInfoDialog"><tt class="xref py py-class docutils literal"><span class="pre">gsdview.gdalbackend.widgets.MajorObjectInfoDialog</span></tt></a>, <tt class="xref py py-class docutils literal"><span class="pre">gsdview.gdalbackend.ui.datasetdialog.Ui_datasetDialog</span></tt></p>
+<dl class="attribute">
+<dt id="gsdview.gdalbackend.widgets.DatasetInfoDialog.dataset">
+<tt class="descname">dataset</tt><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#DatasetInfoDialog.dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.DatasetInfoDialog.dataset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.DatasetInfoDialog.reset">
+<tt class="descname">reset</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#DatasetInfoDialog.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.DatasetInfoDialog.reset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.DatasetInfoDialog.resetDriverTab">
+<tt class="descname">resetDriverTab</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#DatasetInfoDialog.resetDriverTab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.DatasetInfoDialog.resetDriverTab" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.DatasetInfoDialog.resetFilesTab">
+<tt class="descname">resetFilesTab</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#DatasetInfoDialog.resetFilesTab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.DatasetInfoDialog.resetFilesTab" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.DatasetInfoDialog.resetGCPs">
+<tt class="descname">resetGCPs</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#DatasetInfoDialog.resetGCPs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.DatasetInfoDialog.resetGCPs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.DatasetInfoDialog.resetImageStructure">
+<tt class="descname">resetImageStructure</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#DatasetInfoDialog.resetImageStructure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.DatasetInfoDialog.resetImageStructure" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.DatasetInfoDialog.resetInfoTab">
+<tt class="descname">resetInfoTab</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#DatasetInfoDialog.resetInfoTab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.DatasetInfoDialog.resetInfoTab" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.DatasetInfoDialog.setDataset">
+<tt class="descname">setDataset</tt><big>(</big><em>dataset</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#DatasetInfoDialog.setDataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.DatasetInfoDialog.setDataset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.DatasetInfoDialog.setDriverTab">
+<tt class="descname">setDriverTab</tt><big>(</big><em>driver</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#DatasetInfoDialog.setDriverTab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.DatasetInfoDialog.setDriverTab" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.DatasetInfoDialog.setFiles">
+<tt class="descname">setFiles</tt><big>(</big><em>files</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#DatasetInfoDialog.setFiles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.DatasetInfoDialog.setFiles" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.DatasetInfoDialog.setGCPs">
+<tt class="descname">setGCPs</tt><big>(</big><em>gcplist</em>, <em>projection</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#DatasetInfoDialog.setGCPs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.DatasetInfoDialog.setGCPs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.DatasetInfoDialog.setImageStructure">
+<tt class="descname">setImageStructure</tt><big>(</big><em>metadata</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#DatasetInfoDialog.setImageStructure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.DatasetInfoDialog.setImageStructure" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.DatasetInfoDialog.update">
+<tt class="descname">update</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#DatasetInfoDialog.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.DatasetInfoDialog.update" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.DatasetInfoDialog.updateDriverTab">
+<tt class="descname">updateDriverTab</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#DatasetInfoDialog.updateDriverTab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.DatasetInfoDialog.updateDriverTab" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.DatasetInfoDialog.updateFilesTab">
+<tt class="descname">updateFilesTab</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#DatasetInfoDialog.updateFilesTab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.DatasetInfoDialog.updateFilesTab" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.DatasetInfoDialog.updateGCPs">
+<tt class="descname">updateGCPs</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#DatasetInfoDialog.updateGCPs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.DatasetInfoDialog.updateGCPs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.DatasetInfoDialog.updateImageStructure">
+<tt class="descname">updateImageStructure</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#DatasetInfoDialog.updateImageStructure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.DatasetInfoDialog.updateImageStructure" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.DatasetInfoDialog.updateInfoTab">
+<tt class="descname">updateInfoTab</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#DatasetInfoDialog.updateInfoTab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.DatasetInfoDialog.updateInfoTab" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gsdview.gdalbackend.widgets.GDALInfoWidget">
+<em class="property">class </em><tt class="descclassname">gsdview.gdalbackend.widgets.</tt><tt class="descname">GDALInfoWidget</tt><big>(</big><em>parent=None</em>, <em>flags=&lt;PyQt4.QtCore.WindowFlags object at 0x3720ad0&gt;</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#GDALInfoWidget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.GDALInfoWidget" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">PyQt4.QtGui.QWidget</span></tt>, <tt class="xref py py-class docutils literal"><span class="pre">gsdview.gdalbackend.ui.gdalinfo.Ui_gdalInfoWidget</span></tt></p>
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.GDALInfoWidget.setGdalDriversTab">
+<tt class="descname">setGdalDriversTab</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#GDALInfoWidget.setGdalDriversTab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.GDALInfoWidget.setGdalDriversTab" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.GDALInfoWidget.showEvent">
+<tt class="descname">showEvent</tt><big>(</big><em>event</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#GDALInfoWidget.showEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.GDALInfoWidget.showEvent" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.GDALInfoWidget.updateCacheInfo">
+<tt class="descname">updateCacheInfo</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#GDALInfoWidget.updateCacheInfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.GDALInfoWidget.updateCacheInfo" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gsdview.gdalbackend.widgets.GDALPreferencesPage">
+<em class="property">class </em><tt class="descclassname">gsdview.gdalbackend.widgets.</tt><tt class="descname">GDALPreferencesPage</tt><big>(</big><em>parent=None</em>, <em>flags=&lt;PyQt4.QtCore.WindowFlags object at 0x3720b40&gt;</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#GDALPreferencesPage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.GDALPreferencesPage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">PyQt4.QtGui.QWidget</span></tt>, <tt class="xref py py-class docutils literal"><span class="pre">gsdview.gdalbackend.ui.gdalpage.Ui_gdalPreferencesWidget</span></tt></p>
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.GDALPreferencesPage.load">
+<tt class="descname">load</tt><big>(</big><em>settings</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#GDALPreferencesPage.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.GDALPreferencesPage.load" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.GDALPreferencesPage.save">
+<tt class="descname">save</tt><big>(</big><em>settings</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#GDALPreferencesPage.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.GDALPreferencesPage.save" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.GDALPreferencesPage.showinfo">
+<tt class="descname">showinfo</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#GDALPreferencesPage.showinfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.GDALPreferencesPage.showinfo" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gsdview.gdalbackend.widgets.HistogramConfigDialog">
+<em class="property">class </em><tt class="descclassname">gsdview.gdalbackend.widgets.</tt><tt class="descname">HistogramConfigDialog</tt><big>(</big><em>parent=None</em>, <em>flags=&lt;PyQt4.QtCore.WindowFlags object at 0x3720e50&gt;</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#HistogramConfigDialog"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.HistogramConfigDialog" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">PyQt4.QtGui.QDialog</span></tt>, <tt class="xref py py-class docutils literal"><span class="pre">gsdview.gdalbackend.ui.histoconfig.Ui_histogramConfigDialog</span></tt></p>
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.HistogramConfigDialog.setLimits">
+<tt class="descname">setLimits</tt><big>(</big><em>dtype</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#HistogramConfigDialog.setLimits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.HistogramConfigDialog.setLimits" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.HistogramConfigDialog.validate">
+<tt class="descname">validate</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#HistogramConfigDialog.validate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.HistogramConfigDialog.validate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gsdview.gdalbackend.widgets.KeyPressEater">
+<em class="property">class </em><tt class="descclassname">gsdview.gdalbackend.widgets.</tt><tt class="descname">KeyPressEater</tt><big>(</big><em>keys=None</em>, <em>parent=None</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#KeyPressEater"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.KeyPressEater" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">PyQt4.QtCore.QObject</span></tt></p>
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.KeyPressEater.eventFilter">
+<tt class="descname">eventFilter</tt><big>(</big><em>obj</em>, <em>event</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#KeyPressEater.eventFilter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.KeyPressEater.eventFilter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gsdview.gdalbackend.widgets.MajorObjectInfoDialog">
+<em class="property">class </em><tt class="descclassname">gsdview.gdalbackend.widgets.</tt><tt class="descname">MajorObjectInfoDialog</tt><big>(</big><em>gdalobj</em>, <em>parent=None</em>, <em>flags=&lt;PyQt4.QtCore.WindowFlags object at 0x3720de0&gt;</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#MajorObjectInfoDialog"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.MajorObjectInfoDialog" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">PyQt4.QtGui.QDialog</span></tt></p>
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.MajorObjectInfoDialog.printMetadata">
+<tt class="descname">printMetadata</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#MajorObjectInfoDialog.printMetadata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.MajorObjectInfoDialog.printMetadata" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.MajorObjectInfoDialog.reset">
+<tt class="descname">reset</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#MajorObjectInfoDialog.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.MajorObjectInfoDialog.reset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.MajorObjectInfoDialog.resetMetadata">
+<tt class="descname">resetMetadata</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#MajorObjectInfoDialog.resetMetadata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.MajorObjectInfoDialog.resetMetadata" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.MajorObjectInfoDialog.saveMetadata">
+<tt class="descname">saveMetadata</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#MajorObjectInfoDialog.saveMetadata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.MajorObjectInfoDialog.saveMetadata" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.MajorObjectInfoDialog.setMetadata">
+<tt class="descname">setMetadata</tt><big>(</big><em>metadatalist</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#MajorObjectInfoDialog.setMetadata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.MajorObjectInfoDialog.setMetadata" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.MajorObjectInfoDialog.update">
+<tt class="descname">update</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#MajorObjectInfoDialog.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.MajorObjectInfoDialog.update" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.MajorObjectInfoDialog.updateMetadata">
+<tt class="descname">updateMetadata</tt><big>(</big><em>domain=''</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#MajorObjectInfoDialog.updateMetadata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.MajorObjectInfoDialog.updateMetadata" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gsdview.gdalbackend.widgets.MetadataWidget">
+<em class="property">class </em><tt class="descclassname">gsdview.gdalbackend.widgets.</tt><tt class="descname">MetadataWidget</tt><big>(</big><em>parent=None</em>, <em>flags=&lt;PyQt4.QtCore.WindowFlags object at 0x3720c20&gt;</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#MetadataWidget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.MetadataWidget" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">PyQt4.QtGui.QWidget</span></tt>, <tt class="xref py py-class docutils literal"><span class="pre">gsdview.gdalbackend.ui.metadata.Ui_metadataForm</span></tt></p>
+<p>Widget for matadata display.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Signals :</th><td class="field-body"><ul class="first last simple">
+<li><a class="reference internal" href="#gsdview.gdalbackend.widgets.MetadataWidget.domainChanged" title="gsdview.gdalbackend.widgets.MetadataWidget.domainChanged"><tt class="xref py py-attr docutils literal"><span class="pre">domainChanged</span></tt></a></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.MetadataWidget.buttonsEnabled">
+<tt class="descname">buttonsEnabled</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#MetadataWidget.buttonsEnabled"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.MetadataWidget.buttonsEnabled" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.MetadataWidget.domain">
+<tt class="descname">domain</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#MetadataWidget.domain"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.MetadataWidget.domain" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.gdalbackend.widgets.MetadataWidget.domainChanged">
+<tt class="descname">domainChanged</tt><a class="headerlink" href="#gsdview.gdalbackend.widgets.MetadataWidget.domainChanged" title="Permalink to this definition">¶</a></dt>
+<dd><p>SIGNAL: it is emitted when metadata domain changes</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">C++ signature:</th><td class="field-body"><cite>void domainChanged(str)</cite></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.MetadataWidget.domainsEnabled">
+<tt class="descname">domainsEnabled</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#MetadataWidget.domainsEnabled"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.MetadataWidget.domainsEnabled" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.MetadataWidget.enableButtons">
+<tt class="descname">enableButtons</tt><big>(</big><em>enabed=True</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#MetadataWidget.enableButtons"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.MetadataWidget.enableButtons" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.MetadataWidget.enableDomains">
+<tt class="descname">enableDomains</tt><big>(</big><em>enabled=True</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#MetadataWidget.enableDomains"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.MetadataWidget.enableDomains" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.MetadataWidget.resetMetadata">
+<tt class="descname">resetMetadata</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#MetadataWidget.resetMetadata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.MetadataWidget.resetMetadata" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.MetadataWidget.setDomain">
+<tt class="descname">setDomain</tt><big>(</big><em>domain</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#MetadataWidget.setDomain"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.MetadataWidget.setDomain" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.MetadataWidget.setMetadata">
+<tt class="descname">setMetadata</tt><big>(</big><em>metadatalist</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#MetadataWidget.setMetadata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.MetadataWidget.setMetadata" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gsdview.gdalbackend.widgets.OverviewDialog">
+<em class="property">class </em><tt class="descclassname">gsdview.gdalbackend.widgets.</tt><tt class="descname">OverviewDialog</tt><big>(</big><em>item=None</em>, <em>parent=None</em>, <em>flags=&lt;PyQt4.QtCore.WindowFlags object at 0x3720d70&gt;</em>, <em>**kargs</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#OverviewDialog"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.OverviewDialog" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">PyQt4.QtGui.QDialog</span></tt></p>
+<p>Dialog for overview management.</p>
+<p>Display existing overview levels and allow to to sibmit overview
+compitation requests.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Signals :</th><td class="field-body"><ul class="first last simple">
+<li><a class="reference internal" href="#gsdview.gdalbackend.widgets.OverviewDialog.overviewComputationRequest" title="gsdview.gdalbackend.widgets.OverviewDialog.overviewComputationRequest"><tt class="xref py py-attr docutils literal"><span class="pre">overviewComputationRequest</span></tt></a></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="gsdview.gdalbackend.widgets.OverviewDialog.description">
+<tt class="descname">description</tt><a class="headerlink" href="#gsdview.gdalbackend.widgets.OverviewDialog.description" title="Permalink to this definition">¶</a></dt>
+<dd><p>dataset label</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.gdalbackend.widgets.OverviewDialog.overviewComputationRequest">
+<tt class="descname">overviewComputationRequest</tt><a class="headerlink" href="#gsdview.gdalbackend.widgets.OverviewDialog.overviewComputationRequest" title="Permalink to this definition">¶</a></dt>
+<dd><p>SIGNAL: it is emitted when a time expensive computation of overviews
+is required</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">C++ signature:</th><td class="field-body"><cite>void overviewComputationRequest(QtGui.QStandardItem)</cite></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.gdalbackend.widgets.OverviewDialog.overviewWidget">
+<tt class="descname">overviewWidget</tt><a class="headerlink" href="#gsdview.gdalbackend.widgets.OverviewDialog.overviewWidget" title="Permalink to this definition">¶</a></dt>
+<dd><p>overview widget</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.OverviewDialog.reset">
+<tt class="descname">reset</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#OverviewDialog.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.OverviewDialog.reset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.OverviewDialog.setItem">
+<tt class="descname">setItem</tt><big>(</big><em>item</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#OverviewDialog.setItem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.OverviewDialog.setItem" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.OverviewDialog.updateOverviewInfo">
+<tt class="descname">updateOverviewInfo</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#OverviewDialog.updateOverviewInfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.OverviewDialog.updateOverviewInfo" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gsdview.gdalbackend.widgets.OverviewWidget">
+<em class="property">class </em><tt class="descclassname">gsdview.gdalbackend.widgets.</tt><tt class="descname">OverviewWidget</tt><big>(</big><em>item=None</em>, <em>parent=None</em>, <em>flags=&lt;PyQt4.QtCore.WindowFlags object at 0x3720c90&gt;</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#OverviewWidget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.OverviewWidget" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">PyQt4.QtGui.QWidget</span></tt>, <tt class="xref py py-class docutils literal"><span class="pre">gsdview.gdalbackend.ui.overview.Ui_overviewTab</span></tt></p>
+<p>Widget for overview management.</p>
+<p>Display existing overview levels and allow to to sibmit overview
+compitation requests.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Signals :</th><td class="field-body"><ul class="first last simple">
+<li><a class="reference internal" href="#gsdview.gdalbackend.widgets.OverviewWidget.overviewComputationRequest" title="gsdview.gdalbackend.widgets.OverviewWidget.overviewComputationRequest"><tt class="xref py py-attr docutils literal"><span class="pre">overviewComputationRequest</span></tt></a></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.OverviewWidget.addLevel">
+<tt class="descname">addLevel</tt><big>(</big><em>level=None</em>, <em>xsize=None</em>, <em>ysize=None</em>, <em>checked=False</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#OverviewWidget.addLevel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.OverviewWidget.addLevel" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.OverviewWidget.levels">
+<tt class="descname">levels</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#OverviewWidget.levels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.OverviewWidget.levels" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.OverviewWidget.optionlist">
+<tt class="descname">optionlist</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#OverviewWidget.optionlist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.OverviewWidget.optionlist" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.gdalbackend.widgets.OverviewWidget.overviewComputationRequest">
+<tt class="descname">overviewComputationRequest</tt><a class="headerlink" href="#gsdview.gdalbackend.widgets.OverviewWidget.overviewComputationRequest" title="Permalink to this definition">¶</a></dt>
+<dd><p>SIGNAL: it is emitted when a time expensive computation of overviews
+is required</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">C++ signature:</th><td class="field-body"><cite>void overviewComputationRequest()</cite></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.OverviewWidget.readOnly">
+<tt class="descname">readOnly</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#OverviewWidget.readOnly"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.OverviewWidget.readOnly" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.OverviewWidget.reset">
+<tt class="descname">reset</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#OverviewWidget.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.OverviewWidget.reset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.OverviewWidget.setItem">
+<tt class="descname">setItem</tt><big>(</big><em>item</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#OverviewWidget.setItem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.OverviewWidget.setItem" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.OverviewWidget.setReadOnly">
+<tt class="descname">setReadOnly</tt><big>(</big><em>readonly=True</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#OverviewWidget.setReadOnly"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.OverviewWidget.setReadOnly" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gsdview.gdalbackend.widgets.SpecialOverviewWidget">
+<em class="property">class </em><tt class="descclassname">gsdview.gdalbackend.widgets.</tt><tt class="descname">SpecialOverviewWidget</tt><big>(</big><em>item=None</em>, <em>parent=None</em>, <em>flags=&lt;PyQt4.QtCore.WindowFlags object at 0x3720c90&gt;</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#SpecialOverviewWidget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.SpecialOverviewWidget" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gsdview.gdalbackend.widgets.OverviewWidget" title="gsdview.gdalbackend.widgets.OverviewWidget"><tt class="xref py py-class docutils literal"><span class="pre">gsdview.gdalbackend.widgets.OverviewWidget</span></tt></a></p>
+<p>An overview widget that always performs overview recomputation.</p>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#gsdview.gdalbackend.widgets.OverviewWidget" title="gsdview.gdalbackend.widgets.OverviewWidget"><tt class="xref py py-class docutils literal"><span class="pre">OverviewWidget</span></tt></a></p>
+</div>
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.SpecialOverviewWidget.levels">
+<tt class="descname">levels</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#SpecialOverviewWidget.levels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.SpecialOverviewWidget.levels" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.gdalbackend.widgets.SpecialOverviewWidget.reset">
+<tt class="descname">reset</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/gdalbackend/widgets.html#SpecialOverviewWidget.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.gdalbackend.widgets.SpecialOverviewWidget.reset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo.png" alt="Logo"/>
+            </a></p>
+    
+    
+    <p>
+        <a href="http://sourceforge.net/projects/gsdview">
+            <img src="http://sflogo.sourceforge.net/sflogo.php?group_id=226458&type=14" width="150" height="40" alt="Get GSDView at SourceForge.net. Fast, secure and Free Open Source software downloads" />
+        </a>
+    </p>
+    
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="gsdview.gdalbackend.ogrqt4.html"
+                        title="previous chapter">gsdview.gdalbackend.ogrqt4</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="exectools.html"
+                        title="next chapter">exectools</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/api/gsdview.gdalbackend.widgets.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li class="right" >
+          <a href="exectools.html" title="exectools"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="gsdview.gdalbackend.ogrqt4.html" title="gsdview.gdalbackend.ogrqt4"
+             >previous</a> |</li>
+        <li><a href="../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../reference.html" >API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2008-2011, Antonio Valentino.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

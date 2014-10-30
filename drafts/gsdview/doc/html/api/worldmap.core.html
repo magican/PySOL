@@ -1,0 +1,203 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>worldmap.core &mdash; GSDView Open Edition Home Page</title>
+    <link rel="stylesheet" href="../_static/sourceforge.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.6.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/logo.ico"/>
+    <link rel="top" title="GSDView Open Edition Home Page" href="../index.html" />
+    <link rel="up" title="API Reference" href="../reference.html" />
+    <link rel="next" title="zoom" href="zoom.html" />
+    <link rel="prev" title="worldmap.info" href="worldmap.info.html" /> 
+  </head>
+  <body>
+    
+        
+    
+    
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li class="right" >
+          <a href="zoom.html" title="zoom"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="worldmap.info.html" title="worldmap.info"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../reference.html" accesskey="U">API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-worldmap.core">
+<span id="worldmap-core"></span><h1>worldmap.core<a class="headerlink" href="#module-worldmap.core" title="Permalink to this headline">¶</a></h1>
+<p>World map component for GSDView.</p>
+<p class="rubric">Classes</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><a class="reference internal" href="#worldmap.core.WorldmapController" title="worldmap.core.WorldmapController"><tt class="xref py py-obj docutils literal"><span class="pre">WorldmapController</span></tt></a>(app,&nbsp;**kwargs)</td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#worldmap.core.WorldmapPanel" title="worldmap.core.WorldmapPanel"><tt class="xref py py-obj docutils literal"><span class="pre">WorldmapPanel</span></tt></a>(**kwargs[,&nbsp;parent,&nbsp;flags])</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="class">
+<dt id="worldmap.core.WorldmapController">
+<em class="property">class </em><tt class="descclassname">worldmap.core.</tt><tt class="descname">WorldmapController</tt><big>(</big><em>app</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/worldmap/core.html#WorldmapController"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#worldmap.core.WorldmapController" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">PyQt4.QtCore.QObject</span></tt></p>
+<dl class="method">
+<dt id="worldmap.core.WorldmapController.onItemClicked">
+<tt class="descname">onItemClicked</tt><big>(</big><em>index</em><big>)</big><a class="reference internal" href="../_modules/worldmap/core.html#WorldmapController.onItemClicked"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#worldmap.core.WorldmapController.onItemClicked" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="worldmap.core.WorldmapController.onModelChanged">
+<tt class="descname">onModelChanged</tt><big>(</big><em>index=None</em>, <em>start=None</em>, <em>stop=None</em><big>)</big><a class="reference internal" href="../_modules/worldmap/core.html#WorldmapController.onModelChanged"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#worldmap.core.WorldmapController.onModelChanged" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="worldmap.core.WorldmapController.onSubWindowChanged">
+<tt class="descname">onSubWindowChanged</tt><big>(</big><em>subwin=None</em><big>)</big><a class="reference internal" href="../_modules/worldmap/core.html#WorldmapController.onSubWindowChanged"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#worldmap.core.WorldmapController.onSubWindowChanged" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="worldmap.core.WorldmapController.setItemFootprint">
+<tt class="descname">setItemFootprint</tt><big>(</big><em>item</em><big>)</big><a class="reference internal" href="../_modules/worldmap/core.html#WorldmapController.setItemFootprint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#worldmap.core.WorldmapController.setItemFootprint" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="worldmap.core.WorldmapPanel">
+<em class="property">class </em><tt class="descclassname">worldmap.core.</tt><tt class="descname">WorldmapPanel</tt><big>(</big><em>parent=None</em>, <em>flags=&lt;PyQt4.QtCore.WindowFlags object at 0x38f6910&gt;</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/worldmap/core.html#WorldmapPanel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#worldmap.core.WorldmapPanel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">PyQt4.QtGui.QDockWidget</span></tt></p>
+<dl class="method">
+<dt id="worldmap.core.WorldmapPanel.clear">
+<tt class="descname">clear</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/worldmap/core.html#WorldmapPanel.clear"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#worldmap.core.WorldmapPanel.clear" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="worldmap.core.WorldmapPanel.eventFilter">
+<tt class="descname">eventFilter</tt><big>(</big><em>obj</em>, <em>event</em><big>)</big><a class="reference internal" href="../_modules/worldmap/core.html#WorldmapPanel.eventFilter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#worldmap.core.WorldmapPanel.eventFilter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="worldmap.core.WorldmapPanel.plot">
+<tt class="descname">plot</tt><big>(</big><em>polygon</em><big>)</big><a class="reference internal" href="../_modules/worldmap/core.html#WorldmapPanel.plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#worldmap.core.WorldmapPanel.plot" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="worldmap.core.WorldmapPanel.setFootprint">
+<tt class="descname">setFootprint</tt><big>(</big><em>polygon</em><big>)</big><a class="reference internal" href="../_modules/worldmap/core.html#WorldmapPanel.setFootprint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#worldmap.core.WorldmapPanel.setFootprint" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="worldmap.core.WorldmapPanel.setWorldmapItem">
+<tt class="descname">setWorldmapItem</tt><big>(</big><em>resolution='low'</em><big>)</big><a class="reference internal" href="../_modules/worldmap/core.html#WorldmapPanel.setWorldmapItem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#worldmap.core.WorldmapPanel.setWorldmapItem" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo.png" alt="Logo"/>
+            </a></p>
+    
+    
+    <p>
+        <a href="http://sourceforge.net/projects/gsdview">
+            <img src="http://sflogo.sourceforge.net/sflogo.php?group_id=226458&type=14" width="150" height="40" alt="Get GSDView at SourceForge.net. Fast, secure and Free Open Source software downloads" />
+        </a>
+    </p>
+    
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="worldmap.info.html"
+                        title="previous chapter">worldmap.info</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="zoom.html"
+                        title="next chapter">zoom</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/api/worldmap.core.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li class="right" >
+          <a href="zoom.html" title="zoom"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="worldmap.info.html" title="worldmap.info"
+             >previous</a> |</li>
+        <li><a href="../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../reference.html" >API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2008-2011, Antonio Valentino.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,327 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>overview.core &mdash; GSDView Open Edition Home Page</title>
+    <link rel="stylesheet" href="../_static/sourceforge.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.6.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/logo.ico"/>
+    <link rel="top" title="GSDView Open Edition Home Page" href="../index.html" />
+    <link rel="up" title="API Reference" href="../reference.html" />
+    <link rel="next" title="positiontracker" href="positiontracker.html" />
+    <link rel="prev" title="overview.info" href="overview.info.html" /> 
+  </head>
+  <body>
+    
+        
+    
+    
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li class="right" >
+          <a href="positiontracker.html" title="positiontracker"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="overview.info.html" title="overview.info"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../reference.html" accesskey="U">API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-overview.core">
+<span id="overview-core"></span><h1>overview.core<a class="headerlink" href="#module-overview.core" title="Permalink to this headline">¶</a></h1>
+<p>Overview pannel for GDAL raster bands.</p>
+<p class="rubric">Functions</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><tt class="xref py py-obj docutils literal"><span class="pre">overrideCursor</span></tt>(func)</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Classes</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><a class="reference internal" href="#overview.core.BandOverviewDock" title="overview.core.BandOverviewDock"><tt class="xref py py-obj docutils literal"><span class="pre">BandOverviewDock</span></tt></a>(app,&nbsp;**kwargs[,&nbsp;flags])</td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#overview.core.NavigationGraphicsView" title="overview.core.NavigationGraphicsView"><tt class="xref py py-obj docutils literal"><span class="pre">NavigationGraphicsView</span></tt></a>(**kwargs[,&nbsp;parent])</td>
+<td>Graphics view for dataset navigation.</td>
+</tr>
+<tr><td><a class="reference internal" href="#overview.core.OverviewController" title="overview.core.OverviewController"><tt class="xref py py-obj docutils literal"><span class="pre">OverviewController</span></tt></a>(app,&nbsp;**kwargs)</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="class">
+<dt id="overview.core.BandOverviewDock">
+<em class="property">class </em><tt class="descclassname">overview.core.</tt><tt class="descname">BandOverviewDock</tt><big>(</big><em>app</em>, <em>flags=&lt;PyQt4.QtCore.WindowFlags object at 0x38dfd70&gt;</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/overview/core.html#BandOverviewDock"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#overview.core.BandOverviewDock" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">PyQt4.QtGui.QDockWidget</span></tt></p>
+<dl class="method">
+<dt id="overview.core.BandOverviewDock.centerMainViewOn">
+<tt class="descname">centerMainViewOn</tt><big>(</big><em>scenepos</em><big>)</big><a class="reference internal" href="../_modules/overview/core.html#BandOverviewDock.centerMainViewOn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#overview.core.BandOverviewDock.centerMainViewOn" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="overview.core.BandOverviewDock.reset">
+<tt class="descname">reset</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/overview/core.html#BandOverviewDock.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#overview.core.BandOverviewDock.reset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="overview.core.BandOverviewDock.setItem">
+<tt class="descname">setItem</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/overview/core.html#BandOverviewDock.setItem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#overview.core.BandOverviewDock.setItem" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="overview.core.BandOverviewDock.updateMainViewBox">
+<tt class="descname">updateMainViewBox</tt><big>(</big><em>srcview=None</em><big>)</big><a class="reference internal" href="../_modules/overview/core.html#BandOverviewDock.updateMainViewBox"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#overview.core.BandOverviewDock.updateMainViewBox" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="overview.core.NavigationGraphicsView">
+<em class="property">class </em><tt class="descclassname">overview.core.</tt><tt class="descname">NavigationGraphicsView</tt><big>(</big><em>parent=None</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/overview/core.html#NavigationGraphicsView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#overview.core.NavigationGraphicsView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">PyQt4.QtGui.QGraphicsView</span></tt></p>
+<p>Graphics view for dataset navigation.</p>
+<p>The view usually displays an auto-scalled low resolution overview
+of the scene with a red box indicating the area currently displayed
+in the high resolution view.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Signals :</th><td class="field-body"><ul class="first last simple">
+<li><a class="reference internal" href="#overview.core.NavigationGraphicsView.mousePressed" title="overview.core.NavigationGraphicsView.mousePressed"><tt class="xref py py-attr docutils literal"><span class="pre">mousePressed</span></tt></a></li>
+<li><a class="reference internal" href="#overview.core.NavigationGraphicsView.mouseMoved" title="overview.core.NavigationGraphicsView.mouseMoved"><tt class="xref py py-attr docutils literal"><span class="pre">mouseMoved</span></tt></a></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="overview.core.NavigationGraphicsView.autoscale">
+<tt class="descname">autoscale</tt><a class="headerlink" href="#overview.core.NavigationGraphicsView.autoscale" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="overview.core.NavigationGraphicsView.drawForeground">
+<tt class="descname">drawForeground</tt><big>(</big><em>painter</em>, <em>rect</em><big>)</big><a class="reference internal" href="../_modules/overview/core.html#NavigationGraphicsView.drawForeground"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#overview.core.NavigationGraphicsView.drawForeground" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="overview.core.NavigationGraphicsView.fitInView">
+<tt class="descname">fitInView</tt><big>(</big><em>rect=None</em>, <em>aspectRatioMode=1</em><big>)</big><a class="reference internal" href="../_modules/overview/core.html#NavigationGraphicsView.fitInView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#overview.core.NavigationGraphicsView.fitInView" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="overview.core.NavigationGraphicsView.getbox">
+<tt class="descname">getbox</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/overview/core.html#NavigationGraphicsView.getbox"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#overview.core.NavigationGraphicsView.getbox" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="overview.core.NavigationGraphicsView.mouseMoveEvent">
+<tt class="descname">mouseMoveEvent</tt><big>(</big><em>event</em><big>)</big><a class="reference internal" href="../_modules/overview/core.html#NavigationGraphicsView.mouseMoveEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#overview.core.NavigationGraphicsView.mouseMoveEvent" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="overview.core.NavigationGraphicsView.mouseMoved">
+<tt class="descname">mouseMoved</tt><a class="headerlink" href="#overview.core.NavigationGraphicsView.mouseMoved" title="Permalink to this definition">¶</a></dt>
+<dd><p>SIGNAL: it is emitted when the mouse is moved on the view</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>point</strong> &#8211; the scene position</li>
+<li><strong>mousebutton</strong> &#8211; the ID of the pressed button</li>
+<li><strong>dragmode</strong> &#8211; current darg mode</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">C++ signature:</th><td class="field-body"><p class="first last"><cite>void mouseMoved(QPointF, Qt::MouseButtons,
+QGraphicsView::DragMode)</cite></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="overview.core.NavigationGraphicsView.mousePressEvent">
+<tt class="descname">mousePressEvent</tt><big>(</big><em>event</em><big>)</big><a class="reference internal" href="../_modules/overview/core.html#NavigationGraphicsView.mousePressEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#overview.core.NavigationGraphicsView.mousePressEvent" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="overview.core.NavigationGraphicsView.mousePressed">
+<tt class="descname">mousePressed</tt><a class="headerlink" href="#overview.core.NavigationGraphicsView.mousePressed" title="Permalink to this definition">¶</a></dt>
+<dd><p>SIGNAL: it is emitted when a mouse button is presses on the view</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>point</strong> &#8211; the scene position</li>
+<li><strong>mousebutton</strong> &#8211; the ID of the pressed button</li>
+<li><strong>dragmode</strong> &#8211; current darg mode</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">C++ signature:</th><td class="field-body"><p class="first last"><cite>void mousePressed(QPointF, Qt::MouseButtons,
+QGraphicsView::DragMode)</cite></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="overview.core.NavigationGraphicsView.resizeEvent">
+<tt class="descname">resizeEvent</tt><big>(</big><em>event</em><big>)</big><a class="reference internal" href="../_modules/overview/core.html#NavigationGraphicsView.resizeEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#overview.core.NavigationGraphicsView.resizeEvent" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="overview.core.NavigationGraphicsView.setbox">
+<tt class="descname">setbox</tt><big>(</big><em>box</em><big>)</big><a class="reference internal" href="../_modules/overview/core.html#NavigationGraphicsView.setbox"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#overview.core.NavigationGraphicsView.setbox" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="overview.core.NavigationGraphicsView.viewbox">
+<tt class="descname">viewbox</tt><a class="headerlink" href="#overview.core.NavigationGraphicsView.viewbox" title="Permalink to this definition">¶</a></dt>
+<dd><p>viewport box in scene coordinates</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="overview.core.OverviewController">
+<em class="property">class </em><tt class="descclassname">overview.core.</tt><tt class="descname">OverviewController</tt><big>(</big><em>app</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/overview/core.html#OverviewController"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#overview.core.OverviewController" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">PyQt4.QtCore.QObject</span></tt></p>
+<dl class="method">
+<dt id="overview.core.OverviewController.onItemChanged">
+<tt class="descname">onItemChanged</tt><big>(</big><em>item</em><big>)</big><a class="reference internal" href="../_modules/overview/core.html#OverviewController.onItemChanged"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#overview.core.OverviewController.onItemChanged" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="overview.core.OverviewController.onNewPos">
+<tt class="descname">onNewPos</tt><big>(</big><em>pos</em>, <em>buttons</em>, <em>dragmode</em><big>)</big><a class="reference internal" href="../_modules/overview/core.html#OverviewController.onNewPos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#overview.core.OverviewController.onNewPos" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="overview.core.OverviewController.onSubWindowChanged">
+<tt class="descname">onSubWindowChanged</tt><big>(</big><em>subwin=None</em><big>)</big><a class="reference internal" href="../_modules/overview/core.html#OverviewController.onSubWindowChanged"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#overview.core.OverviewController.onSubWindowChanged" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="overview.core.OverviewController.onWindowClosed">
+<tt class="descname">onWindowClosed</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/overview/core.html#OverviewController.onWindowClosed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#overview.core.OverviewController.onWindowClosed" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo.png" alt="Logo"/>
+            </a></p>
+    
+    
+    <p>
+        <a href="http://sourceforge.net/projects/gsdview">
+            <img src="http://sflogo.sourceforge.net/sflogo.php?group_id=226458&type=14" width="150" height="40" alt="Get GSDView at SourceForge.net. Fast, secure and Free Open Source software downloads" />
+        </a>
+    </p>
+    
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="overview.info.html"
+                        title="previous chapter">overview.info</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="positiontracker.html"
+                        title="next chapter">positiontracker</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/api/overview.core.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li class="right" >
+          <a href="positiontracker.html" title="positiontracker"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="overview.info.html" title="overview.info"
+             >previous</a> |</li>
+        <li><a href="../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../reference.html" >API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2008-2011, Antonio Valentino.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,420 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>gsdview.widgets &mdash; GSDView Open Edition Home Page</title>
+    <link rel="stylesheet" href="../_static/sourceforge.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.6.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/logo.ico"/>
+    <link rel="top" title="GSDView Open Edition Home Page" href="../index.html" />
+    <link rel="up" title="API Reference" href="../reference.html" />
+    <link rel="next" title="gsdview.gdalbackend" href="gsdview.gdalbackend.html" />
+    <link rel="prev" title="gsdview.utils" href="gsdview.utils.html" /> 
+  </head>
+  <body>
+    
+        
+    
+    
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li class="right" >
+          <a href="gsdview.gdalbackend.html" title="gsdview.gdalbackend"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="gsdview.utils.html" title="gsdview.utils"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../reference.html" accesskey="U">API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-gsdview.widgets">
+<span id="gsdview-widgets"></span><h1>gsdview.widgets<a class="headerlink" href="#module-gsdview.widgets" title="Permalink to this headline">¶</a></h1>
+<p>Widgets and dialogs for GSDView.</p>
+<p class="rubric">Functions</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><a class="reference internal" href="#gsdview.widgets.get_filedialog" title="gsdview.widgets.get_filedialog"><tt class="xref py py-obj docutils literal"><span class="pre">get_filedialog</span></tt></a>([parent])</td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.widgets.get_mainwin" title="gsdview.widgets.get_mainwin"><tt class="xref py py-obj docutils literal"><span class="pre">get_mainwin</span></tt></a>()</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Classes</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><a class="reference internal" href="#gsdview.widgets.AboutDialog" title="gsdview.widgets.AboutDialog"><tt class="xref py py-obj docutils literal"><span class="pre">AboutDialog</span></tt></a>(**kwargs[,&nbsp;parent,&nbsp;flags])</td>
+<td></td>
+</tr>
+<tr><td><tt class="xref py py-obj docutils literal"><span class="pre">AboutDialogBase</span></tt></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.widgets.ExceptionDialog" title="gsdview.widgets.ExceptionDialog"><tt class="xref py py-obj docutils literal"><span class="pre">ExceptionDialog</span></tt></a>(**kwargs[,&nbsp;exctype,&nbsp;...])</td>
+<td></td>
+</tr>
+<tr><td><tt class="xref py py-obj docutils literal"><span class="pre">ExceptionDialogBase</span></tt></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.widgets.FileEntryWidget" title="gsdview.widgets.FileEntryWidget"><tt class="xref py py-obj docutils literal"><span class="pre">FileEntryWidget</span></tt></a>(**kwargs[,&nbsp;contents,&nbsp;mode,&nbsp;...])</td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.widgets.GSDViewExceptionDialog" title="gsdview.widgets.GSDViewExceptionDialog"><tt class="xref py py-obj docutils literal"><span class="pre">GSDViewExceptionDialog</span></tt></a>(*args,&nbsp;**kwargs)</td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.widgets.GSDViewExceptionDialogBase" title="gsdview.widgets.GSDViewExceptionDialogBase"><tt class="xref py py-obj docutils literal"><span class="pre">GSDViewExceptionDialogBase</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.widgets.GeneralPreferencesPage" title="gsdview.widgets.GeneralPreferencesPage"><tt class="xref py py-obj docutils literal"><span class="pre">GeneralPreferencesPage</span></tt></a>(**kwargs[,&nbsp;parent,&nbsp;flags])</td>
+<td></td>
+</tr>
+<tr><td><tt class="xref py py-obj docutils literal"><span class="pre">GeneralPreferencesPageBase</span></tt></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.widgets.PreferencesDialog" title="gsdview.widgets.PreferencesDialog"><tt class="xref py py-obj docutils literal"><span class="pre">PreferencesDialog</span></tt></a>(**kwargs[,&nbsp;parent,&nbsp;flags])</td>
+<td>Extendible preferences dialogg for GSDView.</td>
+</tr>
+<tr><td><tt class="xref py py-obj docutils literal"><span class="pre">PreferencesDialogBase</span></tt></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#gsdview.widgets.QsciExceptionDialog" title="gsdview.widgets.QsciExceptionDialog"><tt class="xref py py-obj docutils literal"><span class="pre">QsciExceptionDialog</span></tt></a>(**kwargs[,&nbsp;exctype,&nbsp;...])</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="class">
+<dt id="gsdview.widgets.AboutDialog">
+<em class="property">class </em><tt class="descclassname">gsdview.widgets.</tt><tt class="descname">AboutDialog</tt><big>(</big><em>parent=None</em>, <em>flags=&lt;PyQt4.QtCore.WindowFlags object at 0x3720210&gt;</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/gsdview/widgets.html#AboutDialog"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.widgets.AboutDialog" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">PyQt4.QtGui.QDialog</span></tt>, <tt class="xref py py-class docutils literal"><span class="pre">gsdview.ui.aboutdialog.Ui_aboutDialog</span></tt></p>
+<dl class="method">
+<dt id="gsdview.widgets.AboutDialog.addSoftwareVersion">
+<tt class="descname">addSoftwareVersion</tt><big>(</big><em>sw</em>, <em>version</em>, <em>link=''</em><big>)</big><a class="reference internal" href="../_modules/gsdview/widgets.html#AboutDialog.addSoftwareVersion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.widgets.AboutDialog.addSoftwareVersion" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.widgets.AboutDialog.setLogo">
+<tt class="descname">setLogo</tt><big>(</big><em>logofile</em><big>)</big><a class="reference internal" href="../_modules/gsdview/widgets.html#AboutDialog.setLogo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.widgets.AboutDialog.setLogo" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.widgets.AboutDialog.setVersions">
+<tt class="descname">setVersions</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/widgets.html#AboutDialog.setVersions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.widgets.AboutDialog.setVersions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gsdview.widgets.ExceptionDialog">
+<em class="property">class </em><tt class="descclassname">gsdview.widgets.</tt><tt class="descname">ExceptionDialog</tt><big>(</big><em>exctype=None</em>, <em>excvalue=None</em>, <em>tracebackobj=None</em>, <em>parent=None</em>, <em>flags=&lt;PyQt4.QtCore.WindowFlags object at 0x37206e0&gt;</em>, <em>fill=True</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/gsdview/widgets.html#ExceptionDialog"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.widgets.ExceptionDialog" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">PyQt4.QtGui.QDialog</span></tt>, <tt class="xref py py-class docutils literal"><span class="pre">gsdview.ui.exceptiondialog.Ui_crashDialog</span></tt></p>
+<dl class="method">
+<dt id="gsdview.widgets.ExceptionDialog.errorMsg">
+<tt class="descname">errorMsg</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/widgets.html#ExceptionDialog.errorMsg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.widgets.ExceptionDialog.errorMsg" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.widgets.ExceptionDialog.resetExcInfo">
+<tt class="descname">resetExcInfo</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/widgets.html#ExceptionDialog.resetExcInfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.widgets.ExceptionDialog.resetExcInfo" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.widgets.ExceptionDialog.saveBugReport">
+<tt class="descname">saveBugReport</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/widgets.html#ExceptionDialog.saveBugReport"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.widgets.ExceptionDialog.saveBugReport" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.widgets.ExceptionDialog.sendBugReport">
+<tt class="descname">sendBugReport</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/widgets.html#ExceptionDialog.sendBugReport"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.widgets.ExceptionDialog.sendBugReport" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.widgets.ExceptionDialog.setErrorMsg">
+<tt class="descname">setErrorMsg</tt><big>(</big><em>text</em><big>)</big><a class="reference internal" href="../_modules/gsdview/widgets.html#ExceptionDialog.setErrorMsg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.widgets.ExceptionDialog.setErrorMsg" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.widgets.ExceptionDialog.setExcInfo">
+<tt class="descname">setExcInfo</tt><big>(</big><em>exctype</em>, <em>excvalue</em>, <em>tracebackobj</em><big>)</big><a class="reference internal" href="../_modules/gsdview/widgets.html#ExceptionDialog.setExcInfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.widgets.ExceptionDialog.setExcInfo" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.widgets.ExceptionDialog.setText">
+<tt class="descname">setText</tt><big>(</big><em>text</em><big>)</big><a class="reference internal" href="../_modules/gsdview/widgets.html#ExceptionDialog.setText"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.widgets.ExceptionDialog.setText" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.widgets.ExceptionDialog.setTimeStamp">
+<tt class="descname">setTimeStamp</tt><big>(</big><em>timestamp=None</em><big>)</big><a class="reference internal" href="../_modules/gsdview/widgets.html#ExceptionDialog.setTimeStamp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.widgets.ExceptionDialog.setTimeStamp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.widgets.ExceptionDialog.setTraceback">
+<tt class="descname">setTraceback</tt><big>(</big><em>tb</em><big>)</big><a class="reference internal" href="../_modules/gsdview/widgets.html#ExceptionDialog.setTraceback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.widgets.ExceptionDialog.setTraceback" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.widgets.ExceptionDialog.text">
+<tt class="descname">text</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/widgets.html#ExceptionDialog.text"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.widgets.ExceptionDialog.text" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.widgets.ExceptionDialog.timeStamp">
+<tt class="descname">timeStamp</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/widgets.html#ExceptionDialog.timeStamp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.widgets.ExceptionDialog.timeStamp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.widgets.ExceptionDialog.traceback">
+<tt class="descname">traceback</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/widgets.html#ExceptionDialog.traceback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.widgets.ExceptionDialog.traceback" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gsdview.widgets.FileEntryWidget">
+<em class="property">class </em><tt class="descclassname">gsdview.widgets.</tt><tt class="descname">FileEntryWidget</tt><big>(</big><em>contents=''</em>, <em>mode=0</em>, <em>dialog=None</em>, <em>parent=None</em>, <em>flags=&lt;PyQt4.QtCore.WindowFlags object at 0x3720130&gt;</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/gsdview/widgets.html#FileEntryWidget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.widgets.FileEntryWidget" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">PyQt4.QtGui.QWidget</span></tt></p>
+<dl class="method">
+<dt id="gsdview.widgets.FileEntryWidget.choose">
+<tt class="descname">choose</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/widgets.html#FileEntryWidget.choose"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.widgets.FileEntryWidget.choose" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.widgets.FileEntryWidget.mode">
+<tt class="descname">mode</tt><a class="headerlink" href="#gsdview.widgets.FileEntryWidget.mode" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.widgets.FileEntryWidget.setText">
+<tt class="descname">setText</tt><big>(</big><em>text</em><big>)</big><a class="reference internal" href="../_modules/gsdview/widgets.html#FileEntryWidget.setText"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.widgets.FileEntryWidget.setText" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.widgets.FileEntryWidget.text">
+<tt class="descname">text</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/widgets.html#FileEntryWidget.text"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.widgets.FileEntryWidget.text" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gsdview.widgets.GSDViewExceptionDialog">
+<em class="property">class </em><tt class="descclassname">gsdview.widgets.</tt><tt class="descname">GSDViewExceptionDialog</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/gsdview/widgets.html#GSDViewExceptionDialog"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.widgets.GSDViewExceptionDialog" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gsdview.widgets.QsciExceptionDialog" title="gsdview.widgets.QsciExceptionDialog"><tt class="xref py py-class docutils literal"><span class="pre">gsdview.widgets.QsciExceptionDialog</span></tt></a></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.widgets.GSDViewExceptionDialogBase">
+<tt class="descclassname">gsdview.widgets.</tt><tt class="descname">GSDViewExceptionDialogBase</tt><a class="headerlink" href="#gsdview.widgets.GSDViewExceptionDialogBase" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#gsdview.widgets.QsciExceptionDialog" title="gsdview.widgets.QsciExceptionDialog"><tt class="xref py py-class docutils literal"><span class="pre">QsciExceptionDialog</span></tt></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="gsdview.widgets.GeneralPreferencesPage">
+<em class="property">class </em><tt class="descclassname">gsdview.widgets.</tt><tt class="descname">GeneralPreferencesPage</tt><big>(</big><em>parent=None</em>, <em>flags=&lt;PyQt4.QtCore.WindowFlags object at 0x3720520&gt;</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/gsdview/widgets.html#GeneralPreferencesPage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.widgets.GeneralPreferencesPage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">PyQt4.QtGui.QWidget</span></tt>, <tt class="xref py py-class docutils literal"><span class="pre">gsdview.ui.general-page.Ui_generalPreferencesWidget</span></tt></p>
+<dl class="method">
+<dt id="gsdview.widgets.GeneralPreferencesPage.load">
+<tt class="descname">load</tt><big>(</big><em>settings</em><big>)</big><a class="reference internal" href="../_modules/gsdview/widgets.html#GeneralPreferencesPage.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.widgets.GeneralPreferencesPage.load" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.widgets.GeneralPreferencesPage.save">
+<tt class="descname">save</tt><big>(</big><em>settings</em><big>)</big><a class="reference internal" href="../_modules/gsdview/widgets.html#GeneralPreferencesPage.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.widgets.GeneralPreferencesPage.save" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.widgets.GeneralPreferencesPage.setLoglevel">
+<tt class="descname">setLoglevel</tt><big>(</big><em>level='INFO'</em><big>)</big><a class="reference internal" href="../_modules/gsdview/widgets.html#GeneralPreferencesPage.setLoglevel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.widgets.GeneralPreferencesPage.setLoglevel" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gsdview.widgets.PreferencesDialog">
+<em class="property">class </em><tt class="descclassname">gsdview.widgets.</tt><tt class="descname">PreferencesDialog</tt><big>(</big><em>parent=None</em>, <em>flags=&lt;PyQt4.QtCore.WindowFlags object at 0x3720750&gt;</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/gsdview/widgets.html#PreferencesDialog"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.widgets.PreferencesDialog" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">PyQt4.QtGui.QDialog</span></tt>, <tt class="xref py py-class docutils literal"><span class="pre">gsdview.ui.preferences.Ui_preferencesDialog</span></tt></p>
+<p>Extendible preferences dialogg for GSDView.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Signals :</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<ul class="simple">
+<li><a class="reference internal" href="#gsdview.widgets.PreferencesDialog.apply" title="gsdview.widgets.PreferencesDialog.apply"><tt class="xref py py-attr docutils literal"><span class="pre">apply</span></tt></a></li>
+</ul>
+<dl class="method">
+<dt id="gsdview.widgets.PreferencesDialog.addPage">
+<tt class="descname">addPage</tt><big>(</big><em>page</em>, <em>icon</em>, <em>label=None</em><big>)</big><a class="reference internal" href="../_modules/gsdview/widgets.html#PreferencesDialog.addPage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.widgets.PreferencesDialog.addPage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gsdview.widgets.PreferencesDialog.apply">
+<tt class="descname">apply</tt><a class="headerlink" href="#gsdview.widgets.PreferencesDialog.apply" title="Permalink to this definition">¶</a></dt>
+<dd><p>SIGNAL: it is emitted when modifications are applied</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">C++ signature:</th><td class="field-body"><cite>void apply()</cite></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="gsdview.widgets.PreferencesDialog.changePage">
+<tt class="descname">changePage</tt><big>(</big><em>current</em>, <em>previous</em><big>)</big><a class="reference internal" href="../_modules/gsdview/widgets.html#PreferencesDialog.changePage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.widgets.PreferencesDialog.changePage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.widgets.PreferencesDialog.load">
+<tt class="descname">load</tt><big>(</big><em>settings</em><big>)</big><a class="reference internal" href="../_modules/gsdview/widgets.html#PreferencesDialog.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.widgets.PreferencesDialog.load" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.widgets.PreferencesDialog.removePage">
+<tt class="descname">removePage</tt><big>(</big><em>page</em><big>)</big><a class="reference internal" href="../_modules/gsdview/widgets.html#PreferencesDialog.removePage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.widgets.PreferencesDialog.removePage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.widgets.PreferencesDialog.removePageIndex">
+<tt class="descname">removePageIndex</tt><big>(</big><em>index</em><big>)</big><a class="reference internal" href="../_modules/gsdview/widgets.html#PreferencesDialog.removePageIndex"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.widgets.PreferencesDialog.removePageIndex" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gsdview.widgets.PreferencesDialog.save">
+<tt class="descname">save</tt><big>(</big><em>settings</em><big>)</big><a class="reference internal" href="../_modules/gsdview/widgets.html#PreferencesDialog.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.widgets.PreferencesDialog.save" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gsdview.widgets.QsciExceptionDialog">
+<em class="property">class </em><tt class="descclassname">gsdview.widgets.</tt><tt class="descname">QsciExceptionDialog</tt><big>(</big><em>exctype=None</em>, <em>excvalue=None</em>, <em>tracebackobj=None</em>, <em>parent=None</em>, <em>flags=&lt;PyQt4.QtCore.WindowFlags object at 0x3720830&gt;</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/gsdview/widgets.html#QsciExceptionDialog"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.widgets.QsciExceptionDialog" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gsdview.widgets.ExceptionDialog" title="gsdview.widgets.ExceptionDialog"><tt class="xref py py-class docutils literal"><span class="pre">gsdview.widgets.ExceptionDialog</span></tt></a></p>
+<dl class="method">
+<dt id="gsdview.widgets.QsciExceptionDialog.traceback">
+<tt class="descname">traceback</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/widgets.html#QsciExceptionDialog.traceback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.widgets.QsciExceptionDialog.traceback" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="gsdview.widgets.get_filedialog">
+<tt class="descclassname">gsdview.widgets.</tt><tt class="descname">get_filedialog</tt><big>(</big><em>parent=None</em><big>)</big><a class="reference internal" href="../_modules/gsdview/widgets.html#get_filedialog"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.widgets.get_filedialog" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="gsdview.widgets.get_mainwin">
+<tt class="descclassname">gsdview.widgets.</tt><tt class="descname">get_mainwin</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/gsdview/widgets.html#get_mainwin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gsdview.widgets.get_mainwin" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo.png" alt="Logo"/>
+            </a></p>
+    
+    
+    <p>
+        <a href="http://sourceforge.net/projects/gsdview">
+            <img src="http://sflogo.sourceforge.net/sflogo.php?group_id=226458&type=14" width="150" height="40" alt="Get GSDView at SourceForge.net. Fast, secure and Free Open Source software downloads" />
+        </a>
+    </p>
+    
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="gsdview.utils.html"
+                        title="previous chapter">gsdview.utils</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="gsdview.gdalbackend.html"
+                        title="next chapter">gsdview.gdalbackend</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/api/gsdview.widgets.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li class="right" >
+          <a href="gsdview.gdalbackend.html" title="gsdview.gdalbackend"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="gsdview.utils.html" title="gsdview.utils"
+             >previous</a> |</li>
+        <li><a href="../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../reference.html" >API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2008-2011, Antonio Valentino.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

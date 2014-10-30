@@ -1,0 +1,572 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>gsdview.gdalbackend.gdalexectools &mdash; GSDView Open Edition Home Page</title>
+    <link rel="stylesheet" href="../../../_static/sourceforge.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.6.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../../_static/logo.ico"/>
+    <link rel="top" title="GSDView Open Edition Home Page" href="../../../index.html" />
+    <link rel="up" title="gsdview.gdalbackend" href="../gdalbackend.html" /> 
+  </head>
+  <body>
+    
+        
+    
+    
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li><a href="../../../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../gsdview.html" >gsdview</a> &raquo;</li>
+          <li><a href="../gdalbackend.html" accesskey="U">gsdview.gdalbackend</a> &raquo;</li> 
+      </ul>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for gsdview.gdalbackend.gdalexectools</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="c">### Copyright (C) 2008-2011 Antonio Valentino &lt;a_valentino@users.sf.net&gt;</span>
+
+<span class="c">### This file is part of GSDView.</span>
+
+<span class="c">### GSDView is free software; you can redistribute it and/or modify</span>
+<span class="c">### it under the terms of the GNU General Public License as published by</span>
+<span class="c">### the Free Software Foundation; either version 2 of the License, or</span>
+<span class="c">### (at your option) any later version.</span>
+
+<span class="c">### GSDView is distributed in the hope that it will be useful,</span>
+<span class="c">### but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c">### MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c">### GNU General Public License for more details.</span>
+
+<span class="c">### You should have received a copy of the GNU General Public License</span>
+<span class="c">### along with GSDView; if not, write to the Free Software</span>
+<span class="c">### Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA.</span>
+
+
+<span class="sd">&#39;&#39;&#39;Custom exectools components for GDAL.&#39;&#39;&#39;</span>
+
+
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">import</span> <span class="nn">exectools</span>
+<span class="kn">from</span> <span class="nn">exectools.qt4</span> <span class="kn">import</span> <span class="n">Qt4OutputHandler</span>
+
+<span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">gdal</span>
+
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s">&#39;Antonio Valentino &lt;a_valentino@users.sf.net&gt;&#39;</span>
+<span class="n">__date__</span> <span class="o">=</span> <span class="s">&#39;$Date: 2011-07-30 11:07:42 +0200 (sab, 30 lug 2011) $&#39;</span>
+<span class="n">__revision__</span> <span class="o">=</span> <span class="s">&#39;$Revision: 971 $&#39;</span>
+
+
+<div class="viewcode-block" id="BaseGdalToolDescriptor"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.gdalexectools.html#gsdview.gdalbackend.gdalexectools.BaseGdalToolDescriptor">[docs]</a><span class="k">class</span> <span class="nc">BaseGdalToolDescriptor</span><span class="p">(</span><span class="n">exectools</span><span class="o">.</span><span class="n">ToolDescriptor</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Base class for GDAL tool descriprors.&#39;&#39;&#39;</span>
+
+<div class="viewcode-block" id="BaseGdalToolDescriptor.gdal_config_options"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.gdalexectools.html#gsdview.gdalbackend.gdalexectools.BaseGdalToolDescriptor.gdal_config_options">[docs]</a>    <span class="k">def</span> <span class="nf">gdal_config_options</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">):</span>
+        <span class="n">extra_args</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="s">&#39;GDAL_CACHEMAX&#39;</span> <span class="ow">in</span> <span class="n">cmd</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">gdal</span><span class="o">.</span><span class="n">GetCacheMax</span><span class="p">()</span>
+            <span class="n">extra_args</span><span class="o">.</span><span class="n">extend</span><span class="p">((</span><span class="s">&#39;--config&#39;</span><span class="p">,</span> <span class="s">&#39;GDAL_CACHEMAX&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)))</span>
+
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39;CPL_DEBUG&#39;</span><span class="p">,</span> <span class="s">&#39;GDAL_SKIP&#39;</span><span class="p">,</span> <span class="s">&#39;GDAL_DATA&#39;</span><span class="p">,</span>
+                    <span class="s">&#39;GDAL_DRIVER_PATH&#39;</span><span class="p">,</span> <span class="s">&#39;OGR_DRIVER_PATH&#39;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">cmd</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">gdal</span><span class="o">.</span><span class="n">GetConfigOption</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">value</span><span class="p">:</span>
+                    <span class="n">extra_args</span><span class="o">.</span><span class="n">extend</span><span class="p">((</span><span class="s">&#39;--config&#39;</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="s">&#39;&quot;</span><span class="si">%s</span><span class="s">&quot;&#39;</span> <span class="o">%</span> <span class="n">value</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">extra_args</span>
+</div>
+<div class="viewcode-block" id="BaseGdalToolDescriptor.cmdline"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.gdalexectools.html#gsdview.gdalbackend.gdalexectools.BaseGdalToolDescriptor.cmdline">[docs]</a>    <span class="k">def</span> <span class="nf">cmdline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">BaseGdalToolDescriptor</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">cmdline</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="n">extra_args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gdal_config_options</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">extra_args</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">executable</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">executable</span><span class="p">,</span> <span class="nb">basestring</span><span class="p">):</span>
+                <span class="n">parts</span> <span class="o">=</span> <span class="p">[</span><span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">+</span> <span class="n">extra_args</span> <span class="o">+</span> <span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">executable</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">executable</span><span class="p">)</span>
+                <span class="n">parts</span> <span class="o">=</span> <span class="n">executable</span> <span class="o">+</span> <span class="n">extra_args</span> <span class="o">+</span> <span class="n">parts</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">executable</span><span class="p">):]</span>
+
+        <span class="k">return</span> <span class="n">parts</span>
+
+</div></div>
+<div class="viewcode-block" id="GdalAddOverviewDescriptor"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.gdalexectools.html#gsdview.gdalbackend.gdalexectools.GdalAddOverviewDescriptor">[docs]</a><span class="k">class</span> <span class="nc">GdalAddOverviewDescriptor</span><span class="p">(</span><span class="n">BaseGdalToolDescriptor</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Tool descriptor for the gdaladdo utility program.&#39;&#39;&#39;</span>
+
+    <span class="c">#: resampling methods</span>
+    <span class="n">RESAMPLING_METHODS</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s">&#39;nearest&#39;</span><span class="p">,</span>
+        <span class="s">&#39;average&#39;</span><span class="p">,</span>
+        <span class="s">&#39;gauss&#39;</span><span class="p">,</span>
+        <span class="s">&#39;cubic&#39;</span><span class="p">,</span>
+        <span class="s">&#39;average_mp&#39;</span><span class="p">,</span>
+        <span class="s">&#39;average_magphase&#39;</span><span class="p">,</span>
+        <span class="s">&#39;mode&#39;</span><span class="p">,</span>
+    <span class="p">]</span>
+
+    <span class="c">#: TIFF compression methods</span>
+    <span class="n">TIFF_COMPRESSION_METHODS</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s">&#39;JPEG&#39;</span><span class="p">,</span>
+        <span class="s">&#39;LZW&#39;</span><span class="p">,</span>
+        <span class="s">&#39;PACKBITS&#39;</span><span class="p">,</span>
+        <span class="s">&#39;DEFLATE&#39;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c">#: TIFF interleaving methods</span>
+    <span class="n">TIFF_INTERLEAVING_METHODS</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;PIXEL&#39;</span><span class="p">,</span> <span class="s">&#39;BAND&#39;</span><span class="p">)</span>
+
+    <span class="c">#: Allowed options for BigTIFF flag</span>
+    <span class="n">TIFF_USE_BIGTIFF_MODE</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;IF_NEEDED&#39;</span><span class="p">,</span> <span class="s">&#39;IF_SAFER&#39;</span><span class="p">,</span> <span class="s">&#39;YES&#39;</span><span class="p">,</span> <span class="s">&#39;NO&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">env</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                 <span class="n">stdout_handler</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">stderr_handler</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Initialization:</span>
+
+<span class="sd">        :param cwd:</span>
+<span class="sd">            program working directory</span>
+<span class="sd">        :param env:</span>
+<span class="sd">            environment dictionary</span>
+<span class="sd">        :param envmerge:</span>
+<span class="sd">            if set to True (default) it is the :attr:`env` dictionaty is</span>
+<span class="sd">            used to update the system environment</span>
+<span class="sd">        :param stdout_handler:</span>
+<span class="sd">            *OutputHandler* for the stdout of the tool</span>
+<span class="sd">        :param stderr_handler:</span>
+<span class="sd">            *OutputHandler* for the stderr of the tool</span>
+
+<span class="sd">        .. seealso:: :class:`exectools.BaseOutputHandler`</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">GdalAddOverviewDescriptor</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span>
+                    <span class="s">&#39;gdaladdo&#39;</span><span class="p">,</span> <span class="p">[],</span> <span class="n">cwd</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">stdout_handler</span><span class="p">,</span> <span class="n">stderr_handler</span><span class="p">)</span>
+
+        <span class="c">#: ensure that gdaladdo works in readonly mode</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">readonly</span> <span class="o">=</span> <span class="bp">False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_resampling_method</span> <span class="o">=</span> <span class="s">&#39;average&#39;</span>
+
+        <span class="c">#: use Erdas Imagine format (.aux) as overview format.</span>
+        <span class="c">#: If None use GDAL defaults.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">use_rrd</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="c">#: photometric interpretation: RGB, YCBCR, etc. (only for external</span>
+        <span class="c">#: overviews in GeoTIFF format).</span>
+        <span class="c">#: If None use GDAL defaults.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">photometric_interpretation</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_compression_method</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_interleaving_method</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_use_bigtiff_mode</span> <span class="o">=</span> <span class="bp">None</span>
+
+<div class="viewcode-block" id="GdalAddOverviewDescriptor.resampling_method"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.gdalexectools.html#gsdview.gdalbackend.gdalexectools.GdalAddOverviewDescriptor.resampling_method">[docs]</a>    <span class="k">def</span> <span class="nf">resampling_method</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Resampling method for overviews computation.&#39;&#39;&#39;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resampling_method</span>
+</div>
+<div class="viewcode-block" id="GdalAddOverviewDescriptor.set_resampling_method"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.gdalexectools.html#gsdview.gdalbackend.gdalexectools.GdalAddOverviewDescriptor.set_resampling_method">[docs]</a>    <span class="k">def</span> <span class="nf">set_resampling_method</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Set the resampling method for overviews computation.</span>
+
+<span class="sd">        If set to None use GDAL defaults.</span>
+<span class="sd">        Available resampling methods: %s.</span>
+
+<span class="sd">        &#39;&#39;&#39;</span> <span class="o">%</span> <span class="s">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">GdalAddOverviewDescriptor</span><span class="o">.</span><span class="n">RESAMPLING_METHODS</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">method</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">method</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">RESAMPLING_METHODS</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;invalid resampling method: &quot;</span><span class="si">%s</span><span class="s">&quot;. &#39;</span>
+                             <span class="s">&#39;Available methods are: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">method</span><span class="p">,</span>
+                                    <span class="s">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RESAMPLING_METHODS</span><span class="p">)))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_resampling_method</span> <span class="o">=</span> <span class="n">method</span>
+</div>
+<div class="viewcode-block" id="GdalAddOverviewDescriptor.compression_method"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.gdalexectools.html#gsdview.gdalbackend.gdalexectools.GdalAddOverviewDescriptor.compression_method">[docs]</a>    <span class="k">def</span> <span class="nf">compression_method</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;TIFF compression method.</span>
+
+<span class="sd">        This attribute is only used if external overviews are</span>
+<span class="sd">        stored in GeoTIFF format.</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compression_method</span>
+</div>
+<div class="viewcode-block" id="GdalAddOverviewDescriptor.set_compression_method"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.gdalexectools.html#gsdview.gdalbackend.gdalexectools.GdalAddOverviewDescriptor.set_compression_method">[docs]</a>    <span class="k">def</span> <span class="nf">set_compression_method</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Set the TIFF compression method.</span>
+
+<span class="sd">        This attribute is only used if external overviews are</span>
+<span class="sd">        stored in GeoTIFF format.</span>
+
+<span class="sd">        If set to None use GDAL defaults.</span>
+<span class="sd">        Available compression methods: %s.</span>
+
+<span class="sd">        &#39;&#39;&#39;</span> <span class="o">%</span> <span class="s">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">GdalAddOverviewDescriptor</span><span class="o">.</span><span class="n">TIFF_COMPRESSION_METHODS</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_compression_method</span> <span class="o">=</span> <span class="n">method</span>
+</div>
+<div class="viewcode-block" id="GdalAddOverviewDescriptor.interleaving_method"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.gdalexectools.html#gsdview.gdalbackend.gdalexectools.GdalAddOverviewDescriptor.interleaving_method">[docs]</a>    <span class="k">def</span> <span class="nf">interleaving_method</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Ovrviews interleaving method (%s).</span>
+
+<span class="sd">        This attribute is only used if external overviews are</span>
+<span class="sd">        stored in GeoTIFF format.</span>
+
+<span class="sd">        &#39;&#39;&#39;</span> <span class="o">%</span> <span class="s">&#39; or &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">GdalAddOverviewDescriptor</span><span class="o">.</span><span class="n">TIFF_INTERLEAVING_METHODS</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_interleaving_method</span>
+</div>
+<div class="viewcode-block" id="GdalAddOverviewDescriptor.set_interleaving_method"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.gdalexectools.html#gsdview.gdalbackend.gdalexectools.GdalAddOverviewDescriptor.set_interleaving_method">[docs]</a>    <span class="k">def</span> <span class="nf">set_interleaving_method</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Set the ovrview interleaving method.</span>
+
+<span class="sd">        This attribute is only used if external overviews are</span>
+<span class="sd">        stored in GeoTIFF format.</span>
+
+<span class="sd">        If set to None use GDAL defaults.</span>
+<span class="sd">        Possible interleaving methods are: %s.</span>
+
+<span class="sd">        &#39;&#39;&#39;</span> <span class="o">%</span> <span class="s">&#39; or &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">GdalAddOverviewDescriptor</span><span class="o">.</span><span class="n">TIFF_INTERLEAVING_METHODS</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_interleaving_method</span> <span class="o">=</span> <span class="n">method</span>
+</div>
+<div class="viewcode-block" id="GdalAddOverviewDescriptor.use_bigtiff_mode"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.gdalexectools.html#gsdview.gdalbackend.gdalexectools.GdalAddOverviewDescriptor.use_bigtiff_mode">[docs]</a>    <span class="k">def</span> <span class="nf">use_bigtiff_mode</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Mode of using BigTIFF in overviews (%s).</span>
+
+<span class="sd">        This attribute is only used if external overviews are</span>
+<span class="sd">        stored in GeoTIFF format.</span>
+
+<span class="sd">        &#39;&#39;&#39;</span> <span class="o">%</span> <span class="s">&#39; or &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">GdalAddOverviewDescriptor</span><span class="o">.</span><span class="n">TIFF_USE_BIGTIFF_MODE</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_use_bigtiff_mode</span>
+</div>
+<div class="viewcode-block" id="GdalAddOverviewDescriptor.set_use_bigtiff_mode"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.gdalexectools.html#gsdview.gdalbackend.gdalexectools.GdalAddOverviewDescriptor.set_use_bigtiff_mode">[docs]</a>    <span class="k">def</span> <span class="nf">set_use_bigtiff_mode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Set the mode of using BigTIFF in overviews.</span>
+
+<span class="sd">        This attribute is only used if external overviews are</span>
+<span class="sd">        stored in GeoTIFF format.</span>
+
+<span class="sd">        If set to None use GDAL defaults.</span>
+<span class="sd">        Possible interleaving methods are: %s.</span>
+
+<span class="sd">        &#39;&#39;&#39;</span> <span class="o">%</span> <span class="s">&#39; or &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">GdalAddOverviewDescriptor</span><span class="o">.</span><span class="n">TIFF_USE_BIGTIFF_MODE</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_use_bigtiff_mode</span> <span class="o">=</span> <span class="n">mode</span>
+</div>
+<div class="viewcode-block" id="GdalAddOverviewDescriptor.gdal_config_options"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.gdalexectools.html#gsdview.gdalbackend.gdalexectools.GdalAddOverviewDescriptor.gdal_config_options">[docs]</a>    <span class="k">def</span> <span class="nf">gdal_config_options</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">):</span>
+        <span class="n">extra_args</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">GdalAddOverviewDescriptor</span><span class="p">,</span>
+                           <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">gdal_config_options</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_rrd</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="s">&#39;USE_RRD&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">cmd</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_rrd</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="s">&#39;YES&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="s">&#39;NO&#39;</span>
+            <span class="n">extra_args</span><span class="o">.</span><span class="n">extend</span><span class="p">((</span><span class="s">&#39;--config&#39;</span><span class="p">,</span> <span class="s">&#39;USE_RRD&#39;</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">photometric_interpretation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span>
+            <span class="s">&#39;PHOTOMETRIC_OVERVIEW&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">cmd</span><span class="p">):</span>
+
+            <span class="n">extra_args</span><span class="o">.</span><span class="n">extend</span><span class="p">((</span><span class="s">&#39;--config&#39;</span><span class="p">,</span> <span class="s">&#39;PHOTOMETRIC_OVERVIEW&#39;</span><span class="p">,</span>
+                               <span class="bp">self</span><span class="o">.</span><span class="n">photometric_interpretation</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_compression_method</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span>
+            <span class="s">&#39;COMPRESS_OVERVIEW&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">cmd</span><span class="p">):</span>
+
+            <span class="n">extra_args</span><span class="o">.</span><span class="n">extend</span><span class="p">((</span><span class="s">&#39;--config&#39;</span><span class="p">,</span> <span class="s">&#39;COMPRESS_OVERVIEW&#39;</span><span class="p">,</span>
+                               <span class="bp">self</span><span class="o">.</span><span class="n">_compression_method</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_interleaving_method</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span>
+            <span class="s">&#39;INTERLEAVE_OVERVIEW&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">cmd</span><span class="p">):</span>
+
+            <span class="n">extra_args</span><span class="o">.</span><span class="n">extend</span><span class="p">((</span><span class="s">&#39;--config&#39;</span><span class="p">,</span> <span class="s">&#39;INTERLEAVE_OVERVIEW&#39;</span><span class="p">,</span>
+                               <span class="bp">self</span><span class="o">.</span><span class="n">_interleaving_method</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_use_bigtiff_mode</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span>
+            <span class="s">&#39;BIGTIFF_OVERVIEW&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">cmd</span><span class="p">):</span>
+
+            <span class="n">extra_args</span><span class="o">.</span><span class="n">extend</span><span class="p">((</span><span class="s">&#39;--config&#39;</span><span class="p">,</span> <span class="s">&#39;BIGTIFF_OVERVIEW&#39;</span><span class="p">,</span>
+                               <span class="bp">self</span><span class="o">.</span><span class="n">_use_bigtiff_mode</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">extra_args</span>
+</div>
+<div class="viewcode-block" id="GdalAddOverviewDescriptor.cmdline"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.gdalexectools.html#gsdview.gdalbackend.gdalexectools.GdalAddOverviewDescriptor.cmdline">[docs]</a>    <span class="k">def</span> <span class="nf">cmdline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resampling_method</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="s">&#39;-r&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;-r&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resampling_method</span><span class="p">]</span> <span class="o">+</span> <span class="n">args</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">readonly</span> <span class="ow">and</span> <span class="s">&#39;-ro&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+            <span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;-ro&#39;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">GdalAddOverviewDescriptor</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">cmdline</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+
+<span class="c"># @COMPATIBILITY: GDAL &gt;= 1.7.0</span></div></div>
+<span class="k">if</span> <span class="n">gdal</span><span class="o">.</span><span class="n">VersionInfo</span><span class="p">()</span> <span class="o">&lt;</span> <span class="s">&#39;1700&#39;</span><span class="p">:</span>
+    <span class="n">GdalAddOverviewDescriptor</span><span class="o">.</span><span class="n">RESAMPLING_METHODS</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s">&#39;cubic&#39;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="GdalInfoDescriptor"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.gdalexectools.html#gsdview.gdalbackend.gdalexectools.GdalInfoDescriptor">[docs]</a><span class="k">class</span> <span class="nc">GdalInfoDescriptor</span><span class="p">(</span><span class="n">BaseGdalToolDescriptor</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Tool descriptor for the gdalinfo utility program.&#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">env</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                 <span class="n">stdout_handler</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">stderr_handler</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        :param cwd:</span>
+<span class="sd">            program working directory</span>
+<span class="sd">        :param env:</span>
+<span class="sd">            environment dictionary</span>
+<span class="sd">        :param envmerge:</span>
+<span class="sd">            if set to True (default) it is the :attr:`env` dictionaty is</span>
+<span class="sd">            used to update the system environment</span>
+<span class="sd">        :param stdout_handler:</span>
+<span class="sd">            *OutputHandler* for the stdout of the tool</span>
+<span class="sd">        :param stderr_handler:</span>
+<span class="sd">            *OutputHandler* for the stderr of the tool</span>
+
+<span class="sd">        .. seealso:: :class:`exectools.BaseOutputHandler`</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">GdalInfoDescriptor</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="s">&#39;gdalinfo&#39;</span><span class="p">,</span> <span class="p">[],</span> <span class="n">cwd</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span>
+                                                 <span class="n">stdout_handler</span><span class="p">,</span>
+                                                 <span class="n">stderr_handler</span><span class="p">)</span>
+
+        <span class="c">#: force computation of the actual min/max values for each band in the</span>
+        <span class="c">#: dataset.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mm</span> <span class="o">=</span> <span class="bp">False</span>
+
+        <span class="c">#: read and display image statistics. Force computation if no</span>
+        <span class="c">#: statistics are stored in an image.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stats</span> <span class="o">=</span> <span class="bp">False</span>
+
+        <span class="c">#: report histogram information for all bands.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hist</span> <span class="o">=</span> <span class="bp">False</span>
+
+        <span class="c">#: suppress ground control points list printing. It may be useful for</span>
+        <span class="c">#: datasets with huge amount of GCPs, such as L1B AVHRR or HDF4 MODIS</span>
+        <span class="c">#: which contain thousands of the ones.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nogcp</span> <span class="o">=</span> <span class="bp">False</span>
+
+        <span class="c">#: suppress metadata printing. Some datasets may contain a lot of</span>
+        <span class="c">#: metadata strings.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nomd</span> <span class="o">=</span> <span class="bp">False</span>
+
+        <span class="c">#: suppress raster attribute table printing.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">norat</span> <span class="o">=</span> <span class="bp">False</span>
+
+        <span class="c">#: suppress printing of color table.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">noct</span> <span class="o">=</span> <span class="bp">False</span>
+
+        <span class="c">#: force computation of the checksum for each band in the dataset.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">checksum</span> <span class="o">=</span> <span class="bp">False</span>
+
+        <span class="c">#: report metadata for the specified domain.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mdd</span> <span class="o">=</span> <span class="bp">None</span>
+
+<div class="viewcode-block" id="GdalInfoDescriptor.cmdline"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.gdalexectools.html#gsdview.gdalbackend.gdalexectools.GdalInfoDescriptor.cmdline">[docs]</a>    <span class="k">def</span> <span class="nf">cmdline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">extra_args</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39;mm&#39;</span><span class="p">,</span> <span class="s">&#39;stats&#39;</span><span class="p">,</span> <span class="s">&#39;hist&#39;</span><span class="p">,</span> <span class="s">&#39;nogcp&#39;</span><span class="p">,</span> <span class="s">&#39;nomd&#39;</span><span class="p">,</span> <span class="s">&#39;norat&#39;</span><span class="p">,</span>
+                     <span class="s">&#39;noct&#39;</span><span class="p">,</span> <span class="s">&#39;checksum&#39;</span><span class="p">,):</span>
+            <span class="n">flag</span> <span class="o">=</span> <span class="s">&#39;-</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">name</span>
+            <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span> <span class="ow">and</span> <span class="n">flag</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+                <span class="n">extra_args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">flag</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdd</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="s">&#39;-mdd&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+            <span class="n">extra_args</span><span class="o">.</span><span class="n">extend</span><span class="p">((</span><span class="s">&#39;-mdd&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdd</span><span class="p">))</span>
+
+        <span class="n">args</span> <span class="o">=</span> <span class="n">extra_args</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">GdalInfoDescriptor</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">cmdline</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+</div></div>
+<div class="viewcode-block" id="GdalOutputHandler"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.gdalexectools.html#gsdview.gdalbackend.gdalexectools.GdalOutputHandler">[docs]</a><span class="k">class</span> <span class="nc">GdalOutputHandler</span><span class="p">(</span><span class="n">Qt4OutputHandler</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Handler for the GDAL simple progress report to terminal.</span>
+
+<span class="sd">    This progress reporter prints simple progress report to the</span>
+<span class="sd">    terminal window.</span>
+<span class="sd">    The progress report generally looks something like this:</span>
+
+<span class="sd">      &quot;0...10...20...30...40...50...60...70...80...90...100 - done.&quot;</span>
+
+<span class="sd">    Every 2.5% of progress another number or period is emitted.</span>
+
+<span class="sd">    .. seealso:: :class:`exectools.BaseOutputHandler`,</span>
+<span class="sd">                 :class:`exectools.qt4.Qt4OutputHandler`</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">statusbar</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">progressbar</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                 <span class="n">blinker</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">GdalOutputHandler</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">logger</span><span class="p">,</span> <span class="n">statusbar</span><span class="p">,</span> <span class="n">progressbar</span><span class="p">,</span>
+                                                <span class="n">blinker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="c">#pattern = (&#39;(?P&lt;percentage&gt;\d{1,3})|(?P&lt;pulse&gt;\.)|&#39;</span>
+        <span class="c">#           &#39;((?P&lt;text&gt; - done\.?)$)&#39;)</span>
+        <span class="n">pattern</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;(?P&lt;percentage&gt;\d{1,3})|(?P&lt;pulse&gt;\.)|&#39;</span>
+                   <span class="s">&#39;( - (?P&lt;text&gt;done\.?)</span><span class="se">\n</span><span class="s">)&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_progress_pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_percentage</span> <span class="o">=</span> <span class="mf">0.</span>   <span class="c"># @TODO: remove.  Set the progressbar maximum</span>
+                                <span class="c">#        to 1000 instead.</span>
+
+<div class="viewcode-block" id="GdalOutputHandler.handle_progress"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.gdalexectools.html#gsdview.gdalbackend.gdalexectools.GdalOutputHandler.handle_progress">[docs]</a>    <span class="k">def</span> <span class="nf">handle_progress</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Handle progress data.</span>
+
+<span class="sd">        :param data:</span>
+<span class="sd">            a list containing an item for each named group in the</span>
+<span class="sd">            &quot;progress&quot; regular expression: (pulse, percentage, text)</span>
+<span class="sd">            for the default implementation.</span>
+<span class="sd">            Each item can be None.</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="n">pulse</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;pulse&#39;</span><span class="p">)</span>
+        <span class="n">percentage</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;percentage&#39;</span><span class="p">)</span>
+        <span class="c">#~ text = data.get(&#39;text&#39;)</span>
+
+        <span class="k">if</span> <span class="n">pulse</span> <span class="ow">and</span> <span class="n">percentage</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_percentage</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_percentage</span> <span class="o">+</span> <span class="mf">2.5</span><span class="p">)</span>
+            <span class="n">data</span><span class="p">[</span><span class="s">&#39;percentage&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_percentage</span>
+        <span class="k">if</span> <span class="n">percentage</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">percentage</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_percentage</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;new percentage (</span><span class="si">%d</span><span class="s">) is lower than previous &#39;</span>
+                              <span class="s">&#39;one (</span><span class="si">%f</span><span class="s">)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">percentage</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_percentage</span><span class="p">))</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_percentage</span> <span class="o">=</span> <span class="n">percentage</span>
+        <span class="c">#~ if text and not pulse and percentage is None:</span>
+            <span class="c">#~ # reset percentage</span>
+            <span class="c">#~ self._percentage = 0.</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">GdalOutputHandler</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">handle_progress</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="GdalOutputHandler.reset"><a class="viewcode-back" href="../../../api/gsdview.gdalbackend.gdalexectools.html#gsdview.gdalbackend.gdalexectools.GdalOutputHandler.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">GdalOutputHandler</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_percentage</span> <span class="o">=</span> <span class="mf">0.</span>
+
+</div></div>
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+
+    <span class="k">def</span> <span class="nf">test_GdalOutputHandler_re</span><span class="p">():</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="s">&#39;0...10...20...30...40...50...60...70...80...90...100 - done.</span><span class="se">\n</span><span class="s">&#39;</span>
+
+        <span class="n">h</span> <span class="o">=</span> <span class="n">exectools</span><span class="o">.</span><span class="n">BaseOutputHandler</span><span class="p">(</span><span class="n">exectools</span><span class="o">.</span><span class="n">OFStream</span><span class="p">())</span>
+        <span class="n">h</span><span class="o">.</span><span class="n">_progress_pattern</span> <span class="o">=</span> <span class="n">GdalOutputHandler</span><span class="p">()</span><span class="o">.</span><span class="n">_progress_pattern</span>
+        <span class="n">h</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+        <span class="n">h</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">print</span> <span class="s">&#39;done.&#39;</span>
+
+    <span class="k">def</span> <span class="nf">test_GdalOutputHandler1</span><span class="p">():</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="s">&#39;0...10...20...30...40...50...60...70...80...90...100 - done.</span><span class="se">\n</span><span class="s">&#39;</span>
+
+        <span class="k">class</span> <span class="nc">C</span><span class="p">(</span><span class="n">GdalOutputHandler</span><span class="p">):</span>
+            <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+                <span class="n">exectools</span><span class="o">.</span><span class="n">BaseOutputHandler</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                                                     <span class="n">exectools</span><span class="o">.</span><span class="n">OFStream</span><span class="p">())</span>
+
+            <span class="k">def</span> <span class="nf">feed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">exectools</span><span class="o">.</span><span class="n">BaseOutputHandler</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+
+            <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">exectools</span><span class="o">.</span><span class="n">BaseOutputHandler</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+            <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">exectools</span><span class="o">.</span><span class="n">BaseOutputHandler</span><span class="o">.</span><span class="n">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+            <span class="k">def</span> <span class="nf">handle_progress</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">exectools</span><span class="o">.</span><span class="n">BaseOutputHandler</span><span class="o">.</span><span class="n">handle_progress</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+
+        <span class="n">h</span> <span class="o">=</span> <span class="n">C</span><span class="p">()</span>
+        <span class="n">h</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+        <span class="n">h</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">print</span> <span class="s">&#39;done.&#39;</span>
+
+    <span class="k">def</span> <span class="nf">test_GdalOutputHandler2</span><span class="p">():</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="s">&#39;0...10...20...30...40...50...60...70...80...90...100 - done.</span><span class="se">\n</span><span class="s">&#39;</span>
+
+        <span class="n">h</span> <span class="o">=</span> <span class="n">exectools</span><span class="o">.</span><span class="n">BaseOutputHandler</span><span class="p">(</span><span class="n">exectools</span><span class="o">.</span><span class="n">OFStream</span><span class="p">())</span>
+        <span class="n">h</span><span class="o">.</span><span class="n">_progress_pattern</span> <span class="o">=</span> <span class="n">GdalOutputHandler</span><span class="p">()</span><span class="o">.</span><span class="n">_progress_pattern</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">s</span><span class="p">:</span>
+            <span class="n">h</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+        <span class="n">h</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="c">#~ test_GdalOutputHandler_re()</span>
+    <span class="c">#~ test_GdalOutputHandler1()</span>
+    <span class="n">test_GdalOutputHandler2</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+    
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/logo.png" alt="Logo"/>
+            </a></p>
+    
+    
+    <p>
+        <a href="http://sourceforge.net/projects/gsdview">
+            <img src="http://sflogo.sourceforge.net/sflogo.php?group_id=226458&type=14" width="150" height="40" alt="Get GSDView at SourceForge.net. Fast, secure and Free Open Source software downloads" />
+        </a>
+    </p>
+    
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a></li>
+        <li><a href="../../../index.html">GSDView</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../gsdview.html" >gsdview</a> &raquo;</li>
+          <li><a href="../gdalbackend.html" >gsdview.gdalbackend</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2008-2011, Antonio Valentino.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>
