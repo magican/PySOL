@@ -1,0 +1,842 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><head>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <title>
+Comprehensive Examples for LAADS Products</title>
+  
+
+    <link rel="stylesheet" type="text/css" href="Comprehensive%20Examples%20for%20LAADS%20Products_files/superfish.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="Comprehensive%20Examples%20for%20LAADS%20Products_files/print.css" media="print">
+    <style type="text/css" media="screen, projection">
+      @import url(/includes/jq_fade.css);
+    </style>
+    <link rel="stylesheet" type="text/css" href="Comprehensive%20Examples%20for%20LAADS%20Products_files/style.css" media="screen">
+   
+  
+<script type="text/javascript">
+	 
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+
+</script><script src="Comprehensive%20Examples%20for%20LAADS%20Products_files/ga.js" type="text/javascript"></script>
+
+
+<script type="text/javascript">
+
+  try {
+
+  var pageTracker = _gat._getTracker("UA-8715076-1");
+
+  pageTracker._trackPageview();
+
+  } catch(err) {}</script>
+  
+
+
+    <script type="text/javascript">
+
+      function changeid(id){
+    
+    
+
+      var	ID = document.getElementById(id);
+    
+
+
+      if (ID.style.display == ""){
+    
+      ID.style.display = "none"; 
+
+      }else{
+
+      ID.style.display = "";
+      
+      }
+    
+      }
+
+    </script>
+  
+
+
+    <script type="text/javascript" language="JavaScript">
+
+
+	   
+function clear_textbox()
+
+{
+
+if (document.form1.q.value == "Search")
+
+document.form1.q.value = "";
+
+} 
+
+
+
+    </script>
+  
+
+  
+    <script type="text/javascript" src="Comprehensive%20Examples%20for%20LAADS%20Products_files/jquery_002.js"></script>
+    <script type="text/javascript" src="Comprehensive%20Examples%20for%20LAADS%20Products_files/jquery.js"></script>
+    <script type="text/javascript" src="Comprehensive%20Examples%20for%20LAADS%20Products_files/hoverIntent.js"></script>
+    <script type="text/javascript" src="Comprehensive%20Examples%20for%20LAADS%20Products_files/superfish.js"></script>
+    <script type="text/javascript" src="Comprehensive%20Examples%20for%20LAADS%20Products_files/jquery_003.js"></script>
+    <script type="text/javascript">
+      $(document).ready(function() {
+
+        // New menus and submenus using superfish plug-in.
+       $('ul.sf-menu').superfish({pathClass: 'current', pathLevels: 2});
+
+        // Color change effect on old menus.
+        $('ul.sf-menu > li > a').click(function(){ 
+           $(this).addClass("current");
+        });
+       //  jQuery.rssFeed('http://hdfeos.org/forums/external.php');    
+      });
+    
+    </script>
+  
+  
+
+  <script>try {  for(var lastpass_iter=0; lastpass_iter < document.forms.length; lastpass_iter++){    var lastpass_f = document.forms[lastpass_iter];    if(typeof(lastpass_f.lpsubmitorig)=="undefined"){      if (typeof(lastpass_f.submit) == "function") {        lastpass_f.lpsubmitorig = lastpass_f.submit;        lastpass_f.submit = function(){          var form = this;          try {            if (document.documentElement && 'createEvent' in document)            {              var forms = document.getElementsByTagName('form');              for (var i=0 ; i<forms.length ; ++i)                if (forms[i]==form)                {                  var element = document.createElement('lpformsubmitdataelement');                  element.setAttribute('formnum',i);                  element.setAttribute('from','submithook');                  document.documentElement.appendChild(element);                  var evt = document.createEvent('Events');                  evt.initEvent('lpformsubmit',true,false);                  element.dispatchEvent(evt);                  break;                }            }          } catch (e) {}          try {            form.lpsubmitorig();          } catch (e) {}        }      }    }  }} catch (e) {}</script></head>
+
+
+
+  <body>
+  
+  
+
+
+
+    <div id="banner">
+
+      <table border="0" width="1105">
+
+	<tbody><tr>
+
+	  <!-- td width="690" style="padding-left:0px;" valign="bottom" -->
+	  <td style="padding-left:0px;" valign="bottom">
+	    
+	    <img style="display:block;" alt="HdfEos Index Page Banner Image" src="Comprehensive%20Examples%20for%20LAADS%20Products_files/pic5.jpg">
+	    
+
+
+	  </td>
+
+	</tr>
+	
+      </tbody></table>
+
+    </div>
+
+  
+  
+<div id="menu">
+    <ul class="sf-menu sf-js-enabled sf-shadow">
+      <li>
+	<a href="http://hdfeos.org/index.php">HOME</a>
+      </li><li class="current sfHover sf-breadcrumb">
+	<a href="http://hdfeos.org/examples/index.php">EXAMPLES</a>
+      </li><li>
+	<a href="http://hdfeos.org/software/index.php">SOFTWARE</a>
+      </li><li>
+	<a href="http://hdfeos.org/workshops/index.php">WORKSHOPS</a>
+      </li><li>
+        <a href="http://hdfeos.org/forums/index.php">FORUM</a></li>
+      <li>
+	<a href="http://hdfeos.org/help/index.php">HELP</a>
+    </li></ul>
+    <form id="searchbox_014058654162327528908:m3rtotnqst4" action="/search" name="form1" method="get"> 
+      <input name="cx" value="014058654162327528908:m3rtotnqst4" type="hidden"> 
+      <input name="cof" value="FORID:11" type="hidden"> 
+      <input name="ie" value="UTF-8" type="hidden">
+      <table>
+	<tbody><tr valign="center">
+	  <td><input style="margin-top:3px;" size="10" value="Search" onfocus="clear_textbox();" name="q" type="text"></td>
+	  <td><input src="Comprehensive%20Examples%20for%20LAADS%20Products_files/login-button.gif" name="sa" type="image"></td>
+	</tr>
+      </tbody></table>
+    </form>
+</div>
+
+<div id="wrapper">
+    
+    <div id="content2">
+
+          
+      <br>
+
+      <br> 	
+    
+    
+    
+<!-- end of page includes/header.html -->
+    
+    
+<h3>Comprehensive Examples</h3>
+
+<p xmlns:eos_doc="http://tempuri.org/eos_doc.xsd" class="head_paragraph">
+  This page provides comprehensive examples on how to access and visualize
+  various NASA HDF/HDF-EOS files using <a href="http://hdfeos.org/examples/idl.php">IDL</a>
+  <sup>®</sup>, <a href="http://hdfeos.org/examples/matlab.php">MATLAB</a><sup>®</sup>
+  and <a href="http://hdfeos.org/software/ncl.php">NCL</a>.
+  Other tools and programming languages examples can be found
+  <a href="http://hdfeos.org/examples/index.php">here</a>.
+</p>
+
+<p>
+  Please read this <a href="http://hdfeos.org/zoo/note_general.php">special note</a> first 
+  before you proceed further.
+</p>
+<p>
+You can find examples quickly using the search box below. 
+<font color="red">Please add keyword <b>'zoo'</b> first</font> to limit the search within this <i>Comprehensive Examples</i> page. 
+Then, type the <b>first few characters</b> from the NASA HDF/HDF-EOS file name such as <b>MOD06</b>. 
+Finally, you can limit the search by providing one of programming language keywords: <b>NCL, IDL, or MATLAB</b>.
+  </p><form action="/search" name="form2" method="get">
+<input name="cx" value="014058654162327528908:m3rtotnqst4" type="hidden">
+<input name="cof" value="FORID:11" type="hidden">
+<input name="ie" value="UTF-8" type="hidden">
+<table>
+    <tbody><tr valign="center">
+        <td><b>Search Examples by Product Name</b></td>
+        <td>
+            <input style="margin-top: 3px;" size="30" value="e.g. zoo MOD06 MATLAB" onfocus="clear_textbox();" name="q" type="text">
+        </td>
+        <td>
+            <input src="Comprehensive%20Examples%20for%20LAADS%20Products_files/login-button.gif" name="sa" type="image">
+        </td>
+    </tr>
+</tbody></table>
+</form>
+<p></p>
+
+<p>
+  For a list of examples for the different data centers, click on the
+  product name in the table below. 
+</p>
+<table class="xslt_table" style="margin-left: auto;margin-right: auto;">
+  <tbody><tr>
+    <td>
+      <a name="table1"></a>
+      <table class="table_content" border="1">
+        <tbody><tr>
+          <th class="center_aligned">NASA Data Centers</th>
+          <th class="center_aligned">Product Examples using different tools</th>
+        </tr>
+  <!-- GES DISC -->
+  <tr>
+     <td class="center_aligned">
+     <a href="http://disc.sci.gsfc.nasa.gov/" target="_blank">
+     <strong>GES DISC</strong></a>
+  	</td>
+  	<td class="center_aligned">
+            <a href="http://hdfeos.org/zoo/index_openGESDISC_Examples.php#AIRS">AIRS</a>
+            <a href="http://hdfeos.org/zoo/index_openGESDISC_Examples.php#TRMM">TRMM</a>
+            <a href="http://hdfeos.org/zoo/index_openGESDISC_Examples.php#MERRA">MERRA</a>
+            <a href="http://hdfeos.org/zoo/index_openGESDISC_Examples.php#TOMS">TOMS</a>
+            <a href="http://hdfeos.org/zoo/index_openGESDISC_Examples.php#OMI">OMI</a>
+            <a href="http://hdfeos.org/zoo/index_openGESDISC_Examples.php#MLS">MLS</a>
+            <a href="http://hdfeos.org/zoo/index_openGESDISC_Examples.php#HIRDLS">HIRDLS</a>
+            <a href="http://hdfeos.org/zoo/index_openGESDISC_Examples.php#BUV">BUV</a>
+            <a href="http://hdfeos.org/zoo/index_openGESDISC_Examples.php#SWDB">SWDB</a>
+            <a href="http://hdfeos.org/zoo/index_openGESDISC_Examples.php#GSSTF">GSSTF</a>
+            <a href="http://hdfeos.org/zoo/index_openGESDISC_Examples.php#GOSAT">GOSAT/ACOS</a>
+  	</td>
+  </tr>
+
+  <!-- LAADS -->
+<tr>
+  <td class="center_aligned">
+    <a href="http://ladsweb.nascom.nasa.gov/" target="_blank">
+      <strong>LAADS</strong></a>
+  </td>
+  <td class="center_aligned">
+    <table class="table_content" border="1">
+      <tbody><tr>
+	<th class="center_aligned">LAADS Product</th>
+	<th class="center_aligned">Type</th>
+	<th class="center_aligned">File</th>
+	<th colspan="4" class="center_aligned">Codes</th>
+	<th colspan="4" class="center_aligned">Plots</th>
+	<th class="center_aligned">Note</th>
+      </tr>
+
+      <!-- MOD -->
+      <tr>
+        
+	<td class="center_aligned" rowspan="7">
+    <a name="MODIS">
+      MOD
+    </a>
+      <br><a href="http://hdfeos.org/zoo/LAADS_MOD.php">more examples</a><br></td>
+	<td class="center_aligned" rowspan="6">Swath</td>
+
+	<td class="left_aligned">
+          <a href="ftp://ftp.hdfgroup.uiuc.edu/pub/outgoing/NASAHDF/MOD021KM.A2000055.0000.005.2010041143816.hdf">MOD021KM.A2000055.0000.005.2010041143816.hdf</a><br>
+	  <a href="ftp://ftp.hdfgroup.uiuc.edu/pub/outgoing/NASAHDF/MOD03.A2000055.0000.005.2010029175839.hdf">MOD03.A2000055.0000.005.2010029175839.hdf</a> (m)</td>
+        <td>
+          <a href="https://github.com/hdfeos/zoo_python/raw/master/zoo/laads/mod/MOD21KM_EV_Band26.py" target="_blank">Python</a>
+        </td>
+
+        <td><a href="http://hdfeos.org/zoo/LAADS/MOD021KM.A2000055.0000.005.2010041143816_EV_Band26.ncl" target="_blank">NCL</a></td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/MOD21KM_EV_Band26.m" target="_blank">MATLAB</a></td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/MOD021KM.A2000055.0000.005.2010041143816_EV_Band26_Polar.he.idl" target="_blank">IDL</a></td>
+
+        <td><a href="http://hdfeos.org/zoo/LAADS/MOD021KM.A2000055.0000.005.2010041143816.hdf.py.png" target="_blank">Python(p)</a></td>
+        <td><a href="http://hdfeos.org/zoo/LAADS/MOD021KM.A2000055.0000.005.2010041143816_EV_Band26.ncl.pdf" target="_blank">NCL(p)</a></td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/MOD021KM.A2000055.0000.005.2010041143816_EV_Band26.m.jpg" target="_blank">MATLAB(p)</a></td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/MOD021KM.A2000055.0000.005.2010041143816_EV_Band26_Polar.idl.JPG" target="_blank">IDL(p)</a></td>
+	<td class="left_aligned"></td>
+
+      </tr>
+
+
+
+      <tr>
+	<td class="left_aligned">
+          <a href="ftp://ftp.hdfgroup.uiuc.edu/pub/outgoing/NASAHDF/MOD05_L2.A2010001.0000.005.2010005211557.hdf">MOD05_L2.A2010001.0000.005.2010005211557.hdf</a><br>
+	  <a href="ftp://ftp.hdfgroup.uiuc.edu/pub/outgoing/NASAHDF/MOD03.A2010001.0000.005.2010003235220.hdf">MOD03.A2010001.0000.005.2010003235220.hdf</a> (m)</td>
+        <td>
+          <a href="https://github.com/hdfeos/zoo_python/raw/master/zoo/laads/mod/MOD05_L2_Water_Vapor_Near_Infrared.py" target="_blank">Python</a>
+        </td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/MOD05_L2.A2010001.0000.005.2010005211557_Water_Vapor_Near_Infrared.ncl" target="_blank">NCL</a></td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/MOD05_L2_Water_Vapor_Near_Infrared.m" target="_blank">MATLAB</a></td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/MOD05_L2.A2010001.0000.005.2010005211557_Water_Vapor_Near_Infrared.idl.he.idl" target="_blank">IDL</a><br><a href="http://hdfeos.org/zoo/LAADS/MOD05_L2.A2010001.0000.005.2010005211557_Water_Vapor_Near_Infrared_polar.he.idl" target="_blank">IDL(p)</a></td>
+
+        <td><a href="http://hdfeos.org/zoo/LAADS/MOD05_L2.A2010001.0000.005.2010005211557.hdf.py.png" target="_blank">Python(p)</a></td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/MOD05_L2.A2010001.0000.005.2010005211557_Water_Vapor_Near_Infrared.ncl.pdf" target="_blank">NCL</a></td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/MOD05_L2.A2010001.0000.005.2010005211557_Water_Vapor_Near_Infrared_Polar.m.jpg" target="_blank">MATLAB(p)</a></td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/MOD05_L2.A2010001.0000.005.2010005211557_Water_Vapor_Near_Infrared_Global.idl.JPG" target="_blank">IDL</a><br><a href="http://hdfeos.org/zoo/LAADS/MOD05_L2.A2010001.0000.005.2010005211557_Water_Vapor_Near_Infrared_Polar.idl.JPG" target="_blank">IDL(p)</a></td>
+
+	<td class="left_aligned"></td>
+      </tr>
+
+      <tr>
+	<td class="left_aligned"><a href="ftp://ftp.hdfgroup.uiuc.edu/pub/outgoing/NASAHDF/MOD06_L2.A2010001.0000.005.2010005213214.hdf">MOD06_L2.A2010001.0000.005.2010005213214.hdf</a><br>
+  	  <a href="ftp://ftp.hdfgroup.uiuc.edu/pub/outgoing/NASAHDF/MOD03.A2010001.0000.005.2010003235220.hdf">MOD03.A2010001.0000.005.2010003235220.hdf</a> (m)</td>
+        <td>
+          <a href="https://github.com/hdfeos/zoo_python/raw/master/zoo/laads/mod/MOD06_L2_Cloud_Optical_Thickness.py" target="_blank">Python</a>
+        </td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/MOD06_L2.A2010001.0000.005.2010005213214_Cloud_Optical_Thickness.ncl" target="_blank">NCL</a></td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/MOD06_L2_Cloud_Optical_Thickness.m" target="_blank">MATLAB</a></td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/MOD06_L2.A2010001.0000.005.2010005213214_Cloud_Optical_Thickness.idl.he.idl" target="_blank">IDL</a><br><a href="http://hdfeos.org/zoo/LAADS/MOD06_L2.A2010001.0000.005.2010005213214_Cloud_Optical_Thickness_polar.he.idl" target="_blank">IDL(p)</a></td>
+
+        <td><a href="http://hdfeos.org/zoo/LAADS/MOD06_L2.A2010001.0000.005.2010005213214.hdf.py.png" target="_blank">Python(p)</a></td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/MOD06_L2.A2010001.0000.005.2010005213214_Cloud_Optical_Thickness.ncl.pdf" target="_blank">NCL</a></td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/MOD06_L2.A2010001.0000.005.2010005213214_Cloud_Optical_Thickness_Polar.m.jpg" target="_blank">MATLAB(p)</a></td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/MOD06_L2.A2010001.0000.005.2010005213214_Cloud_Optical_Thickness_Global.idl.JPG" target="_blank">IDL</a><br><a href="http://hdfeos.org/zoo/LAADS/MOD06_L2.A2010001.0000.005.2010005213214_Cloud_Optical_Thickness_Polar.idl.JPG" target="_blank">IDL(p)</a></td>
+	<td class="left_aligned"></td>
+      </tr>
+
+      <tr>
+	<td class="left_aligned">
+          <a href="ftp://ftp.hdfgroup.uiuc.edu/pub/outgoing/NASAHDF/MOD07_L2.A2010001.0000.005.2010004001518.hdf">MOD07_L2.A2010001.0000.005.2010004001518.hdf</a></td>
+	<!-- td rowspan="2" class="left_aligned" -->
+        <td>
+          <a href="https://github.com/hdfeos/zoo_python/raw/master/zoo/laads/mod/MOD07_L2_Retrieved_Moisture_Profile_Pressure_Lvl5.py" target="_blank">Python</a>
+        </td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/MOD07_L2_Retrieved_Moisture_Profile.ncl" target="_blank">NCL</a></td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/MOD07_L2_Retrieved_Moisture_Profile_Pressure_Lvl5.m" target="_blank">MATLAB</a></td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/MOD07_L2.A2010001.0000.005.2010004001518_Retrieved_Moisture_Profile_level5.idl.he.idl" target="_blank">IDL</a><br><a href="http://hdfeos.org/zoo/LAADS/MOD07_L2.A2010001.0000.005.2010004001518_Retrieved_Moisture_Profile_level5_polar.he.idl" target="_blank">IDL(p)</a></td>
+
+        <td><a href="http://hdfeos.org/zoo/LAADS/MOD07_L2.A2010001.0000.005.2010004001518.hdf.py.png" target="_blank">Python(p)</a></td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/MOD07_L2.A2010001.0000.005.2010004001518_Retrieved_Moisture_Profile_1lvl_1lvl.ncl.pdf" target="_blank">NCL</a></td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/MOD07_L2.A2010001.0000.005.2010004001518_Retrieved_Moisture_Profile_level5_Polar.m.jpg" target="_blank">MATLAB(p)</a> </td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/MOD07_L2.A2010001.0000.005.2010004001518_Retrieved_Moisture_Profile_level5_Global.idl.JPG" target="_blank">IDL</a><br><a href="http://hdfeos.org/zoo/LAADS/MOD07_L2.A2010001.0000.005.2010004001518_Retrieved_Moisture_Profile_level5_Polar.idl.JPG" target="_blank">IDL(p)</a></td>
+
+	<td class="left_aligned">
+          NCL plots include both global and polar views.
+        </td>
+      </tr>
+
+      <tr>
+  	<td class="left_aligned">
+          <a href="ftp://ftp.hdfgroup.uiuc.edu/pub/outgoing/NASAHDF/MODARNSS.Abracos_Hill.A2000080.1515.005.2007164153544.hdf">MODARNSS.Abracos_Hill.A2000080.1515.005.2007164153544.hdf</a></td>
+        <td>
+          <a href="https://github.com/hdfeos/zoo_python/raw/master/zoo/laads/mod/MODARNSS_EV_1KM_Emissive_level0.py" target="_blank">Python(z)</a>
+        </td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/MODARNSS_EV_1KM_Emissive.ncl" target="_blank">NCL</a></td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/MODARNSS_EV_1KM_Emissive_level0_zoom.m" target="_blank">MATLAB(z)</a></td>
+	<td>
+          <a href="http://hdfeos.org/zoo/LAADS/MODARNSS.Abracos_Hill.A2000080.1515.005.2007164153544_EV_1KM_Emissive_level0.idl.he.idl" target="_blank">IDL</a><br><a href="http://hdfeos.org/zoo/LAADS/MODARNSS.Abracos_Hill.A2000080.1515.005.2007164153544_EV_1KM_Emissive_level0_zoom.he.idl" target="_blank">IDL(z)</a></td>
+
+        <td><a href="http://hdfeos.org/zoo/LAADS/MODARNSS.Abracos_Hill.A2000080.1515.005.2007164153544.hdf.py.png" target="_blank">Python(z)</a></td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/MODARNSS.Abracos_Hill.A2000080.1515.005.2007164153544_EV_1KM_Emissive.ncl.pdf" target="_blank">NCL</a></td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/MODARNSS.Abracos_Hill.A2000080.1515.005.2007164153544_EV_1KM_Emissive_Band_1KM_Emissive0_zoom.m.jpg" target="_blank">MATLAB(z)</a><br>
+	</td><td><a href="http://hdfeos.org/zoo/LAADS/MODARNSS.Abracos_Hill.A2000080.1515.005.2007164153544_EV_1KM_Emissive_level0.idl.JPG" target="_blank">IDL</a><br><a href="http://hdfeos.org/zoo/LAADS/MODARNSS.Abracos_Hill.A2000080.1515.005.2007164153544_EV_1KM_Emissive_level0_zoom.idl.JPG" target="_blank">IDL(z)</a></td>
+
+        <td class="left_aligned">IDL plot has a regional view, not a global view.</td>
+      </tr>
+
+      <tr>
+	<td class="left_aligned"><a href="ftp://ftp.hdfgroup.uiuc.edu/pub/outgoing/NASAHDF/MODATML2.A2000055.0000.005.2006253045900.hdf">MODATML2.A2000055.0000.005.2006253045900.hdf</a></td>
+        <td>
+          <a href="https://github.com/hdfeos/zoo_python/raw/master/zoo/laads/mod/MODATML2_Cloud_Fraction.py" target="_blank">Python(z)</a>
+        </td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/MODATML2.A2000055.0000.005.2006253045900_Cloud_Fraction.ncl" target="_blank">NCL</a></td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/MODATML2_Cloud_Fraction.m" target="_blank">MATLAB(z)</a></td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/MODATML2.A2000055.0000.005.2006253045900_Cloud_Fraction.idl.idl" target="_blank">IDL</a><br><a href="http://hdfeos.org/zoo/LAADS/MODATML2.A2000055.0000.005.2006253045900_Cloud_Fraction_zoom.idl" target="_blank">IDL(z)</a>
+	</td>
+
+        <td><a href="http://hdfeos.org/zoo/LAADS/MODATML2.A2000055.0000.005.2006253045900.hdf.py.png" target="_blank">Python(z)</a></td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/MODATML2.A2000055.0000.005.2006253045900.ncl.pdf" target="_blank">NCL</a></td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/MODATML2.A2000055.0000.005.2006253045900_Cloud_Fraction_zoom.m.jpg" target="_blank">MATLAB</a></td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/MODATML2.A2000055.0000.005.2006253045900_Cloud_Fraction.idl.JPG" target="_blank">IDL</a><br><a href="http://hdfeos.org/zoo/LAADS/MODATML2.A2000055.0000.005.2006253045900_Cloud_Fraction_zoom.idl.JPG" target="_blank">IDL(z)</a></td>
+
+        <td class="left_aligned">Multiply scale factor and add offset on lat/lon. <br>IDL plot has a regional view, not a global view.<br>IDL(z) avoids region with fill value.</td>
+      </tr>
+
+      <tr>
+	<td class="center_aligned" rowspan="1">Grid</td>
+	<td class="left_aligned">
+	  <a href="ftp://ftp.hdfgroup.uiuc.edu/pub/outgoing/NASAHDF/MOD08_D3.A2010001.005.2010006233008.hdf">MOD08_D3.A2010001.005.2010006233008.hdf</a>
+	</td>
+        <td>
+          <a href="https://github.com/hdfeos/zoo_python/raw/master/zoo/laads/mod/MOD08_D3_Cloud_Fraction_Liquid.py" target="_blank">Python</a>
+        </td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/MOD08_D3_Cloud_Fraction_Liquid.ncl" target="_blank">NCL</a></td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/MOD08_D3_Cloud_Fraction_Liquid.m" target="_blank">MATLAB</a></td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/MOD08_D3.A2010001.005.2010006233008_Cloud_Fraction_Liquid.idl.he.idl" target="_blank">IDL</a></td>
+
+        <td><a href="http://hdfeos.org/zoo/LAADS/MOD08_D3.A2010001.005.2010006233008.hdf.py.png" target="_blank">Python</a></td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/MOD08_D3.A2010001.005.2010006233008_Cloud_Fraction_Liquid.ncl.pdf" target="_blank">NCL</a></td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/MOD08_D3.A2010001.005.2010006233008_Cloud_Fraction_Liquid.m.jpg" target="_blank">MATLAB</a></td>
+ 	<td><a href="http://hdfeos.org/zoo/LAADS/MOD08_D3.A2010001.005.2010006233008_Cloud_Fraction_Liquid.idl.JPG" target="_blank">IDL</a></td>
+
+	<td class="left_aligned"></td>
+      </tr>
+
+      <!-- MYD -->
+      <tr>
+	<td class="center_aligned" rowspan="6">
+    <a name="MYD">
+      MYD
+    </a>
+      <br>
+          <a href="http://hdfeos.org/zoo/LAADS_MYD.php">more examples</a><br></td>
+	<td class="center_aligned" rowspan="5">Swath</td>
+	<td rowspan="2" class="left_aligned">
+	  <a href="ftp://ftp.hdfgroup.uiuc.edu/pub/outgoing/NASAHDF/MYD021KM.A2002226.0000.005.2009193222735.hdf">MYD021KM.A2002226.0000.005.2009193222735.hdf</a><br>
+	  <a href="ftp://ftp.hdfgroup.uiuc.edu/pub/outgoing/NASAHDF/MYD03.A2002226.0000.005.2009193071127.hdf">MYD03.A2002226.0000.005.2009193071127.hdf</a> (m)</td>
+        <td>
+          <a href="https://github.com/hdfeos/zoo_python/raw/master/zoo/laads/myd/MYD021KM_EV_1KM_Emissive_level0.py" target="_blank">Python(z)</a>
+        </td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/MYD021KM.A2002226.0000.005.2009193222735_EV_1KM_Emissive.ncl" target="_blank">NCL</a></td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/MYD021KM_EV_1KM_Emissive_level0.m" target="_blank">MATLAB</a><br>
+          <a href="http://hdfeos.org/zoo/LAADS/MYD021KM_EV_1KM_Emissive_level0_zoom.m" target="_blank">MATLAB(z)</a></td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/MYD021KM.A2002226.0000.005.2009193222735_EV_1KM_Emissive_level0.idl.he.idl" target="_blank">IDL</a><br>
+          <a href="http://hdfeos.org/zoo/LAADS/MYD021KM.A2002226.0000.005.2009193222735_EV_1KM_Emissive_level0_zoom.he.idl" target="_blank">IDL(z)</a>
+	</td>
+
+	<td><a href="http://hdfeos.org/zoo/LAADS/MYD021KM.A2002226.0000.005.2009193222735.hdf.py.png" target="_blank">Python(z)</a></td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/MYD021KM.A2002226.0000.005.2009193222735_EV_1KM_Emissive.ncl.pdf" target="_blank">NCL</a></td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/MYD021KM.A2002226.0000.005.2009193222735_EV_1KM_Emissive_Band_1KM_Emissive0.m.jpg" target="_blank">MATLAB</a><br>
+          <a href="http://hdfeos.org/zoo/LAADS/MYD021KM.A2002226.0000.005.2009193222735_EV_1KM_Emissive_Band_1KM_Emissive0_zoom.m.jpg" target="_blank">MATLAB(z)</a></td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/MYD021KM.A2002226.0000.005.2009193222735_EV_1KM_Emissive_level0.idl.JPG" target="_blank">IDL</a><br>
+          <a href="http://hdfeos.org/zoo/LAADS/MYD021KM.A2002226.0000.005.2009193222735_EV_1KM_Emissive_level0_zoom.idl.JPG" target="_blank">IDL(z)</a></td>
+
+	<td class="left_aligned">Field: EV_1KM_Emissive</td>
+
+      </tr>
+
+      <tr>
+        <td>
+          <a href="https://github.com/hdfeos/zoo_python/raw/master/zoo/laads/myd/MYD021KM_EV_Band26.py" target="_blank">Python(z)</a>
+        </td>
+ 	<td><a href="http://hdfeos.org/zoo/LAADS/MYD021KM.A2002226.0000.005.2009193222735_EV_Band26.ncl" target="_blank">NCL(z)</a></td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/MYD021KM_EV_Band26.m" target="_blank">MATLAB</a><br>
+          <a href="http://hdfeos.org/zoo/LAADS/MYD021KM_EV_Band26_zoom.m" target="_blank">MATLAB(z)</a> </td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/MYD021KM.A2002226.0000.005.2009193222735_EV_Band26.idl.he.idl" target="_blank">IDL</a><br>
+          <a href="http://hdfeos.org/zoo/LAADS/MYD021KM.A2002226.0000.005.2009193222735_EV_Band26_zoom.he.idl" target="_blank">IDL(z)</a>
+	</td>
+
+	<td><a href="http://hdfeos.org/zoo/LAADS/MYD021KM.A2002226.0000.005.2009193222735.hdf.evband26.py.png" target="_blank">Python(z)</a></td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/MYD021KM.A2002226.0000.005.2009193222735_EV_Band26.ncl.pdf" target="_blank">NCL(z)</a></td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/MYD021KM.A2002226.0000.005.2009193222735_EV_Band26.m.jpg" target="_blank">MATLAB</a><br>
+          <a href="http://hdfeos.org/zoo/LAADS/MYD021KM.A2002226.0000.005.2009193222735_EV_Band26_zoom.m.jpg" target="_blank">MATLAB(z)</a></td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/MYD021KM.A2002226.0000.005.2009193222735_EV_Band26.idl.JPG" target="_blank">IDL</a><br>
+          <a href="http://hdfeos.org/zoo/LAADS/MYD021KM.A2002226.0000.005.2009193222735_EV_Band26_zoom.idl.JPG" target="_blank">IDL(z)</a></td>
+
+	<td class="left_aligned">Field: EV_Band26</td>
+      </tr>
+
+      <tr>
+	<td class="left_aligned">
+          <a href="ftp://ftp.hdfgroup.uiuc.edu/pub/outgoing/NASAHDF/MYD02HKM.A2010031.0035.005.2010031183706.hdf">MYD02HKM.A2010031.0035.005.2010031183706.hdf</a>
+	  <br>
+          <a href="ftp://ftp.hdfgroup.uiuc.edu/pub/outgoing/NASAHDF/lat_MYD02HKM.A2010031.0035.005.2010031183706.output">lat_MYD02HKM.A2010031.0035.005.2010031183706.output</a>
+	  <br>
+          <a href="ftp://ftp.hdfgroup.uiuc.edu/pub/outgoing/NASAHDF/lon_MYD02HKM.A2010031.0035.005.2010031183706.output">lon_MYD02HKM.A2010031.0035.005.2010031183706.output</a></td>
+
+
+        <td>
+          <a href="https://github.com/hdfeos/zoo_python/raw/master/zoo/laads/myd/MYD02HKM_A2010031_0035_005_2010031183706_EV_500_RefSB_lvl0.py" target="_blank">Python(p)</a>
+        </td>
+	<td>
+          <a href="http://hdfeos.org/zoo/LAADS/MYD02HKM.A2010031.0035.005.2010031183706_EV_500_RefSB_lvl0_p.ncl" target="_blank">NCL(p)</a>
+        </td>
+	<td>
+          <a href="http://hdfeos.org/zoo/LAADS/MYD02HKM_A2010031_0035_005_2010031183706_EV_500_RefSB_lvl0.m" target="_blank">MATLAB(p)</a>
+        </td>
+	<td>
+          <a href="http://hdfeos.org/zoo/LAADS/MYD02HKM.A2010031.0035.005.2010031183706_EV_500_RefSB_lvl0.idl" target="_blank">IDL(p)</a>
+        </td>
+
+	<td>
+          <a href="http://hdfeos.org/zoo/LAADS/MYD02HKM.A2010031.0035.005.2010031183706.hdf.py.png" target="_blank">Python(p)</a>
+        </td>
+	<td>
+          <a href="http://hdfeos.org/zoo/LAADS/MYD02HKM.A2010031.0035.005.2010031183706_EV_500_RefSB_polar.ncl.pdf" target="_blank">NCL(p)</a>
+        </td>
+	<td>
+          <a href="http://hdfeos.org/zoo/LAADS/MYD02HKM.A2010031.0035.005.2010031183706_EV_500_RefSB_at_Band_500M.m.p.jpg" target="_blank">MATLAB(p)</a>
+        </td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/MYD02HKM.A2010031.0035.005.2010031183706_EV_500_RefSB_level0_Polar.idl.JPG" target="_blank">IDL(p)</a></td>
+
+	<td class="left_aligned"></td>
+      </tr>
+      <tr>
+	<td class="left_aligned">
+	  <a href="ftp://ftp.hdfgroup.uiuc.edu/pub/outgoing/NASAHDF/MYD07_L2.A2002184.2200.005.2006133121629.hdf">MYD07_L2.A2002184.2200.005.2006133121629.hdf</a>
+	</td>
+
+        <td>
+          <a href="https://github.com/hdfeos/zoo_python/raw/master/zoo/laads/myd/MYD07_L2_Water_Vapor.py" target="_blank">Python(z)</a>
+        </td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/MYD07_L2_Water_Vapor.ncl" target="_blank">NCL</a></td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/MYD07_L2_Water_Vapor.m" target="_blank">MATLAB</a><br><a href="http://hdfeos.org/zoo/LAADS/MYD07_L2_Water_Vapor_zoom.m" target="_blank">MATLAB(z)</a></td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/MYD07_L2.A2002184.2200.005.2006133121629_Water_Vapor.idl.he.idl" target="_blank">IDL</a><br><a href="http://hdfeos.org/zoo/LAADS/MYD07_L2.A2002184.2200.005.2006133121629_Water_Vapor_zoom.he.idl" target="_blank">IDL(z)</a>
+	</td>
+
+    	<td><a href="http://hdfeos.org/zoo/LAADS/MYD07_L2.A2002184.2200.005.2006133121629.hdf.py.png" target="_blank">Python(z)</a></td>
+    	<td><a href="http://hdfeos.org/zoo/LAADS/MYD07_L2.A2002184.2200.005.2006133121629_Water_Vapor.ncl.pdf" target="_blank">NCL</a></td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/MYD07_L2.A2002184.2200.005.2006133121629_Water_Vapor.m.jpg" target="_blank">MATLAB</a><br>
+          <a href="http://hdfeos.org/zoo/LAADS/MYD07_L2.A2002184.2200.005.2006133121629_Water_Vapor_zoom.m.jpg" target="_blank">MATLAB(z)</a></td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/MYD07_L2.A2002184.2200.005.2006133121629_Water_Vapor.idl.JPG" target="_blank">IDL</a><br>
+          <a href="http://hdfeos.org/zoo/LAADS/MYD07_L2.A2002184.2200.005.2006133121629_Water_Vapor_zoom.idl.JPG" target="_blank">IDL(z)</a></td>
+
+	<td class="left_aligned"></td>
+
+      </tr>
+
+      <tr>
+	<td class="left_aligned">
+          <a href="ftp://ftp.hdfgroup.uiuc.edu/pub/outgoing/NASAHDF/MYDARNSS.Barrow.A2002184.2200.005.2007051063709.hdf">MYDARNSS.Barrow.A2002184.2200.005.2007051063709.hdf</a></td>
+
+        <td>
+          <a href="https://github.com/hdfeos/zoo_python/raw/master/zoo/laads/myd/MYDARNSS_EV_1KM_Emissive_lvl9.py" target="_blank">Python(z)</a>
+        </td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/MYDARNSS_EV_1KM_Emissive.ncl" target="_blank">NCL</a></td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/MYDARNSS_EV_1KM_Emissive_lvl9.m" target="_blank">MATLAB</a></td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/MYDARNSS.Barrow.A2002184.2200.005.2007051063709EV_1KM_Emissive_level9.idl.he.idl" target="_blank">IDL</a><br>
+          <a href="http://hdfeos.org/zoo/LAADS/MYDARNSS.Barrow.A2002184.2200.005.2007051063709EV_1KM_Emissive_level9_zoom.he.idl" target="_blank">IDL(z)</a>
+	</td>
+
+    	<td><a href="http://hdfeos.org/zoo/LAADS/MYDARNSS.Barrow.A2002184.2200.005.2007051063709.hdf.py.png" target="_blank">Python(z)</a></td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/MYDARNSS.Barrow.A2002184.2200.005.2007051063709_EV_1KM_Emissive.ncl.pdf" target="_blank">NCL</a></td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/MYDARNSS.Barrow.A2002184.2200.005.2007051063709_EV_1KM_Emissive_level9_zoom.m.jpg" target="_blank">MATLAB</a></td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/MYDARNSS.Barrow.A2002184.2200.005.2007051063709EV_1KM_Emissive_level9.idl.JPG" target="_blank">IDL</a><br><a href="http://hdfeos.org/zoo/LAADS/MYDARNSS.Barrow.A2002184.2200.005.2007051063709EV_1KM_Emissive_level9_zoom.idl.JPG" target="_blank">IDL(z)</a> </td>
+
+	<td class="left_aligned">IDL plot has a regional view, not a global view.</td>
+      </tr>
+
+      <tr>
+	<td class="center_aligned" rowspan="1">Grid</td>
+	<td class="left_aligned">
+	  <a href="ftp://ftp.hdfgroup.uiuc.edu/pub/outgoing/NASAHDF/MYD08_D3.A2009001.005.2009048010832.hdf">MYD08_D3.A2009001.005.2009048010832.hdf</a>
+	</td>
+
+        <td>
+          <a href="https://github.com/hdfeos/zoo_python/raw/master/zoo/laads/myd/MYD08_D3_Cloud_Fraction_Liquid.py" target="_blank">Python</a>
+        </td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/MYD08_D3_Cloud_Fraction_Liquid.ncl" target="_blank">NCL</a></td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/MYD08_D3_Cloud_Fraction_Liquid.m" target="_blank">MATLAB</a></td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/MYD08_D3.A2009001.005.2009048010832_Cloud_Fraction_Liquid.idl.he.idl" target="_blank">IDL</a></td>
+
+    	<td><a href="http://hdfeos.org/zoo/LAADS/MYD08_D3.A2009001.005.2009048010832.hdf.py.png" target="_blank">Python</a></td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/MYD08_D3.A2009001.005.2009048010832_Cloud_Fraction_Liquid.ncl.pdf" target="_blank">NCL</a></td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/MYD08_D3.A2009001.005.2009048010832_Cloud_Fraction_Liquid.m.jpg" target="_blank">MATLAB</a></td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/MYD08_D3.A2009001.005.2009048010832_Cloud_Fraction_Liquid.idl.JPG" target="_blank">IDL</a></td>
+
+	<td class="left_aligned"></td>
+      </tr>
+      <!-- NPP VIIRS -->
+      <tr>
+        
+	<td class="center_aligned" rowspan="2">
+    <a name="NPP_VIIRS">NPP VIIRS</a></td>
+	<td class="center_aligned" rowspan="1">Swath</td>
+	<td class="left_aligned">
+	  <a href="ftp://ftp.hdfgroup.uiuc.edu/pub/outgoing/NASAHDF/NPP_VSTIP_L2.A2012002.2340.P1_03001.2012022162425.hdf">NPP_VSTIP_L2.A2012002.2340.P1_03001.2012022162425.hdf</a>
+	</td>
+        <td>
+          <a href="https://github.com/hdfeos/zoo_python/raw/master/zoo/laads/viirs/NPP_VSTIP_L2_A2012002_2340_P1_03001_2012022162425.py" target="_blank">Python(p)</a>
+        </td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/NPP_VSTIP_L2.A2012002.2340.P1_03001.2012022162425.hdf.ncl" target="_blank">NCL</a></td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/NPP_VSTIP_L2_A2012002_2340_P1_03001_2012022162425.m" target="_blank">MATLAB</a></td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/NPP_VSTIP_L2.A2012002.2340.P1_03001.2012022162425.hdf.idl" target="_blank">IDL(z)</a></td>
+
+    	<td><a href="http://hdfeos.org/zoo/LAADS/NPP_VSTIP_L2.A2012002.2340.P1_03001.2012022162425.hdf.py.png" target="_blank">Python(p)</a></td>
+    	<td><a href="http://hdfeos.org/zoo/LAADS/NPP_VSTIP_L2.A2012002.2340.P1_03001.2012022162425.hdf.pdf" target="_blank">NCL</a></td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/NPP_VSTIP_L2.A2012002.2340.P1_03001.2012022162425.hdf.m.jpg" target="_blank">MATLAB</a></td>
+	<td><a href="http://hdfeos.org/zoo/LAADS/NPP_VSTIP_L2.A2012002.2340.P1_03001.2012022162425.hdf.idl.jpg" target="_blank">IDL(z)</a></td>
+
+	<td class="left_aligned">Python/NCL subsets data field.</td>
+      </tr>
+      <tr> 
+        <td class="center_aligned">Grid</td> 
+        <td class="left_aligned">
+          <a href="ftp://ftp.hdfgroup.uiuc.edu/pub/outgoing/NASAHDF/NPP_D16BRDF3_L3D.A2012241.h20v03.C1_03001.2012258151353.hdf">NPP_D16BRDF3_L3D.A2012241.h20v03.C1_03001.2012258151353.hdf</a>
+	  <br>
+          <a href="ftp://ftp.hdfgroup.uiuc.edu/pub/outgoing/NASAHDF/lat_NPP_D16BRDF3_L3D.A2012241.h20v03.C1_03001.2012258151353.output">lat_NPP_D16BRDF3_L3D.A2012241.h20v03.C1_03001.2012258151353.output</a>
+	  <br>
+          <a href="ftp://ftp.hdfgroup.uiuc.edu/pub/outgoing/NASAHDF/lon_NPP_D16BRDF3_L3D.A2012241.h20v03.C1_03001.2012258151353.output">lon_NPP_D16BRDF3_L3D.A2012241.h20v03.C1_03001.2012258151353.output</a>
+        </td>
+        <td>
+          <a href="https://github.com/hdfeos/zoo_python/raw/master/zoo/laads/viirs/NPP_D16BRDF3_L3D_A2012241_h20v03_C1_03001_2012258151353.py" target="_blank">Python(z)</a>
+        </td>
+        <td>
+          <a href="http://hdfeos.org/zoo/LAADS/NPP_D16BRDF3_L3D.A2012241.h20v03.C1_03001.2012258151353.hdf.ncl" target="_blank">NCL</a>
+        </td>
+        <td>
+          <a href="http://hdfeos.org/zoo/LAADS/NPP_D16BRDF3_L3D_A2012241_h20v03_C1_03001_2012258151353.m" target="_blank">MATLAB</a>
+          <br>
+          <a href="http://hdfeos.org/zoo/LAADS/NPP_D16BRDF3_L3D_A2012241_h20v03_C1_03001_2012258151353_zoom.m" target="_blank">MATLAB(z)</a>
+        </td>
+        <td>
+          <a href="http://hdfeos.org/zoo/LAADS/NPP_D16BRDF3_L3D.A2012241.h20v03.C1_03001.2012258151353.hdf.idl" target="_blank">IDL</a>
+          <br>
+          <a href="http://hdfeos.org/zoo/LAADS/NPP_D16BRDF3_L3D.A2012241.h20v03.C1_03001.2012258151353.hdf.zoom.idl" target="_blank">IDL(z)</a>
+        </td>
+
+        <td>
+          <a href="http://hdfeos.org/zoo/LAADS/NPP_D16BRDF3_L3D.A2012241.h20v03.C1_03001.2012258151353.hdf.py.png" target="_blank">Python(z)</a>
+        </td>
+        <td>
+          <a href="http://hdfeos.org/zoo/LAADS/NPP_D16BRDF3_L3D.A2012241.h20v03.C1_03001.2012258151353.hdf.ncl.pdf" target="_blank">NCL</a>
+        </td>
+        <td>
+          <a href="http://hdfeos.org/zoo/LAADS/NPP_D16BRDF3_L3D.A2012241.h20v03.C1_03001.2012258151353.hdf.m.jpg" target="_blank">MATLAB</a>
+          <br>
+          <a href="http://hdfeos.org/zoo/LAADS/NPP_D16BRDF3_L3D.A2012241.h20v03.C1_03001.2012258151353.hdf.zoom.m.jpg" target="_blank">MATLAB(z)</a>
+        </td>
+        <td>
+          <a href="http://hdfeos.org/zoo/LAADS/NPP_D16BRDF3_L3D.A2012241.h20v03.C1_03001.2012258151353.hdf.idl.jpg" target="_blank">IDL</a>
+          <br>
+          <a href="http://hdfeos.org/zoo/LAADS/NPP_D16BRDF3_L3D.A2012241.h20v03.C1_03001.2012258151353.hdf.zoom.idl.jpg" target="_blank">IDL(z)</a>
+        </td>
+        <td>NCL plot and code include zoomed image.</td>
+      </tr>
+    </tbody></table>
+  </td>
+</tr>
+
+
+  <!-- LP DAAC -->
+  <tr>
+  	<td class="center_aligned">
+        <a href="https://lpdaac.usgs.gov/" target="_blank">
+        <strong>LP DAAC</strong></a>
+  	</td>
+  	<td class="center_aligned">
+            <a href="http://hdfeos.org/zoo/index_openLPDAAC_Examples.php#MCD">MCD</a>
+            <a href="http://hdfeos.org/zoo/index_openLPDAAC_Examples.php#MOD">MOD</a>
+            <a href="http://hdfeos.org/zoo/index_openLPDAAC_Examples.php#MYD">MYD</a>
+            <a href="http://hdfeos.org/zoo/index_openLPDAAC_Examples.php#VIP">VIP</a>
+            <a href="http://hdfeos.org/zoo/index_openLPDAAC_Examples.php#WELD">WELD</a>
+            <a href="http://hdfeos.org/zoo/index_openLPDAAC_Examples.php#GED">GED</a>
+  	</td>
+  </tr>
+
+  <!-- LARC -->
+  <tr>
+  	<td class="center_aligned">
+        <a href="http://eosweb.larc.nasa.gov/" target="_blank">
+        <strong>LaRC</strong></a>
+  	</td>
+  	<td class="center_aligned">
+            <a href="http://hdfeos.org/zoo/index_openLaRC_Examples.php#CALIPSO">CALIPSO</a>
+            <a href="http://hdfeos.org/zoo/index_openLaRC_Examples.php#CERES">CERES</a>
+            <a href="http://hdfeos.org/zoo/index_openLaRC_Examples.php#MISR">MISR</a>
+            <a href="http://hdfeos.org/zoo/index_openLaRC_Examples.php#MOPITT">MOPITT</a>
+            <a href="http://hdfeos.org/zoo/index_openLaRC_Examples.php#TES">TES</a>
+  	</td>
+  </tr>
+
+  <!-- NSIDC -->
+  <tr>
+    <td class="center_aligned">
+    <a href="http://nsidc.org/" target="_blank"><strong>NSIDC</strong></a>
+  	</td>
+  	<td class="center_aligned">
+            <a href="http://hdfeos.org/zoo/index_openNSIDC_Examples.php#AMSR_E">AMSR_E</a>
+            <a href="http://hdfeos.org/zoo/index_openNSIDC_Examples.php#MODIS">MODIS</a>
+            <a href="http://hdfeos.org/zoo/index_openNSIDC_Examples.php#NISE">NISE</a>
+            <a href="http://hdfeos.org/zoo/index_openNSIDC_Examples.php#GLAS">ICESat/GLAS</a>
+  	</td>
+  </tr>
+
+  <!-- PO DAAC -->
+  <tr>
+    <td class="center_aligned">
+    <a href="http://podaac.jpl.nasa.gov/" target="_blank">
+    <strong>PO.DAAC</strong></a>
+  	</td>
+  	<td class="center_aligned">
+            <a href="http://hdfeos.org/zoo/index_openPODAAC_Examples.php#AVHRR">AVHRR</a>
+            <a href="http://hdfeos.org/zoo/index_openPODAAC_Examples.php#SeaWinds">SeaWinds</a>
+            <a href="http://hdfeos.org/zoo/index_openPODAAC_Examples.php#QuikSCAT">QuikSCAT</a>
+            <a href="http://hdfeos.org/zoo/index_openPODAAC_Examples.php#Aquarius">Aquarius</a>
+  	</td>
+  </tr>
+
+  <!-- OBPG -->
+  <tr>
+    <td class="center_aligned">
+    <a href="http://oceancolor.gsfc.nasa.gov/" target="_blank">
+    <strong>Ocean Biology Processing Group</strong></a>
+  	</td>
+  	<td class="center_aligned">
+            <a href="http://hdfeos.org/zoo/index_openOBPG_Examples.php#OCTS">OCTS</a>
+            <a href="http://hdfeos.org/zoo/index_openOBPG_Examples.php#SeaWiFS">SeaWiFS</a>
+            <a href="http://hdfeos.org/zoo/index_openOBPG_Examples.php#CZCS">CZCS</a>
+            <a href="http://hdfeos.org/zoo/index_openOBPG_Examples.php#MODISA">MODISA</a>
+            <a href="http://hdfeos.org/zoo/index_openOBPG_Examples.php#MODIST">MODIST</a>
+            <a href="http://hdfeos.org/zoo/index_openOBPG_Examples.php#VIIRS">VIIRS</a>
+    </td>
+  </tr>
+
+  <!-- GHRC -->
+  <tr>
+    <td class="center_aligned">
+    <a href="http://ghrc.nsstc.nasa.gov/" target="_blank">
+    <strong>GHRC</strong></a>
+  	</td>
+  	<td class="center_aligned">
+       <a href="http://hdfeos.org/zoo/index_openGHRC_Examples.php#LIS">LIS</a>
+  	</td>
+  </tr>
+<!-- ICESat 2 -->
+<tr>
+  <td class="center_aligned">
+    <strong><a href="http://icesat.gsfc.nasa.gov/icesat2/" target="_blank">ICESat-2</a></strong>
+  </td>
+  <td class="center_aligned">
+    <a href="http://hdfeos.org/zoo/index_openICESat2_Examples.php#MABEL">MABEL</a>
+  </td>
+</tr>
+      </tbody></table>
+    </td>
+  </tr>
+  <tr>
+    <td class="table_title" align="center">
+      <a class="referred_table" name="ref__bottom">
+        Table 1. Sample Data Files and Code Examples
+      </a>
+    </td>
+  </tr>
+</tbody></table>
+<p>
+  We also provide examples for other data centers that produce HDF4 files. 
+</p>
+<table class="xslt_table" style="margin-left: auto;margin-right: auto;">
+  <tbody><tr>
+    <td>
+      <a name="table2"></a>
+      <table class="table_content" border="1">
+        <tbody><tr>
+          <th class="center_aligned">Other Data Centers</th>
+          <th class="center_aligned">Product Examples using different tools</th>
+        </tr>
+        <!-- CloudSAT Data Processing Center -->
+        <tr>
+          <td class="center_aligned">
+              <strong><a href="http://www.cloudsat.cira.colostate.edu/" target="_blank">CloudSAT Data Processing Center</a></strong>
+          </td>
+          <td class="center_aligned">
+            <a href="http://hdfeos.org/zoo/index_openCDPC_Examples.php#CloudSAT">CloudSAT</a>
+          </td>
+        </tr>
+        <!-- JPL MASTER -->
+        <tr>
+          <td class="center_aligned">
+              <strong><a href="http://masterweb.jpl.nasa.gov/" target="_blank">MODIS/ASTER Airborne Simulator</a></strong>
+          </td>
+          <td class="center_aligned">
+            <a href="http://hdfeos.org/zoo/index_openMASTER_Examples.php#MASTER">MASTER</a>
+          </td>
+        </tr>
+        <!-- Ocean Productivity  -->
+        <tr>
+          <td class="center_aligned">
+              <strong><a href="http://www.science.oregonstate.edu/ocean.productivity/index.php" target="_blank">Ocean Productivity</a></strong>
+          </td>
+          <td class="center_aligned">
+            <a href="http://hdfeos.org/zoo/index_openOP_Examples.php#NPP">Net Primary Production</a>
+          </td>
+        </tr>
+
+
+      </tbody></table>
+    </td>
+  </tr>
+  <tr>
+    <td class="table_title" align="center">
+      <a class="referred_table" name="ref__bottom">
+        Table 3. Sample Data Files and Code Examples from Other Data Centers
+      </a>
+    </td>
+  </tr>
+</tbody></table>
+<p>
+  We also extracted and documented information for sample HDF-EOS2/HDF4 and
+  HDF-EOS5 files that are useful to determine the EOS contents stored in the
+  sample files. Please click
+  <a href="http://hdfeos.org/zoo/Data_Collection/index.php" target="_blank">here</a>
+  for HDF-EOS2/HDF4 and
+  <a href="http://hdfeos.org/zoo/Data_Collection/hdf5index.php" target="_blank">here</a>
+  for HDF-EOS5 to read comprehensive description and retrieve sample files.
+</p>
+<br><i><b style="color:gray; font-weight:300; font-size:80%; padding-left:0px;">Last modified: 09/30/2014</b></i><br>
+</div><!--end of content-->
+
+
+</div><!--end of wrapper-->
+
+
+<div id="footer"></div>
+<div id="bottom">
+
+	<a href="http://hdfeos.org/home/aboutus.php" target="">About Us</a> 
+	<a href="#">|</a> 
+	<a href="http://hdfeos.org/home/contact.php">Contact Info</a>
+	<a href="#">|</a> 
+	<a href="http://hdfeos.org/help/archive.php">Archive Info</a> 
+	<a href="#">|</a> 
+	<a href="http://hdfeos.org/home/disclaimer.php">Disclaimer</a> 
+	
+	<br>
+        <b style="color:gray; font-weight:300; font-size:80%; padding-left:0px;">
+ 
+         Sponsored by Subcontract number 114820 under Raytheon Contract 
+number NNG10HP02C, funded by NASA / Maintained by The HDF Group 
+        </b>
+<!-- revision:  -->
+	
+</div>
+
+
+
+
+ 
+
+
+		
+</body></html>

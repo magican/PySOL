@@ -1,0 +1,107 @@
+/* <![CDATA[ */
+
+	
+body {
+	background-color:white; 
+	font-family:"Times New Roman", Times, serif;
+	font-size:13px; 
+	color:black;
+	padding:0px; 
+	margin:0px; 
+}
+
+
+#content td {
+}
+
+h3 {
+	padding:0px; 
+	margin:0px; 
+	font-size:17px;
+	color:black;
+	font-weight:600;
+	text-transform:uppercase;
+}
+
+h4 {
+	padding:0px; 
+	margin:0px; 
+	font-size:17px;
+	color:black;
+	font-weight:600;
+	text-transform:uppercase;
+}
+
+
+#banner_sub img {
+display:none;
+
+}
+
+#banner {
+display:none;
+}
+
+#banner_sup {
+display:none;
+}
+
+
+
+#content {
+	float: left;
+	width: 550px; 
+	background-color:white;
+	min-height:300px; 
+	
+}
+	
+#content a:hover {
+}
+
+#content ul {
+}
+
+#content li {
+}
+
+#content2 {
+	float: left;
+	width: 850px; 
+	background-color:white;
+	min-height:300px; 
+}
+	
+#content2 a:hover {
+}
+
+#content2 ul {
+}
+
+#content2 li {
+}
+
+#mid {	
+display:none;
+}
+
+#side_bar_right	{
+display:none;
+}
+
+/* easy clearing */
+/* end easy clearing */
+#footer	{
+display:none;
+}
+
+
+
+
+
+#bottom {
+display:none;
+}
+
+
+
