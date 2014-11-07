@@ -20,7 +20,8 @@ __status__   = "Development"
 # http://williams.best.vwh.net/avform.htm
 #
 
-from math import sin,cos,atan,acos,asin,atan2,sqrt,pi, modf
+from math import sin,cos,atan,acos,asin,atan2,sqrt,pi,radians,degrees, modf
+from numpy import mod
 
 # At the equator / on another great circle???
 nauticalMilePerLat = 60.00721
@@ -61,11 +62,8 @@ def getDistanceLL(loc1, loc2):
    #   lat1,lon1 = DMSToDecimal(loc1[0]),DMSToDecimal(loc1[1])
    #if type(loc2[0]) == type(()):
    #   lat2,lon2 = DMSToDecimal(loc2[0]),DMSToDecimal(loc2[1])
-   # convert to radians
-   lon1 = lon1 * rad
-   lon2 = lon2 * rad
-   lat1 = lat1 * rad
-   lat2 = lat2 * rad
+   # convert decimal degrees to radians 
+   lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
    # haversine formula
    dlon = lon2 - lon1
    dlat = lat2 - lat1
@@ -73,6 +71,19 @@ def getDistanceLL(loc1, loc2):
    c = 2.0 * atan2(sqrt(a), sqrt(1.0-a))
    km = earthradius * c
    return km
+
+def bearing(loc1, loc2):
+   "Haversine formula - give coordinates as (lat_decimal,lon_decimal) tuples"
+   lat1, lon1 = loc1
+   lat2, lon2 = loc2
+   # earth's mean radius = 6,371km
+   earthradius = WGS84EarthRadius((lat1+lat2)/2)
+   lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
+   dlon = lon2 - lon1
+   dlat = lat2 - lat1
+   bearing = atan2(sin(dlon) * cos(lat2), cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(dlon))
+   bearing = mod(degrees(bearing) + 360, 360)
+   return bearing
 
 def getPixelResolution(lat, lon, shape, units="km"):
     """
@@ -86,8 +97,10 @@ def getPixelResolution(lat, lon, shape, units="km"):
        col = ([lat[0,0], lon[0,0]], [lat[0,-1], lon[0,-1]])
        row = ([lat[0,0], lon[0,0]], [lat[-1,0], lon[-1,0]])
 
-    PxResRow = getDistanceLL(col[0], col[1])/shape[1]
-    PxResCol = getDistanceLL(row[0], row[1])/shape[0]
+    PxResRow = getDistanceLL(col[0], col[1])
+    PxResCol = getDistanceLL(row[0], row[1])
+    PxResRow = PxResRow/shape[1]
+    PxResCol = PxResCol/shape[0]
 
     if units == "deg":
         PxResRow = min(getCoordinateDiffForDistance(lat[0], lon[0], PxResRow, units="km"))
