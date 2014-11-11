@@ -1,5 +1,7 @@
 CUDA/
 cmod/
+notebooks/**/.ipynb_checkpoints
+**checkpoint.ipynb
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
