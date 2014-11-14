@@ -20,8 +20,8 @@ __status__   = "Development"
 # http://williams.best.vwh.net/avform.htm
 #
 
-from math import sin,cos,atan,acos,asin,atan2,sqrt,pi,radians,degrees, modf
-from numpy import mod
+from math import sin,atan,acos,asin,atan2,sqrt,pi,radians,degrees, modf
+from numpy import mod, cos
 
 # At the equator / on another great circle???
 nauticalMilePerLat = 60.00721
@@ -146,9 +146,8 @@ def getCoordinateDiffForDistance(originlat, originlon, distance, units="km"):
       degreelength = degreeInMiles
    else:
       raise Exception("Units must be either 'km' or 'miles'!")
-
    lat = distance / degreelength
-   lon = distance / (cos(originlat * rad) * degreelength)
+   lon = min(distance / (cos(originlat * rad) * degreelength))
 
    return (lat, lon)
 
