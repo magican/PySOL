@@ -1,7 +1,7 @@
 import os, sys
 
 from osgeo import gdal, ogr, osr
-from numpy import asarray
+from numpy import asarray, ceil
 
 from pyproj import Proj
 
@@ -185,6 +185,58 @@ def reproject(shape_fname, proj='+units=m +ellps=WGS84 +lon_0=-45 +proj=stere +l
     inDataSet.Destroy()
     outDataSet.Destroy()
 
+def gshhs_rasterize_4326(lonlim=(1,31), latlim=(55,65), \
+                    pxRes=(0.1,0.1), lakes = True, \
+                    shapefile = '/media/SOLabNFS/store/auxdata/coastline/GSHHS_shp/f/GSHHS_f_L1.shp'):
+
+    # Get area extent
+    minlon,minlat,maxlon,maxlat=[min(lonlim),min(latlim),max(lonlim),max(latlim)]
+
+    maskvalue = 1
+
+    # Get the shape of the rasterized field
+    xres = float(pxRes[0])
+    yres = float(pxRes[1])
+    ncols = int( ceil( (maxlon-minlon)/xres ) )
+    nrows = int( ceil( (maxlat-minlat)/yres ) )
+
+    # set the geotransform
+    geotransform=(minlon,xres,0,maxlat,0, -yres)
+
+    # Open the shape file and read the layers
+    src_ds = ogr.Open(shapefile)
+    src_lyr=src_ds.GetLayer()
+
+    dst_ds = gdal.GetDriverByName('MEM').Create('', ncols, nrows, 1 ,gdal.GDT_Byte)
+    dst_rb = dst_ds.GetRasterBand(1)
+    dst_rb.Fill(0) #initialise raster with zeros
+    dst_rb.SetNoDataValue(0)
+    dst_ds.SetGeoTransform(geotransform)
+
+    err = gdal.RasterizeLayer(dst_ds, [maskvalue], src_lyr)
+    dst_ds.FlushCache()
+    
+    mask_arr=dst_ds.GetRasterBand(1).ReadAsArray()
+
+    # if lakes are also specified for masking
+    if lakes:
+        # Open the shape file and read the layers
+        shapefile_lakes =  shapefile[:-5] + "2.shp"
+        src_ds = ogr.Open(shapefile_lakes)
+        src_lyr=src_ds.GetLayer()
+
+        dst_ds = gdal.GetDriverByName('MEM').Create('', ncols, nrows, 1 ,gdal.GDT_Byte)
+        dst_rb = dst_ds.GetRasterBand(1)
+        dst_rb.Fill(0) #initialise raster with zeros
+        dst_rb.SetNoDataValue(0)
+        dst_ds.SetGeoTransform(geotransform)
+
+        err = gdal.RasterizeLayer(dst_ds, [maskvalue], src_lyr)
+        dst_ds.FlushCache()
+
+        mask_arr_lakes=dst_ds.GetRasterBand(1).ReadAsArray()
+
+    return (mask_arr & ~mask_arr_lakes)
 
     msg('output file: %s' % outputShapefile)
     return outputShapefile
