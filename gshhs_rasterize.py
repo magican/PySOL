@@ -1,6 +1,7 @@
 import os, sys
 
 from osgeo import gdal, ogr, osr
+from numpy import asarray
 
 from pyproj import Proj
 
