@@ -1,7 +1,7 @@
 import os, sys
 
 from osgeo import gdal, ogr, osr
-from numpy import asarray, ceil
+from numpy import asarray, floor
 
 from pyproj import Proj
 
@@ -25,15 +25,20 @@ def gshhs_rasterize(lonlim=(1,31), latlim=(55,65), units='deg', \
         left  = min(lonlim)
         right = max(lonlim)
 
-        left_ex1, up_ex1 = p(left, up)
-        right_ex1, up_ex2 = p(right, up)
-        left_ex2, down_ex1 = p(left, down)
-        right_ex2, down_ex2 = p(right, down)
-
-        area_extent = (min(left_ex1, left_ex2),
-                       min(up_ex1, up_ex2),
-                       max(right_ex1, right_ex2),
-                       max(down_ex1, down_ex2))
+        #~ left_ex1, up_ex1 = p(left, up)
+        #~ right_ex1, up_ex2 = p(right, up)
+        #~ left_ex2, down_ex1 = p(left, down)
+        #~ right_ex2, down_ex2 = p(right, down)
+        #~ 
+        #~ area_extent = (min(left_ex1, left_ex2),
+        #~ min(up_ex1, up_ex2),
+        #~ max(right_ex1, right_ex2),
+        #~ max(down_ex1, down_ex2))
+        
+        area_extent = (min(left_ex1, left_ex2, right_ex1, right_ex2),
+        min(up_ex1, up_ex2, down_ex1, down_ex2),
+        max(left_ex1, left_ex2, right_ex1, right_ex2),
+        max(up_ex1, up_ex2, down_ex1, down_ex2))
 
         minlon, minlat, maxlon, maxlat = area_extent
 
@@ -186,7 +191,7 @@ def reproject(shape_fname, proj='+units=m +ellps=WGS84 +lon_0=-45 +proj=stere +l
     outDataSet.Destroy()
 
 def gshhs_rasterize_4326(lonlim=(1,31), latlim=(55,65), \
-                    pxRes=(0.1,0.1), lakes = True, \
+                    pxRes=(0.1,0.1), arrShape=None, lakes = True, \
                     shapefile = '/media/SOLabNFS/store/auxdata/coastline/GSHHS_shp/f/GSHHS_f_L1.shp'):
 
     # Get area extent
@@ -197,8 +202,11 @@ def gshhs_rasterize_4326(lonlim=(1,31), latlim=(55,65), \
     # Get the shape of the rasterized field
     xres = float(pxRes[0])
     yres = float(pxRes[1])
-    ncols = int( ceil( (maxlon-minlon)/xres ) )
-    nrows = int( ceil( (maxlat-minlat)/yres ) )
+    if arrShape is None:
+        ncols = int( floor( (maxlon-minlon)/xres ) )
+        nrows = int( floor( (maxlat-minlat)/yres ) )
+    ncols = arrShape[1]
+    nrows = arrShape[0]
 
     # set the geotransform
     geotransform=(minlon,xres,0,maxlat,0, -yres)
