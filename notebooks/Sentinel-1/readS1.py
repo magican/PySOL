@@ -214,72 +214,134 @@ def swath_area_def(name='Temporal SWATH EPSG Projection 4326', proj='eqc', lonli
     lat_ts (latitude of true scale)
     lat_0,lon_0 is central point
     EXAMPLE:
-    
+
     epsg3426 is the default one
     for epsg3413:
     swath_area_def(name='Temporal SWATH EPSG Projection 3413', proj='stere', lonlim=(-180,180), latlim=(30,90), ellps="WGS84", res=111.2e3, lat_ts=70, lat_0=90, lon_0=-45)
-        
+
     """
+
+    up    = max(latlim)
+    down  = min(latlim)
+    left  = min(lonlim)
+    right = max(lonlim)
+    
+    print 'up, down, left, right: ', up, down, left, right
 
     area_id = name.replace(" ", "_").lower()
     proj_id = area_id
 
-    up    = min(latlim)
-    down  = max(latlim)
-    left  = min(lonlim)
-    right = max(lonlim)
-    
     if proj == 'eqc':
         p = Proj(proj=proj, llcrnrlat=up, urcrnrlat=down, llcrnrlon=left, urcrnrlon=right, ellps=ellps)
-        proj4_args = '+proj=' + str(proj) + ' ' +              '+llcrnrlat=' + str(up) + ' ' +              '+urcrnrlat=' + str(down) + ' ' +              '+llcrnrlon=' + str(left) + ' ' +              '+urcrnrlon=' + str(right) + ' ' +              '+ellps=' + str(ellps)
+        proj4_args = '+proj=' + str(proj) + ' ' + \
+             '+llcrnrlat=' + str(up) + ' ' + \
+             '+urcrnrlat=' + str(down) + ' ' + \
+             '+llcrnrlon=' + str(left) + ' ' + \
+             '+urcrnrlon=' + str(right) + ' ' + \
+             '+ellps=' + str(ellps)
     elif lat_ts!=None and lat_0!=None:
         # lat_ts is latitude of true scale.
         # lon_0,lat_0 is central point.
         p = Proj(proj=proj, lat_0=lat_0, lon_0=lon_0, lat_ts=lat_ts, ellps=ellps)
-        proj4_args = '+proj=' + str(proj) + ' ' +              '+lat_0=' + str(lat_0) + ' ' +              '+lon_0=' + str(lon_0) + ' ' +              '+lat_ts=' + str(lat_ts) + ' ' +              '+ellps=' + str(ellps)
+        proj4_args = '+proj=' + str(proj) + ' ' + \
+             '+lat_0=' + str(lat_0) + ' ' + \
+             '+lon_0=' + str(lon_0) + ' ' + \
+             '+lat_ts=' + str(lat_ts) + ' ' + \
+             '+ellps=' + str(ellps)
     elif lon_0!=None and lat_0!=None and lat_ts==None:
         # lon_0,lat_0 is central point.
         p = Proj(proj=proj, lat_0=lat_0, lon_0=lon_0, ellps=ellps)
-        proj4_args = '+proj=' + str(proj) + ' ' +              '+lat_0=' + str(lat_0) + ' ' +              '+lon_0=' + str(lon_0) + ' ' +              '+ellps=' + str(ellps)
+        proj4_args = '+proj=' + str(proj) + ' ' + \
+             '+lat_0=' + str(lat_0) + ' ' + \
+             '+lon_0=' + str(lon_0) + ' ' + \
+             '+ellps=' + str(ellps)
     elif lon_0==None and lat_0==None and lat_ts==None:
         # lon_0,lat_0 is central point.
-        lat_0 = (min(latlim) + max(latlim)) / 2
-        lon_0 = (min(lonlim) + max(lonlim)) / 2
+        lat_0 = (up + down) / 2
+        lon_0 = (right + left) / 2
         p = Proj(proj=proj, lat_0=lat_0, lon_0=lon_0, ellps=ellps)
-        proj4_args = '+proj=' + str(proj) + ' ' +              '+lat_0=' + str(lat_0) + ' ' +              '+lon_0=' + str(lon_0) + ' ' +              '+ellps=' + str(ellps)
+        proj4_args = '+proj=' + str(proj) + ' ' + \
+             '+lat_0=' + str(lat_0) + ' ' + \
+             '+lon_0=' + str(lon_0) + ' ' + \
+             '+ellps=' + str(ellps)
 
-    # area_extent defined as (x_min, y_min, x_max, y_max)
     left_ex1, up_ex1 = p(left, up)
     right_ex1, up_ex2 = p(right, up)
     left_ex2, down_ex1 = p(left, down)
     right_ex2, down_ex2 = p(right, down)
 
-    area_extent = (min(left_ex1, left_ex2),
-                   min(up_ex1, up_ex2),
-                   max(right_ex1, right_ex2),
-                   max(down_ex1, down_ex2))
-
-    # минимум из всех координат X, Y, максимум из всех координат X, Y
-    # Такой результат даёт правильный area_extent для 3413
-    # При этом для 4326 area_extent остаётся неизменным
-    # area_def_3413 = swath_area_def(name='Temporal SWATH EPSG Projection 3413', proj='stere', \
-    #                                lonlim=(-180,180), latlim=(30,90), ellps="WGS84", res=1500, \
-    #                                lat_ts=70, lat_0=90, lon_0=-45)
-    # Area extent: (-5050747.263141337, 0.0, 0.0, 5050747.263141336)
-    area_extent = (min(left_ex1, left_ex2, right_ex1, right_ex2),
-                   min(up_ex1, up_ex2, down_ex1, down_ex2),
-                   max(left_ex1, left_ex2, right_ex1, right_ex2),
-                   max(up_ex1, up_ex2, down_ex1, down_ex2))
+    if proj == 'stere':
+        lon = (left+right)/2.0
+        if (lon >=0 and lon <90) or (lon >=-360 and lon < -270):
+            print 11111111111
+            area_extent = (
+                           min(left_ex1, left_ex2, right_ex1, right_ex2),
+                           min(down_ex1, down_ex2, up_ex1, up_ex2),
+                           max(left_ex1, left_ex2, right_ex1, right_ex2),
+                           max(down_ex1, down_ex2, up_ex1, up_ex2)
+                          )
+        elif (lon >=90 and lon <180) or (lon >=-270 and lon < -180):
+            print 2222222222222
+            area_extent = (
+#                        min(left_ex1, left_ex2, right_ex1, right_ex2),
+#                        min(down_ex1, down_ex2, up_ex1, up_ex2),
+#                        max(left_ex1, left_ex2, right_ex1, right_ex2),
+#                        max(down_ex1, down_ex2, up_ex1, up_ex2)
+                       max(left_ex1, left_ex2, right_ex1, right_ex2),
+                       max(down_ex1, down_ex2, up_ex1, up_ex2),
+                       min(left_ex1, left_ex2, right_ex1, right_ex2),
+                       min(down_ex1, down_ex2, up_ex1, up_ex2)
+                       )
+        elif (lon >= 180 and lon < 270) or (lon >= -180 and lon < -90):
+            print 333333333333
+            area_extent = (
+                       min(left_ex1, left_ex2, right_ex1, right_ex2),
+                       min(down_ex1, down_ex2, up_ex1, up_ex2),
+                       max(left_ex1, left_ex2, right_ex1, right_ex2),
+                       max(down_ex1, down_ex2, up_ex1, up_ex2)
+#                        min(left_ex1, left_ex2),
+#                        min(up_ex1, up_ex2),
+#                        max(right_ex1, right_ex2),
+#                        max(down_ex1, down_ex2)
+                      )
+        else:
+            print 44444444444444444
+            area_extent = (
+                       min(left_ex1, left_ex2, right_ex1, right_ex2),
+                       min(down_ex1, down_ex2, up_ex1, up_ex2),
+                       max(left_ex1, left_ex2, right_ex1, right_ex2),
+                       max(down_ex1, down_ex2, up_ex1, up_ex2)
+                      )
+    else:
+        # минимум из всех координат X, Y, максимум из всех координат X, Y
+        # Такой результат даёт правильный area_extent для 3413
+        # При этом для 4326 area_extent остаётся неизменным
+        # area_def_3413 = swath_area_def(name='Temporal SWATH EPSG Projection 3413', proj='stere', \
+        #                                lonlim=(-180,180), latlim=(30,90), ellps="WGS84", res=1500, \
+        #                                lat_ts=70, lat_0=90, lon_0=-45)
+        # Area extent: (-5050747.263141337, 0.0, 0.0, 5050747.263141336)
+        area_extent = (
+                min(left_ex1, left_ex2, right_ex1, right_ex2),
+		        min(up_ex1, up_ex2, down_ex1, down_ex2),
+	        	max(left_ex1, left_ex2, right_ex1, right_ex2),
+		        max(up_ex1, up_ex2, down_ex1, down_ex2)
+		      ) 
+    
+    print 'left: ', left_ex1, left_ex2
+    print 'right: ', right_ex1, right_ex2
+    print 'up: ', up_ex1, up_ex2
+    print 'down: ', down_ex1, down_ex2
 
 #     Using abs() to avoid negative numbers of coloumns/rows as for epsg3413 for example
-    xsize = abs(int((area_extent[2] - area_extent[0]) / res[0]))
-    ysize = abs(int((area_extent[3] - area_extent[1]) / res[1]))
-
+    xsize = abs(int((area_extent[2] - area_extent[0]) / res))
+    ysize = abs(int((area_extent[3] - area_extent[1]) / res))
+    
     swath_area_def = pr.utils.get_area_def(area_id, name, proj_id, proj4_args, xsize, ysize, area_extent)
 
 #     print swath_area_def
 
     return swath_area_def
+
 
 
 
@@ -635,7 +697,14 @@ class readS1:
                 noiseLut_2[p] = RectBivariateSpline(nLUTs['line'][:,0], nLUTs['pixel'][0,:], nLUTs['noiseLut'], kx=2, ky=2)(line_2, pixel_2)
 
                 # Apply Calibration, remove the thermal noise estimation and Convert to Intensity
-                sigma0[p] = ( double(raw_counts[p])**2 - noiseLut_2[p] )/sigmaNought_2[p]**2
+                # for VH, HV - multiply S1 noiseLUTs by nLtCoeff=1e10
+                # for VV, HH - multiply S1 noiseLUTs by nLtCoeff=sqrt(2)*1e10
+                if p=='vv' or p=='hh':
+                    nLtCoeff=sqrt(2)*1e10
+                elif p=='vh' or p=='hv':
+                    nLtCoeff=1e10
+
+                sigma0[p] = ( double(raw_counts[p])**2 - noiseLut_2[p]*nLtCoeff )/sigmaNought_2[p]**2
 
         elif len(polarization[0])==1: # if only 1 polarization
             p = polarization
@@ -684,7 +753,11 @@ class readS1:
             noiseLut_2[p] = RectBivariateSpline(nLUTs['line'][:,0], nLUTs['pixel'][0,:], nLUTs['noiseLut'], kx=2, ky=2)(line_2, pixel_2)
 
             # Apply Calibration, remove the thermal noise estimation and Convert to Intensity
-            sigma0[p] = ( double(raw_counts[p])**2 - noiseLut_2[p] )/sigmaNought_2[p]**2
+            # for VV, HH - multiply S1 noiseLUTs by nLtCoeff=sqrt(2)*1e10
+            if p=='vv' or p=='hh':
+                nLtCoeff=sqrt(2)*1e10
+
+            sigma0[p] = ( double(raw_counts[p])**2 - noiseLut_2[p]*nLtCoeff )/sigmaNought_2[p]**2
 
 
         #~ Putting others vars to self
