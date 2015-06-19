@@ -20,26 +20,24 @@ def gshhs_rasterize(lonlim=(1,31), latlim=(55,65), units='deg', \
     if units != 'deg':
         p = Proj(proj)
 
-        up    = min(latlim)
-        down  = max(latlim)
-        left  = min(lonlim)
-        right = max(lonlim)
+		up    = max(latlim)
+		down  = min(latlim)
+		left  = min(lonlim)
+		right = max(lonlim)
 
-        #~ left_ex1, up_ex1 = p(left, up)
-        #~ right_ex1, up_ex2 = p(right, up)
-        #~ left_ex2, down_ex1 = p(left, down)
-        #~ right_ex2, down_ex2 = p(right, down)
-        #~ 
-        #~ area_extent = (min(left_ex1, left_ex2),
-        #~ min(up_ex1, up_ex2),
-        #~ max(right_ex1, right_ex2),
-        #~ max(down_ex1, down_ex2))
-        
-        area_extent = (min(left_ex1, left_ex2, right_ex1, right_ex2),
-        min(up_ex1, up_ex2, down_ex1, down_ex2),
-        max(left_ex1, left_ex2, right_ex1, right_ex2),
-        max(up_ex1, up_ex2, down_ex1, down_ex2))
-
+        # минимум из всех координат X, Y, максимум из всех координат X, Y
+        # Такой результат даёт правильный area_extent для 3413
+        # При этом для 4326 area_extent остаётся неизменным
+        # area_def_3413 = swath_area_def(name='Temporal SWATH EPSG Projection 3413', proj='stere', \
+        #                                lonlim=(-180,180), latlim=(30,90), ellps="WGS84", res=1500, \
+        #                                lat_ts=70, lat_0=90, lon_0=-45)
+        # Area extent: (-5050747.263141337, 0.0, 0.0, 5050747.263141336)
+        area_extent = (
+                min(left_ex1, left_ex2, right_ex1, right_ex2),
+		        min(up_ex1, up_ex2, down_ex1, down_ex2),
+	        	max(left_ex1, left_ex2, right_ex1, right_ex2),
+		        max(up_ex1, up_ex2, down_ex1, down_ex2)
+		      ) 
         minlon, minlat, maxlon, maxlat = area_extent
 
         lonlim = (minlon, maxlon)
