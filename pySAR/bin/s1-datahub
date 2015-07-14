@@ -1,0 +1,339 @@
+#!/usr/bin/env python
+# coding=utf-8
+"""
+"""
+
+
+import argparse
+import urllib2
+import xml.etree.ElementTree as ET
+from datetime import datetime
+from zipfile import ZipFile
+import os
+
+
+ROOT = 'https://scihub.esa.int/dhus'
+XML_NS = {'opensearch': 'http://a9.com/-/spec/opensearch/1.1/',
+          'default': 'http://www.w3.org/2005/Atom'}
+
+
+def set_new_opener(uri, username, password):
+    """
+    """
+    passwordmgr = urllib2.HTTPPasswordMgrWithDefaultRealm()
+    passwordmgr.add_password(None, uri, username, password)
+    authhandler = urllib2.HTTPBasicAuthHandler(passwordmgr)
+    opener = urllib2.build_opener(authhandler)
+    urllib2.install_opener(opener)
+
+
+def set_query(args):
+    """
+    """
+    qlists = []
+    if args.query_product is not None:
+        qlists.append(map(lambda x: 'productType:'+x,
+                          args.query_product))
+    if args.query_mode is not None:
+        qlists.append(map(lambda x: 'sensorOperationalMode:'+x,
+                          args.query_mode))
+    if args.query_swath is not None:
+        qlists.append(map(lambda x: 'swathIdentifier:'+x,
+                          args.query_swath))
+    if args.query_polarisation is not None:
+        qlists.append(map(lambda x: 'polarisationMode:"'+x+'"',
+                          args.query_polarisation))
+    if args.query_pass is not None:
+        qlists.append(map(lambda x: 'orbitDirection:'+x,
+                          args.query_pass))
+    if args.query_orbit is not None:
+        fmt = 'orbitNumber:[{0} TO {1}]'
+        qlists.append(map(lambda x: fmt.format(*(x.split(','))),
+                          args.query_orbit))
+    if args.query_sensing_period is not None:
+        fmt = '(beginPosition:[{0} TO {1}] AND endPosition:[{0} TO {1}])'
+        qlists.append(map(lambda x: fmt.format(*(x.split(','))),
+                          args.query_sensing_period))
+    if args.query_ingestion_period is not None:
+        fmt = 'ingestionDate:[{0} TO {1}]'
+        qlists.append(map(lambda x: fmt.format(*(x.split(','))),
+                          args.query_ingestion_period))
+    if args.query_polygon is not None:
+        fmt = 'footprint:"Intersects(POLYGON(({})))"'
+        qlist = []
+        for poly in args.query_polygon:
+            coords = poly[1:-1].split(',')
+            pairs = ['{0} {1}'.format(i, j) for i, j in zip(coords[::2],
+                                                            coords[1::2])]
+            qlist.append(fmt.format(','.join(pairs)))
+        qlists.append(qlist)
+    if args.query_bounding_box is not None:
+        fmt = 'footprint:"Intersects(POLYGON(({0} {1},{2} {1},{2} {3},'\
+              '{0} {3},{0} {1})))"'
+        qlists.append(map(lambda x: fmt.format(*(x[1:-1].split(','))),
+                          args.query_bounding_box))
+    if args.query_point is not None:
+        fmt = 'footprint:"Intersects({1}, {0})"'
+        qlists.append(map(lambda x: fmt.format(*(x[1:-1].split(','))),
+                          args.query_point))
+    if args.query_filename is not None:
+        qlists.append(map(lambda x: 'filename:'+x,
+                          args.query_filename))
+    if args.query_text is not None:
+        qlists.append(args.query_text)
+    if args.query_text_file is not None:
+        with open(args.query_text_file) as f:
+            qlists.append([line.rstrip('\n') for line in f])
+    if len(qlists) == 0:
+        query = '*'
+    else:
+        queries = []
+        for qlist in qlists:
+            if len(qlist) == 1:
+                queries.extend(qlist)
+            else:
+                queries.append('(' + ' OR '.join(qlist) + ')')
+        query = ' AND '.join(queries)
+    return query
+
+
+def parse_entry(elem):
+    """
+    """
+    entry = {}
+    entry['title'] = elem.find('default:title', XML_NS).text
+    for elemlnk in elem.findall('default:link', XML_NS):
+        lnkname = 'link'
+        if 'rel' in elemlnk.attrib:
+            lnkname += '_' + elemlnk.attrib['rel']
+        entry[lnkname] = elemlnk.attrib['href']
+    entry['id'] = elem.find('default:id', XML_NS).text
+    entry['summary'] = elem.find('default:summary', XML_NS).text
+    for elemstr in elem.findall('default:str', XML_NS):
+        entry[elemstr.attrib['name']] = elemstr.text
+    for elemint in elem.findall('default:int', XML_NS):
+        entry[elemint.attrib['name']] = int(elemint.text)
+    for elemdate in elem.findall('default:date', XML_NS):
+        try:
+            dtime = datetime.strptime(elemdate.text, '%Y-%m-%dT%H:%M:%S.%fZ')
+        except:
+            dtime = datetime.strptime(elemdate.text, '%Y-%m-%dT%H:%M:%SZ')
+        entry[elemdate.attrib['name']] = dtime
+    for elembool in elem.findall('default:bool', XML_NS):
+        entry[elembool.attrib['name']] = elembool.text == 'true'
+    return entry
+
+
+def get_size_entry(entry):
+    """
+    """
+    size, unit = entry['size'].split(' ')
+    size = float(size)
+    if unit == 'GB':
+        pass
+    elif unit == 'MB':
+        size /= 1024.
+    elif unit == 'KB':
+        size /= 1024. ** 2
+    else:
+        raise Exception('Unknown size unit.')
+    return size
+
+
+if __name__ == "__main__":
+    """
+    """
+    description = 'List/Download SAFE products from Sentinel-1 Data Hub. '\
+                  'Download is done only if -d or -de is set. '\
+                  'Query options (-q*) are joined with an AND. '\
+                  'Multiple choices inside a query option are joined with an OR.'
+    parser = argparse.ArgumentParser(description=description)
+    parser.add_argument('-u', '--username',
+                        required=True,
+                        help='S1 Data Hub username (required).')
+    parser.add_argument('-p', '--password',
+                        required=True,
+                        help='S1 Data Hub password (required).')
+    parser.add_argument('-o', '--output',
+                        help='Output directory (required if -d or -de).')
+    parser.add_argument('-d', '--download',
+                        action='store_true',
+                        help='Download zipped SAFE products.')
+    parser.add_argument('-de', '--download-and-extract',
+                        action='store_true',
+                        help='Download zipped SAFE products, '\
+                        'extract all from them and remove them.')
+    parser.add_argument('-qprod', '--query-product',
+                        choices=['RAW', 'SLC', 'GRD'],
+                        nargs='*',
+                        default=None,
+                        help='Product type(s) for query.')
+    parser.add_argument('-qmode', '--query-mode',
+                        choices=['SM', 'IW', 'EW'],
+                        nargs='*',
+                        default=None,
+                        help='Mode(s) for query.')
+    parser.add_argument('-qswath', '--query-swath',
+                        choices=['S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'IW',
+                                 'IW1', 'IW2', 'IW3', 'EW', 'EW1', 'EW2',
+                                 'EW3', 'EW4', 'EW5'],
+                        nargs='*',
+                        default=None,
+                        help='Swath identifier(s) for query.')
+    parser.add_argument('-qpol', '--query-polarisation',
+                        choices=['HH', 'VV', 'HV', 'VH', 'HH+HV', 'VV+VH'],
+                        nargs='*',
+                        default=None,
+                        help='Polarisation(s) for query.')
+    parser.add_argument('-qpass', '--query-pass',
+                        choices=['ASCENDING', 'DESCENDING'],
+                        nargs='*',
+                        default=None,
+                        help='Pass(es) for query.')
+    parser.add_argument('-qorbit', '--query-orbit',
+                        nargs='*',
+                        default=None,
+                        help='Orbit number range(s) for query. Format is '\
+                        '<from>,<to> where <from>/<to> can be : * or '\
+                        '<n>.')
+    parser.add_argument('-qsperiod', '--query-sensing-period',
+                        nargs='*',
+                        default=None,
+                        help='Sensing period(s) for query. Format is '\
+                        '<from>,<to> where <from>/<to> can be : * or '\
+                        'yyyy-MM-ddThh:mm:ss.SSSZ or NOW or NOW-<n>MINUTE(S) or '\
+                        'NOW-<n>HOUR(S) or NOW-<n>DAY(S) or NOW-<n>MONTH(S).')
+    parser.add_argument('-qiperiod', '--query-ingestion-period',
+                        nargs='*',
+                        default=None,
+                        help='Ingestion period(s) for query. Format is '\
+                        '<from>,<to> where <from>/<to> can be : * or '\
+                        'yyyy-MM-ddThh:mm:ss.SSSZ or NOW or NOW-<n>MINUTE(S) or '\
+                        'NOW-<n>HOUR(S) or NOW-<n>DAY(S) or NOW-<n>MONTH(S).')
+    parser.add_argument('-qpoly', '--query-polygon',
+                        nargs='*',
+                        default=None,
+                        help='Polygon(s) for query. Format is '\
+                        '[lon_1,lat_1,...,lon_n,lat_n,lon_1,lat_1].')
+    parser.add_argument('-qbbox', '--query-bounding-box',
+                        nargs='*',
+                        default=None,
+                        help='Bounding box(es) for query. Format is '\
+                        '[lonmin,latmin,lonmax,latmax].')
+    parser.add_argument('-qpoint', '--query-point',
+                        nargs='*',
+                        default=None,
+                        help='Point(s) for query. Format is [lon,lat].')
+    parser.add_argument('-qfname', '--query-filename',
+                        nargs='*',
+                        default=None,
+                        help='SAFE filename(s) for query. Wildcards * or ? '\
+                        'can be used.')
+    parser.add_argument('-qtext', '--query-text',
+                        nargs='*',
+                        default=None,
+                        help='Text(s) for query. Can be copied/pasted from '\
+                        'S1 Data Hub search interface (use \'\' around text).')
+    parser.add_argument('-qtextfile', '--query-text-file',
+                        default=None,
+                        help='Same as -qtext/--query-text but stored in a '\
+                        'text file.')
+    args = parser.parse_args()
+    if args.output is None and (args.download or args.download_and_extract):
+        raise Exception('-o/--output is required for download.')
+    if args.query_polygon is not None:
+        for poly in args.query_polygon:
+            if poly[0] != '[' or poly[-1] != ']':
+                raise Exception('-qpoly/--query-polygon format is '\
+                                '[lon_1,lat_1,...,lon_n,lat_n,lon_1,lat_1].')
+    if args.query_bounding_box is not None:
+        for bbox in args.query_bounding_box:
+            if bbox[0] != '[' or bbox[-1] != ']':
+                raise Exception('-qbbox/--query-bounding-box format is '\
+                                '[lonmin,latmin,lonmax,latmax].')
+    if args.query_point is not None:
+        for point in args.query_point:
+            if point[0] != '[' or point[-1] != ']':
+                raise Exception('-qpoint/--query-point format is [lon,lat].')
+
+    # Set query
+    query = set_query(args)
+
+    # Set a new opener for authentification
+    set_new_opener(ROOT, args.username, args.password)
+
+    # Search and list/download products
+    rows = 10
+    start = 0
+    stop = 100
+    counts = {}
+    while start < stop:
+
+        url = '{}/search?q={}&rows={}&start={}'.format(ROOT, query, rows, start)
+        urlq = urllib2.quote(url, safe='/:?=&*')
+        urlfile = urllib2.urlopen(urlq)
+        tree = ET.parse(urlfile)
+        urlfile.close()
+
+        root = tree.getroot()
+        print ''
+        print root.find('default:title', XML_NS).text
+        print root.find('default:subtitle', XML_NS).text
+
+        start += rows
+        stop = int(root.find('opensearch:totalResults', XML_NS).text)
+
+        elems = root.findall('default:entry', XML_NS)
+        for elem in elems:
+
+            entry = parse_entry(elem)
+            print ''
+            print entry['title']
+            print entry['summary']
+            prod = entry['filename'][0:14]
+            size = get_size_entry(entry)
+            if prod not in counts:
+                counts[prod] = {}
+                counts[prod]['size'] = size
+                counts[prod]['number'] = 1
+            else:
+                counts[prod]['size'] += size
+                counts[prod]['number'] += 1
+
+            if args.download or args.download_and_extract:
+
+                dirpath = args.output
+                safepath = os.path.join(dirpath, entry['filename'])
+                if os.path.exists(safepath):
+                    print 'Skip it : {} already exists'.format(safepath)
+                    continue
+                zippath = safepath + '.zip'
+                if os.path.exists(zippath):
+                    print 'Skip it : {} already exists'.format(zippath)
+                    continue
+
+                if not os.path.exists(dirpath):
+                    os.makedirs(dirpath)
+                print 'Downloading to {}'.format(zippath)
+                lnkfile = urllib2.urlopen(entry['link'])
+                with open(zippath, 'w') as f:
+                    f.write(lnkfile.read())
+                lnkfile.close()
+
+                if args.download_and_extract:
+                    print 'Extracting to {}'.format(dirpath)
+                    with ZipFile(zippath, 'r') as f:
+                        f.extractall(dirpath)
+                    print 'Removing {}'.format(zippath)
+                    os.remove(zippath)
+
+    print ''
+    total_size = 0.
+    prods = counts.keys()
+    prods.sort()
+    for prod in prods:
+        print '{} ({}): {:.3f} GB'.format(prod, counts[prod]['number'],
+                                          counts[prod]['size'])
+        total_size += counts[prod]['size']
+    print 'Total size : {:.3f} GB'.format(total_size)
+

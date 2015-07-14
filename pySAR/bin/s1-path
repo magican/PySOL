@@ -1,0 +1,73 @@
+#!/usr/bin/env python
+# coding=utf-8
+"""
+"""
+
+
+import argparse
+from datetime import datetime
+import sar.utils.datapath.s1path as s1path
+
+
+def arg2datetime(arg):
+    """
+    """
+    return datetime.strptime(arg, '%Y%m%dT%H%M%S')
+
+
+if __name__ == "__main__":
+    """
+    """
+    descr = 'Output Sentinel-1 data paths.'
+    parser = argparse.ArgumentParser(description=descr)
+    parser.add_argument('-r', '--root', default=s1path.DEFAULTROOT,
+                        help='root directory (default={})'.format(s1path.DEFAULTROOT))
+    parser.add_argument('-s', '--safename', nargs='*', default=None,
+                        help='SAFE name')
+    parser.add_argument('-mi', '--mission', nargs='*', default=None,
+                        choices=s1path.MISSION,
+                        help='mission identifier')
+    parser.add_argument('-pr', '--product', nargs='*', default=['SLC', 'GRD'],
+                        choices=s1path.PRODUCT,
+                        help='product type (default=[SLC,GRD])')
+    parser.add_argument('-mo', '--mode', nargs='*', default=None,
+                        choices=s1path.MODE,
+                        help='mode/beam identifier')
+    parser.add_argument('-re', '--resolution', nargs='*', default=None,
+                        choices=s1path.RESOLUTION,
+                        help='resolution class')
+    parser.add_argument('-cl', '--class', nargs='*', default=['S'],
+                        choices=s1path.PCLASS, dest='pclass',
+                        help='product class (default=[S])')
+    parser.add_argument('-po', '--polarisation', nargs='*', default=None,
+                        choices=s1path.POLARISATION,
+                        help='polarisation')
+    parser.add_argument('-o0', '--orbit_start', default=None, type=int,
+                        help='orbit start')
+    parser.add_argument('-o1', '--orbit_stop', default=None, type=int,
+                        help='orbit stop')
+    parser.add_argument('-d0', '--date_start', default=None, type=arg2datetime,
+                        help='date start')
+    parser.add_argument('-d1', '--date_stop', default=None, type=arg2datetime,
+                        help='date stop')
+    parser.add_argument('-bb', '--bounding_box', nargs=4, default=None,
+                        type=float,
+                        metavar=('LONMIN', 'LATMIN', 'LONMAX', 'LATMAX'),
+                        help='bounding box')
+    parser.add_argument('-bp', '--bounding_polygon', nargs='*', default=None,
+                        type=float,
+                        # metavar=('LON1', 'LAT1', 'LON2', 'LAT2', '...',
+                        #          'LONn', 'LATn', 'LON1', 'LAT1'),
+                        help='bounding polygon (LON1, LAT1, LON2, LAT2, ..., '
+                        'LONn, LATn, LON1, LAT1)')
+    parser.add_argument('--onlysafe', action='store_true', default=False,
+                        help='output SAFE paths instead of TIFF paths')
+
+    args = parser.parse_args()
+    if args.bounding_polygon is not None:
+        args.bounding_polygon = zip(args.bounding_polygon[0::2],
+                                    args.bounding_polygon[1::2])
+    kwargs = vars(args)
+    paths = s1path.s1path(**kwargs)
+    for path in paths:
+        print path

@@ -1,0 +1,46 @@
+#!/usr/bin/env python
+# coding=utf-8
+"""
+"""
+
+
+import argparse
+from sar.processing.make_sarxspec import make_sarxspec
+
+
+TYPES = ['netcdf', 'plot']
+
+
+if __name__ == "__main__":
+    """
+    """
+    descr = 'Compute SAR cross-spectra and make a netcdf file and/or plot(s).'
+    parser = argparse.ArgumentParser(description=descr)
+    parser.add_argument('-i', '--input', required=True, nargs='*',
+                        help='input SAR filename(s)')
+    parser.add_argument('-o', '--output', required=True,
+                        help='output directory name')
+    parser.add_argument('-t', '--type', required=True, choices=TYPES, nargs='*',
+                        help='output type')
+    parser.add_argument('-anl', '--azimuth-nlooks',
+                        type=int, default=3,
+                        help='azimuth number of looks (default is 3).')
+    parser.add_argument('-alw', '--azimuth-look-width',
+                        type=float, default=0.25,
+                        help='azimuth look width (default is 0.25).')
+    parser.add_argument('-als', '--azimuth-look-separation',
+                        type=float, default=0.27,
+                        help='azimuth look separation (default is 0.27).')
+    parser.add_argument('-rlw', '--range-look-width',
+                        type=float, default=0.78,
+                        help='range look width (default is 0.78).')
+
+    args = parser.parse_args()
+    kwargs = {}
+    kwargs['nlooks'] = args.azimuth_nlooks
+    kwargs['azi_look_width'] = args.azimuth_look_width
+    kwargs['look_sep'] = args.azimuth_look_separation
+    kwargs['ran_look_width'] = args.range_look_width
+    for inp in args.input:
+        print inp
+        make_sarxspec(inp, args.output, args.type, **kwargs)
