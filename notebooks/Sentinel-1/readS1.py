@@ -226,7 +226,7 @@ def swath_area_def(name='Temporal SWATH EPSG Projection 4326', proj='eqc', lonli
     left  = min(lonlim)
     right = max(lonlim)
     
-    print 'up, down, left, right: ', up, down, left, right
+    print 'up, down, left, right: ', round(up), round(down), round(left), round(right)
 
     area_id = name.replace(" ", "_").lower()
     proj_id = area_id
@@ -279,39 +279,31 @@ def swath_area_def(name='Temporal SWATH EPSG Projection 4326', proj='eqc', lonli
                            min(down_ex1, down_ex2, up_ex1, up_ex2),
                            max(left_ex1, left_ex2, right_ex1, right_ex2),
                            max(down_ex1, down_ex2, up_ex1, up_ex2)
-                          )
+                        )
         elif (lon >=90 and lon <180) or (lon >=-270 and lon < -180):
             print 2222222222222
             area_extent = (
-#                        min(left_ex1, left_ex2, right_ex1, right_ex2),
-#                        min(down_ex1, down_ex2, up_ex1, up_ex2),
-#                        max(left_ex1, left_ex2, right_ex1, right_ex2),
-#                        max(down_ex1, down_ex2, up_ex1, up_ex2)
-                       max(left_ex1, left_ex2, right_ex1, right_ex2),
-                       max(down_ex1, down_ex2, up_ex1, up_ex2),
-                       min(left_ex1, left_ex2, right_ex1, right_ex2),
-                       min(down_ex1, down_ex2, up_ex1, up_ex2)
-                       )
+                           max(left_ex1, left_ex2, right_ex1, right_ex2),
+                           max(down_ex1, down_ex2, up_ex1, up_ex2),
+                           min(left_ex1, left_ex2, right_ex1, right_ex2),
+                           min(down_ex1, down_ex2, up_ex1, up_ex2)
+                        )
         elif (lon >= 180 and lon < 270) or (lon >= -180 and lon < -90):
             print 333333333333
             area_extent = (
-                       min(left_ex1, left_ex2, right_ex1, right_ex2),
-                       min(down_ex1, down_ex2, up_ex1, up_ex2),
-                       max(left_ex1, left_ex2, right_ex1, right_ex2),
-                       max(down_ex1, down_ex2, up_ex1, up_ex2)
-#                        min(left_ex1, left_ex2),
-#                        min(up_ex1, up_ex2),
-#                        max(right_ex1, right_ex2),
-#                        max(down_ex1, down_ex2)
-                      )
+                           min(left_ex1, left_ex2, right_ex1, right_ex2),
+                           min(down_ex1, down_ex2, up_ex1, up_ex2),
+                           max(left_ex1, left_ex2, right_ex1, right_ex2),
+                           max(down_ex1, down_ex2, up_ex1, up_ex2)
+                        )
         else:
             print 44444444444444444
             area_extent = (
-                       min(left_ex1, left_ex2, right_ex1, right_ex2),
-                       min(down_ex1, down_ex2, up_ex1, up_ex2),
-                       max(left_ex1, left_ex2, right_ex1, right_ex2),
-                       max(down_ex1, down_ex2, up_ex1, up_ex2)
-                      )
+                           min(left_ex1, left_ex2, right_ex1, right_ex2),
+                           min(down_ex1, down_ex2, up_ex1, up_ex2),
+                           max(left_ex1, left_ex2, right_ex1, right_ex2),
+                           max(down_ex1, down_ex2, up_ex1, up_ex2)
+                        )
     else:
         # минимум из всех координат X, Y, максимум из всех координат X, Y
         # Такой результат даёт правильный area_extent для 3413
@@ -321,20 +313,20 @@ def swath_area_def(name='Temporal SWATH EPSG Projection 4326', proj='eqc', lonli
         #                                lat_ts=70, lat_0=90, lon_0=-45)
         # Area extent: (-5050747.263141337, 0.0, 0.0, 5050747.263141336)
         area_extent = (
-                min(left_ex1, left_ex2, right_ex1, right_ex2),
-		        min(up_ex1, up_ex2, down_ex1, down_ex2),
-	        	max(left_ex1, left_ex2, right_ex1, right_ex2),
-		        max(up_ex1, up_ex2, down_ex1, down_ex2)
-		      ) 
+                        min(left_ex1, left_ex2, right_ex1, right_ex2),
+                        min(up_ex1, up_ex2, down_ex1, down_ex2),
+                        max(left_ex1, left_ex2, right_ex1, right_ex2),
+                        max(up_ex1, up_ex2, down_ex1, down_ex2)
+                    )
     
-    print 'left: ', left_ex1, left_ex2
-    print 'right: ', right_ex1, right_ex2
-    print 'up: ', up_ex1, up_ex2
-    print 'down: ', down_ex1, down_ex2
+    #~ print 'left: ', left_ex1, left_ex2
+    #~ print 'right: ', right_ex1, right_ex2
+    #~ print 'up: ', up_ex1, up_ex2
+    #~ print 'down: ', down_ex1, down_ex2
 
 #     Using abs() to avoid negative numbers of coloumns/rows as for epsg3413 for example
-    xsize = abs(int((area_extent[2] - area_extent[0]) / res))
-    ysize = abs(int((area_extent[3] - area_extent[1]) / res))
+    xsize = abs(int((area_extent[2] - area_extent[0]) / res[0]))
+    ysize = abs(int((area_extent[3] - area_extent[1]) / res[1]))
     
     swath_area_def = pr.utils.get_area_def(area_id, name, proj_id, proj4_args, xsize, ysize, area_extent)
 
@@ -543,11 +535,13 @@ fn='S1A_EW_GRDH_1SDH_20141003T133957_20141003T134057_002666_002F83_0BE7.zip'):
 
         # READ THE RAW_COUNTS from GRD image
         raw_counts[p] = read_raw_counts(fn, fileLocation, p)
-
+    
+    GEOgrid = read_anotation(fn, fileLocation, polarization[0])
+    
     # Close ZIP-file
     zf.close()
 
-    return raw_counts, polarization, manifest
+    return raw_counts, polarization, manifest, GEOgrid
 
 class readS1:
     """\
