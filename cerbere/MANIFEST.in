@@ -1,0 +1,4 @@
+include *.txt
+include *.rst
+include install.sh
+include pyhdf_setup.py.patch

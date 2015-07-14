@@ -1,0 +1,11 @@
+--- setup.py	2008-10-03 02:35:13.000000000 +0200
++++ setup.py.up	2013-08-26 12:50:23.385623976 +0200
+@@ -85,7 +85,7 @@
+ if sys.platform == 'win32':
+     libraries = ["hm423m", "hd423m", "xdr_for_dll" ]
+ else:
+-    libraries = ["mfhdf", "df"]
++    libraries = ["mfhdfalt", "dfalt"]
+ 
+ if szip_installed:
+     extra_compile_args = []

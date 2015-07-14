@@ -1,0 +1,75 @@
+*.py[cod]
+
+# C extensions
+*.so
+
+# Packages
+*.egg
+*.egg-info
+dist
+build
+eggs
+parts
+develop-eggs
+.installed.cfg
+#lib
+lib64
+__pycache__
+MANIFEST
+
+# Installer logs
+pip-log.txt
+
+# Unit test / coverage reports
+.coverage
+.tox
+nosetests.xml
+
+# Translations
+*.mo
+
+# Mr Developer
+.mr.developer.cfg
+.project
+.pydevproject
+
+
+*.pyc
+*.pyo
+DS_Store
+*.sqlite3
+
+migrations
+*/migrations/*.py
+
+src/datamodel/test/data/GW_L2P_ALT_ENVI_GDR_20110101_061209_20110101_070215_098_078.nc
+src/datamodel/test/data/polarfront_2008-09-09T050025_2008-10-17T114909_HiWASE_2008_FORE.nc
+src/datamodel/test/data/QS_S2B54289.20093261508
+src/datamodel/test/data/WMO51101_20110101T0050_20110131T2350_Lat_24.32N_Lon_162.06W.nc
+src/datamodel/test/data/20120109000000-OSISAF-L3C_GHRSST-SSTsubskin-SEVIRI_SST-ssteqc_meteosat09_20120109_000000-v02.0-fv01.0.nc
+src/datamodel/test/data/20120323-ATS_NR_2P-UPA-L2P-ATS_NR__2PNPDK20120323_185109_000062203113_00042_52642_2614-v01.nc
+src/20130404-NCDC-L4LRblend-GLOB-v01-fv02_0-AVHRR_OI.nc
+src/20130516-IFR-L4_GHRSST-SSTfnd-ODYSSEA-GLOB_010-v2.0-fv1.0.nc
+src/datamodel/fastregrid.c
+src/dmi.nc
+src/hrdds1.nc
+src/hrdds2.nc
+src/test.py
+cerbere/20130404-NCDC-L4LRblend-GLOB-v01-fv02_0-AVHRR_OI.nc
+cerbere/20130516-IFR-L4_GHRSST-SSTfnd-ODYSSEA-GLOB_010-v2.0-fv1.0.nc
+cerbere/datamodel/fastregrid.c
+cerbere/datamodel/test/data/20120109000000-OSISAF-L3C_GHRSST-SSTsubskin-SEVIRI_SST-ssteqc_meteosat09_20120109_000000-v02.0-fv01.0.nc
+cerbere/datamodel/test/data/20120323-ATS_NR_2P-UPA-L2P-ATS_NR__2PNPDK20120323_185109_000062203113_00042_52642_2614-v01.nc
+cerbere/datamodel/test/data/GW_L2P_ALT_ENVI_GDR_20110101_061209_20110101_070215_098_078.nc
+cerbere/datamodel/test/data/QS_S2B54289.20093261508
+cerbere/datamodel/test/data/WMO51101_20110101T0050_20110131T2350_Lat_24.32N_Lon_162.06W.nc
+cerbere/datamodel/test/data/polarfront_2008-09-09T050025_2008-10-17T114909_HiWASE_2008_FORE.nc
+cerbere/dmi.nc
+cerbere/hrdds1.nc
+cerbere/hrdds2.nc
+tests/data/20120109000000-OSISAF-L3C_GHRSST-SSTsubskin-SEVIRI_SST-ssteqc_meteosat09_20120109_000000-v02.0-fv01.0.nc
+tests/data/20120323-ATS_NR_2P-UPA-L2P-ATS_NR__2PNPDK20120323_185109_000062203113_00042_52642_2614-v01.nc
+tests/data/GW_L2P_ALT_ENVI_GDR_20110101_061209_20110101_070215_098_078.nc
+tests/data/QS_S2B54289.20093261508
+tests/data/WMO51101_20110101T0050_20110131T2350_Lat_24.32N_Lon_162.06W.nc
+tests/data/polarfront_2008-09-09T050025_2008-10-17T114909_HiWASE_2008_FORE.nc
