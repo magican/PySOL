@@ -1,3 +1,5 @@
+# coding: utf-8
+
 import os, sys
 
 from osgeo import gdal, ogr, osr
@@ -20,11 +22,10 @@ def gshhs_rasterize(lonlim=(1,31), latlim=(55,65), units='deg', \
     if units != 'deg':
         p = Proj(proj)
 
-		up    = max(latlim)
-		down  = min(latlim)
-		left  = min(lonlim)
-		right = max(lonlim)
-
+        up    = max(latlim)
+        down  = min(latlim)
+        left  = min(lonlim)
+        right = max(lonlim)
         # минимум из всех координат X, Y, максимум из всех координат X, Y
         # Такой результат даёт правильный area_extent для 3413
         # При этом для 4326 area_extent остаётся неизменным
@@ -33,11 +34,11 @@ def gshhs_rasterize(lonlim=(1,31), latlim=(55,65), units='deg', \
         #                                lat_ts=70, lat_0=90, lon_0=-45)
         # Area extent: (-5050747.263141337, 0.0, 0.0, 5050747.263141336)
         area_extent = (
-                min(left_ex1, left_ex2, right_ex1, right_ex2),
-		        min(up_ex1, up_ex2, down_ex1, down_ex2),
-	        	max(left_ex1, left_ex2, right_ex1, right_ex2),
-		        max(up_ex1, up_ex2, down_ex1, down_ex2)
-		      ) 
+                        min(left_ex1, left_ex2, right_ex1, right_ex2),
+                        min(up_ex1, up_ex2, down_ex1, down_ex2),
+                        max(left_ex1, left_ex2, right_ex1, right_ex2),
+                        max(up_ex1, up_ex2, down_ex1, down_ex2)
+                    )
         minlon, minlat, maxlon, maxlat = area_extent
 
         lonlim = (minlon, maxlon)
@@ -188,6 +189,9 @@ def reproject(shape_fname, proj='+units=m +ellps=WGS84 +lon_0=-45 +proj=stere +l
     inDataSet.Destroy()
     outDataSet.Destroy()
 
+
+#~ from memory_profiler import profile
+#~ @profile
 def gshhs_rasterize_4326(lonlim=(1,31), latlim=(55,65), \
                     pxRes=(0.1,0.1), arrShape=None, lakes = True, \
                     shapefile = '/media/SOLabNFS/store/auxdata/coastline/GSHHS_shp/f/GSHHS_f_L1.shp'):
