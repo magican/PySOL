@@ -36,6 +36,8 @@ from scipy.signal import wiener
 
 import os
 
+import distancelib
+
 __author__   = 'Alexander Myasoedov'
 __email__    = 'mag@rshu.ru'
 __created__  = datetime.datetime(2014, 10, 28)
@@ -341,7 +343,7 @@ def swath_area_def(name='Temporal SWATH EPSG Projection 4326', proj='eqc', lonli
 
 # READ THE RAW_COUNTS from GRD image
 
-def read_raw_counts(fn, fileLocation, polarization):
+def read_raw_counts(fn, fileLocation, polarization, scale):
 
 
     # Note that For SLC images BitsPerSample=32 and for GRD BitsPerSample=16
@@ -352,7 +354,7 @@ def read_raw_counts(fn, fileLocation, polarization):
     im = StringIO.StringIO(im) #Encode the raw data to be used by Image.open()
     im = Image.open(im)        #Open the image
 
-    return asarray(im)
+    return asarray(im)[::scale,::scale]
 
 
 # In[12]:
@@ -472,7 +474,7 @@ def read_noise_luts(fn, fileLocation, polarization):
     return nLUTs
 
 def readS1_raw_counts(inpath = '/media/SOLabNFS2/tmp/sentinel-1/Svalbard-Barents/', \
-fn='S1A_EW_GRDH_1SDH_20141003T133957_20141003T134057_002666_002F83_0BE7.zip'):
+fn='S1A_EW_GRDH_1SDH_20141003T133957_20141003T134057_002666_002F83_0BE7.zip', resolution=None):
     """Reading raw_counts from Sentinel-1 images"""
 
     global zf
@@ -511,33 +513,32 @@ fn='S1A_EW_GRDH_1SDH_20141003T133957_20141003T134057_002666_002F83_0BE7.zip'):
             polarization = transmitterReceiverPolarisation.lower()
         else:
             polarization.append(transmitterReceiverPolarisation[p].lower())
+    if isinstance(polarization, basestring):
+        polarization = [polarization]
     print "Available polarizations: \'%s\'" %polarization
-
 
     # In[18]:
 
     # %%timeit -n 1 -r 1
 
+    # set default resolution
+    if resolution is None:
+        resolution = 80
+
     raw_counts = {}
 
-    # NB! if len(polarization[0]) == 1 then there is only one polarization, meaning polarization=='vv'
-    if len(polarization[0])>=2: # if 2 polarizations
-        for p in polarization:
-            print "Reading raw_counts: \'%s\' polarization" %p
-
-            # READ THE RAW_COUNTS from GRD image
-            raw_counts[p] = read_raw_counts(fn, fileLocation, p)
-
-    elif len(polarization[0])==1: # if only 1 polarization
-        p = polarization
-        
-        print "Reading raw_counts: \'%s\' polarization" %p
-
-        # READ THE RAW_COUNTS from GRD image
-        raw_counts[p] = read_raw_counts(fn, fileLocation, p)
-    
     GEOgrid = read_anotation(fn, fileLocation, polarization[0])
-    
+
+    # Find scale to reduce image to the specified resolution
+    arrShape =  (GEOgrid['line'].max()+1, GEOgrid['pixel'].max()+1)
+    scale = resolution/round(mean(asarray(distancelib.getPixelResolution(GEOgrid['lats'], \
+                                                                         GEOgrid['lons'], \
+                                                                         arrShape, 'km'))*1e3))
+    for p in polarization:
+        print "Reading raw_counts: \'%s\' polarization" %p
+        # READ THE RAW_COUNTS from GRD image
+        raw_counts[p] = read_raw_counts(fn, fileLocation, p, scale)
+
     # Close ZIP-file
     zf.close()
 
@@ -552,7 +553,7 @@ class readS1:
             fn = filename
     """
     def __init__(self, inpath = '/media/SOLabNFS2/tmp/sentinel-1/Svalbard-Barents/', \
-    fn='S1A_EW_GRDH_1SDH_20141003T133957_20141003T134057_002666_002F83_0BE7.zip'):
+    fn='S1A_EW_GRDH_1SDH_20141003T133957_20141003T134057_002666_002F83_0BE7.zip', resolution = None):
         """Reading and Interpolating data from Sentinel-1 images"""
 
         # READ THE MANIFEST - top level
@@ -628,12 +629,18 @@ class readS1:
                 polarization = transmitterReceiverPolarisation.lower()
             else:
                 polarization.append(transmitterReceiverPolarisation[p].lower())
+        # If only one polarization, it is represented as basestring, we make it a list, to avoid mistakes in loops
+        if isinstance(polarization, basestring):
+            polarization = [polarization]
         print "Available polarizations: \'%s\'" %polarization
-
 
         # In[18]:
 
         # %%timeit -n 1 -r 1
+
+        # set default resolution
+        if resolution is None:
+            resolution = 80
 
         raw_counts = {}
         lats_2 = {}
@@ -644,98 +651,48 @@ class readS1:
         sigma0 = {}
 
         # NB! if len(polarization[0]) == 1 then there is only one polarization, meaning polarization=='vv'
-        if len(polarization[0])>=2: # if 2 polarizations
-            for p in polarization:
-                print "Reading raw_counts: \'%s\' polarization" %p
+        # READ the ANNOTATION
+        GEOgrid = read_anotation(fn, fileLocation, polarization[0])
 
-                # READ THE RAW_COUNTS from GRD image
-                raw_counts[p] = read_raw_counts(fn, fileLocation, p)
+        # READ the CALIBRATION LUTs
+        cLUTs = read_clbrtn_luts(fn, fileLocation, polarization[0])
 
-                print "Interpolating LUTs: \'%s\' polarization" %p
+        # READ the NOISE LUTs
+        nLUTs = read_noise_luts(fn, fileLocation, polarization[0])
 
-            # READ the ANNOTATION
-            GEOgrid = read_anotation(fn, fileLocation, polarization[0])
+        # Find scale to reduce image to the specified resolution
+        arrShape =  (GEOgrid['line'].max()+1, GEOgrid['pixel'].max()+1)
+        scale = resolution/round(mean(asarray(distancelib.getPixelResolution(GEOgrid['lats'], \
+                                                                             GEOgrid['lons'], \
+                                                                             arrShape, 'km'))*1e3))
 
-            # READ the CALIBRATION LUTs
-            cLUTs = read_clbrtn_luts(fn, fileLocation, polarization[0])
-
-            # READ the NOISE LUTs
-            nLUTs = read_noise_luts(fn, fileLocation, polarization[0])
-            
-            #  ----------------------------------
-            # INTERPOLATE DATA
-            # Interpolate Geolocation grid points and calibration LUTs onto grid of raw_counts.shape
-
-            # Serial Processing
-
-            # Serial loop is faster than the Parallel Loop (see appropriate ipnb file)
-            # 1 loops, best of 1: 31.5 s per loop
-            # %%timeit -n 1 -r 1
-
-            # create new grid of raw_counts shape
-            line_2 = arange(raw_counts[p].shape[0])
-            pixel_2 = arange(raw_counts[p].shape[1])
-
-            # Interpolate onto a new grid
-            lats_2 = RectBivariateSpline(GEOgrid['line'][:,0], GEOgrid['pixel'][0,:], GEOgrid['lats'], kx=2, ky=2)(line_2, pixel_2)
-            lons_2 = RectBivariateSpline(GEOgrid['line'][:,0], GEOgrid['pixel'][0,:], GEOgrid['lons'], kx=2, ky=2)(line_2, pixel_2)
-
-            for p in polarization:
-                # interpolate incidenceAngle
-                incidenceAngle_2[p] = RectBivariateSpline(GEOgrid['line'][:,0], GEOgrid['pixel'][0,:], GEOgrid['incidenceAngle'], kx=2, ky=2)(line_2, pixel_2)
-
-                # interpolate sigmaNought
-                sigmaNought_2[p] = RectBivariateSpline(cLUTs['line'][:,0], cLUTs['pixel'][0,:], cLUTs['sigmaNought'], kx=2, ky=2)(line_2, pixel_2)
-
-                # interpolate noiseLut
-                noiseLut_2[p] = RectBivariateSpline(nLUTs['line'][:,0], nLUTs['pixel'][0,:], nLUTs['noiseLut'], kx=2, ky=2)(line_2, pixel_2)
-
-                # Apply Calibration, remove the thermal noise estimation and Convert to Intensity
-                # for VH, HV - multiply S1 noiseLUTs by nLtCoeff=1e10
-                # for VV, HH - multiply S1 noiseLUTs by nLtCoeff=sqrt(2)*1e10
-                if p=='vv' or p=='hh':
-                    nLtCoeff=sqrt(2)*1e10
-                elif p=='vh' or p=='hv':
-                    nLtCoeff=1e10
-
-                sigma0[p] = ( double(raw_counts[p])**2 - noiseLut_2[p]*nLtCoeff )/sigmaNought_2[p]**2
-
-        elif len(polarization[0])==1: # if only 1 polarization
-            p = polarization
-            
+        for p in polarization:
             print "Reading raw_counts: \'%s\' polarization" %p
-
             # READ THE RAW_COUNTS from GRD image
-            raw_counts[p] = read_raw_counts(fn, fileLocation, p)
+            raw_counts[p] = read_raw_counts(fn, fileLocation, p, scale)
 
+        #  ----------------------------------
+        # INTERPOLATE DATA
+        # Interpolate Geolocation grid points and calibration LUTs onto grid of raw_counts.shape
+
+        # Serial Processing
+
+        # Serial loop is faster than the Parallel Loop (see appropriate ipnb file)
+        # 1 loops, best of 1: 31.5 s per loop
+        # %%timeit -n 1 -r 1
+
+        # create new grid of raw_counts shape
+        #~ line_2 = arange(raw_counts[p].shape[0])
+        #~ pixel_2 = arange(raw_counts[p].shape[1])
+        line_2 = arange(arrShape[0])[::scale]
+        pixel_2 = arange(arrShape[1])[::scale]
+
+        # Interpolate onto a new grid
+        lats_2 = RectBivariateSpline(GEOgrid['line'][:,0], GEOgrid['pixel'][0,:], GEOgrid['lats'], kx=2, ky=2)(line_2, pixel_2)
+        lons_2 = RectBivariateSpline(GEOgrid['line'][:,0], GEOgrid['pixel'][0,:], GEOgrid['lons'], kx=2, ky=2)(line_2, pixel_2)
+
+        for p in polarization:
             print "Interpolating LUTs: \'%s\' polarization" %p
-
-            # READ the ANNOTATION
-            GEOgrid = read_anotation(fn, fileLocation, p)
-
-            # READ the CALIBRATION LUTs
-            cLUTs = read_clbrtn_luts(fn, fileLocation, p)
-
-            # READ the NOISE LUTs
-            nLUTs = read_noise_luts(fn, fileLocation, p)
-            
-            #  ----------------------------------
-            # INTERPOLATE DATA
-            # Interpolate Geolocation grid points and calibration LUTs onto grid of raw_counts.shape
-
-            # Serial Processing
-
-            # Serial loop is faster than the Parallel Loop (see appropriate ipnb file)
-            # 1 loops, best of 1: 31.5 s per loop
-            # %%timeit -n 1 -r 1
-
-            # create new grid of raw_counts shape
-            line_2 = arange(raw_counts[p].shape[0])
-            pixel_2 = arange(raw_counts[p].shape[1])
-
-            # Interpolate onto a new grid
-            lats_2 = RectBivariateSpline(GEOgrid['line'][:,0], GEOgrid['pixel'][0,:], GEOgrid['lats'], kx=2, ky=2)(line_2, pixel_2)
-            lons_2 = RectBivariateSpline(GEOgrid['line'][:,0], GEOgrid['pixel'][0,:], GEOgrid['lons'], kx=2, ky=2)(line_2, pixel_2)
 
             # interpolate incidenceAngle
             incidenceAngle_2[p] = RectBivariateSpline(GEOgrid['line'][:,0], GEOgrid['pixel'][0,:], GEOgrid['incidenceAngle'], kx=2, ky=2)(line_2, pixel_2)
@@ -747,12 +704,14 @@ class readS1:
             noiseLut_2[p] = RectBivariateSpline(nLUTs['line'][:,0], nLUTs['pixel'][0,:], nLUTs['noiseLut'], kx=2, ky=2)(line_2, pixel_2)
 
             # Apply Calibration, remove the thermal noise estimation and Convert to Intensity
+            # for VH, HV - multiply S1 noiseLUTs by nLtCoeff=1e10
             # for VV, HH - multiply S1 noiseLUTs by nLtCoeff=sqrt(2)*1e10
             if p=='vv' or p=='hh':
                 nLtCoeff=sqrt(2)*1e10
+            elif p=='vh' or p=='hv':
+                nLtCoeff=1e10
 
             sigma0[p] = ( double(raw_counts[p])**2 - noiseLut_2[p]*nLtCoeff )/sigmaNought_2[p]**2
-
 
         #~ Putting others vars to self
         self.polarization = polarization
