@@ -7,7 +7,9 @@
 
 # In[3]:
 
-from numpy import asarray, zeros, reshape, double, arange, ma, log10, diff, mean, flipud, floor, pi, sqrt, size
+from numpy import asarray, zeros, reshape, double, arange, \
+                  ma, log10, diff, mean, flipud, floor, pi, sqrt, size, fliplr, meshgrid, exp, cos, radians, \
+                  round, array, maximum, minimum, repeat
 import pyresample as pr
 from pyproj import Proj
 
@@ -337,13 +339,58 @@ def swath_area_def(name='Temporal SWATH EPSG Projection 4326', proj='eqc', lonli
     return swath_area_def
 
 
+def _format_extent_spacing(extent, spacing, GEOgrid, midazimuth=False,
+                           midrange=False):
+    """Format (and check) extent and spacing."""
+    # Check extent
+    ext = round(extent).flatten()
+    if ext.size != 4:
+        raise Exception('extent must contain 4 elements')
+    extmax = (0.,0., GEOgrid['numberOfLines']-1, GEOgrid['numberOfSamples']-1)
+    if (ext[0:2] < extmax[0:2]).any() or (ext[2:4] > extmax[2:4]).any():
+        exttmp = array(ext)
+        ext[0:2] = maximum(ext[0:2], extmax[0:2])
+        ext[2:4] = minimum(ext[2:4], extmax[2:4])
+        print 'Warning : extent is outside SAR image, '+str(exttmp)+\
+            ' becomes '+str(ext)
+    if (ext[0:2] > ext[2:4]).any():
+        raise Exception('extent[0:2] must be less or equal than '+\
+                        'extent[2:4]')
+    # Check spacing
+    spa = round(spacing).flatten()
+    if spa.size == 1:
+        spa = repeat(spa[0], 2)
+    elif spa.size == 2:
+        pass
+    else:
+        raise Exception('spacing must contain 1 or 2 elements')
+    if (spa < [1, 1]).any():
+        spatmp = array(spa)
+        spa = maximum(spa, [1, 1])
+        print 'Warning : spacing too small, '+str(spatmp)+' becomes '+\
+            str(spa)
+    if (spa > ext[2:4]-ext[0:2]).any():
+        spatmp = array(spa)
+        spa = minimum(spa, ext[2:4]-ext[0:2])
+        print 'Warning : spacing too large, '+str(spatmp)+' becomes '+\
+            str(spa)
+    # Make extent to be spacing modulo
+    ext[2:4] -= (ext[2:4]-ext[0:2]) % spa
+#     # 1D extent
+#     if midazimuth == True:
+#         dim = (ext[2]-ext[0]+1)/spa[0]
+#         ext[0:3:2] = ext[0] + (dim-1)//2*spa[0] + [0, spa[0]-1]
+#     if midrange == True:
+#         dim = (ext[3]-ext[1]+1)/spa[1]
+#         ext[1:4:2] = ext[1] + (dim-1)//2*spa[1] + [0, spa[1]-1]
+    return (ext, spa)
 
 
 # In[11]:
 
 # READ THE RAW_COUNTS from GRD image
 
-def read_raw_counts(fn, fileLocation, polarization, scale):
+def read_raw_counts(fn, fileLocation, polarization, scale, GEOgrid):
 
 
     # Note that For SLC images BitsPerSample=32 and for GRD BitsPerSample=16
@@ -353,8 +400,17 @@ def read_raw_counts(fn, fileLocation, polarization, scale):
     im = zf.read(fn[:-4] + '.SAFE' + fileLocation[fn.lower().replace("_","")[0:8] + polarization][1:])
     im = StringIO.StringIO(im) #Encode the raw data to be used by Image.open()
     im = Image.open(im)        #Open the image
+    im = asarray(im)
 
-    return asarray(im)[::scale,::scale]
+    arrShape =  asarray([GEOgrid['numberOfLines'], GEOgrid['numberOfSamples']])
+    ext, spa = _format_extent_spacing((0.,0.,arrShape[0]-1,arrShape[1]-1), scale, GEOgrid)
+    if scale.max() > 1:
+        im = im[ext[0]:ext[2],ext[1]:ext[3]]
+        sha = (im.shape[0]/spa[0], spa[0],
+               im.shape[1]/spa[1], spa[1])
+        im = im.reshape(sha).mean(-1).mean(1)
+    
+    return im, ext, spa
 
 
 # In[12]:
@@ -369,10 +425,15 @@ def read_anotation(fn, fileLocation, polarization):
 
     annotation = zf.read(fn[:-4] + '.SAFE' + fileLocation['product' + fn.lower().replace("_","")[0:8] + polarization][1:])
     annotation = xmltodict.parse(annotation) # Parse the read document string
-
+    
     # get geolocationGrid parameters from the Annotation Data Set Records (ADSR)
     # preallocate variables
     GEOgrid = {} # empty dict for GEOgrids
+
+    GEOgrid['rangePixelSpacing']   = float(annotation['product']['imageAnnotation']['imageInformation']['rangePixelSpacing'])
+    GEOgrid['azimuthPixelSpacing'] = float(annotation['product']['imageAnnotation']['imageInformation']['azimuthPixelSpacing'])
+    GEOgrid['numberOfSamples']   = float(annotation['product']['imageAnnotation']['imageInformation']['numberOfSamples'])
+    GEOgrid['numberOfLines'] = float(annotation['product']['imageAnnotation']['imageInformation']['numberOfLines'])
 
     geolocationGridPointList = annotation['product']['geolocationGrid']['geolocationGridPointList']
     GEOgrid['lats']  = zeros( ( int(geolocationGridPointList['@count']), 1) )
@@ -380,6 +441,7 @@ def read_anotation(fn, fileLocation, polarization):
     GEOgrid['line']  = zeros( GEOgrid['lats'].shape, dtype=int )
     GEOgrid['pixel'] = zeros( GEOgrid['lats'].shape, dtype=int )
     GEOgrid['incidenceAngle'] = zeros( GEOgrid['lats'].shape )
+    GEOgrid['elevationAngle'] = zeros( GEOgrid['lats'].shape )
 
     # read Geolocation grid points
     for n in range(int(geolocationGridPointList['@count'])):
@@ -388,16 +450,18 @@ def read_anotation(fn, fileLocation, polarization):
         GEOgrid['line'][n]  = int(geolocationGridPointList['geolocationGridPoint'][n]['line'])
         GEOgrid['pixel'][n] = int(geolocationGridPointList['geolocationGridPoint'][n]['pixel'])
         GEOgrid['incidenceAngle'][n] = float(geolocationGridPointList['geolocationGridPoint'][n]['incidenceAngle'])
+        GEOgrid['elevationAngle'][n] = float(geolocationGridPointList['geolocationGridPoint'][n]['elevationAngle'])
 
 
-    # find zero pixel to rehape grid points to array
+    # find zero pixel to reshape grid points to array
     ind = find(GEOgrid['pixel'] == 0)
     GEOgrid['pixel'] = reshape(GEOgrid['pixel'], (ind.size, GEOgrid['lats'].size/ind.size))
     GEOgrid['line']  = reshape(GEOgrid['line'], (ind.size, GEOgrid['lats'].size/ind.size))
     GEOgrid['lats']  = reshape(GEOgrid['lats'], (ind.size, GEOgrid['lats'].size/ind.size))
     GEOgrid['lons']  = reshape(GEOgrid['lons'], (ind.size, GEOgrid['lats'].size/ind.size))
     GEOgrid['incidenceAngle'] = reshape(GEOgrid['incidenceAngle'], (ind.size, GEOgrid['lats'].size/ind.size))
-    
+    GEOgrid['elevationAngle'] = reshape(GEOgrid['elevationAngle'], (ind.size, GEOgrid['lats'].size/ind.size))
+
     return GEOgrid
 
 
@@ -530,14 +594,16 @@ fn='S1A_EW_GRDH_1SDH_20141003T133957_20141003T134057_002666_002F83_0BE7.zip', re
     GEOgrid = read_anotation(fn, fileLocation, polarization[0])
 
     # Find scale to reduce image to the specified resolution
-    arrShape =  (GEOgrid['line'].max()+1, GEOgrid['pixel'].max()+1)
-    scale = resolution/round(mean(asarray(distancelib.getPixelResolution(GEOgrid['lats'], \
-                                                                         GEOgrid['lons'], \
-                                                                         arrShape, 'km'))*1e3))
+    # arrShape =  asarray([GEOgrid['numberOfLines'], GEOgrid['numberOfSamples']])
+    # scale = resolution/round(mean(asarray(distancelib.getPixelResolution(GEOgrid['lats'], \
+    #                                                                      GEOgrid['lons'], \
+    #                                                                      arrShape, 'km'))*1e3))
+    scale = floor(resolution/asarray([GEOgrid['azimuthPixelSpacing'],GEOgrid['rangePixelSpacing']]))
+
     for p in polarization:
         print "Reading raw_counts: \'%s\' polarization" %p
         # READ THE RAW_COUNTS from GRD image
-        raw_counts[p] = read_raw_counts(fn, fileLocation, p, scale)
+        raw_counts[p], _, _ = read_raw_counts(fn, fileLocation, p, scale, GEOgrid)
 
     # Close ZIP-file
     zf.close()
@@ -661,15 +727,17 @@ class readS1:
         nLUTs = read_noise_luts(fn, fileLocation, polarization[0])
 
         # Find scale to reduce image to the specified resolution
-        arrShape =  (GEOgrid['line'].max()+1, GEOgrid['pixel'].max()+1)
-        scale = resolution/round(mean(asarray(distancelib.getPixelResolution(GEOgrid['lats'], \
-                                                                             GEOgrid['lons'], \
-                                                                             arrShape, 'km'))*1e3))
+        arrShape =  asarray([GEOgrid['numberOfLines'], GEOgrid['numberOfSamples']])
+        # scale = resolution/round(mean(asarray(distancelib.getPixelResolution(GEOgrid['lats'], \
+        #                                                                      GEOgrid['lons'], \
+        #                                                                      arrShape, 'km'))*1e3))
+        scale = floor(resolution/asarray([GEOgrid['azimuthPixelSpacing'],GEOgrid['rangePixelSpacing']]))
+
 
         for p in polarization:
             print "Reading raw_counts: \'%s\' polarization" %p
             # READ THE RAW_COUNTS from GRD image
-            raw_counts[p] = read_raw_counts(fn, fileLocation, p, scale)
+            raw_counts[p], ext, spa = read_raw_counts(fn, fileLocation, p, scale, GEOgrid)
 
         #  ----------------------------------
         # INTERPOLATE DATA
@@ -684,8 +752,10 @@ class readS1:
         # create new grid of raw_counts shape
         #~ line_2 = arange(raw_counts[p].shape[0])
         #~ pixel_2 = arange(raw_counts[p].shape[1])
-        line_2 = arange(arrShape[0])[::scale]
-        pixel_2 = arange(arrShape[1])[::scale]
+        #~ line_2 = arange(arrShape[0])[::scale[0]]
+        #~ pixel_2 = arange(arrShape[1])[::scale[1]]
+        line_2  = arange(arrShape[0])[ext[0]:ext[2]][::spa[0]]
+        pixel_2 = arange(arrShape[1])[ext[1]:ext[3]][::spa[1]]
 
         # Interpolate onto a new grid
         lats_2 = RectBivariateSpline(GEOgrid['line'][:,0], GEOgrid['pixel'][0,:], GEOgrid['lats'], kx=2, ky=2)(line_2, pixel_2)
