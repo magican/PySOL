@@ -1,0 +1,46 @@
+Filename: /usr/local/lib/python2.7/dist-packages/pyresample/kd_tree.py
+
+Line #    Mem usage    Increment   Line Contents
+================================================
+    62 189220.0 MiB      0.0 MiB   
+    63                             @profile
+    64                             def resample_nearest(source_geo_def, data, target_geo_def,
+    65                                                  radius_of_influence, epsilon=0,
+    66                                                  fill_value=0, reduce_data=True, nprocs=1, segments=None):
+    67                                 """Resamples data using kd-tree nearest neighbour approach
+    68                             
+    69                                 :Parameters:
+    70                                 source_geo_def : object
+    71                                     Geometry definition of source
+    72                                 data : numpy array               
+    73                                     1d array of single channel data points or
+    74                                     (source_size, k) array of k channels of datapoints
+    75                                 target_geo_def : object
+    76                                     Geometry definition of target
+    77                                 radius_of_influence : float 
+    78                                     Cut off distance in meters
+    79                                 epsilon : float, optional
+    80                                     Allowed uncertainty in meters. Increasing uncertainty
+    81                                     reduces execution time
+    82                                 fill_value : {int, None}, optional 
+    83                                         Set undetermined pixels to this value.
+    84                                         If fill_value is None a masked array is returned 
+    85                                         with undetermined pixels masked    
+    86                                 reduce_data : bool, optional
+    87                                     Perform initial coarse reduction of source dataset in order
+    88                                     to reduce execution time
+    89                                 nprocs : int, optional
+    90                                     Number of processor cores to be used
+    91                                 segments : {int, None}
+    92                                     Number of segments to use when resampling.
+    93                                     If set to None an estimate will be calculated
+    94                             
+    95                                 :Returns: 
+    96                                 data : numpy array 
+    97                                     Source data resampled to target geometry
+    98 189220.0 MiB      0.0 MiB       """
+    99 189220.0 MiB      0.0 MiB   
+   100 189220.0 MiB      0.0 MiB       return _resample(source_geo_def, data, target_geo_def, 'nn',
+   101 190509.4 MiB   1289.3 MiB                        radius_of_influence, neighbours=1,
+   102                                                  epsilon=epsilon, fill_value=fill_value,
+   103                                                  reduce_data=reduce_data, nprocs=nprocs, segments=segments)

@@ -780,7 +780,11 @@ class readS1:
                 nLtCoeff=sqrt(2)*1e10
             elif p=='vh' or p=='hv':
                 nLtCoeff=1e10
-
+            #~ For production purposes use smaller noise coeficient to
+            #~ avoid infinite values when calculating sigma0 in dB with log10
+            #~ when substracting noise from low wind areas with smaller radar returns
+            nLtCoeff=0.78e10
+            
             sigma0[p] = ( double(raw_counts[p])**2 - noiseLut_2[p]*nLtCoeff )/sigmaNought_2[p]**2
 
         #~ Putting others vars to self
