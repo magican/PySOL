@@ -10,12 +10,13 @@
 from numpy import asarray, zeros, reshape, double, arange, \
                   ma, log10, diff, mean, flipud, floor, pi, sqrt, size, fliplr, meshgrid, exp, cos, radians, \
                   round, array, maximum, minimum, repeat
+from scipy.signal import argrelmin, argrelmax
 import pyresample as pr
 from pyproj import Proj
 
 # In[4]:
 
-from IPython.html import widgets
+#from IPython.html import widgets
 # [widget for widget in dir(widgets) if widget.endswith('Widget')]
 
 
@@ -33,7 +34,7 @@ import xmltodict
 from PIL import Image
 import StringIO
 
-from scipy.interpolate import RectBivariateSpline
+from scipy.interpolate import RectBivariateSpline, griddata
 from scipy.signal import wiener
 
 import os
@@ -99,7 +100,7 @@ import pygrib
 
 def ncepGFSmodel(startTime, lats_2, lons_2):
     """
-    NCEP GFS model wind for givven time, lat/lon crop 
+    NCEP GFS model wind for givven time, lat/lon crop
     """
     ncepGFSmodel = {} # empty dict for ncepGFSmodel
 
@@ -229,7 +230,7 @@ def swath_area_def(name='Temporal SWATH EPSG Projection 4326', proj='eqc', lonli
     down  = min(latlim)
     left  = min(lonlim)
     right = max(lonlim)
-    
+
     print 'up, down, left, right: ', round(up), round(down), round(left), round(right)
 
     area_id = name.replace(" ", "_").lower()
@@ -322,7 +323,7 @@ def swath_area_def(name='Temporal SWATH EPSG Projection 4326', proj='eqc', lonli
                         max(left_ex1, left_ex2, right_ex1, right_ex2),
                         max(up_ex1, up_ex2, down_ex1, down_ex2)
                     )
-    
+
     #~ print 'left: ', left_ex1, left_ex2
     #~ print 'right: ', right_ex1, right_ex2
     #~ print 'up: ', up_ex1, up_ex2
@@ -331,7 +332,7 @@ def swath_area_def(name='Temporal SWATH EPSG Projection 4326', proj='eqc', lonli
 #     Using abs() to avoid negative numbers of coloumns/rows as for epsg3413 for example
     xsize = abs(int((area_extent[2] - area_extent[0]) / res[0]))
     ysize = abs(int((area_extent[3] - area_extent[1]) / res[1]))
-    
+
     swath_area_def = pr.utils.get_area_def(area_id, name, proj_id, proj4_args, xsize, ysize, area_extent)
 
 #     print swath_area_def
@@ -409,7 +410,7 @@ def read_raw_counts(fn, fileLocation, polarization, scale, GEOgrid):
         sha = (im.shape[0]/spa[0], spa[0],
                im.shape[1]/spa[1], spa[1])
         im = im.reshape(sha).mean(-1).mean(1)
-    
+
     return im, ext, spa
 
 
@@ -425,7 +426,7 @@ def read_anotation(fn, fileLocation, polarization):
 
     annotation = zf.read(fn[:-4] + '.SAFE' + fileLocation['product' + fn.lower().replace("_","")[0:8] + polarization][1:])
     annotation = xmltodict.parse(annotation) # Parse the read document string
-    
+
     # get geolocationGrid parameters from the Annotation Data Set Records (ADSR)
     # preallocate variables
     GEOgrid = {} # empty dict for GEOgrids
@@ -511,7 +512,7 @@ def read_clbrtn_luts(fn, fileLocation, polarization):
 # READ the NOISE LUTs
 
 def read_noise_luts(fn, fileLocation, polarization):
-    # The L1 Noise ADS provides a LUT – with values provided in linear power – 
+    # The L1 Noise ADS provides a LUT – with values provided in linear power –
     # that can be used to derive calibrated noise profiles which match the calibrated GRD data.
 
     # open the fileLocation
@@ -619,7 +620,7 @@ class readS1:
             fn = filename
     """
     def __init__(self, inpath = '/media/SOLabNFS2/tmp/sentinel-1/Svalbard-Barents/', \
-    fn='S1A_EW_GRDH_1SDH_20141003T133957_20141003T134057_002666_002F83_0BE7.zip', resolution = None):
+    fn='S1A_EW_GRDH_1SDH_20141003T133957_20141003T134057_002666_002F83_0BE7.zip', resolution=None, min_lat=None):
         """Reading and Interpolating data from Sentinel-1 images"""
 
         # READ THE MANIFEST - top level
@@ -660,7 +661,7 @@ class readS1:
 
         #~ fn = fileNameList[-1]
         global zf
-        zf = zipfile.ZipFile(inpath+fn, 'r')
+        zf = zipfile.ZipFile(os.path.join(inpath, fn), 'r')
 
         manifest = zf.read(fn[:-4] + '.SAFE/manifest.safe')
         manifest = xmltodict.parse(manifest) # Parse the read document string
@@ -719,6 +720,11 @@ class readS1:
         # NB! if len(polarization[0]) == 1 then there is only one polarization, meaning polarization=='vv'
         # READ the ANNOTATION
         GEOgrid = read_anotation(fn, fileLocation, polarization[0])
+        self.lat_skip = False
+        if min_lat and GEOgrid['lats'].max() <= min_lat:
+            print "skipping no area overlap"
+            self.lat_skip = True
+            return None
 
         # READ the CALIBRATION LUTs
         cLUTs = read_clbrtn_luts(fn, fileLocation, polarization[0])
@@ -757,9 +763,52 @@ class readS1:
         line_2  = arange(arrShape[0])[ext[0]:ext[2]][::spa[0]]
         pixel_2 = arange(arrShape[1])[ext[1]:ext[3]][::spa[1]]
 
+        
+        # Fool Proof: if LonLims out of -180:+180 range after interpolation => correct
+        # if lons overlap both negative and positive values from -180 to 180,
+        # meanung the image covering Pole
+        # I have tried interpolating using kx,ky=1 => linear interpolation, but that is not working very good
+        # using griddata with "nearest" method does not work as well
+        # I'll have to interpolate by hand as for MODIS:
+        # Try to interpolate rows, then coloumns - too complicated
+        # try using Spline but befor removing all negative values
+
         # Interpolate onto a new grid
-        lats_2 = RectBivariateSpline(GEOgrid['line'][:,0], GEOgrid['pixel'][0,:], GEOgrid['lats'], kx=2, ky=2)(line_2, pixel_2)
-        lons_2 = RectBivariateSpline(GEOgrid['line'][:,0], GEOgrid['pixel'][0,:], GEOgrid['lons'], kx=2, ky=2)(line_2, pixel_2)
+        if (GEOgrid['lons'].min() < 0) & (GEOgrid['lons'].max()>0):
+        #     pixel_2m, line_2m = meshgrid(pixel_2, line_2)
+        #     lats_2 = griddata((GEOgrid['line'].flatten(), GEOgrid['pixel'].flatten()),\
+        #                       GEOgrid['lats'].flatten(),\
+        #                       (line_2m, pixel_2m), method='nearest')
+        #     lons_2 = griddata((GEOgrid['line'].flatten(), GEOgrid['pixel'].flatten()),\
+        #                       GEOgrid['lons'].flatten(),\
+        #                       (line_2m, pixel_2m), method='nearest')
+            lns = GEOgrid['lons'].copy()
+            pxl = GEOgrid['pixel']
+            lin = GEOgrid['line']
+
+            # print ((lin[argrelmin(lns[:,0])] - lin[argrelmax(lns[:,0])])/2).min()
+            # on smaller grid we use negValue to summ, but on finer grid after interpolation
+            # one have to substract from the shifted grid
+
+            # I have tried different variants, looks like
+            shiftValue = ( GEOgrid['lons'].max() - GEOgrid['lons'].min() )/2
+            # is the best one
+
+            negInd = lns<0
+            negValue = -2*lns.min()
+
+            lns[lns<0] = lns[lns<0]+negValue
+            lons_2 = RectBivariateSpline(GEOgrid['line'][:,0], GEOgrid['pixel'][0,:],\
+                                         lns, kx=2, ky=2)(line_2, pixel_2)
+            lons_2[lons_2>shiftValue] = lons_2[lons_2>shiftValue]-negValue
+
+            lats_2 = RectBivariateSpline(GEOgrid['line'][:,0], GEOgrid['pixel'][0,:],\
+                                         GEOgrid['lats'], kx=2, ky=2)(line_2, pixel_2)
+        else:
+            lats_2 = RectBivariateSpline(GEOgrid['line'][:,0], GEOgrid['pixel'][0,:],\
+                                         GEOgrid['lats'], kx=2, ky=2)(line_2, pixel_2)
+            lons_2 = RectBivariateSpline(GEOgrid['line'][:,0], GEOgrid['pixel'][0,:],\
+                                         GEOgrid['lons'], kx=2, ky=2)(line_2, pixel_2)
 
         for p in polarization:
             print "Interpolating LUTs: \'%s\' polarization" %p
@@ -783,8 +832,12 @@ class readS1:
             #~ For production purposes use smaller noise coeficient to
             #~ avoid infinite values when calculating sigma0 in dB with log10
             #~ when substracting noise from low wind areas with smaller radar returns
-            nLtCoeff=0.78e10
-            
+            # New data after 2015 in EW GRDM mode hase correct noise LUTs, so we check for that
+            if noiseLut_2[p].mean() <= 1e-9 and noiseLut_2[p].min() <= 1e-10:
+                nLtCoeff=0.78e10
+            else:
+                nLtCoeff=1
+
             sigma0[p] = ( double(raw_counts[p])**2 - noiseLut_2[p]*nLtCoeff )/sigmaNought_2[p]**2
 
         #~ Putting others vars to self
