@@ -84,7 +84,7 @@ class AbstractFeature(object):
             if isinstance(times, numpy.ndarray) and\
                     isinstance(times[0], datetime.datetime):
                 val = numpy.array(netCDF4.date2num(times,
-                                                units=DEFAULT_TIME_UNITS))
+                                                   units=DEFAULT_TIME_UNITS))
                 self.set_times(val,
                                units=DEFAULT_TIME_UNITS)
             elif isinstance(times, datetime.datetime):
@@ -855,7 +855,6 @@ class AbstractFeature(object):
         if slices:
             for dim in new_dims.keys():
                 if dim in slices:
-                    #start,end,step = slices[d]
                     if not slices[dim].start:
                         start = 0
                     else:
@@ -869,7 +868,7 @@ class AbstractFeature(object):
             for dim in new_dims:
                 if dim in indices:
                     new_dims[dim] = len(indices[dim])
-                    
+
         new_field = Field(
             copy.copy(field.variable),
             new_dims,

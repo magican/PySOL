@@ -95,17 +95,18 @@ class AbstractMapper(object):
         elif url and 'http://' not in url:
             existant = self.exists(url)
             if mode == READ_ONLY and not existant:
-                logging.error("File %s not existing and can not be read", url)
-                raise Exception("File %s not existing and can not be read",
-                                url)
+                logging.error(
+                    "File {} not existing and can not be read".format(url))
+                raise Exception(
+                    "File {} not existing and can not be read".format(url))
             elif mode == WRITE_NEW and existant:
                 logging.error("File '%s' already existing and can not be\
                     created", url)
                 raise Exception("File '%s' already existing and can not be\
                     created", url)
             elif mode == READ_WRITE and not existant:
-                logging.warning("File '%s' is not existing. Will be created",
-                                url)
+                logging.warning(
+                    "File {} is not existing. Will be created".format(url))
         elif urlseries:
             self._urlseries.storageClass = self.__class__
         return

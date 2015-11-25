@@ -16,7 +16,8 @@ import datetime
 import copy
 import collections
 from dateutil import parser
-import pdb
+#import pdb
+
 import numpy
 import netCDF4
 
@@ -24,7 +25,6 @@ from .. import READ_ONLY, WRITE_NEW, DEFAULT_TIME_UNITS
 from .abstractmapper import AbstractMapper, FieldHandler, CorruptFileException
 from ..datamodel.field import Field
 from ..datamodel.variable import Variable
-import cerbere.mapper.slices
 
 
 class NCFile(AbstractMapper):
@@ -161,8 +161,10 @@ class NCFile(AbstractMapper):
             'y': ['lat', 'latitude'],
             'z': ['depth', 'height'],
             'station': ['mes', 'station'],
-            'cell': ['ni', 'cell', 'col', 'ra_size', 'columns', 'NUMCELLS'],
-            'row': ['nj', 'row', 'az_size', 'rows', 'NUMROWS'],
+            'cell': ['ni', 'cell', 'col', 'ra_size', 'columns', 'NUMCELLS',
+                     'across_track'],
+            'row': ['nj', 'row', 'az_size', 'rows', 'NUMROWS',
+                    'along_track'],
             }
         self.geodim_native2std = {
             'time': 'time',
@@ -184,7 +186,9 @@ class NCFile(AbstractMapper):
             'rows': 'row',
             'columns': 'cell',
             'NUMROWS': 'row',
-            'NUMCELLS': 'cell'
+            'NUMCELLS': 'cell',
+            'across_track': 'cell',
+            'along_track': 'row'
             }
         if geodim_matching:
             for std, native in geodim_matching.items():
@@ -417,10 +421,11 @@ class NCFile(AbstractMapper):
 
     def _do_remove_time(self, stddims):
         """Check if time dimension must be removed."""
-        return (self._feature_type == 'Grid' and
-                'x' in stddims and 'y' in stddims and 'time' in stddims and
-                'bnds' not in stddims)\
-            or (self._feature_type == 'Swath' and 'time' in stddims)
+        return ((self._feature_type == 'Grid' and
+                 'x' in stddims and 'y' in stddims and 'time' in stddims and
+                 'bnds' not in stddims) or
+                (self._feature_type == 'Swath' and
+                 'time' in stddims and len(stddims) > 1))
 
     #@profile
     def read_values(self, fieldname, slices=None):
@@ -448,6 +453,7 @@ class NCFile(AbstractMapper):
         if self.is_reference and native_fieldname == 'time'\
                 and native_fieldname not in self.get_handler().variables:
             return numpy.ma.array([0.])
+
         var = self._handler.variables[native_fieldname]
         var.set_auto_maskandscale(True)
         dims = list(self._handler.variables[native_fieldname].dimensions)
@@ -468,6 +474,17 @@ class NCFile(AbstractMapper):
             # standard slicing
             if slices is not None:
                 ncslices = copy.copy(slices)
+                if (fieldname == 'time' and
+                        self.__is_swath() and
+                        len(self.get_full_dimensions('time')) == 1):
+                    # case of swath files where the time is one-dimensional
+                    # along the satellite track (row dimension), e.g. one time
+                    # value per scan line : we reconstruct a 2-dimensionsal
+                    # time field (row, cell) to match the cerbere swath model
+                    if slices is not None:
+                        ncslices = [slices[0]]
+                    else:
+                        ncslices = slices
                 if isinstance(ncslices, dict):
                     if self._do_remove_time(stddims) and 'time' in ncslices:
                         ncslices.pop('time')
@@ -475,29 +492,14 @@ class NCFile(AbstractMapper):
                 elif isinstance(ncslices, list):
                     if self._do_remove_time(stddims):
                         ncslices.insert(stddims.index('time'), slice(None))
-                # align slices with variable dimensions (netcdf slicing does 
-                # not follow all python slicing rules)
-                ncslices = cerbere.mapper.slices.get_nice_slices(ncslices, 
-                                                                 dimsizes)
-
-                # expand slices
                 if self.view is None:
                     ncslices = self._fill_slices(ncslices, dimsizes)
                 else:
                     # slices are relative to the opened view
                     viewdimsizes = [self.get_dimsize(dim) for dim in dims]
                     ncslices = self._fill_slices(ncslices, viewdimsizes)
-                # if slice is empty, returns an empty array
-                shape = cerbere.mapper.slices.get_shape_from_slice(ncslices)
-                if min(list(shape)) <= 0:
-                    shape = tuple([0 for _ in list(shape)])
-                    values = numpy.ma.masked_all(
-                        shape,
-                        dtype = var.dtype)
-                    return values
-                # adjust wrt view
-                if self.view is not None:    
-                    for index, (ncsli, vwsli) in enumerate(zip(ncslices, viewslices)):
+                    for index, (ncsli, vwsli) in enumerate(zip(ncslices,
+                                                               viewslices)):
                         vw_first = vwsli.start
                         nc_first = ncsli.start
                         if ncsli.stop is None:
@@ -517,7 +519,6 @@ class NCFile(AbstractMapper):
             else:
                 ncslices = [slice(None) for i in range(len(dims))]
                 ncslices = self._fill_slices(ncslices, dimsizes)
-
             if self.center_on_greenwhich:
                 # shift offsets for longitudes when centering on meridian 0
                 # is requested
@@ -589,6 +590,23 @@ class NCFile(AbstractMapper):
             shape = list(values.shape)
             shape.pop(stddims.index('time'))
             values = values.reshape(tuple(shape))
+        if (fieldname == 'time' and
+                self.__is_swath() and
+                len(self.get_full_dimensions('time')) == 1):
+            # case of swath files where the time is one-dimensional
+            # along the satellite track (row dimension), e.g. one time value
+            # per scan line : we reconstruct a 2-dimensionsal time field
+            # (row, cell) to match the cerbere swath model
+            rows = self.get_dimsize('row')
+            cols = self.get_dimsize('cell')
+            if slices is None:
+                shape = (cols, rows)
+            else:
+                newslices = self._fill_slices(slices, (rows, cols))
+                shape = (newslices[1].stop - newslices[1].start,
+                         newslices[0].stop - newslices[0].start)
+            time = numpy.ma.resize(values, shape).transpose()
+            return time
         return values
 
     def read_fillvalue(self, fieldname):
@@ -987,6 +1005,11 @@ class NCFile(AbstractMapper):
                 = field.qc_details.values[:]
         return
 
+    def __is_swath(self):
+        """Returns True if the stored feature is a Swath or Image."""
+        return ('row' in self.get_full_dimensions() and
+                'cell' in self.get_full_dimensions())
+
     def read_field(self, fieldname):
         """
         Return the :class:`cerbere.field.Field` object corresponding to
@@ -1085,6 +1108,17 @@ class NCFile(AbstractMapper):
             if att not in ['units', 'scale_factor', 'add_offset',
                            '_FillValue', 'valid_min', 'valid_max']:
                 field.attributes[att] = attrs[att]
+        if (fieldname == 'time' and
+                self.__is_swath() and
+                len(self.get_full_dimensions('time')) == 1):
+            # case of swath files where the time is one-dimensional
+            # along the satellite track (row dimension), e.g. one time value
+            # per scan line : we reconstruct a 2-dimensionsal time field
+            # (row, cell) to match the cerbere swath model
+            rows = self.get_dimsize('row')
+            cols = self.get_dimsize('cell')
+            field.dimensions = collections.OrderedDict([('row', rows),
+                                                        ('cell', cols)])
         return field
 
     def create_dim(self, dimname, size=None):
@@ -1122,7 +1156,7 @@ class NCFile(AbstractMapper):
             dims = self.get_handler().dimensions
         else:
             if fieldname not in self.get_handler().variables:
-                raise Exception("Field '%s' not existing in NetCDF file" %
+                raise Exception("Field % not existing in NetCDF file",
                                 fieldname)
             dims = self.get_handler().variables[fieldname].dimensions
         stddims = []
@@ -1282,25 +1316,11 @@ class NCFile(AbstractMapper):
                 attrdate = attrdate + 'T' + attrtime
             dt = parser.parse(attrdate)
             return dt
-#             if '.' in attrdate:
-#                 # case 13-DEC-2005 00:00:00.000000
-#                 dt = parser.parse(attrdate)
-#                 return dt
-#                 #return datetime.datetime.strptime(
-#                 #            attrdate, "%Y-%m-%dT%H:%M:%S.%f"
-#                 #            )
-#             else:
-#                 return datetime.datetime.strptime(
-#                             attrdate, "%Y-%m-%dT%H:%M:%S"
-#                             )
         elif 'time_coverage_start' in attrs:
             try:
-                tmp = handler.getncattr('time_coverage_start')
-                if 'Z' in tmp:
-                    res = datetime.datetime.strptime(tmp,"%Y%m%dT%H%M%SZ")
-                else:
-                    res = datetime.datetime.strptime(tmp,"%Y%m%dT%H%M%S")
-                return res
+                attrdate = handler.getncattr('time_coverage_start')
+                attrdate = attrdate.strip('Z')
+                return parser.parse(attrdate)
             except ValueError:
                 logging.error('Unexpected metadata time format.')
                 # Unexpected metadata time format.
@@ -1330,42 +1350,20 @@ class NCFile(AbstractMapper):
                 attrdate = attrdate + 'T' + attrtime
             dt = parser.parse(attrdate)
             return dt
-#             if '.' in attrdate:
-#                 return datetime.datetime.strptime(
-#                             attrdate, "%Y-%m-%dT%H:%M:%S.%f"
-#                             )
-#             else:
-#                 return datetime.datetime.strptime(
-#                             attrdate, "%Y-%m-%dT%H:%M:%S"
-#                             )
         elif 'time_coverage_end' in attrs:
             try:
-                tmp = handler.getncattr('time_coverage_end')
-                if 'Z' in tmp:
-                    res = datetime.datetime.strptime(tmp,"%Y%m%dT%H%M%SZ")
-                else:
-                    res = datetime.datetime.strptime(tmp,"%Y%m%dT%H%M%S")
-                return res
-#                return datetime.datetime.strptime(
-#                    handler.getncattr('time_coverage_end'),
-#                    "%Y%m%dT%H%M%SZ"
-#                )
+                attrdate = handler.getncattr('time_coverage_end')
+                attrdate = attrdate.strip('Z')
+                return parser.parse(attrdate)
             except ValueError:
                 # Unexpected metadata time format.
                 logging.error('Unexpected metadata time format.')
                 return None
         elif 'time_coverage_stop' in attrs:
             try:
-                tmp = handler.getncattr('time_coverage_stop')
-                if 'Z' in tmp:
-                    res = datetime.datetime.strptime(tmp,"%Y%m%dT%H%M%SZ")
-                else:
-                    res = datetime.datetime.strptime(tmp,"%Y%m%dT%H%M%S")
-                return res
-#                return datetime.datetime.strptime(
-#                    handler.getncattr('time_coverage_end'),
-#                    "%Y%m%dT%H%M%SZ"
-#                )
+                attrdate = handler.getncattr('time_coverage_stop')
+                attrdate = attrdate.strip('Z')
+                return parser.parse(attrdate)
             except ValueError:
                 # Unexpected metadata time format.
                 logging.error('Unexpected metadata time format.')

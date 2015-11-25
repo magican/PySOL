@@ -1,0 +1,12 @@
+'numpy',
+'scipy',
+'netCDF4',
+'osr',
+'django.contrib.gis.geos',
+'gdal',
+'pyhdf',
+'pyhdf.SD',
+'pyhdf.V',
+'pyhdf.HDF',
+'pygrib',
+'gdalconst'

@@ -31,9 +31,6 @@ PREFIX = {'n': 'Nadir', 'o': 'Oblique', 'x': ''}
 
 PIXSYNC = {'in': 'PIXSYNC_i', 'io': 'PIXSYNC_i', 'an': 'PIXSYNC_a'}
 
-# offset between nadir and oblique swath edge
-NADIR_TO_OBLIQUE_OFFSET = 300
-
 
 class SAFESLFile(AbstractMapper):
     """Abstract class for SAFE SLSTR files (except L2P).
@@ -41,7 +38,7 @@ class SAFESLFile(AbstractMapper):
     def __init__(self, url=None, sltype=None, mode=READ_ONLY, **kwargs):
         if mode != READ_ONLY:
             raise Exception("This mapper can only be used in read_only mode.")
-        if not sltype in ['i', 'c', 'a', 'b']:
+        if sltype not in ['i', 'c', 'a', 'b']:
             raise Exception("Unknown SLSTR product type")
         super(SAFESLFile, self).__init__(url=url, mode=mode, **kwargs)
         self.__sltype = sltype
@@ -66,6 +63,17 @@ class SAFESLFile(AbstractMapper):
                                      mode=mode, **kwargs)
         self.__fieldlocator = {}
         self.__geofieldlocator = {}
+        self.__fieldtranslate = {}
+        # offset between nadir and oblique swath edge
+        self.nadir_to_oblique_offset = None
+
+    def __is_oblique(self, fieldname):
+        """Test if a field corresponds to an oblique view subproduct.
+
+        Returns:
+            bool: True f a field corresponds to an oblique view
+        """
+        return (fieldname in self.__oblique_fields)
 
     def open(self,
              view=None,
@@ -85,9 +93,9 @@ class SAFESLFile(AbstractMapper):
                 only used by the classes from :mod:`~cerbere.datamodel`
                 package. Can be 'Grid', 'Swath', etc...
 
-            datamodel_geolocation_dims (list, optional): list of the name of the
-                geolocation dimensions defining the data model to be read in
-                the file. Optional argument, only used by the datamodel
+            datamodel_geolocation_dims (list, optional): list of the name of
+                the geolocation dimensions defining the data model to be read
+                in the file. Optional argument, only used by the datamodel
                 classes, in case the mapper class can store different types of
                 data models.
 
@@ -102,7 +110,8 @@ class SAFESLFile(AbstractMapper):
             # modify view for oblique fields which are narrower
             if 'cell' in view:
                 obliqueview = view
-                obliqueview['cell'] = view['cell'] - NADIR_TO_OBLIQUE_OFFSET
+                obliqueview['cell'] = (
+                    view['cell'] - self.nadir_to_oblique_offset)
         for hdlr in self.__data_handlers:
             f = os.path.basename(hdlr.get_url())
             is_oblique = (f[-4] == 'o')
@@ -120,14 +129,30 @@ class SAFESLFile(AbstractMapper):
         for hdlr in self.__data_handlers:
             f = os.path.basename(hdlr.get_url())
             is_oblique = (f[-4] == 'o')
-            if is_oblique:
-                self.__oblique_fields.extend(hdlr.get_fieldnames())
             for fieldname in hdlr.get_fieldnames():
-                if 'orphan_pixels' not in hdlr.get_dimensions(fieldname):
-                    self.__fieldlocator[fieldname] = hdlr
+                ncvar = hdlr.get_handler().variables[fieldname]
+                if 'long_name' in (ncvar.ncattrs()):
+                    longname = ncvar.long_name
+                    newfieldname = self.__get_fieldname(fieldname,
+                                                        longname)
+                else:
+                    newfieldname = fieldname
+                self.__fieldtranslate[newfieldname] = fieldname
+                self.__fieldlocator[newfieldname] = hdlr
+                if is_oblique:
+                    self.__oblique_fields.append(newfieldname)
         # ...for geodetic coordinates
         for fieldname in self.__geod_handler.get_fieldnames():
             self.__geofieldlocator[fieldname] = self.__geod_handler
+        # define nadir/oblique offset
+        nadir_track_offset = (
+            self.__geofieldlocator['latitude_orphan_%sn' % self.__sltype]
+            .read_global_attribute('track_offset'))
+        oblique_track_offset = (
+            self.__fieldlocator['latitude_orphan_%so' % self.__sltype]
+            .read_global_attribute('track_offset'))
+        self.nadir_to_oblique_offset = int(round(
+            nadir_track_offset - oblique_track_offset))
 
     def close(self):
         """Close handler on storage"""
@@ -165,18 +190,34 @@ class SAFESLFile(AbstractMapper):
             tuple<str>: the standard dimensions of the field or file.
         """
         if fieldname is None:
-            return self.__geod_handler.get_dimensions()
+            dims = self.__geod_handler.get_dimensions()
+            if 'orphan_pixels' in dims:
+                # same dimension name (but not size) in oblique/nadir views so
+                # we have to create two dimensions since we merge the two views
+                newdims = []
+                for dim in dims:
+                    if dim != 'orphan_pixels':
+                        newdims.append(dim)
+                    else:
+                        newdims.extend([dim + '_n', dim + '_o'])
+                return newdims
+            return dims
         if fieldname in ['time', 'lat', 'lon', 'z']:
             # Should all have the same dimension as lat
             native_fieldname = self.get_geolocation_field('lat')
             dims = self.__geod_handler.get_dimensions(native_fieldname)
         else:
             handler = self.__fieldlocator[fieldname]
-            dims = handler.get_dimensions(fieldname)
+            dims = handler.get_dimensions(
+                self.__get_native_fieldname(fieldname))
         # convert geolocation dims to standard names
         newdims = []
         for dim in list(dims):
-            newdims.append(self.get_standard_dimname(dim))
+            if self.__is_oblique(fieldname):
+                view = 'o'
+            else:
+                view = 'n'
+            newdims.append(self.get_standard_dimname(dim, view))
         return tuple(newdims)
 
     def get_matching_dimname(self, dimname):
@@ -207,11 +248,14 @@ class SAFESLFile(AbstractMapper):
         """
         matching = {'time': 'time', 'row': 'rows', 'cell': 'columns',
                     'z': 'elevation'}
+        # remove the oblique/nadir suffix
+        if dimname[-2:] in ['_n', '_o']:
+            dimname = dimname.strip('_n').strip('_o')
         if dimname in matching:
             return matching[dimname]
         return dimname
 
-    def get_standard_dimname(self, dimname):
+    def get_standard_dimname(self, dimname, view=None):
         """
         Returns the equivalent standard dimension name for a
         dimension in the native format.
@@ -236,6 +280,13 @@ class SAFESLFile(AbstractMapper):
                     'elevation': 'z'}
         if dimname in matching:
             return matching[dimname]
+        # for other dimensions, add the oblique/nadir suffix
+        if dimname in ['row', 'cell', 'time', 'z']:
+            return dimname
+        if view is 'n':
+            dimname += '_n'
+        elif view is 'o':
+            dimname += '_o'
         return dimname
 
     def get_fieldnames(self):
@@ -260,6 +311,26 @@ class SAFESLFile(AbstractMapper):
         """
         if fieldname in ['lat', 'lon', 'time', 'z']:
             return self.get_geolocation_field(fieldname)
+        if fieldname in self.__fieldtranslate:
+            return self.__fieldtranslate[fieldname]
+        return fieldname
+
+    def __get_fieldname(self, fieldname, longname):
+        """Returns a unique field name built from the long name for ambiguous
+        field names.
+
+        Used because some sub files use the same variable names.
+
+        Args:
+            fieldname (str): field name to replace with a new name, if not
+                unique.
+            longname (str): longname from which to build a new unique field
+                name
+        Returns:
+            str: a unique field name among all the files in a SAFE container.
+        """
+        if fieldname in ["SST", "SST_uncertainty", "exception"]:
+            return longname.replace(' ', '_')
         return fieldname
 
     def get_geolocation_field(self, fieldname):
@@ -324,8 +395,20 @@ class SAFESLFile(AbstractMapper):
             return geofield
         else:
             native_name = self.__get_native_fieldname(fieldname)
-            field = self.__fieldlocator[native_name].read_field(native_name)
+            field = self.__fieldlocator[fieldname].read_field(native_name)
+            field.name = fieldname
             field.attach_storage(self.get_field_handler(fieldname))
+            dims = field.dimensions
+            renamed_dims = OrderedDict()
+            for dim in dims:
+                newdim = dim
+                if dim not in ['row', 'cell', 'time', 'z']:
+                    if self.__is_oblique(fieldname):
+                        newdim += '_o'
+                    else:
+                        newdim += '_n'
+                renamed_dims[newdim] = dims[dim]
+            field.dimensions = renamed_dims
             # for oblique view, the swath is narrower. It is padded with
             # dummy values to stack it over nadir view fields
             if fieldname in self.__oblique_fields:
@@ -380,44 +463,63 @@ class SAFESLFile(AbstractMapper):
         elif fieldname in ['lat', 'lon', 'z']:
             return self.__geofieldlocator[native_name].read_values(native_name,
                                                                    slices)
-        elif fieldname in self.__oblique_fields:
+        elif self.__is_oblique(fieldname):
             # oblique views has not the same cell dimension than nadir
             # we want to stack fields from both views by padding fillvalues
             celldim = None
             try:
-                dims = self.__fieldlocator[native_name].get_dimensions(
+                dims = self.__fieldlocator[fieldname].get_dimensions(
                     native_name
                     )
-                dimsizes = [self.get_dimsize(dim) for dim in dims]
-                celldim = list(dims).index('cell')
-                nadir_slices = cerbere.mapper.slices.get_nice_slices(
-                    slices,
-                    dimsizes)
-                sli = nadir_slices[celldim]
-                nad_start, nad_end, step = sli.start, sli.stop, sli.step
-                obliquewidth = (self.__fieldlocator[native_name]
-                                .get_dimsize('cell'))
-                obl_start, obl_end = nad_start, nad_end
-                obl_start = max(0, obl_start - NADIR_TO_OBLIQUE_OFFSET)
-                obl_end = max(0, min(obliquewidth,
-                                     obl_end - NADIR_TO_OBLIQUE_OFFSET))
-                newslices = list(nadir_slices)
-                newslices[celldim] = slice(obl_start, obl_end, step)
+                empty = False
+                if 'cell' in dims:
+                    dimsizes = [self.get_dimsize(dim) for dim in dims]
+                    celldim = list(dims).index('cell')
+                    nadir_slices = cerbere.mapper.slices.get_nice_slices(
+                        slices,
+                        dimsizes)
+                    sli = nadir_slices[celldim]
+                    nad_start, nad_end, step = sli.start, sli.stop, sli.step
+                    obliquewidth = (self.__fieldlocator[fieldname]
+                                    .get_dimsize('cell'))
+                    obl_start, obl_end = nad_start, nad_end
+                    obl_start = max(0,
+                                    obl_start - self.nadir_to_oblique_offset)
+                    if obl_start > obliquewidth:
+                        obl_start = obliquewidth
+                    obl_end = max(0,
+                                  min(obliquewidth,
+                                      obl_end - self.nadir_to_oblique_offset)
+                                  )
+                    newslices = list(nadir_slices)
+                    newslices[celldim] = slice(obl_start, obl_end, step)
+                    if obl_start >= obl_end:
+                        empty = True                        
+                else:
+                    # case of some fields such as orphan pixels which don't
+                    # have a cell dimension
+                    newslices = list(slices) if slices is not None else None
             except ValueError:
-                pass
+                raise
+
             # read values in oblique view grid
-            values = self.__fieldlocator[native_name].read_values(
-                native_name,
-                newslices)
-            # padding for values in nadir view grid
+            if celldim is not None and empty:
+                values = ma.masked_all(
+                    (),
+                    dtype=self.__fieldlocator[fieldname]._handler.variables[native_name].dtype)
+            else:
+                values = self.__fieldlocator[fieldname].read_values(
+                    self.__fieldtranslate[fieldname],
+                    newslices)
+            # padding for missing oblique values to match nadir view grid
             if celldim is not None:
                 shape = cerbere.mapper.slices.get_shape_from_slice(
                     cerbere.mapper.slices.get_nice_slices(slices, dimsizes))
                 padded_values = ma.masked_all(
                     tuple(shape),
-                    dtype = values.dtype,
+                    dtype=values.dtype,
                     )
-                if min(list(values.shape)) <= 0:
+                if values.shape == () or min(list(values.shape)) <= 0:
                     # empty result => return padded values only
                     return padded_values
                 padded_slice = []
@@ -425,16 +527,19 @@ class SAFESLFile(AbstractMapper):
                     if dim != 'cell':
                         padded_slice.append(slice(None, None, None))
                     else:
-                        offset = NADIR_TO_OBLIQUE_OFFSET - nad_start + obl_start
+                        offset = (self.nadir_to_oblique_offset -
+                                  nad_start + obl_start)
                         padded_slice.append(slice(
                             offset,
-                            offset + values.shape[celldim]     
+                            offset + values.shape[celldim]
                         ))
                 padded_values[padded_slice] = values
-                return padded_values        
-        else: 
-            return self.__fieldlocator[native_name].read_values(native_name,
-                                                                slices)
+                return padded_values
+            else:
+                return values
+        else:
+            return self.__fieldlocator[fieldname].read_values(native_name,
+                                                              slices)
 
     def read_fillvalue(self, fieldname):
         """Read the fill value of a field.

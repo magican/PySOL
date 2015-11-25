@@ -26,7 +26,6 @@ from ..datamodel.variable import Variable
 from .. import READ_ONLY
 from .ncfile import NCFile
 
-import re
 VIRTUALFIELD_DESCR = {
                       'time': '15th of the data acquisition month at 00:00:00'
                       }
@@ -36,6 +35,7 @@ VIRTUALFIELD_STDNAME = {
 VIRTUALFIELD_UNITS = {
                 'time': 'seconds since 1981-01-01 00:00:00'
                 }
+
 class AquariusL3PODAACNCFile(NCFile):
     def __init__(self, url=None, mode=READ_ONLY,
                  ncformat='NETCDF4', **kwargs):
@@ -50,6 +50,7 @@ class AquariusL3PODAACNCFile(NCFile):
 #         else:
 #             res = ('lat')
 #         return res
+
     def get_matching_dimname(self, geodimname):
         """Return the equivalent name in the native format for a standard
         dimension.
@@ -129,10 +130,10 @@ class AquariusL3PODAACNCFile(NCFile):
         else:
             return None
 
-    def get_dimensions(self, fieldname=None):
-        """
-        """
-        return super(AquariusL3PODAACNCFile, self).get_dimensions(fieldname)
+#     def get_dimensions(self, fieldname=None):
+#         """
+#         """
+#         return super(AquariusL3PODAACNCFile, self).get_dimensions(fieldname)
 
     def get_fieldnames(self):
         '''
@@ -192,8 +193,9 @@ class AquariusL3PODAACNCFile(NCFile):
         else:
             values = super(AquariusL3PODAACNCFile, self).read_values(fieldname,
                                                                slices)
-            values.mask = False
+#             values.mask = False
         return values
+    
     def get_start_time(self):
         yearmonth_file = self.read_values('time')
         yearmonth_dt_file = netCDF4.num2date(yearmonth_file,VIRTUALFIELD_UNITS['time'])
@@ -201,14 +203,16 @@ class AquariusL3PODAACNCFile(NCFile):
         month = yearmonth_dt_file.month
         st = datetime.datetime(year,month,1)
         return st
+    
     def get_end_time(self):
         yearmonth_file = self.read_values('time')
         yearmonth_dt_file = netCDF4.num2date(yearmonth_file,VIRTUALFIELD_UNITS['time'])
         year = yearmonth_dt_file.year
         month = yearmonth_dt_file.month
-        b,e = calendar.monthrange(year,month)
+        _,e = calendar.monthrange(year,month)
         st = datetime.datetime(year,month,e)
         return st
+    
     def get_cycle_number(self):
         return None
 

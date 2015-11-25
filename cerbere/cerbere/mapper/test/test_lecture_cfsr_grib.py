@@ -1,6 +1,7 @@
 from cerbere.mapper.gribfile import GribFile
 from cerbere.datamodel.grid import Grid
 import numpy
+import pygrib
 from matplotlib import pyplot as plt
 import pdb
 def test_attr(hh):
@@ -8,6 +9,7 @@ def test_attr(hh):
     for aa in attrs.keys():
         print aa,'=',attrs[aa]
     return
+
 def test_lonlat(hh):
     print hh.get_fieldnames()
     lats = hh.read_values('lat')
@@ -57,6 +59,34 @@ def test_lonlat(hh):
 # print filout
 # print 'time:',hh.read_values('time').shape
 # sensinle_heat = hh.read_values('shtfl')
+
+def recup_var_names_with_pygrib(ff):
+    grbs=pygrib.open(ff)
+    print dir(grbs)
+    grbs.message(6).data()[1].shape
+    for dodo in range(grbs.messages):
+        print grbs.message(dodo+1).name
+#     pdb.set_trace()
+    grb = grbs.select(name='Momentum flux, u component')[0]
+    data=grb.values
+    lat,lon = grb.latlons()
+    grbs.close()
+    print data.shape
+    return grbs.messages
+
+def recup_var_name_with_mapper(hh):
+    fields = hh.get_fieldnames()
+    print fields
+#     for fifi in fields:
+#         fofo = hh.read_field(fifi)
+#         attrs = hh.read_field_attributes(fifi)
+#         for aat in attrs.keys():
+# #             if 'abb' in aat or 'ariabl' in aat:
+#             print fifi,aat,'=',attrs[aat] #shortNameECMF,parameterName,nameECMF,unitsECMF,units,parameterUnits
+#         pdb.set_trace()
+#         print fofo
+    return len(fields)
+
 def testgrid(hh):
     att_show = False
     if att_show==True:
@@ -125,8 +155,14 @@ def testgrid(hh):
     print 'file output:',filout
     return
 if __name__ == '__main__':
-    ff = '/home/cercache/project/oceanheatflux/data/sources/fluxes/cfsr/1990/flxf06.gdas.1990123118.grb2'
+#     ff = '/home/cercache/project/oceanheatflux/data/sources/fluxes/cfsr/1990/flxf06.gdas.1990123118.grb2'
+    ff = "/home/cercache/users/mirror/home/oo7/oo/ncep/cfsr/grb/2002/flxf06.gdas.2002081618.grb2"
     hh = GribFile(url=ff,mode='r')
     hh.open()
+    taille_vraie = recup_var_names_with_pygrib(ff)
+    taille_proxy = recup_var_name_with_mapper(hh)
+    print 'taille_vraie',taille_vraie
+    print 'taille_proxy',taille_proxy
     test_attr(hh)
+#     
     hh.close()

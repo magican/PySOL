@@ -21,9 +21,6 @@ sudo apt-get install gcc \
 # of setup.py but it works fine when done this way.
 pip install numpy==1.8
 
-# Cython is used in the setup.py file, so it must be installed beforehand.
-pip install Cython==0.19.2
-
 # the pyhdf project changed the version number convention they use for the
 # python packages (X.Y-Z to X.Y.Z), which prevents pip from detecting the latest
 # version correctly => manual installation.

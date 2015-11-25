@@ -15,6 +15,5 @@ Subpackages
 .. toctree::
 
     cerbere.datamodel
-    cerbere.geo
     cerbere.mapper
 

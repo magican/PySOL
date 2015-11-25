@@ -178,8 +178,8 @@ class LandMaskNCFile(NCFile):
             values = super(LandMaskNCFile, self).read_values(VIRTUALFIELD_STDNAME[fieldname],
                                                                slices)
             #apply convention sea=-1 and land=0
-            values[values==1] = -1
-            values[values==2] = 0
+            values[values==0] = -1
+            values[values==1] = 0
         else:
             values = super(LandMaskNCFile, self).read_values(fieldname,
                                                                slices)

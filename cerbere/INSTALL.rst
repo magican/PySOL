@@ -12,10 +12,6 @@ Your Python package manager should handle most of the dependencies by himself, b
 
     pip install numpy==1.7.1
 
-- Cerbere's setup.py imports some Cython modules, so Cython must also be installed before you can let the package manager do its work::
-
-    pip install Cython==0.19.1
-
 - The versioning convention of the pyhdf package changed from major.minor-revision to major.minor.revision. This change prevents package managers to handle pyhdf correctly, you have to install it manually
 
     .. sourcecode :: bash

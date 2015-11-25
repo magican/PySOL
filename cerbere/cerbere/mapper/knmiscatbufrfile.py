@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-.. module::cerbere.mapper.bufrfile
+.. module::cerbere.mapper.knmiscatbufrfile
 
 Mapper classs for KNMI L2 scatterometer BUFR format
 

@@ -14,8 +14,10 @@ grids, each with different dimensions.
 
 .. important::
 
-  From **cerbere** perspective, each grid and view combination is considered as
-  a different product, with its own mapper class.
+  From **cerbere** perspective, each grid is considered as a different product,
+  with its own mapper class. However it merges oblique and nadir views as if
+  they were contained in the same file, so you don't need to instanciate a
+  mapper for each view.
 
 Note that all mapper classes inherit from the same parent class, `SAFESLFile`.
 
@@ -24,26 +26,22 @@ Refer to the following table to decide which mapper you need to use:
 +------------------------------------------------+------------------------+---------------+
 | Dataset                                        | Mapper class           | Datamodel     |
 +================================================+========================+===============+
-| S3A_SL_2_WCT Nadir (in)                        | SAFESLIRNadirFile      | Swath         |
+| S3A_SL_2_WCT Nadir (in)                        | SAFESLIRFile           | Swath         |
 | S3A_SL_1_RBT 1km Nadir (in)                    |                        |               |
-+------------------------------------------------+------------------------+---------------+
-| S3A_SL_2_WCT Oblique (io)                      | SAFESLIRObliqueFile    | Swath         |
+| S3A_SL_2_WCT Oblique (io)                      |                        |               |
 | S3A_SL_1_RBT 1km Oblique (io)                  |                        |               |
 +------------------------------------------------+------------------------+---------------+
-| S3A_SL_1_RBT 500m & SWIR A Stripe Nadir (an)   | SAFESL500ANadirFile    | Swath         |
+| S3A_SL_1_RBT 500m & SWIR A Stripe Nadir (an)   | SAFESL500AFile         | Swath         |
+| S3A_SL_1_RBT 500m & SWIR A Stripe Oblique (ao) |                        |               |
 +------------------------------------------------+------------------------+---------------+
-| S3A_SL_1_RBT 500m & SWIR A Stripe Oblique (ao) | SAFESL500AObliqueFile  | Swath         |
+| S3A_SL_1_RBT 500m & SWIR B Stripe Nadir (bn)   | SAFESL500BFile         | Swath         |
+| S3A_SL_1_RBT 500m & SWIR B Stripe Oblique (bo) |                        |               |
 +------------------------------------------------+------------------------+---------------+
-| S3A_SL_1_RBT 500m & SWIR B Stripe Nadir (bn)   | SAFESL500BNadirFile    | Swath         |
-+------------------------------------------------+------------------------+---------------+
-| S3A_SL_1_RBT 500m & SWIR B Stripe Oblique (bo) | SAFESL500BObliqueFile  | Swath         |
-+------------------------------------------------+------------------------+---------------+
-| S3A_SL_1_RBT TDI Nadir (cn)                    | SAFESL500TDINadirFile  | Swath         |
-+------------------------------------------------+------------------------+---------------+
-| S3A_SL_1_RBT TDI Oblique (co)                  | SAFESL500TDIObliqueFile| Swath         |
+| S3A_SL_1_RBT TDI Nadir (cn)                    | SAFESL500TDIFile       | Swath         |
+| S3A_SL_1_RBT TDI Oblique (co)                  |                        |               |
 +------------------------------------------------+------------------------+---------------+
 
-Let's for instance work with the SAFE L2 WCT product:
+Let's for instance work with the SAFE L2 WCT product::
 
   S3A_SL_2_WCT____20130621T101013_20130621T101053_20141201T092032_0039_009_022______MAR_O_NR_001.SEN3
 
@@ -51,10 +49,10 @@ We will open first the Nadir view:
 
 .. code-block:: python
 
-  from cerbere.mapper.safeslfile import SAFESLIRNadirFile
+  from cerbere.mapper.safeslfile import SAFESLIRFile
   fname = 'S3A_SL_2_WCT____20130621T101013_20130621T101053_20141201T092032_0039_009_022______MAR_O_NR_001.SEN3'
   # this creates the mapper object (equivalent to opening a file)
-  fd = SAFESLIRNadirFile(url=fname)
+  fd = SAFESLIRFile(url=fname)
 
 
 Discovery of the file content
@@ -169,10 +167,10 @@ as listed in the above table.::
 Load the content from a file into the model, thanks to the mapper already
 seen, using the `load` function::
 
-  from cerbere.mapper.safeslfile import SAFESLNadirFile
+  from cerbere.mapper.safeslfile import SAFESLFile
   fname = 'S3A_SL_2_WCT____20130621T101013_20130621T101053_20141201T092032_0039_009_022______MAR_O_NR_001.SEN3'
   # this creates the mapper object (equivalent to opening a file)
-  fd = SAFESLNadirFile(url=fname)
+  fd = SAFESLFile(url=fname)
   
   swath.load(fd)
 

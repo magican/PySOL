@@ -36,7 +36,7 @@ class GPMHDF5File(hdf5file.HDF5File):
                  **kwargs):
         """
         Args:
-            subproduct (str): sub-product to open. Used only in the case of
+            subproduct (str): HS or MS sub-product to open. Used only in the case of
                 Ka L2 product which contains two underlying products with their
                 own geolocation grid.
         """

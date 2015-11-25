@@ -321,15 +321,27 @@ class SAFEOCNNCFile(NCFile):
 
     def get_start_time(self):
         """Returns the minimum date of the file temporal coverage"""
-        return datetime.strptime(
+        try:
+            res = datetime.strptime(
                     self.get_handler().getncattr('firstMeasurementTime'),
                     '%Y-%m-%dT%H:%M:%S.%fZ')
+        except:
+            res= datetime.strptime(
+                    self.get_handler().getncattr('firstMeasurementTime'),
+                    '%Y-%m-%dT%H:%M:%SZ')
+        return res
 
     def get_end_time(self):
         """Returns the maximum date of the file temporal coverage"""
-        return datetime.strptime(
+        try:
+            res = datetime.strptime(
                     self.get_handler().getncattr('lastMeasurementTime'),
                     '%Y-%m-%dT%H:%M:%S.%fZ')
+        except:
+            res = datetime.strptime(
+                    self.get_handler().getncattr('lastMeasurementTime'),
+                    '%Y-%m-%dT%H:%M:%SZ')
+        return res
 
 #     def get_bbox(self):
 #         '''

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 cerbere.mapper.ghrsstncfile
-============================
+===========================
 
 Mapper class for GHRSST netcdf files
 
@@ -323,7 +323,7 @@ class GHRSSTNCFile(NCFile):
                 if 'NAVO' in self.get_collection_id():
                     values = numpy.ma.masked_equal(values, 0, atol=0.0001,
                                                    copy=False)
-            # homegenize longitudes
+            # homogenize longitudes
             if fieldname == 'lon':
                 ind = numpy.ma.where(values >= 180.)
                 values[ind] = values[ind] - 360.
@@ -333,6 +333,18 @@ class GHRSSTNCFile(NCFile):
                 # pixel time is time + sst_dtime
                 var = self.get_handler().variables['time']
                 values = var[0] + values
+            # fix invalid values
+            if (self.get_collection_id() == 'JPL-L2P-MODIS_A' or
+                    self.get_collection_id() == 'JPL-L2P-MODIS_T'):
+                # some lats have nan
+                if fieldname == 'lat':
+                    values = numpy.ma.fix_invalid(values, copy=False)
+                # and corresponding lons have 0.0.... !
+                elif fieldname == 'lon':
+                    lats = self.read_values('lat', slices=slices)
+                    lats = numpy.ma.fix_invalid(lats, copy=False)
+                    values = numpy.ma.array(values, mask=lats.mask,
+                                            copy=False)
             return values
         except:
             logging.error("Could not read values for fieldname: {}".format(

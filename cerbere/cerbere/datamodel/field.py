@@ -340,7 +340,7 @@ class Field(object):
             padding (bool) : if True, pad the result with fill values where
                 slices are out of the field size.
         '''
-        if cache or strong_cache:
+        if (cache or strong_cache):
             # cache reads in the entire field, regardless of any
             # slicing, this is useful in some instances for lat / lon / time
             # fields, or when many many subsets are extracted from a netCDF
@@ -369,6 +369,7 @@ class Field(object):
             subset = None
         if subset is not None and padding:
             subset, original_subset = self.__fix_subset_offset(subset)
+        
         if self._values is None:
             if self.handler and self.handler.is_saved():
                 values = self.handler.mapper.read_values(
@@ -475,6 +476,36 @@ class Field(object):
                       valid_min=self.valid_min,
                       valid_max=self.valid_max
                       )
+        return field
+
+    def __add__(self, other):
+        """Return a new field with the sum of current and an other field."""
+        sumname = "%s_%s_sum" % (self.variable.shortname,
+                                 other.variable.shortname)
+        variable = Variable(sumname)
+        field = Field(
+            variable,
+            dimensions=copy.copy(self.dimensions),
+            datatype=self.datatype,
+            fillvalue=self.fillvalue,
+            values=self.get_values() + other.get_values(),
+            units=self.units)
+        return field
+
+    def __sub__(self, other):
+        """Return a new field with the difference of current and an other
+        field.
+        """
+        sumname = "%s_%s_difference" % (self.variable.shortname,
+                                        other.variable.shortname)
+        variable = Variable(sumname)
+        field = Field(
+            variable,
+            dimensions=copy.copy(self.dimensions),
+            datatype=self.datatype,
+            fillvalue=self.fillvalue,
+            values=self.get_values() - other.get_values(),
+            units=self.units)
         return field
 
 

@@ -23,27 +23,35 @@ from ..datamodel.field import Field
 from ..datamodel.variable import Variable
 from .. import READ_ONLY
 from .ncfile import NCFile
-
+import pdb
+import sys
+sys.path.append('/home/losafe/users/agrouaze/git/pathfinders_acidification/src/lib')
+from read_dat_file import read_official_nsidc_grid_north
 import re
 
 def GetPolarGrid(pole,original=False):
     '''
-    return lons and lats or NSIDC grid arctic/antarctic at 50km res
-    original (bool) True=>get the full array 12.5km
+    return lons and lats or NSIDC grid arctic/antarctic at 25km res
+    original (bool) True=>get the full array 25km
     pole (str) north or south
+    note: originally we used a sterepolar grid but it was not the official NSIDC one (shift of 7km), now the official grid is retrieved from    
+    psn25lats_v3.dat: 304 columns x 448 rows, range = [31.102, 89.836]
     '''
-    file = '/home/cercache/users/agrouaze/temporaire/grid_'+pole+'_12km.nc'
-    nc = netCDF4.Dataset(file,'r')
-    tlon = nc.variables['longitude'][:]
-    tlat = nc.variables['latitude'][:]
-    tlon[tlon>180] = tlon[tlon>180]-360.
-    nc.close()
-    if original:
-        lons = tlon
-        lats = tlat
-    else:
-        lons = tlon[slice(0,tlon.shape[0],2),slice(0,tlon.shape[1],2)]
-        lats = tlat[slice(0,tlat.shape[0],2),slice(0,tlat.shape[1],2)]
+#     file = '/home/cercache/users/agrouaze/temporaire/grid_'+pole+'_12km.nc'
+#     nc = netCDF4.Dataset(file,'r')
+#     tlon = nc.variables['longitude'][:]
+#     tlat = nc.variables['latitude'][:]
+#     
+#     nc.close()
+#     if original:
+#         lons = tlon
+#         lats = tlat
+#     else:
+#         
+    lats,lons = read_official_nsidc_grid_north()
+#     lons = lons[slice(0,lons.shape[0],2),slice(0,lons.shape[1],2)]
+#     lats = lats[slice(0,lats.shape[0],2),slice(0,lats.shape[1],2)]
+#     lons[lons>180] = n[tlon>180]-360.
     varlon = Variable(
                         shortname='lon',
                         description='longitude',
@@ -54,6 +62,7 @@ def GetPolarGrid(pole,original=False):
                         description='latitude',
                         standardname='latitude'
                         )
+    logging.info('GetPolarGrid | lon: %s lat:%s',lons.shape,lats.shape)
 #     dimensions = ['cell','row']
     dimensions = ['y','x']
 #     dimensions = ['lat','lon']
@@ -209,7 +218,7 @@ class CERSATIceSSMINCFile(NCFile):
         pole = self.read_global_attribute('pole')
         fieldlon,fieldlat = GetPolarGrid(pole,original=True)
         if fieldname == 'longitude':
-           values = fieldlon.values
+            values = fieldlon.values
         elif fieldname == 'latitude':
             values = fieldlat.values
         elif fieldname == 'concentration':

@@ -6,26 +6,20 @@ Created on 15 janv. 2015
 import sys
 
 from cerbere.mapper.safeolfile import SAFEOLFile
+from cerbere.datamodel.swath import Swath
+from cerplot.mapping import CerMap
 
-test = int(sys.argv[1])
 
-
-if test == 0:
-    fname = "/home1/ananda/data/v1/S3A_OL_1_ERR____20080108T065652_20080108T074025_20150520T171028_2613_065_006______LN2_D_NT____.SEN3"
-    ncf = SAFEOLFile(url=fname)
+fname = sys.argv[1]
+print fname
+if 'S3A_OL_1_ERR' in fname or 'S3A_OL_1_EFR' in fname:
     testfield = "Oa01_radiance"
-elif test == 1:
-    fname = "/home1/ananda/data/v1/S3A_OL_2_LRR____20080108T065652_20080108T074025_20150521T125214_2613_084_049______LN1_D_NT_001.SEN3"
-    ncf = SAFEOLFile(url=fname)
+elif 'S3A_OL_2_LRR' in fname or 'S3A_OL_2_LFR' in fname:
     testfield = "IWV"
-elif test == 2:
-    fname = "/home1/ananda/data/v1/S3A_OL_2_WRR____20080108T065652_20080108T074025_20150521T130759_2613_084_049______MAR_D_NT_001.SEN3"
-    ncf = SAFEOLFile(url=fname)
+elif 'S3A_OL_2_WRR' in fname or 'S3A_OL_2_WFR' in fname:
     testfield = "Oa01_reflectance"
 
-
-from cerbere.datamodel.swath import Swath
-
+ncf = SAFEOLFile(url=fname)
 
 print 'OPEN'
 ncf.open()
@@ -87,8 +81,5 @@ for fieldname in swath.get_fieldnames():
 
 
 # DISPLAY
-from cerbereutils.plot.mapping import CerMap
-
-m = CerMap(swath, testfield, contouring='scatter')
-m.save('toto.png')
-
+m = CerMap(swath, fieldname=testfield)
+m.show()

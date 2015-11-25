@@ -16,7 +16,7 @@ import datetime
 import bufr
 import numpy
 import netCDF4
-
+import logging
 from cerbere.mapper import abstractmapper
 from cerbere.datamodel import field
 from cerbere.datamodel import variable
@@ -121,7 +121,7 @@ class BUFRFile(abstractmapper.AbstractMapper):
         """
         return dimname
 
-    def open(self, view=None):
+    def open(self, view=None,datamodel_geolocation_dims=None,datamodel=None,):
         """Open the file (or any other type of storage)
 
         Args:
@@ -143,6 +143,10 @@ class BUFRFile(abstractmapper.AbstractMapper):
         self._handler = bufr.BUFRFile(self._url)
         super(BUFRFile, self).open(view=view,
                                    datamodel='Swath')
+        if datamodel_geolocation_dims:
+            self.datamodel_geolocation_dims = datamodel_geolocation_dims
+        if datamodel is not None:
+            self._feature_type = datamodel
         # force data buffering to get full file structure and content
         fieldnames = []
         units = []
@@ -165,17 +169,19 @@ class BUFRFile(abstractmapper.AbstractMapper):
         for record in self._handler:
             nbrows += 1
             if first:
-                nbcells = len(record[0].data)
+                nbcells = len(record[1].data)
                 for entry in record:
                     # create valid name
                     entryname = (entry.name.lower().replace(' ','_').
                                  strip('_').strip('*'))
+                    logging.debug('entry name %s',entryname)
                     # identify geolocation information. We assume the first met
                     # entries with geolocation names are the correct ones. The
                     # next ones with the same names are processed as additional
                     # variables
                     if entryname == 'year' and yearidx is None:
                         yearidx = entry.index
+                        logging.debug('entry index year = %s',yearidx)
                     elif entryname == 'month' and monthidx is None:
                         monthidx = entry.index
                     elif entryname == 'day' and dayidx is None:
@@ -225,25 +231,27 @@ class BUFRFile(abstractmapper.AbstractMapper):
                     elif entry.name in self.ATTRIBUTE_ENTRIES:
                         self.attributes[entryname] = entry.data[0]
                 first = False
+                for i in range(nbcells):
+                    logging.debug('year %s', int(record[yearidx].data[i]))
                 geolocdata['time'] = [numpy.array(
                     [(datetime.datetime(int(record[yearidx].data[i]),
                                         int(record[monthidx].data[i]),
                                         int(record[dayidx].data[i]),
                                         int(record[houridx].data[i]),
                                         int(record[minuteidx].data[i]),
-                                        int(record[secondidx].data[i]))
-                        - REFERENCE_TIME).total_seconds()
+                                        int(record[secondidx].data[i])) -
+                        REFERENCE_TIME).total_seconds()
                      for i in range(nbcells)
                      ])]
             else:
                 # read arrays of data
                 current_reccord_range_length = record[secondidx].data.shape[0]
-                if nbcells==current_reccord_range_length:
+                if nbcells == current_reccord_range_length:
                     for i, fieldname in enumerate(fieldnames):
                         data[i].append(record[indexes[fieldname]].data)
                     geolocdata['lon'].append(record[lonidx].data)
                     geolocdata['lat'].append(record[latidx].data)
-                    
+
                     geolocdata['time'].append(numpy.array(
                         [(datetime.datetime(int(record[yearidx].data[i]),
                                             int(record[monthidx].data[i]),
@@ -256,9 +264,16 @@ class BUFRFile(abstractmapper.AbstractMapper):
                          ]))
         del self._handler
         self._handler = self
-        # get dimensions
-        self._dimensions = collections.OrderedDict([('row', nbrows),
-                                                    ('cell', nbcells)])
+        # get dimensions (take into account the view)
+        self._dimensions = collections.OrderedDict([
+            ('row', nbrows),
+            ('cell', nbcells)
+            ])
+        newslices = cerbere.mapper.slices.get_absolute_slices(
+            self.view,
+            slices=None,
+            dimnames=self._dimensions.keys(),
+            dimsizes=self._dimensions.values())
         # get fields and cache data
         self._fields = {}
         for i, fieldname in enumerate(fieldnames):
@@ -268,7 +283,7 @@ class BUFRFile(abstractmapper.AbstractMapper):
                 dimensions=self._dimensions,
                 datatype=numpy.float32,
                 values=numpy.ma.masked_equal(numpy.vstack(data[i]),
-                                             self.FILLVALUE),
+                                             self.FILLVALUE)[tuple(newslices)],
                 fillvalue=self.FILLVALUE,
                 units=units[i],
                 )
@@ -281,7 +296,7 @@ class BUFRFile(abstractmapper.AbstractMapper):
             dimensions=self._dimensions,
             datatype=numpy.float32,
             values=numpy.ma.masked_equal(numpy.vstack(geolocdata['lat']),
-                                         self.FILLVALUE),
+                                         self.FILLVALUE)[tuple(newslices)],
             fillvalue=self.FILLVALUE,
             units='degrees_north',
             )
@@ -292,7 +307,7 @@ class BUFRFile(abstractmapper.AbstractMapper):
             dimensions=self._dimensions,
             datatype=numpy.float32,
             values=numpy.ma.masked_equal(numpy.vstack(geolocdata['lon']),
-                                         self.FILLVALUE),
+                                         self.FILLVALUE)[tuple(newslices)],
             fillvalue=self.FILLVALUE,
             units='degrees_east',
             )
@@ -302,7 +317,7 @@ class BUFRFile(abstractmapper.AbstractMapper):
             variable=var,
             dimensions=self._dimensions,
             datatype=numpy.int32,
-            values=numpy.vstack(geolocdata['time']),
+            values=numpy.vstack(geolocdata['time'])[tuple(newslices)],
             units=('seconds since %s'
                    % datetime.datetime.strftime(REFERENCE_TIME,
                                                 "%Y-%m-%d %H:%M:%S"))
@@ -312,7 +327,7 @@ class BUFRFile(abstractmapper.AbstractMapper):
 
     def close(self):
         """Close handler on storage"""
-        raise NotImplementedError
+        pass
 
     def read_values(self, fieldname, slices=None):
         """Read the data of a field.

@@ -46,21 +46,18 @@ Mapper for Sentinel-3 SLSTR files in SAFE format.
 +------------------------------------------------+------------------------+---------------+
 | Dataset                                        | Mapper class           | Datamodel     |
 +================================================+========================+===============+
-| S3A_SL_2_WCT Nadir (in)                        | SAFESLIRNadirFile      | Swath         |
+| S3A_SL_2_WCT Nadir (in)                        | SAFESLIRFile           | Swath         |
 | S3A_SL_1_RBT 1km Nadir (in)                    |                        |               |
-+------------------------------------------------+------------------------+---------------+
-| S3A_SL_2_WCT Oblique (io)                      | SAFESLIRObliqueFile    | Swath         |
+| S3A_SL_2_WCT Oblique (io)                      |                        |               |
 | S3A_SL_1_RBT 1km Oblique (io)                  |                        |               |
 +------------------------------------------------+------------------------+---------------+
-| S3A_SL_1_RBT 500m & SWIR A Stripe Nadir (an)   | SAFESL500ANadirFile    | Swath         |
+| S3A_SL_1_RBT 500m & SWIR A Stripe Nadir (an)   | SAFESL500AFile         | Swath         |
+| S3A_SL_1_RBT 500m & SWIR A Stripe Oblique (ao) |                        |               |
 +------------------------------------------------+------------------------+---------------+
-| S3A_SL_1_RBT 500m & SWIR A Stripe Oblique (ao) | SAFESL500AObliqueFile  | Swath         |
+| S3A_SL_1_RBT 500m & SWIR B Stripe Nadir (bn)   | SAFESL500BFile         | Swath         |
+| S3A_SL_1_RBT 500m & SWIR B Stripe Oblique (bo) |                        |               |
 +------------------------------------------------+------------------------+---------------+
-| S3A_SL_1_RBT 500m & SWIR B Stripe Nadir (bn)   | SAFESL500BNadirFile    | Swath         |
+| S3A_SL_1_RBT TDI Nadir (cn)                    | SAFESL500TDIFile       | Swath         |
+| S3A_SL_1_RBT TDI Oblique (co)                  |                        |               |
 +------------------------------------------------+------------------------+---------------+
-| S3A_SL_1_RBT 500m & SWIR B Stripe Oblique (bo) | SAFESL500BObliqueFile  | Swath         |
-+------------------------------------------------+------------------------+---------------+
-| S3A_SL_1_RBT TDI Nadir (cn)                    | SAFESL500TDINadirFile  | Swath         |
-+------------------------------------------------+------------------------+---------------+
-| S3A_SL_1_RBT TDI Oblique (co)                  | SAFESL500TDIObliqueFile| Swath         |
-+------------------------------------------------+------------------------+---------------+
+

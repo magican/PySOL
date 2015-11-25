@@ -5,7 +5,7 @@ As usual, you have to instantiate a mapper of the correct class for this type of
 
   from cerbere.mapper.safeocnncfile import SAFEOCNNCFile
   
-  fname = '/home/cercache/project/mpc-sentinel1/data/sample_data/wv_sl2/L2/ASA_WV_OCN__2SSH_20051128T002716_20051128T002717_019580_000000_7C18.SAFE/measurement/asa-is2-ocn-hh-20051127t235932-20051128t002731-019580-000000-055.nc'
+  fname = '/home/cercache/project/mpc-sentinel1/data/esa/sentinel-1a/L2/WV/S1A_WV_OCN__2S/2015/320/S1A_WV_OCN__2SSV_20151116T203517_20151116T205112_008634_00C443_EE48.SAFE/measurement/s1a-wv1-ocn-vv-20151116t204729-20151116t204732-008634-00c443-051.nc'
   # this creates the mapper object (equivalent to opening a file)
   fd = SAFEOCNNCFile(url=fname)
 

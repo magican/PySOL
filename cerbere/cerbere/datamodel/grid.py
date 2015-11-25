@@ -195,16 +195,13 @@ class Grid(AbstractFeature):
                 See STANDARD_ATTRIBUTES_VALUES in abstractmapper class to see
                 a list of standard attributes
         """
-        if not output:
+        if output is None:
             mapper = self.get_mapper()
         else:
             mapper = output
         if mapper.is_writable():
             # creating dimensions
-            if self.is_unique_grid_time():
-                mapper.create_dim('time', None)
-            else:
-                mapper.create_dim('time', 1)
+            mapper.create_dim('time', None)
             if self.projection.is_cylindrical():
                 mapper.create_dim(
                         'lat',
@@ -231,7 +228,7 @@ class Grid(AbstractFeature):
                 if v not in self._geolocation_fields:
                     for d in self._fields[v].dimensions:
                         if d not in dims:
-                            output.create_dim(d, self._fields[v].get_dimsize(d))
+                            mapper.create_dim(d, self._fields[v].get_dimsize(d))
                             dims.append(d)
             # creating metadata
             if attrs:
@@ -264,9 +261,9 @@ class Grid(AbstractFeature):
             globalattr['cdm_data_type'] = 'grid'
             mapper.write_global_attributes(globalattr)
             # creating records
+            if self._geolocation_fields['time'] is None:
+                raise Exception('No time information defined')
             for geof in self._geolocation_fields:
-                if self._geolocation_fields['time'] is None:
-                    raise Exception('No time information defined')
                 if self._geolocation_fields[geof] is None:
                     logging.warning('Missing geolocation variable : %s', geof)
                 else:
@@ -279,10 +276,12 @@ class Grid(AbstractFeature):
                     mapper.create_field(self._fields[dataf],
                                         dim_translation,
                                         feature='Grid')
+        else:
+            raise Exception('Mapper object is not writable')
         # saving records
         for geof in self._geolocation_fields:
             field = self._geolocation_fields[geof]
-            if field and not field.is_saved():
+            if field is not None and not field.is_saved():
                 mapper.write_field(self._geolocation_fields[geof])
         for dataf in self._fields.keys():
             if not self._fields[dataf].is_saved():

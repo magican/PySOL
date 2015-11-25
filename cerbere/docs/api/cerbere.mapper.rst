@@ -89,6 +89,24 @@ mapper Package
     :undoc-members:
     :show-inheritance:
 
+mod:`safeolfile` Module
+-----------------------
+
+.. automodule:: cerbere.mapper.safeolfile
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+mod:`safeslfile` Module
+-----------------------
+
+.. automodule:: cerbere.mapper.safeslfile
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+
 :mod:`safegeotifffile` Module
 -----------------------------
 

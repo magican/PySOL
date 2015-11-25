@@ -359,10 +359,12 @@ class URLSeries(object):
             day2 = datetime.datetime(end.year,end.month,end.day)
             d = day1
 #             logging.debug('[urlseries.py] day1:%s, day2:%s',day1,day2)
+            extension = os.path.splitext(self.timepattern['%TIME'])[1]
+            
             while d <= day2:
                 pattern = self.urlpattern.replace( '%TIME', d.strftime(self.timepattern['%TIME']) )
                 logging.debug("URL series pattern : %s" % os.path.join( os.path.dirname( pattern ), '*' ))
-                urls = glob.glob(os.path.join( os.path.dirname( pattern ), '*' ))
+                urls = glob.glob(os.path.join( os.path.dirname( pattern ), '*'+extension ))
                 urls.sort()
                 patdep,patindep = self.urlpattern.split('%TIME')
                 patdep = patdep + self.timepattern['%TIME']
@@ -423,30 +425,36 @@ class URLSeries(object):
                         patdep_simplified = patdep
 #                         logging.debug('udep %s patdep %s', udep, patdep_simplified)
 #                     utime = datetime.datetime.strptime( udep, patdep )
-#                     try:
-                    utime = datetime.datetime.strptime( udep, patdep_simplified )
-#                     logging.debug('utime %s start %s end %s',utime,start,end)
-                    if flag_filename_time_precision == False:
-                        #collect all the files of the directory
-                        res.append( (u,utime) )
-                    else:
-                        #enlarge the 
-#                         start.replace(hour=0,minute=0,second=0,microsecond=0)
-#                         end.replace(hour=0,minute=0,second=0,microsecond=0)
-                        if utime >= start and utime < end:
-                            if unique_result == True:
-                                middle = start + (end-start)/2
-                                
-                                if res != []:
-    #                                 pdb.set_trace()
-                                    if abs(middle-utime)<abs(middle-res[0][1]):
+                    
+                    try:
+                        utime = datetime.datetime.strptime( udep, patdep_simplified )
+                        flag_respect_pattern = True
+                    except:
+                        flag_respect_pattern = False
+                        
+                    if flag_respect_pattern:
+    #                     logging.debug('utime %s start %s end %s',utime,start,end)
+                        if flag_filename_time_precision == False:
+                            #collect all the files of the directory
+                            res.append( (u,utime) )
+                        else:
+                            #enlarge the 
+    #                         start.replace(hour=0,minute=0,second=0,microsecond=0)
+    #                         end.replace(hour=0,minute=0,second=0,microsecond=0)
+                            if utime >= start and utime < end:
+                                if unique_result == True:
+                                    middle = start + (end-start)/2
+                                    
+                                    if res != []:
+        #                                 pdb.set_trace()
+                                        if abs(middle-utime)<abs(middle-res[0][1]):
+                                            res.append( (u,utime) )
+                                    else:
                                         res.append( (u,utime) )
                                 else:
-                                    res.append( (u,utime) )
-                            else:
-                                if not (u,utime) in res:
-                                    res.append( (u,utime) )
-#                                 logging.debug('[urlseries.py] url %s', u)
+                                    if not (u,utime) in res:
+                                        res.append( (u,utime) )
+    #                                 logging.debug('[urlseries.py] url %s', u)
 #                     except:
 #                         pass
                 d = d + datetime.timedelta(days=1)

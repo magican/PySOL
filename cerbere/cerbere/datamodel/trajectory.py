@@ -115,7 +115,7 @@ class Trajectory(AbstractFeature):
                                                  padding=padding))
         return subtraj
 
-    def save(self, output, attrs=None):
+    def save(self, output=None, attrs=None):
         """
         Save the trajectory to a storage (file,...).
 
@@ -128,56 +128,72 @@ class Trajectory(AbstractFeature):
                 See STANDARD_ATTRIBUTES_VALUES in abstractmapper class to see
                 a list of standard attributes
         """
-        if output.is_writable():
+        if output is None:
+            mapper = self.get_mapper()
+        else:
+            mapper = output
+        if mapper.is_writable():
 
             # creating dimensions
-            output.create_dim( 'time', None )
+            mapper.create_dim('time', None)
+
+            # create additional dimensions
+            dims = ['time']
+            for v in self._fields.keys():
+                if v not in self._geolocation_fields:
+                    for d in self._fields[v].dimensions:
+                        if d not in dims:
+                            mapper.create_dim(d, self._fields[v].get_dimsize(d))
+                            dims.append(d)
 
             # creating metadata
             if attrs:
                 globalattr = attrs
             else:
                 globalattr = {}
-            if not self._bbox:
-                self._bbox = (
-                    self.get_lon().min(), self.get_lat().min(),
-                    self.get_lon().max(), self.get_lat().max(),
-                    )
-            globalattr['geospatial_lat_min'] = self._bbox[1]
-            globalattr['geospatial_lon_min'] = self._bbox[0]
-            globalattr['geospatial_lat_max'] = self._bbox[3]
-            globalattr['geospatial_lon_max'] = self._bbox[2]
+            if 'title' not in globalattr and self.title is not None:
+                globalattr['title'] = self.title
+            if 'summary' not in globalattr and self.description is not None:
+                globalattr['summary'] = self.description
+            if 'id' not in globalattr and self.identifier is not None:
+                globalattr['id'] = self.identifier
+            lonmin, latmin, lonmax, latmax = self.get_bbox()
+            globalattr['geospatial_lat_min'] = latmin
+            globalattr['geospatial_lon_min'] = lonmin
+            globalattr['geospatial_lat_max'] = latmax
+            globalattr['geospatial_lon_max'] = lonmax
             if 'time_coverage_start' not in globalattr:
-                times = self.get_times()
-                mintime = num2date(times.min(),
-                                   self.get_time_units())
-                globalattr['time_coverage_start'] = (
-                    mintime.strftime('%Y%m%dT%H%M%S'))
+                tmptime = self.get_start_time()
+                if tmptime is not None:
+                    globalattr['time_coverage_start'] = tmptime
             if 'time_coverage_end' not in globalattr:
-                maxtime = num2date(times.max(),
-                                   self.get_time_units())
-                globalattr['time_coverage_end'] = (
-                    maxtime.strftime('%Y%m%dT%H%M%S'))
+                tmptime = self.get_end_time()
+                if tmptime is not None:
+                    globalattr['time_coverage_end'] = tmptime
             globalattr['cdm_data_type'] = 'trajectory'
-            output.write_global_attributes(globalattr)
+            mapper.write_global_attributes(globalattr)
 
             # creating fields
+            if self._geolocation_fields['time'] is None:
+                raise Exception('No time information defined')
             for geof in self._geolocation_fields:
-                if not self._geolocation_fields['time']:
-                    raise Exception('No time information defined')
-                if not self._geolocation_fields[geof]:
-                    logging.debug('Missing geolocation variable : %s', geof)
+                if self._geolocation_fields[geof] is None:
+                    logging.warning('Missing geolocation variable : %s', geof)
                 else:
-                    output.create_field(self._geolocation_fields[geof])
+                    mapper.create_field(self._geolocation_fields[geof])
             for dataf in self._fields.keys():
-                output.create_field(self._fields[dataf])
+                if dataf not in self._geolocation_fields:
+                    mapper.create_field(self._fields[dataf])
         else:
-            raise Exception("Mapper object is not writable")
+            raise Exception('Mapper object is not writable')
 
         # saving fields
         for geof in self._geolocation_fields:
-            if self._geolocation_fields[geof]:
-                output.write_field(self._geolocation_fields[geof])
+            field = self._geolocation_fields[geof]
+            if field is not None and not field.is_saved():
+                mapper.write_field(self._geolocation_fields[geof])
         for dataf in self._fields.keys():
-            output.write_field(self._fields[dataf])
-        output.sync()
+            if not self._fields[dataf].is_saved():
+                mapper.write_field(self._fields[dataf])
+        mapper.sync()
+        return

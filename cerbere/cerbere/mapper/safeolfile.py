@@ -73,13 +73,16 @@ class SAFEOLFile(AbstractMapper):
                                       mode=mode, **kwargs)
         self.__fields[instrument] = []
         # get product type
-        safefolder = os.path.basename(url)
-        if "_OL_1_ERR" in safefolder:
+        safefolder = os.path.basename(os.path.normpath(url))
+        print safefolder
+        if "_OL_1_ERR" in safefolder or "_OL_1_EFR" in safefolder:
             datafiles = DATAFILES["L1B"]
-        elif "OL_2_LRR" in safefolder:
+        elif "OL_2_LRR" in safefolder or "OL_2_LFR" in safefolder:
             datafiles = DATAFILES["L2LAND"]
-        elif "OL_2_WRR" in safefolder:
+        elif "OL_2_WRR" in safefolder or "OL_2_WFR" in safefolder:
             datafiles = DATAFILES["L2WATER"]
+        else:
+            raise Exception("Unknown product type")
         # detect the data files and instanciate mappers for each one
         for f in datafiles:
             if '*' in f:
