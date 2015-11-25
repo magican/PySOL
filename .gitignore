@@ -2,6 +2,21 @@ CUDA/
 cmod/
 notebooks/**/.ipynb_checkpoints
 **checkpoint.ipynb
+*.png
+*.jpg
+*.jpg
+*.html
+*.css
+*.tgz
+*.zip
+*.gif
+*.nc
+*.eps
+*.tif
+*.tiff
+*.pickle
+*.gz
+*.pdf
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
