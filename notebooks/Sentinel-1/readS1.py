@@ -604,7 +604,12 @@ fn='S1A_EW_GRDH_1SDH_20141003T133957_20141003T134057_002666_002F83_0BE7.zip', re
     for p in polarization:
         print "Reading raw_counts: \'%s\' polarization" %p
         # READ THE RAW_COUNTS from GRD image
-        raw_counts[p], _, _ = read_raw_counts(fn, fileLocation, p, scale, GEOgrid)
+        try:
+            raw_counts[p], _, _ = read_raw_counts(fn, fileLocation, p, scale, GEOgrid)
+        except:
+            print "Can't read file: ", fn[:-4] + '.SAFE' + fileLocation[fn.lower().replace("_","")[0:8] + p][1:]
+            polarization.remove(p)
+            pass
 
     # Close ZIP-file
     zf.close()
@@ -743,7 +748,12 @@ class readS1:
         for p in polarization:
             print "Reading raw_counts: \'%s\' polarization" %p
             # READ THE RAW_COUNTS from GRD image
-            raw_counts[p], ext, spa = read_raw_counts(fn, fileLocation, p, scale, GEOgrid)
+            try:
+                raw_counts[p], ext, spa = read_raw_counts(fn, fileLocation, p, scale, GEOgrid)
+            except:
+                print "Can't read file: ", fn[:-4] + '.SAFE' + fileLocation[fn.lower().replace("_","")[0:8] + p][1:]
+                polarization.remove(p)
+                continue
 
         #  ----------------------------------
         # INTERPOLATE DATA
@@ -763,7 +773,7 @@ class readS1:
         line_2  = arange(arrShape[0])[ext[0]:ext[2]][::spa[0]]
         pixel_2 = arange(arrShape[1])[ext[1]:ext[3]][::spa[1]]
 
-        
+
         # Fool Proof: if LonLims out of -180:+180 range after interpolation => correct
         # if lons overlap both negative and positive values from -180 to 180,
         # meanung the image covering Pole
@@ -811,6 +821,7 @@ class readS1:
                                          GEOgrid['lons'], kx=2, ky=2)(line_2, pixel_2)
 
         for p in polarization:
+
             print "Interpolating LUTs: \'%s\' polarization" %p
 
             # interpolate incidenceAngle
