@@ -43,6 +43,21 @@ SAFESLFile
 
 Mapper for Sentinel-3 SLSTR files in SAFE format.
 
+This case is quite complex because of the different sub-products
+(with different grids and views) existing within a single SLSTR SAFE container. Because these
+sub-products don't all overlap (e.g. they don't have the same array dimensions nor same
+pixel locations), we can not extract a single miniprod from a SAFE container.
+
+The data in felyx are read with `**cerbere**<http://cerbere.readthedocs.org/>`_ python package.
+The `**cerbere** strategy for SLSTR products is to provide several mappers adapted to
+each product/subproduct combination. A mapper will merge the nadir and oblique view fields as
+if they were in the same product file. 
+
+There are 4 different possible mappers for a S3A_SL_1_RBT product which means you
+will have to configure 4 datasets in felyx if you want to extract miniprod for all possible
+subproducts. This is the more tricky case. Fortunately there is only one possible mapper
+for any other S3 SLSTR product!
+
 +------------------------------------------------+------------------------+---------------+
 | Dataset                                        | Mapper class           | Datamodel     |
 +================================================+========================+===============+
@@ -60,4 +75,5 @@ Mapper for Sentinel-3 SLSTR files in SAFE format.
 | S3A_SL_1_RBT TDI Nadir (cn)                    | SAFESL500TDIFile       | Swath         |
 | S3A_SL_1_RBT TDI Oblique (co)                  |                        |               |
 +------------------------------------------------+------------------------+---------------+
+
 

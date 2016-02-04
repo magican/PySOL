@@ -120,7 +120,7 @@ class KNMIL2IFRNCFile(NCFile):
             # create a virtual field
             variable = Variable(
                     shortname=fieldname,
-                    description='best wind % solution'
+                    description='best wind %s solution'
                         % VIRTUALFIELD_DESCR[fieldname],
                     authority=self.get_naming_authority(),
                     standardname='wind %s' % VIRTUALFIELD_DESCR[fieldname]

@@ -1,3 +1,5 @@
+__import__('pkg_resources').declare_namespace(__name__)
+
 # encoding: utf-8
 __all__ = ['abstractmapper', 'ghrsstncfile', 'gribfile', 'hdffile',
     'ncfile', 'qscathdffile', 'saralncfile', 'sopranoncfile', 'urlseries',

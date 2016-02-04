@@ -70,7 +70,8 @@ class NCFile(AbstractMapper):
         ('id', ''),
         ('naming_authority', 'fr.ifremer.cersat'),
         ('Metadata_Conventions', 'Unidata Dataset Discovery v1.0'),
-        ('standard_name_vocabulary', 'NetCDF Climate and Forecast (CF) Metadata Convention'),
+        ('standard_name_vocabulary',
+         'NetCDF Climate and Forecast (CF) Metadata Convention'),
         ('institution', 'Institut Francais de Recherche et d\'Exploitation de'
             ' la Mer/Centre de Recherche et d\'Exploitation satellitaire'),
         ('institution_abbreviation', 'ifremer/cersat'),
@@ -80,8 +81,8 @@ class NCFile(AbstractMapper):
         ('keywords', ''),
         ('keywords_vocabulary', 'NASA Global Change Master Directory (GCMD)'
             ' Science Keywords'),
-        ('standard_name_vocabulary', 'NetCDF Climate and Forecast (CF) Metadata'
-            ' Convention'),
+        ('standard_name_vocabulary', 'NetCDF Climate and Forecast (CF) '
+            'Metadata Convention'),
         ('scientific_project', ''),
         ('acknowledgement', ''),
         ('license', ''),
@@ -625,7 +626,9 @@ class NCFile(AbstractMapper):
 
     @classmethod
     def get_netcdf_fillvalue(cls, datatype):
-        if datatype == numpy.dtype('S1'):
+        if datatype == str:
+            return str('')
+        elif datatype == numpy.dtype('S1'):
             return ' '
         elif datatype == numpy.dtype(numpy.complex64):
             # take type of real and imag components
@@ -649,6 +652,9 @@ class NCFile(AbstractMapper):
                     # later (bug in netcdf library?).
                     datatype = 'int64'
                     fillvalue = numpy.int64(fillvalue)
+                if self.format == 'NETCDF4' and datatype == str:
+                    fillvalue = None
+
                 result = self.get_handler().createVariable(
                     name,
                     datatype=datatype,
@@ -658,7 +664,7 @@ class NCFile(AbstractMapper):
                     shuffle=True,
                     fletcher32=False,
                     fill_value=fillvalue
-                )
+                    )
             except:
                 logging.error("Could not create field %s", name)
                 raise
@@ -935,75 +941,78 @@ class NCFile(AbstractMapper):
            explicitely created by the mapper before, by calling the
            :func:`create_field` method of this class.
         """
-        values = field.get_values()
-        if values is None:
-            raise Exception("No values provided for field ", field.name)
-        # forbids int64
-        if self.format != "NETCDF4":
-            if values.dtype == numpy.dtype(numpy.int64):
-                logging.warning("Forced type of data from int64 to int32")
-                values = values.astype(numpy.int32)
-        if field.name == 'time':
-            # Need to convert incoming datetime object to a floating point time
-            # as netcdf cannot handle time properly.
-            if isinstance(values.reshape(-1)[0], datetime.datetime):
-                units = DEFAULT_TIME_UNITS
-                if field.units is not None:
-                    units = field.units
-                values = netCDF4.date2num(values, units)
-            # Else already in proper units (we hope).
+        try:
+            values = field.get_values()
+            if values is None:
+                raise Exception("No values provided for field ", field.name)
+            # forbids int64
+            if self.format != "NETCDF4":
+                if values.dtype == numpy.dtype(numpy.int64):
+                    logging.warning("Forced type of data from int64 to int32")
+                    values = values.astype(numpy.int32)
+            if field.name == 'time':
+                # Need to convert incoming datetime object to a floating point
+                # time as netcdf cannot handle time properly.
+                if isinstance(values.reshape(-1)[0], datetime.datetime):
+                    units = DEFAULT_TIME_UNITS
+                    if field.units is not None:
+                        units = field.units
+                    values = netCDF4.date2num(values, units)
+                # Else already in proper units (we hope).
 
-        logging.debug("Writing field %s", field.name)
-        if field.datatype == numpy.dtype(numpy.complex64)\
-                or field.datatype == numpy.dtype(numpy.complex128):
-            # netcdf can not store complex and the field is
-            # splitted in two netcdf variables
-            ncvar_real = self.get_handler().variables[field.name + '_real']
-            ncvar_imag = self.get_handler().variables[field.name + '_imag']
-            if ncvar_real.shape == (0,)\
-                    or values.shape == ()\
-                    or ncvar_real.shape == values.shape:
-                ncvar_real[:] = values.real
-                ncvar_imag[:] = values.imag
-            else:
-                raise IndexError(
-                    str(
-                        "Your input data shape {} is not compatible with your "
-                        "field shape {}."
-                    ).format(
-                        values.shape, ncvar_real.shape
+            logging.debug("Writing field %s", field.name)
+            if field.datatype == numpy.dtype(numpy.complex64)\
+                    or field.datatype == numpy.dtype(numpy.complex128):
+                # netcdf can not store complex and the field is
+                # splitted in two netcdf variables
+                ncvar_real = self.get_handler().variables[field.name + '_real']
+                ncvar_imag = self.get_handler().variables[field.name + '_imag']
+                if ncvar_real.shape == (0,)\
+                        or values.shape == ()\
+                        or ncvar_real.shape == values.shape:
+                    ncvar_real[:] = values.real
+                    ncvar_imag[:] = values.imag
+                else:
+                    raise IndexError(
+                        str(
+                            "Your input data shape {} is not compatible with your "
+                            "field shape {}."
+                        ).format(
+                            values.shape, ncvar_real.shape
+                        )
                     )
-                )
-        else:
-            ncvar = self.get_handler().variables[field.name]
-            if ncvar.shape == (0,)\
-                    or ncvar.shape == ()\
-                    or values.shape == ()\
-                    or ncvar.shape == values.shape\
-                    or (ncvar.shape == (1,) and values.size == 1):
-                ncvar[:] = values
-            elif (len(ncvar.shape) - 1 == len(values.shape) and
-                  ncvar.shape[0] == 1):
-                # case of grids
-                ncvar[0, :] = values
             else:
-                raise IndexError(
-                    str(
-                        "Your input data shape {} is not compatible with your "
-                        "field shape {}."
-                    ).format(
-                        values.shape, ncvar.shape
+                ncvar = self.get_handler().variables[field.name]
+                if ncvar.shape == (0,)\
+                        or ncvar.shape == ()\
+                        or values.shape == ()\
+                        or ncvar.shape == values.shape\
+                        or (ncvar.shape == (1,) and values.size == 1):
+                    ncvar[:] = values
+                elif (len(ncvar.shape) - 1 == len(values.shape) and
+                      (ncvar.shape[0] == 1 or ncvar.shape[0] == 0)):
+                    # case of grids
+                    ncvar[0, :] = values
+                else:
+                    raise IndexError(
+                        str(
+                            "Your input data shape {} is not compatible with your "
+                            "field shape {}."
+                        ).format(
+                            values.shape, ncvar.shape
+                        )
                     )
-                )
-        if field.qc_levels is not None:
-            self.get_handler().variables[field.name + '_qc_level'][:]\
-                = field.qc_levels.values[:]
-        if field.qc_details is not None:
-            fieldname = field.name + '_qc_details'
-            self.get_handler().variables[fieldname].set_auto_maskandscale(True)
-            self.get_handler().variables[fieldname][:]\
-                = field.qc_details.values[:]
-        return
+            if field.qc_levels is not None:
+                self.get_handler().variables[field.name + '_qc_level'][:]\
+                    = field.qc_levels.values[:]
+            if field.qc_details is not None:
+                fieldname = field.name + '_qc_details'
+                self.get_handler().variables[fieldname].set_auto_maskandscale(True)
+                self.get_handler().variables[fieldname][:]\
+                    = field.qc_details.values[:]
+        except:
+            logging.error("Could not write field {}".format(field.name))
+            raise
 
     def __is_swath(self):
         """Returns True if the stored feature is a Swath or Image."""

@@ -14,6 +14,7 @@ Classes for the handling the data fields
 import logging
 import copy
 import numpy
+import collections
 from functools import partial
 
 from .variable import Variable
@@ -96,6 +97,10 @@ class Field(object):
         """
         """
         object.__init__(self)
+        if not isinstance(dimensions, collections.OrderedDict):
+            raise TypeError("Dimension must be an ordered dictionary "
+                            "(OrderedDict) instead of {}"
+                            .format(type(dimensions)))
         self.variable = variable
         self.dimensions = dimensions
         self.attributes = {}

@@ -80,10 +80,11 @@ class GHRSSTNCFile(NCFile):
 
         Internal function only. Should no be called by a user.
         """
+        prodid = self.get_collection_id()
         if self.__reversed is None:
-            if ('NAVO' in self.get_collection_id() and
-                'VIIRS' not in self.get_collection_id()) or\
-                    self.get_collection_id() == 'USA-RSS-AMSRE-MW-L2-SST':
+            if ('NAVO' in prodid and
+                'VIIRS' not in prodid) or\
+                    prodid == 'USA-RSS-AMSRE-MW-L2-SST':
                 self.__reversed = True
             else:
                 self.__reversed = False
@@ -250,11 +251,14 @@ class GHRSSTNCFile(NCFile):
             elif 'id' in attrs:
                 self.__collection_id = self.get_handler().id
             else:
-                pass
+                self.__collection_id = ''
         return self.__collection_id
 
     def is_l2(self):
         """Return True if the product is a L2P"""
+        attrs = self.get_handler().ncattrs()
+        if 'cdm_data_type' in attrs:
+            return self.get_handler().getncattr('cdm_data_type') == 'swath'
         if self.__is_l2p is None:
             self.__is_l2p = ('L2' in self.get_collection_id())
         return self.__is_l2p

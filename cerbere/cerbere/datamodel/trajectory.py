@@ -13,12 +13,13 @@ Model class for the trajectory feature
 """
 
 import logging
+import collections
 
-from netCDF4 import num2date
 
 from .abstractfeature import AbstractFeature
 
 __all__ = ['Trajectory']
+
 
 class Trajectory(AbstractFeature):
     """
@@ -42,7 +43,6 @@ class Trajectory(AbstractFeature):
                             )
         return
 
-
     def get_geolocation_dimnames(self):
         """
         Returns the geolocation dimension names defining a swath
@@ -55,12 +55,13 @@ class Trajectory(AbstractFeature):
         """
         return ('time',)
 
-
     def get_geolocation_dimsizes(self):
         """
         Returns the geolocation dimension sizes of the trajectory object
         """
-        return {'time':self.get_geolocation_field('time').get_dimsize('time')}
+        return collections.OrderedDict([
+            ('time',
+             self.get_geolocation_field('time').get_dimsize('time'))])
 
     def extract_subset(self,
                        boundaries=None,

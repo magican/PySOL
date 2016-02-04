@@ -8,7 +8,7 @@ import numpy
 from collections import OrderedDict
 
 from .ncfile import NCFile
-from cerbereutils.science.wind import uv2dir
+from cerform.wind import uv2dir
 from ..datamodel.field import Field
 from ..datamodel.variable import Variable
 

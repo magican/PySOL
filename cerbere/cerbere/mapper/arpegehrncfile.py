@@ -9,7 +9,7 @@ from .. import READ_ONLY, WRITE_NEW
 from cerbere.mapper.ncfile import NCFile
 from cerbere.datamodel.grid import Grid
 from ..datamodel.field import Field
-from cerbereutils.science.wind import uv2dir
+from cerform.wind import uv2dir
 from ..datamodel.variable import Variable
 
 VIRTUALFIELD_DESCR = {'wind_speed': 'wind speed',

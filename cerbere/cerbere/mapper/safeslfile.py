@@ -12,10 +12,11 @@ Class to read Sentinel-3 SLSTR files (except L2P).
 """
 import os
 import glob
+import datetime
 from numpy import ma, dtype, int64
 from collections import OrderedDict
 
-from netCDF4 import num2date
+from netCDF4 import num2date, date2num
 
 from .. import READ_ONLY
 from .abstractmapper import AbstractMapper
@@ -459,6 +460,16 @@ class SAFESLFile(AbstractMapper):
             time = first_min_ts.reshape((-1, 1))\
                 + (scan - first_scan_i.reshape((-1, 1)))\
                 * SCANSYNC + pixel * PIXSYNC_i
+            # mask wrong times (which occur in test data)
+            maxdate = date2num(datetime.datetime(2050, 1, 1),
+                               "microseconds since 2000-01-01T00:00:00Z")
+            mindate = date2num(datetime.datetime(2001, 1, 1),
+                               "microseconds since 2000-01-01T00:00:00Z")
+            time = ma.masked_where(
+                ((time < mindate) | (time > maxdate)),
+                time,
+                copy=False
+                )
             return time
         elif fieldname in ['lat', 'lon', 'z']:
             return self.__geofieldlocator[native_name].read_values(native_name,

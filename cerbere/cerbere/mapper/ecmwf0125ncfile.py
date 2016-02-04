@@ -8,7 +8,16 @@ import numpy
 import logging
 from collections import OrderedDict
 from .ncfile import NCFile
-from cerbereutils.science.wind import uv2dir
+try:
+    from cerform.wind import uv2dir
+except ImportError as err:
+    try:
+        from cerbereutils.science.wind import uv2dir
+        logging.warning('cerbereutils has been split into multiple packages '
+                        'and no longer exists. Please add the new cer* '
+                        'packages to your python environment.')
+    except ImportError:
+        raise err
 from ..datamodel.field import Field
 from ..datamodel.variable import Variable
 

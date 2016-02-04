@@ -2,7 +2,10 @@
 """
 .. module::cerbere.mapper.knmiscatbufrfile
 
-Mapper classs for KNMI L2 scatterometer BUFR format
+Mapper classs for KNMI L2 scatterometer BUFR format.
+
+Requires the following packages:
+  * https://github.com/pytroll/python-bufr
 
 :copyright: Copyright 2013 Ifremer / Cersat.
 :license: Released under GPL v3 license, see :ref:`license`.

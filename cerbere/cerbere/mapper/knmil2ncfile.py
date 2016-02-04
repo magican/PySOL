@@ -13,6 +13,7 @@ Mapper class for KNMI ASCAT / OSCAT netcdf files
 from datetime import datetime
 from collections import OrderedDict
 import numpy
+import logging
 from .. import READ_ONLY, WRITE_NEW
 from .ncfile import NCFile
 from ..datamodel.field import Field
@@ -32,7 +33,7 @@ VIRTUALFIELD_MATCHING = {
                              'wind_speed_selection': 'wind_speed',
                              'wind_dir_selection': 'wind_dir'
                              },
-    'ASCAT-A-L2-12_5km':{
+    'ASCATL2B-050':{#'ASCAT-A-L2-12_5km':{
                              'wind_speed_selection': 'wind_speed',
                              'wind_dir_selection': 'wind_dir'
                              },
@@ -63,12 +64,12 @@ class KNMIL2NCFile(NCFile):
     (ex: ASCAT-B-L2-25km)
     """
     def __init__(self, url=None, mode=READ_ONLY,
-                 ncformat='NETCDF4_CLASSIC',collection=None, **kwargs):
+                 ncformat='NETCDF4_CLASSIC', **kwargs):
         super(KNMIL2NCFile, self).__init__(url=url,
                                               mode=mode,
                                               ncformat=ncformat,
                                               **kwargs)
-        self._collection_id = collection
+#         self._collection_id = collection
 
     def get_geolocation_field(self, fieldname):
         matching = {'time': 'time',
@@ -244,10 +245,13 @@ class KNMIL2NCFile(NCFile):
 
     def get_collection_id(self):
         """return the identifier of the product collection"""
-        res = self._collection_id
-        if res not in VIRTUALFIELD_MATCHING.keys() or res is None:
-            logging.error('the collection you gave to init the mapper do not correspond to pre-defined ones: %s',VIRTUALFIELD_MATCHING.keys())
-            raise
+#         res = self._collection_id
+        if '/home/cerdata/provider/knmi/satellite/metop-a/ascat/l2b/12.5km/' in self._url:
+            res = 'ASCATL2B-050'
+        else:
+#         if res not in VIRTUALFIELD_MATCHING.keys() :#or res is None:
+#             logging.error('the collection you gave to init the mapper do not correspond to pre-defined ones: %s',VIRTUALFIELD_MATCHING.keys())
+            raise Exception('the collection you gave to init the mapper do not correspond to pre-defined ones: %s',VIRTUALFIELD_MATCHING.keys())
         return res
 #         return self.get_handler().Sensor_Id +\
 #                 self.get_handler().Product_Id + "-050"

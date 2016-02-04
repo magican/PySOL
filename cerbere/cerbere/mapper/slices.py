@@ -13,6 +13,9 @@ Functions to handle slices when reading data from a :package:`mapper` or
 """
 
 
+import numpy as np
+
+
 # TODO : method shape() from Slices object should be used instead !
 def get_shape_from_slice(slices):
     """Returns the shape of the result from a slicing operation.
@@ -306,3 +309,90 @@ class Slices(tuple):
                 abs_stop = None
             abs_slices.append(slice(abs_start, abs_stop, abs_step))
         return Slices(abs_slices, view_slices.dimsizes)
+
+    def indices_array(self, dtype=None):
+        """
+        """
+        ind_arr = []
+        for _slice in self:
+            stop = _slice.stop
+            if stop is None:
+                stop = -1
+            ind_arr.append(np.arange(_slice.start, stop, _slice.step,
+                                     dtype=dtype))
+        return ind_arr
+
+    def indices_minmax(self):
+        """
+        """
+        ind_minmax = []
+        for _slice, size in zip(self, self.shape()):
+            stopin = _slice.start + (size - 1) * _slice.step
+            if _slice.step > 0:
+                ind_minmax.append([_slice.start, stopin])
+            else:
+                ind_minmax.append([stopin, _slice.start])
+        return ind_minmax
+
+    def indices_offsetextent(self):
+        """
+        """
+        ind_offext = []
+        for minmax in self.indices_minmax():
+            ind_offext.append([minmax[0], minmax[1] - minmax[0] + 1])
+        return ind_offext
+
+    def outsub_insub_slices(self, sub_offset, sub_size):
+        """
+        """
+        if len(self) != len(sub_offset) or len(self) != len(sub_size):
+            raise Exception('Mismatch between slices/ofssets/sizes lengths.')
+        outsub_slices = []
+        insub_slices = []
+        shp = self.shape()
+        minmax = self.indices_minmax()
+        for i in range(len(self)):
+            # self slice (ie absolute slice)
+            absmin = minmax[i][0]
+            #absmax = minmax[i][1]
+            abssize = shp[i]
+            absstep = self[i].step
+            # sub
+            submin = sub_offset[i]
+            subsize = sub_size[i]
+            submax = submin + subsize - 1
+            # Find outsub min and max
+            outmin = np.ceil(float(submin - absmin) / abs(absstep))
+            outmax = np.floor(float(submax - absmin) / abs(absstep))
+            if outmax < 0 or outmin >= abssize:
+                return None, None
+            outmin = int(np.maximum(0, outmin))
+            outmax = int(np.minimum(abssize - 1, outmax))
+            # TMP check
+            if outmin < 0 or outmin >= abssize or outmax < 0 or outmax >= abssize:
+                raise Exception()
+            # Find insub min and max
+            inmin = int(absmin + outmin * abs(absstep) - submin)
+            inmax = int(absmin + outmax * abs(absstep) - submin)
+            # TMP check
+            if inmin < 0 or inmin >= subsize or inmax < 0 or inmax >= subsize:
+                raise Exception()
+            # Make slices
+            if absstep > 0:
+                outsub_slices.append(slice(outmin, outmax+1, 1))
+                insub_slices.append(slice(inmin, inmax+1, absstep))
+            else:
+                outsub_slices.append(slice(abssize - 1 - outmax,
+                                           abssize - outmin, 1))
+                if inmin == 0:
+                    instop = None
+                else:
+                    instop = inmin - 1
+                insub_slices.append(slice(inmax, instop, absstep))
+        res = (Slices(outsub_slices, shp), Slices(insub_slices, sub_size))
+        # TMP check
+        for size1, size2 in zip(res[0].shape(), res[1].shape()):
+            if size1 != size2:
+                raise Exception()
+        return res
+

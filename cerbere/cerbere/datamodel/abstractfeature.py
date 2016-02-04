@@ -383,11 +383,15 @@ class AbstractFeature(object):
             a long time. Use only when accessing single elements for instance.
         """
         field = self._geolocation_fields['time']
-        values = self._get_field_values(field, slices, indices, cache, **kwargs)
+        values = self._get_field_values(field, slices, indices,
+                                        cache, **kwargs)
         if not isinstance(values, datetime.datetime)\
                 or not isinstance(values[0], datetime.datetime):
-            values = netCDF4.num2date(numpy.array(values),
+            values = numpy.ma.array(values, copy=False)
+            mask = numpy.ma.getmask(values)
+            values = netCDF4.num2date(values.filled(0),
                                       field.units)
+            values = numpy.ma.array(values, mask=mask, copy=False)
         return values
 
     def _get_time_dimensions(self, values):
@@ -770,7 +774,8 @@ class AbstractFeature(object):
         if self._datastorage is None:
             metadata = self.get_metadata()
             if 'time_coverage_start' in metadata:
-                if isinstance(metadata['time_coverage_start'], datetime):
+                if isinstance(metadata['time_coverage_start'], 
+                              datetime.datetime):
                     return metadata['time_coverage_start']
                 else:
                     logging.warning('time_coverage_start is not a datetime'
@@ -794,7 +799,8 @@ class AbstractFeature(object):
         if self._datastorage is None:
             metadata = self.get_metadata()
             if 'time_coverage_end' in metadata:
-                if isinstance(metadata['time_coverage_end'], datetime):
+                if isinstance(metadata['time_coverage_end'],
+                              datetime.datetime):
                     return metadata['time_coverage_end']
                 else:
                     logging.warning('time_coverage_end is not a datetime'
