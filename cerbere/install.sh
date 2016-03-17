@@ -19,7 +19,7 @@ sudo apt-get install gcc \
 
 # Numpy installation fails when it is done during "install_requires" processing
 # of setup.py but it works fine when done this way.
-pip install numpy==1.8
+pip install numpy>=1.8
 
 # the pyhdf project changed the version number convention they use for the
 # python packages (X.Y-Z to X.Y.Z), which prevents pip from detecting the latest
@@ -36,6 +36,7 @@ fi
 export INCLUDE_DIRS=/usr/include/hdf
 export LIBRARY_DIRS=/usr/lib
 export NOSZIP=1
+export CFLAGS=-D_FORTIFY_SOURCE=1
 python setup.py install
 
 # Now we can install cerbere

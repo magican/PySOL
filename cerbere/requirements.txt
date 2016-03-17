@@ -1,4 +1,0 @@
-# Use official repository
--i https://pypi.python.org/simple/
-
--e .

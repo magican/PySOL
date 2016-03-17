@@ -461,10 +461,11 @@ class SAFESLFile(AbstractMapper):
                 + (scan - first_scan_i.reshape((-1, 1)))\
                 * SCANSYNC + pixel * PIXSYNC_i
             # mask wrong times (which occur in test data)
-            maxdate = date2num(datetime.datetime(2050, 1, 1),
+            maxdate = date2num(self.get_end_time(),
                                "microseconds since 2000-01-01T00:00:00Z")
-            mindate = date2num(datetime.datetime(2001, 1, 1),
+            mindate = date2num(self.get_start_time(),
                                "microseconds since 2000-01-01T00:00:00Z")
+
             time = ma.masked_where(
                 ((time < mindate) | (time > maxdate)),
                 time,
@@ -505,7 +506,7 @@ class SAFESLFile(AbstractMapper):
                     newslices = list(nadir_slices)
                     newslices[celldim] = slice(obl_start, obl_end, step)
                     if obl_start >= obl_end:
-                        empty = True                        
+                        empty = True
                 else:
                     # case of some fields such as orphan pixels which don't
                     # have a cell dimension

@@ -39,6 +39,8 @@ nosetests.xml
 DS_Store
 *.sqlite3
 
+VERSION.txt
+
 migrations
 */migrations/*.py
 

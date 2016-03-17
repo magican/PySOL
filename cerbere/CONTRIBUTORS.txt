@@ -1,5 +1,0 @@
-Jean-François Piollé <jean.francois.piolle@ifremer.fr>
-David Poulter <david.poulter@pelamis.co.uk>
-Antoine Grouazel <antoine.grouazel@ifremer.fr>
-Gilles Guitton <gilles.guitton@oceandatalab.com>
-Sylvain Herlédan <sylvain.herledan@oceandatalab.com>

@@ -25,16 +25,6 @@ except ImportError:
     logging.exception('A netCDF mapper failed to load, and is unavailable:')
     
 try:
-    packages.require('pyhdf')
-    # from . import hdffile
-    # from . import qscathdffile
-except DistributionNotFound, exception:
-    logging.warning('Python pyhdf package is required for HDF. ' 
-        'No HDF compatable modules are avaialble on this cerbere instance')
-except ImportError:
-    logging.exception('An HDF mapper failed to load, and is unavailable:')    
-    
-try:
     packages.require('pygrib')
     # from . import gribfile
 except DistributionNotFound, exception:
