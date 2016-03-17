@@ -1,0 +1,35 @@
+{
+    "is_masked": {
+        "roughness": false,
+        "sigma0": false,
+        "wind_speed": true
+    },
+    "min_max_values": {
+        "roughness": [
+            -1,
+            1
+        ],
+        "sigma0": [
+            -35,
+            5
+        ],
+        "wind_speed": [
+            0,
+            35
+        ]
+    },
+    "nc_data_type": [
+        "u1"
+    ],
+    "polarizations_list": [
+        "hh",
+        "vv",
+        "hv",
+        "vh"
+    ],
+    "variables_list": [
+        "sigma0",
+        "wind_speed",
+        "roughness"
+    ]
+}
