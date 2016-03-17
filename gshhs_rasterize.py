@@ -14,37 +14,40 @@ def msgx(s): dashes(); msg('ERROR'); msg(s); dashes(); sys.exit(0)
 
 # Creates a land mask by projecting land polygons in lat/lon coordinates from
 # an ESRI shapefile to coordinates of the unprojected image and rasterizing the polygons.
-def gshhs_rasterize(lonlim=(1,31), latlim=(55,65), units='deg', \
-                    raster_shape=[300,300], proj='4326', proj_name=None, lakes = False, \
+def gshhs_rasterize(lonlim=(1,31), latlim=(55,65), \
+                    area_def=None, lakes = False, \
                     shapefile = '/media/SOLabNFS/store/auxdata/coastline/GSHHS_shp/f/GSHHS_f_L1.shp'):
 
+    proj      = area_def.proj_
+    proj_name =  area_def.proj_name
+    raster_shape = area_def.shape
+
     # Get area extent
-    if units != 'deg':
-        p = Proj(proj)
+    # p = Proj(proj)
 
-        up    = max(latlim)
-        down  = min(latlim)
-        left  = min(lonlim)
-        right = max(lonlim)
-        # минимум из всех координат X, Y, максимум из всех координат X, Y
-        # Такой результат даёт правильный area_extent для 3413
-        # При этом для 4326 area_extent остаётся неизменным
-        # area_def_3413 = swath_area_def(name='Temporal SWATH EPSG Projection 3413', proj='stere', \
-        #                                lonlim=(-180,180), latlim=(30,90), ellps="WGS84", res=1500, \
-        #                                lat_ts=70, lat_0=90, lon_0=-45)
-        # Area extent: (-5050747.263141337, 0.0, 0.0, 5050747.263141336)
-        area_extent = (
-                        min(left_ex1, left_ex2, right_ex1, right_ex2),
-                        min(up_ex1, up_ex2, down_ex1, down_ex2),
-                        max(left_ex1, left_ex2, right_ex1, right_ex2),
-                        max(up_ex1, up_ex2, down_ex1, down_ex2)
-                    )
-        minlon, minlat, maxlon, maxlat = area_extent
+    # up    = max(latlim)
+    # down  = min(latlim)
+    # left  = min(lonlim)
+    # right = max(lonlim)
+    # # минимум из всех координат X, Y, максимум из всех координат X, Y
+    # # Такой результат даёт правильный area_extent для 3413
+    # # При этом для 4326 area_extent остаётся неизменным
+    # # area_def_3413 = swath_area_def(name='Temporal SWATH EPSG Projection 3413', proj='stere', \
+    # #                                lonlim=(-180,180), latlim=(30,90), ellps="WGS84", res=1500, \
+    # #                                lat_ts=70, lat_0=90, lon_0=-45)
+    # # Area extent: (-5050747.263141337, 0.0, 0.0, 5050747.263141336)
+    # area_extent = (
+    #                 min(left_ex1, left_ex2, right_ex1, right_ex2),
+    #                 min(up_ex1, up_ex2, down_ex1, down_ex2),
+    #                 max(left_ex1, left_ex2, right_ex1, right_ex2),
+    #                 max(up_ex1, up_ex2, down_ex1, down_ex2)
+    #             )
 
-        lonlim = (minlon, maxlon)
-        latlim = (minlat, maxlat)
-    else:
-        minlon,minlat,maxlon,maxlat=[min(lonlim),min(latlim),max(lonlim),max(latlim)]
+    minlon, minlat, maxlon, maxlat = area_def.area_extent_ll
+    lonlim = (minlon, maxlon)
+    latlim = (minlat, maxlat)
+    # else:
+    #     minlon,minlat,maxlon,maxlat=[min(lonlim),min(latlim),max(lonlim),max(latlim)]
 
 
     # if projection is not 4326 use manual config
@@ -52,14 +55,14 @@ def gshhs_rasterize(lonlim=(1,31), latlim=(55,65), units='deg', \
         # if projection file alredy exists - skip
         outputShapefile = get_output_fname(shapefile, proj_name)
         if not os.path.isfile(outputShapefile):
-            msgt('Projection %s not found. Reprojecting ' % proj_name)
+            msgt('Projection %s file not found. Reprojecting ' % proj_name)
             reproject(shapefile, proj, proj_name)
         if lakes:
             # if projection file alredy exists - skip
             shapefile_lakes = shapefile[:-5] + "2.shp"
             outputShapefile = get_output_fname(shapefile_lakes, proj_name)
             if not os.path.isfile(outputShapefile):
-                msgt('Lakes Projection %s not found. Reprojecting ' % proj_name)
+                msgt('Lakes Projection %s file not found. Reprojecting ' % proj_name)
                 reproject(shapefile_lakes, proj, proj_name)
 
 
@@ -207,8 +210,9 @@ def gshhs_rasterize_4326(lonlim=(1,31), latlim=(55,65), \
     if arrShape is None:
         ncols = int( floor( (maxlon-minlon)/xres ) )
         nrows = int( floor( (maxlat-minlat)/yres ) )
-    ncols = arrShape[1]
-    nrows = arrShape[0]
+    else:
+        ncols = arrShape[1]
+        nrows = arrShape[0]
 
     # set the geotransform
     geotransform=(minlon,xres,0,maxlat,0, -yres)
