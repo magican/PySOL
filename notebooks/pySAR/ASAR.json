@@ -1,5 +1,5 @@
 {
-    "is_masked": {
+    "is_land_masked": {
         "roughness": false,
         "sigma0": false,
         "wind_speed": true
@@ -19,7 +19,8 @@
         ]
     },
     "nc_data_type": [
-        "u1"
+        "u1",
+        "u8"
     ],
     "polarizations_list": [
         "hh",
