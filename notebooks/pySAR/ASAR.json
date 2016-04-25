@@ -1,4 +1,18 @@
 {
+    "default_min_max_values": {
+        "roughness": [
+            -0.5,
+            0.5
+        ],
+        "sigma0": [
+            -25,
+            -5
+        ],
+        "wind_speed": [
+            0,
+            25
+        ]
+    },
     "is_land_masked": {
         "roughness": false,
         "sigma0": false,
